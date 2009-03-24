@@ -1,0 +1,32 @@
+# Simple builds for examples in C/Fortran.
+
+.SUFFIXES: .o .c .f .f90 .cpp .a
+
+CC          = gcc
+CFLAGS      = -g -O1
+INCLUDES    = -I ../src
+LIBS        = -lhpct -lstdc++
+LDFLAGS     = -L../src/
+
+# Example gfortran Settings 
+FLDFLAGS    = -L/usr/local/lib/gcc/i386-apple-darwin9.2.0/4.4.0/ -lgfortran -lgfortranbegin
+F90=gfortran
+
+# Example Intel Settings
+
+#FLDFLAGS    = 
+#F90=ifort
+
+all: ctest ftest
+
+ctest: input.c
+	$(CC) -o ctest $(INCLUDES) $(CFLAGS) input.c $(LDFLAGS) $(LIBS)
+
+ftest: inputf.o
+	$(F90) -o ftest inputf.o $(LDFLAGS) $(LDFLAGS) $(LIBS) $(FLDFLAGS)
+
+inputf.o: inputf.f90
+	$(F90) -c inputf.f90 
+
+clean:
+	rm -f ctest ftest inputf.o
