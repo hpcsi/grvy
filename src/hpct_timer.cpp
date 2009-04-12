@@ -138,6 +138,17 @@ void hpct_timer_end(const char *id)
 
 void hpct_timer_init()
 {
+
+  _HPCT_Type_TimerMap :: iterator index;
+
+  // first: reset accumulated time for any counters that have been 
+  // defined previously
+
+  for(index=_HPCT_TimerMap.begin(); index != _HPCT_TimerMap.end(); ++index)
+    index->second[0] = 0.0;
+
+  // initialize global timer region
+
   hpct_timer_begin(_HPCT_gtimer);
   return;
 }

@@ -15,29 +15,33 @@ int main()
 {
 
 
-  int i;
+  int i,itest;
+  int num_repeat = 2;
 
   /* Primary Iteration Loop */
 
-  for(i=0;i<Max_Iters;i++)
+  for(itest=0;itest<num_repeat;itest++)
     {
-
-      /* Define the beginning of the overall portion to be monitored */
-
-      hpct_timer_init();
-
-      printf("Main iteration loop = %i\n",i);
-
-      foo();
-      bar();
-      poo();
-
-      hpct_timer_finalize();
+      for(i=0;i<Max_Iters;i++)
+	{
+	  
+	  /* Define the beginning of the overall portion to be monitored */
+	  
+	  hpct_timer_init();
+	  
+	  printf("Main iteration loop = %i\n",i);
+	  
+	  foo();
+	  bar();
+	  poo();
+	  
+	  hpct_timer_finalize();
+	}
+      
+      hpct_timer_summarize();
+      
+      printf("\nExpecting %10.5e secs\n",Max_Iters*(Foo_Sleep+Poo_Sleep+Bar_Sleep)/1.e6);
     }
-
-  hpct_timer_summarize();
-
-  printf("\nExpecting %10.5e secs\n",Max_Iters*(Foo_Sleep+Poo_Sleep+Bar_Sleep)/1.e6);
 
   return 0;
 }
