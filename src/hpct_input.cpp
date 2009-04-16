@@ -103,6 +103,23 @@ extern "C" int hpct_input_fdump()
 
 }
 
+extern "C" int hpct_input_fdump_delim(const char *prefix)
+{
+
+  if(_HPCT_Initialized)
+    {
+      _hpct_ifile.print(prefix);
+      return 1;
+    }
+  else
+    {
+      printf("\n%s (%s): unitialized file - verify file has been opened\n",
+	     _Error_Mask,__func__);
+      return 0;
+    }
+
+}
+
 extern "C" int hpct_input_fclose()
 {
   _HPCT_Initialized=0;

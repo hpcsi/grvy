@@ -188,6 +188,7 @@ public:
 
     // (*) output --------------------------------------------------------------
     inline int print() const;
+    inline int print(const char *prefix) const;
 
 private:
     // (*) Type Declaration ----------------------------------------------------
@@ -1626,6 +1627,25 @@ GetPot::print() const
     STRING_VECTOR::const_iterator it = argv.begin();
     for(; it != argv.end(); ++it)
         std::cout << *it << std::endl;
+    std::cout << std::endl;
+    return 1;
+}
+
+
+// PECOS Addition - add option to prepend with a delimiter also
+// disabling argc print and skipping first print (the name of the
+// input file) ks. 4/16/09
+
+inline int
+GetPot::print(const char* prefix) const
+{
+    STRING_VECTOR::const_iterator it = argv.begin();
+    it++;
+    for(; it != argv.end(); ++it)
+      {
+	std::cout << prefix << " ";
+        std::cout << *it << std::endl;
+      }
     std::cout << std::endl;
     return 1;
 }
