@@ -24,6 +24,9 @@ program main
   call hpct_input_fdump(flag);
   print*,' ---- End Full Dump ----'
 
+  print*,' ------ Full Dump (delimited) ------'
+  call hpct_input_fdump_delim('# ',flag);
+
   ! Read specific variables
 
   call hpct_input_fread_real ("reyn",reyn,flag)

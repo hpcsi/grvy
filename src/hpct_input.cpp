@@ -336,6 +336,17 @@ extern "C" void hpct_input_fdump_(int *flag)
 }
 
 #ifdef FORTRAN_ORDER1
+extern "C" void hpct_input_fdump_delim_(char *prefix, int *flag, int _namelen )
+#else
+extern "C" void hpct_input_fdump_delim_(char *prefix, int _namelen, int *flag)
+#endif
+{
+  char *name = hpct_f2c_char(prefix,_namelen);
+  *flag = hpct_input_fdump_delim(name);
+  return;
+}
+
+#ifdef FORTRAN_ORDER1
 extern "C" void hpct_input_fread_real_(char *var,float *value,int *flag,int _namelen)
 #else
 extern "C" void hpct_input_fread_real_(char *var,int _namelen,float *value,int *flag)
