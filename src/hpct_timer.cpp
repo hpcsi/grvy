@@ -253,6 +253,20 @@ void hpct_timer_summarize()
 //                     Fortran Interfaces
 //-----------------------------------------------------------------
 
+extern "C" void hpct_asci_time_(char *timestring,int _namelen) {
+  struct tm *ptr;
+  time_t tm;
+
+  tm = time(NULL);
+  ptr = localtime(&tm);
+
+  std::strncpy(timestring,asctime(ptr),strlen(asctime(ptr)));
+ 
+  return;
+
+}
+
+
 extern "C" void hpct_timer_init_() {
   hpct_timer_init();
 }

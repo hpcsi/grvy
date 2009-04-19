@@ -6,8 +6,13 @@ program main
   integer :: Poo_Sleep = 3
   integer :: Max_Iters = 2
   real*8  :: igot,igot2
+  character :: timestring*50 = ''
 
   integer i
+
+  call hpct_asci_time(timestring)
+
+  write(*,'(a,a26)') 'Run on: ',trim(timestring)
 
   ! Primary Iteration Loop 
 
