@@ -260,8 +260,11 @@ extern "C" void hpct_asci_time_(char *timestring,int _namelen) {
   tm = time(NULL);
   ptr = localtime(&tm);
 
-  std::strncpy(timestring,asctime(ptr),strlen(asctime(ptr)));
- 
+  // asctime() puts a newline at the end of the string - we won't include
+  // that in the copy.
+
+  std::strncpy(timestring,asctime(ptr),strlen(asctime(ptr)) - 1);
+
   return;
 
 }
