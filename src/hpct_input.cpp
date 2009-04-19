@@ -128,6 +128,8 @@ extern "C" int hpct_input_fdump_file(const char *prefix, const char *filename)
   fp = freopen(filename,"a",stdout);
   if(fp == NULL)
     {
+      freopen("/dev/tty","w",stdout);
+
       printf("\n%s (%s): unable to open output file %s\n",
 	     _Error_Mask,__func__,filename);
       return 0;
@@ -374,6 +376,19 @@ extern "C" void hpct_input_fdump_delim_(char *prefix, int _namelen, int *flag)
 {
   char *name = hpct_f2c_char(prefix,_namelen);
   *flag = hpct_input_fdump_delim(name);
+  return;
+}
+
+#ifdef FORTRAN_ORDER1
+extern "C" void hpct_input_fdump_file_(char *prefix, char *filename, int *flag, int _namelen, int _filelen )
+#else
+extern "C" void hpct_input_fdump_file_(char *prefix, int _namelen, char *filename, int _filelen, int *flag)
+#endif
+{
+  char *name = hpct_f2c_char(prefix,  _namelen);
+  char *file = hpct_f2c_char(filename,_filelen);
+
+    *flag = hpct_input_fdump_file(name,file);
   return;
 }
 
