@@ -42,6 +42,7 @@ extern int hpct_input_fopen       (const char *filename);
 extern int hpct_input_fclose      ();
 extern int hpct_input_fdump       ();
 extern int hpct_input_fdump_delim (const char* prefix);
+extern int hpct_input_fdump_file  (const char* prefix, const char *filename);
 extern int hpct_input_fread_int   (const char* var, int *value);
 extern int hpct_input_fread_float (const char* var, float *value);
 extern int hpct_input_fread_double(const char* var, double *value);

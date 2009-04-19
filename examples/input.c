@@ -32,6 +32,12 @@ int main(int argc, char **argv)
   hpct_input_fdump_delim("# ");
   printf(" ---- End Full Dump ----\n\n");
 
+  /* Dump the whole file to a file */
+
+  printf("\n ------ Full Dump to test.out ------\n\n");
+  hpct_input_fdump_file("% ","test.out");
+  printf(" -------    End Full Dump    -------\n\n");
+
   /* Read specific variables and echo locally */
 
   if(hpct_input_fread_float("reyn",&reyn))

@@ -120,6 +120,37 @@ extern "C" int hpct_input_fdump_delim(const char *prefix)
 
 }
 
+extern "C" int hpct_input_fdump_file(const char *prefix, const char *filename)
+{
+
+  FILE *fp;
+
+  fp = freopen(filename,"a",stdout);
+  if(fp == NULL)
+    {
+      printf("\n%s (%s): unable to open output file %s\n",
+	     _Error_Mask,__func__,filename);
+      return 0;
+    }
+
+  if(_HPCT_Initialized)
+    {
+      _hpct_ifile.print(prefix);
+
+      fclose(fp);
+      freopen("/dev/tty","w",stdout);
+
+      return 1;
+    }
+  else
+    {
+      printf("\n%s (%s): uninitialized file - verify file has been opened\n",
+	     _Error_Mask,__func__);
+      return 0;
+    }
+
+}
+
 extern "C" int hpct_input_fclose()
 {
   _HPCT_Initialized=0;
