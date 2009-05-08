@@ -13,6 +13,7 @@ program main
   call hpct_asci_time(timestring)
 
   write(*,'(a,a26)') 'Run on: ',trim(timestring)
+  print*,'koomie'
 
   ! Primary Iteration Loop 
 
