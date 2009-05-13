@@ -299,7 +299,7 @@ extern "C" int hpct_input_fread_char(const char *var, char **value)
 
   tstring = _hpct_ifile(var,Char_Def);
   *value = (char *) malloc(tstring.length()*sizeof(char)+1);
-  std::strcpy(value[0],tstring.c_str());
+  strcpy(value[0],tstring.c_str());
 
   if(strcmp(*value,Char_Def) == 0)
     {
@@ -317,7 +317,7 @@ extern "C" int hpct_input_fread_char_ivec(const char *var,char **value,int elem)
 
   tstring = _hpct_ifile(var,Char_Def,elem);
   *value = (char *) malloc(tstring.length()*sizeof(char)+1);
-  std::strcpy(value[0],tstring.c_str());
+  strcpy(value[0],tstring.c_str());
 
   if(strcmp(*value,Char_Def) == 0)
     {
@@ -541,7 +541,7 @@ extern "C" void hpct_input_fread_char_(char *var,int _namelen,char *value,int _s
   char *name = hpct_f2c_char(var,_namelen);
   *flag = hpct_input_fread_char(name,&tmpvar);
 
-  std::strncpy(value,tmpvar,strlen(tmpvar));
+  strncpy(value,tmpvar,strlen(tmpvar));
 
   delete[] name;
   return;
@@ -569,7 +569,7 @@ extern "C" void hpct_input_fread_char_ivec_(char *var,int _namelen,char *value,
 
   *flag = hpct_input_fread_char_ivec(name,&tmpvar,cindex);
 
-  std::strncpy(value,tmpvar,strlen(tmpvar));
+  strncpy(value,tmpvar,strlen(tmpvar));
 
   delete[] name;
   free(tmpvar);

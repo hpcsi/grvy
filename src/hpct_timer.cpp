@@ -45,6 +45,7 @@ using namespace std;
 #include<hpct_int.h>
 #include<iostream>
 #include<math.h>
+#include<string.h>
 
 const static double HPCT_TIMER_THRESH = 9.0e-8;  // low water mark for expected timer usage deltas
 const static double HPCT_PERC_TOL     = 1e-3;    // tolerance for defining acceptable global percentages
@@ -224,7 +225,7 @@ void hpct_timer_summarize()
 	{
 	  local_percentage  = 100.*indexHL->first[0]/(totaltime);
 	  total_percentage += local_percentage;
-	  printf(" (%8.4f %)\n",local_percentage);
+	  printf(" (%8.4f %%)\n",local_percentage);
 	}
       else
 	printf("\n");
@@ -232,7 +233,7 @@ void hpct_timer_summarize()
 
   if(global_time_defined)
     {
-      printf("\n %22s = %10.5e secs (%8.4f %)\n","Total Measured Time",totaltime,total_percentage);
+      printf("\n %22s = %10.5e secs (%8.4f %%)\n","Total Measured Time",totaltime,total_percentage);
 
       if( fabs(total_percentage - 100.0) > HPCT_PERC_TOL )
 	{
@@ -263,7 +264,7 @@ extern "C" void hpct_asci_time_(char *timestring,int _namelen) {
   // asctime() puts a newline at the end of the string - we won't include
   // that in the copy.
 
-  std::strncpy(timestring,asctime(ptr),strlen(asctime(ptr)) - 1);
+  strncpy(timestring,asctime(ptr),strlen(asctime(ptr)) - 1);
 
   return;
 
