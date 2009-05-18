@@ -69,12 +69,15 @@ puts stderr "\t-I\$HPCT_INC "
 puts stderr "\nand add the following options to the link step: "
 puts stderr ""
 puts stderr "\t-L\$HPCT_LIB -lhpct"
+puts stderr ""
+puts stderr "\npkg-config may also be used to find compile and link options."
 
 puts stderr "\nVersion %{version}"
 
 }
 
 prepend-path    LD_LIBRARY_PATH   %{INSTALL_DIR}/lib
+prepend-path    PKG_CONFIG_PATH   %{INSTALL_DIR}/lib/pkgconfig
 prepend-path    INCLUDE           %{INSTALL_DIR}/include
 
 setenv HPCT_DIR %{INSTALL_DIR}
