@@ -75,7 +75,8 @@ extern "C" int hpct_input_fopen(const char *filename)
 
   if(_hpct_ifile.size() <= 1)
     {
-      printf("\n%s (%s): non-existent or empty file -> %s\n",_Error_Mask,__func__,filename);
+      if(_HPCT_Input_Output_Errors)
+	printf("\n%s (%s): non-existent or empty file -> %s\n",_Error_Mask,__func__,filename);
       return 0;
     }
   else 
