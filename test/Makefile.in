@@ -32,9 +32,11 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = C_input_read_variables$(EXEEXT) \
-	C_input_nofile_available$(EXEEXT)
-TESTS = C_input_read_variables$(EXEEXT) \
-	C_input_nofile_available$(EXEEXT)
+	C_input_nofile_available$(EXEEXT) \
+	C_input_read_missing_variable$(EXEEXT)
+TESTS = init.sh C_input_read_variables$(EXEEXT) \
+	C_input_nofile_available$(EXEEXT) \
+	C_input_read_missing_variable$(EXEEXT) finalize.sh
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -48,6 +50,11 @@ am_C_input_nofile_available_OBJECTS = input-nofile.$(OBJEXT)
 C_input_nofile_available_OBJECTS =  \
 	$(am_C_input_nofile_available_OBJECTS)
 C_input_nofile_available_LDADD = $(LDADD)
+am_C_input_read_missing_variable_OBJECTS =  \
+	input-missing-var.$(OBJEXT)
+C_input_read_missing_variable_OBJECTS =  \
+	$(am_C_input_read_missing_variable_OBJECTS)
+C_input_read_missing_variable_LDADD = $(LDADD)
 am_C_input_read_variables_OBJECTS = input.$(OBJEXT)
 C_input_read_variables_OBJECTS = $(am_C_input_read_variables_OBJECTS)
 C_input_read_variables_LDADD = $(LDADD)
@@ -64,8 +71,10 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(C_input_nofile_available_SOURCES) \
+	$(C_input_read_missing_variable_SOURCES) \
 	$(C_input_read_variables_SOURCES)
 DIST_SOURCES = $(C_input_nofile_available_SOURCES) \
+	$(C_input_read_missing_variable_SOURCES) \
 	$(C_input_read_variables_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -183,6 +192,7 @@ INCLUDES = -I$(top_srcdir)/src
 
 # C Tests
 C_input_read_variables_SOURCES = input.c 
+C_input_read_missing_variable_SOURCES = input-missing-var.c 
 C_input_nofile_available_SOURCES = input-nofile.c
 all: all-am
 
@@ -227,6 +237,9 @@ clean-checkPROGRAMS:
 C_input_nofile_available$(EXEEXT): $(C_input_nofile_available_OBJECTS) $(C_input_nofile_available_DEPENDENCIES) 
 	@rm -f C_input_nofile_available$(EXEEXT)
 	$(LINK) $(C_input_nofile_available_OBJECTS) $(C_input_nofile_available_LDADD) $(LIBS)
+C_input_read_missing_variable$(EXEEXT): $(C_input_read_missing_variable_OBJECTS) $(C_input_read_missing_variable_DEPENDENCIES) 
+	@rm -f C_input_read_missing_variable$(EXEEXT)
+	$(LINK) $(C_input_read_missing_variable_OBJECTS) $(C_input_read_missing_variable_LDADD) $(LIBS)
 C_input_read_variables$(EXEEXT): $(C_input_read_variables_OBJECTS) $(C_input_read_variables_DEPENDENCIES) 
 	@rm -f C_input_read_variables$(EXEEXT)
 	$(LINK) $(C_input_read_variables_OBJECTS) $(C_input_read_variables_LDADD) $(LIBS)
@@ -237,6 +250,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/input-missing-var.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/input-nofile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/input.Po@am__quote@
 

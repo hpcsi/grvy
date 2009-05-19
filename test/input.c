@@ -18,6 +18,8 @@ int main(int argc, char **argv)
   char *key1, *key2;
   int flag = 1;
 
+  hpct_input_toggle_messages(0);
+
   //  printf("--> %s\n",test_name);
 
   /* Initialize/read the file */
