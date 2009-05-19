@@ -20356,7 +20356,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile examples/Makefile hpct.pc"
+ac_config_files="$ac_config_files Makefile src/Makefile examples/Makefile test/Makefile hpct.pc"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -20947,6 +20947,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
+    "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
     "hpct.pc") CONFIG_FILES="$CONFIG_FILES hpct.pc" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5

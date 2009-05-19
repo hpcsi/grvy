@@ -43,4 +43,4 @@ AC_HEADER_STDBOOL
 # Checks for library functions.
 AC_FUNC_MALLOC
 
-AC_OUTPUT(Makefile src/Makefile examples/Makefile hpct.pc)
+AC_OUTPUT(Makefile src/Makefile examples/Makefile test/Makefile hpct.pc)

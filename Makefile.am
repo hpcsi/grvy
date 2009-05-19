@@ -1,7 +1,8 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS          = src examples
-DISTDIRS         = src examples
+SUBDIRS          = src examples test
+DISTDIRS         = src examples 
 EXTRA_DIST       = autogen.sh
 
-pkgconfigdir   = $(libdir)/pkgconfig
-pkgconfig_DATA = hpct.pc
+pkgconfigdir     = $(libdir)/pkgconfig
+pkgconfig_DATA   = hpct.pc
+
