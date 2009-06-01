@@ -124,6 +124,26 @@ extern "C" int hpct_input_fdump_delim(const char *prefix)
 extern "C" int hpct_input_fdump_file(const char *prefix, const char *filename)
 {
 
+  std::streambuf* cout_sbuf = std::cout.rdbuf();   // save original stdout buff
+  std::ofstream fout(filename,ios::app|ios::out);  // file for append
+  std::cout.rdbuf(fout.rdbuf());		   // redirect cout to file
+
+  if(_HPCT_Initialized)
+    {
+      _hpct_ifile.print(prefix);
+      std::cout.rdbuf(cout_sbuf); 	           // restore cout stream
+      return 1;
+    }
+  else
+    {
+      printf("\n%s (%s): uninitialized file - verify file has been opened\n",
+	     _Error_Mask,__func__);
+      std::cout.rdbuf(cout_sbuf); 	           // restore cout stream
+      return 0;
+    }
+
+#if 0
+
   FILE *fp;
 
   fp = freopen(filename,"a",stdout);
@@ -151,6 +171,7 @@ extern "C" int hpct_input_fdump_file(const char *prefix, const char *filename)
 	     _Error_Mask,__func__);
       return 0;
     }
+#endif
 
 }
 
