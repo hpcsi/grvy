@@ -34,6 +34,7 @@
 using namespace std;
 #include<stdio.h>
 #include<string.h>
+#include "hpct_int.h"
 
 //------------------------------------
 // Basic stdout warning/error messages                      

@@ -29,8 +29,14 @@
 //--------------------------------------------------------------------------
 
 using namespace std;
-#include <GetPot>		
+
+#define _HPCT_GLOBAL_DEF
+
 #include<stdlib.h>
+#include "hpct_int.h"
+#include "hpct_classes.h"
+#include <GetPot>		
+
 
 // Define a Fortran string length argument 
 // list order.  Online docs indicate that SYSV
@@ -54,13 +60,14 @@ const char *comment_start = "#";
 const char *comment_end   = "\n";
 
 static GetPot _hpct_ifile;               // input file 
+static HPCT_Input_Class _HPCT_Input;     // input class
 static int _HPCT_Initialized;	         // input file initialized?
 const char *_Error_Mask   = "[*] Error"; // default error notification
 
 // Convention is to assume that user wants error messages.
 // Thou shalt turn them off otherwise.
 
-static int _HPCT_Input_Output_Errors=1;  // flag to control output
+//static int _HPCT_Input_Output_Errors=1;  // flag to control output
 
 char *hpct_f2c_char   (char *input,int len);
 void hpct_input_error (const char *func_name,const char *var_name);
@@ -633,5 +640,50 @@ void hpct_input_error(const char *func_name, const char *var_name)
 }
 
 
+//--------------------------------
+// Variable Registration Routines
+//--------------------------------
 
+extern "C" int hpct_input_register_int(const char *var,int value)
+{
+  _HPCT_Input.Register_Var(var,value);
+  return 1;
+}
 
+extern "C" int hpct_input_register_float(const char *var,float value)
+{
+  _HPCT_Input.Register_Var(var,value);
+  return 1;
+}
+
+extern "C" int hpct_input_register_double(const char *var,double value)
+{
+  _HPCT_Input.Register_Var(var,value);
+  return 1;
+}
+
+extern "C" int hpct_input_register_char       (const char *var,char *value)
+{
+  _HPCT_Input.Register_Var(var,value);
+  return 1;
+}
+
+extern "C" int hpct_input_register_get_int    (const char *var,int *value)
+{
+  return( _HPCT_Input.Get_Var(var,value) );
+}
+
+extern "C" int hpct_input_register_get_float  (const char *var,float *value)
+{
+  return( _HPCT_Input.Get_Var(var,value) );
+}
+
+extern "C" int hpct_input_register_get_double (const char *var,double *value)
+{
+  return( _HPCT_Input.Get_Var(var,value) );
+}
+
+extern "C" int hpct_input_register_get_char   (const char *var,char **value)
+{
+  return( _HPCT_Input.Get_Var(var,value) );
+}

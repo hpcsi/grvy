@@ -56,6 +56,19 @@ extern int hpct_input_fread_double_ivec(const char* var, double *value, int elem
 extern int hpct_input_fread_int_ivec   (const char* var, int *value,    int elem);
 extern int hpct_input_fread_char_ivec  (const char* var, char **value,  int elem);
 
+/* Input variable registration functions (to provide default input
+   values and backwards compatibility support) */
+
+extern int hpct_input_register_int        (const char *var,     int value);
+extern int hpct_input_register_float      (const char *var,   float value);
+extern int hpct_input_register_double     (const char *var,  double value);
+extern int hpct_input_register_char       (const char *var,   char *value);
+
+extern int hpct_input_register_get_int    (const char *var,    int *value);
+extern int hpct_input_register_get_float  (const char *var,  float *value);
+extern int hpct_input_register_get_double (const char *var, double *value);
+extern int hpct_input_register_get_char   (const char *var,  char **value);
+
 /* Output Control */
 
 extern void hpct_input_toggle_messages(int flag);

@@ -33,11 +33,40 @@
 #include<vector>
 #include<string>
 
-const char *_HPCT_emask   = "[*] Error";       // default error mask
-const char *_HPCT_wmask   = "[*] Warning";     // default warning mask
-const char *_HPCT_gtimer  = "HPCT_Unassigned"; // default global timer key
+#ifdef _HPCT_GLOBAL_DEF
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif
 
-// Timer Foo
+// Internal Routines
+
+extern void _HPCT_message (const char *mask, const char *func, const char *message);
+extern void _HPCT_message (const char *mask, const char *func, const char *message, const char *char_item);
+extern void _HPCT_message (const char *mask, const char *func, const char *message, int int_item);
+extern void _HPCT_message (const char *mask, const char *func, const char *message, float float_item);
+extern void _HPCT_message (const char *mask, const char *func, const char *message, double double_item);
+extern char *hpct_f2c_char(char*input,int len);
+
+// Evil Globals Vars
+
+#ifdef _HPCT_GLOBAL_DEF
+
+GLOBAL const  char *_HPCT_emask   = "[*] Error";      // default error mask
+GLOBAL const  char *_HPCT_wmask   = "[*] Warning";    // default warning mask
+GLOBAL int _HPCT_Input_Output_Errors = 1;             // flag to control output
+
+#else
+
+GLOBAL const char *_HPCT_emask;
+GLOBAL const char *_HPCT_wmask;
+GLOBAL int _HPCT_Input_Output_Errors;
+
+#endif
+
+//const char *_HPCT_gtimer  = "HPCT_Unassigned"; // default global timer key
+
+// Classes/Typedefs
 
 class TimerCmpHighLow {
  public:
@@ -55,14 +84,5 @@ typedef map<std::string,vector <double> >                      _HPCT_Type_TimerM
 typedef map<std::vector <double>,std::string,TimerCmpHighLow > _HPCT_Type_TimerMapSortHL;  
 typedef map<std::vector <double>,std::string,TimerCmpLowHigh > _HPCT_Type_TimerMapSortLH;  
 
-// Messaging Foo
 
-extern void _HPCT_message(const char *mask, const char *func, const char *message);
-extern void _HPCT_message(const char *mask, const char *func, const char *message, const char *char_item);
-extern void _HPCT_message(const char *mask, const char *func, const char *message, int int_item);
-extern void _HPCT_message(const char *mask, const char *func, const char *message, float float_item);
-extern void _HPCT_message(const char *mask, const char *func, const char *message, double double_item);
 
-// Utilities
-
-extern char *hpct_f2c_char(char*input,int len);

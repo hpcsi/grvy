@@ -42,7 +42,7 @@ using namespace std;
 #include<sys/time.h>
 #include<time.h>
 #include<stdio.h>
-#include<hpct_int.h>
+#include"hpct_int.h"
 #include<iostream>
 #include<math.h>
 #include<string.h>
@@ -51,6 +51,7 @@ const static double HPCT_TIMER_THRESH = 9.0e-8;  // low water mark for expected 
 const static double HPCT_PERC_TOL     = 1e-3;    // tolerance for defining acceptable global percentages
 static double _HPCT_Timer_Last        = 0.;      // timer value at last call
 static _HPCT_Type_TimerMap _HPCT_TimerMap;       // performance timer map
+const char *_HPCT_gtimer  = "HPCT_Unassigned";   // default global timer key
 
 extern "C" double hpct_timer           ();
 extern "C" void   hpct_timer_init      ();
