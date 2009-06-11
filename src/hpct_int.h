@@ -47,7 +47,6 @@ extern void _HPCT_message (const char *mask, const char *func, const char *messa
 extern void _HPCT_message (const char *mask, const char *func, const char *message, float float_item);
 extern void _HPCT_message (const char *mask, const char *func, const char *message, double double_item);
 
-//extern void  hpct_input_error (const char *func_name,const char *var_name);
 extern char *hpct_f2c_char(char*input,int len);
 
 // Evil Globals Vars
@@ -56,15 +55,15 @@ extern char *hpct_f2c_char(char*input,int len);
 
 GLOBAL const  char *_HPCT_emask   = "[*] Error";      // default error mask
 GLOBAL const  char *_HPCT_wmask   = "[*] Warning";    // default warning mask
+GLOBAL const  char *_HPCT_imask   = "[*] Info";       // default info mask
 
 #else
 
 GLOBAL const char *_HPCT_emask;
 GLOBAL const char *_HPCT_wmask;
+GLOBAL const char *_HPCT_imask;
 
 #endif
-
-//const char *_HPCT_gtimer  = "HPCT_Unassigned"; // default global timer key
 
 // Classes/Typedefs
 

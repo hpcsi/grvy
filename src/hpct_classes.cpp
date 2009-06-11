@@ -1,4 +1,4 @@
-//--------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 //
 // Copyright (C) 2008,2009 The PECOS Development Team
@@ -50,7 +50,7 @@ HPCT_Input_Class::HPCT_Input_Class()   // default constructor
   // Convention is to assume that user wants error messages.
   // Thou shalt turn them off otherwise.
 
-  silent        = 0;
+  silent        = 0; 
 
 }
 
@@ -138,9 +138,9 @@ void HPCT_Input_Class:: MsgToggle(int flag)
     silent = 0;
 }
 
-//-------------
+//--------------
 // Scalar Reads
-//-------------
+//--------------
 
 template <typename T> int HPCT_Input_Class:: Read_Var(const char *var, T *value, T Var_Def)
 {
@@ -150,11 +150,19 @@ template <typename T> int HPCT_Input_Class:: Read_Var(const char *var, T *value,
 
   if(*value == Var_Def)
     {
-      ErrorMsg("fread",var);
-      return 0;
+      if( !Get_Var(var,value) )
+	{
+	  ErrorMsg("fread",var);
+	  return 0;
+	}
+      else
+	{
+	  if(!silent)
+	    _HPCT_message(_HPCT_imask,"fread","Using pre-registered value for variable",var);
+	}
     }
-  else
-    return 1;
+  
+  return 1;
 }
 
 //--------------
@@ -218,11 +226,20 @@ int HPCT_Input_Class:: Read_Var(const char *var, char **value)
 
   if(strcmp(*value,Char_Def) == 0)
     {
-      ErrorMsg("fread_char",var);
-      return 0;
+
+      if( !Get_Var(var,value) )
+	{
+	  ErrorMsg("fread_char",var);
+	  return 0;
+	}
+      else 
+	{
+	  if(!silent)
+	    _HPCT_message(_HPCT_imask,"fread_char","Using pre-registered value for variable",var);
+	}
     }
-  else
-    return 1;
+  //  else
+  return 1;
 }
 
 int HPCT_Input_Class:: Read_Var_iVec(const char *var, char **value, int elem)
@@ -281,7 +298,7 @@ int HPCT_Input_Class:: Get_Var (const char *varname, int *var)
   if( index == default_ints.end() )
     {
       if(!silent)
-	_HPCT_message(_HPCT_emask,__func__,"No registered variable named",varname);
+	_HPCT_message(_HPCT_imask,"register_get","No registered variable named",varname);
       return(0);
     }
   else
@@ -301,7 +318,7 @@ int HPCT_Input_Class:: Get_Var (const char *varname, float *var)
   if( index == default_floats.end() )
     {
       if(!silent)
-	_HPCT_message(_HPCT_emask,__func__,"No registered variable named",varname);
+	_HPCT_message(_HPCT_imask,"register_get","No registered variable named",varname);
       return(0);
     }
   else
@@ -321,7 +338,7 @@ int HPCT_Input_Class:: Get_Var (const char *varname, double *var)
   if( index == default_doubles.end() )
     {
       if(!silent)
-	_HPCT_message(_HPCT_emask,__func__,"No registered variable named",varname);
+	_HPCT_message(_HPCT_imask,"register_get","No registered variable named",varname);
       return(0);
     }
   else
@@ -342,7 +359,7 @@ int HPCT_Input_Class:: Get_Var (const char *varname, char **var)
   if( index == default_strings.end() )
     {
       if(!silent)
-	_HPCT_message(_HPCT_emask,__func__,"No registered variable named",varname);
+	_HPCT_message(_HPCT_imask,"register_get","No registered variable named",varname);
       return(0);
     }
   else
