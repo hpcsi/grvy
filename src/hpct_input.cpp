@@ -48,28 +48,16 @@ using namespace std;
 #define FORTRAN_ORDER1
 #endif
 
-// GetPot constants to define typedefs and delimiters
-
-#if 1
+// GetPot constants
 
 const float     Float_Def = -9999999.0f;
 const double   Double_Def = -9999999.0e1;
 const int         Int_Def = -9999999;
 const long       Long_Def = -9999999;
 const char*      Char_Def = "unknown";
-const char *comment_start = "#";
-const char *comment_end   = "\n";
-
-#endif
 
 static HPCT_Input_Class _HPCT_Input;     // input class
-static int _HPCT_Initialized;	         // input file initialized?
 const char *_Error_Mask   = "[*] Error"; // default error notification
-
-// Convention is to assume that user wants error messages.
-// Thou shalt turn them off otherwise.
-
-//static int _HPCT_Input_Output_Errors=1;  // flag to control output
 
 //-----------------------------------------------------------------
 //                       ye ol' C Interfaces
@@ -145,21 +133,6 @@ extern "C" int hpct_input_fread_int_ivec(const char *var,int *value,int elem)
   return( _HPCT_Input.Read_Var_iVec(var,value,elem,Int_Def) );
 }
 
-
-#if 0
-extern "C" int hpct_input_fread_long(const char *var,int *value)
-{
-  *value = _hpct_ifile(var,Long_Def);
-  if(*value == Long_Def)
-    {
-      hpct_input_error("fread_long",var);
-      return 0;
-    }
-  else
-    return 1;
-}
-#endif
-
 extern "C" int hpct_input_fread_char(const char *var, char **value)
 {
   return( _HPCT_Input.Read_Var(var,value) );
@@ -174,10 +147,7 @@ extern "C" int hpct_input_fread_char_ivec(const char *var,char **value,int elem)
 
 extern "C" void hpct_input_toggle_messages(int flag)
 {
-  if(flag == 0)
-    _HPCT_Input_Output_Errors = 0;
-  else
-    _HPCT_Input_Output_Errors = 1;
+  _HPCT_Input.MsgToggle(flag);
 }
 
 //-----------------------------------------------------------------
@@ -418,15 +388,6 @@ extern "C" void hpct_input_fread_char_ivec_(char *var,int _namelen,char *value,
   return;
 }
 
-extern "C" void hpct_input_toggle_messages_(int *flag)
-{
-  if(*flag == 0)
-    _HPCT_Input_Output_Errors = 0;
-  else
-    _HPCT_Input_Output_Errors = 1;
-}
-  
-
 // ----------------------------------------------------------------
 // -------------------- Convenience Functions ---------------------
 // ----------------------------------------------------------------
@@ -443,15 +404,6 @@ char *hpct_f2c_char(char*input,int len)
   return(name);
 }
 #endif
-
-// hpct_input_error(): output error message if desired
-
-void hpct_input_error(const char *func_name, const char *var_name)
-{
-  if(_HPCT_Input_Output_Errors)
-    printf("\n%s (%s): unable to query variable -> %s\n",_Error_Mask,func_name,var_name);
-}
-
 
 //--------------------------------
 // Variable Registration Routines

@@ -64,6 +64,8 @@ class HPCT_Input_Class {
   int  VerifyInit   ();
   int  Open         (const char *filename);
   int  Close        ();
+  void MsgToggle    (int flag);
+  void ErrorMsg     (const char *func_name, const char *var);
 
   int  Fdump        ();
   int  Fdump        (const char *prefix);

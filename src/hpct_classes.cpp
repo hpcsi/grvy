@@ -37,8 +37,6 @@
 
 HPCT_Input_Class::HPCT_Input_Class()   // default constructor
 {
-
-#if 1
   Float_Def     = -9999999.0f;
   Double_Def    = -9999999.0e1;
   Int_Def       = -9999999;
@@ -46,10 +44,14 @@ HPCT_Input_Class::HPCT_Input_Class()   // default constructor
   Char_Def      = "unknown";
   comment_start = "#";
   comment_end   = "\n";
-#endif
 
   initialized   = 0;
-  _HPCT_Input_Output_Errors = 1;
+
+  // Convention is to assume that user wants error messages.
+  // Thou shalt turn them off otherwise.
+
+  silent        = 0;
+
 }
 
 int HPCT_Input_Class:: VerifyInit()
@@ -71,7 +73,7 @@ int HPCT_Input_Class:: Open(const char *filename)
 
   if(ifile.size() <= 1)
     {
-      if(_HPCT_Input_Output_Errors)
+      if(!silent)
 	printf("\n%s (%s): non-existent or empty file -> %s\n",_HPCT_emask,__func__,filename);
       return 0;
     }
@@ -122,6 +124,20 @@ int HPCT_Input_Class:: Fdump(const char *prefix, const char *filename)
   return 1;
 }
 
+void HPCT_Input_Class:: ErrorMsg(const char *func_name,const char *var_name)
+{
+  if(!silent)
+    printf("\n%s (%s): unable to query variable -> %s\n",_HPCT_emask,func_name,var_name);
+}
+
+void HPCT_Input_Class:: MsgToggle(int flag)
+{
+  if(flag == 0)
+    silent = 1;
+  else
+    silent = 0;
+}
+
 //-------------
 // Scalar Reads
 //-------------
@@ -134,16 +150,16 @@ template <typename T> int HPCT_Input_Class:: Read_Var(const char *var, T *value,
 
   if(*value == Var_Def)
     {
-      hpct_input_error("fread",var);
+      ErrorMsg("fread",var);
       return 0;
     }
   else
     return 1;
 }
 
-//------------------
+//--------------
 // Vector Reads
-//------------------
+//--------------
 
 template <typename T> int HPCT_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelems,T Var_Def)
 {
@@ -157,7 +173,7 @@ template <typename T> int HPCT_Input_Class:: Read_Var_Vec(const char *var, T *va
 
       if(value[i] == Var_Def)
         {
-	  hpct_input_error("fread_ivec",var);
+	  ErrorMsg("fread_ivec",var);
           return 0;
         }
     }
@@ -179,7 +195,7 @@ template <typename T> int HPCT_Input_Class:: Read_Var_iVec(const char *var, T *v
 
   if(*value == Var_Def)
     {
-      hpct_input_error("fread_ivec",var);
+      ErrorMsg("fread_ivec",var);
       return 0;
     }
  
@@ -202,7 +218,7 @@ int HPCT_Input_Class:: Read_Var(const char *var, char **value)
 
   if(strcmp(*value,Char_Def) == 0)
     {
-      hpct_input_error(__func__,var);
+      ErrorMsg("fread_char",var);
       return 0;
     }
   else
@@ -221,7 +237,7 @@ int HPCT_Input_Class:: Read_Var_iVec(const char *var, char **value, int elem)
 
   if(strcmp(*value,Char_Def) == 0)
     {
-      hpct_input_error(__func__,var);
+      ErrorMsg("fread_char_ivec",var);
       return 0;
     }
   else
@@ -264,7 +280,7 @@ int HPCT_Input_Class:: Get_Var (const char *varname, int *var)
 
   if( index == default_ints.end() )
     {
-      if(_HPCT_Input_Output_Errors)
+      if(!silent)
 	_HPCT_message(_HPCT_emask,__func__,"No registered variable named",varname);
       return(0);
     }
@@ -284,7 +300,7 @@ int HPCT_Input_Class:: Get_Var (const char *varname, float *var)
 
   if( index == default_floats.end() )
     {
-      if(_HPCT_Input_Output_Errors)
+      if(!silent)
 	_HPCT_message(_HPCT_emask,__func__,"No registered variable named",varname);
       return(0);
     }
@@ -304,7 +320,7 @@ int HPCT_Input_Class:: Get_Var (const char *varname, double *var)
 
   if( index == default_doubles.end() )
     {
-      if(_HPCT_Input_Output_Errors)
+      if(!silent)
 	_HPCT_message(_HPCT_emask,__func__,"No registered variable named",varname);
       return(0);
     }
@@ -325,7 +341,7 @@ int HPCT_Input_Class:: Get_Var (const char *varname, char **var)
 
   if( index == default_strings.end() )
     {
-      if(_HPCT_Input_Output_Errors)
+      if(!silent)
 	_HPCT_message(_HPCT_emask,__func__,"No registered variable named",varname);
       return(0);
     }
