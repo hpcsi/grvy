@@ -29,17 +29,17 @@ int main(int argc, char **argv)
   /* Register variable (can be use for backwards-compatible
    * input file support) */
 
-  hpct_input_register_int   ("solver/aint",   iset);
-  hpct_input_register_float ("solver/afloat", fset);
-  hpct_input_register_double("solver/adouble",dset);
-  hpct_input_register_char  ("solver/astring",sset);
+  hpct_input_register_int   ("sec1/aint",   iset);
+  hpct_input_register_float ("sec1/afloat", fset);
+  hpct_input_register_double("sec1/adouble",dset);
+  hpct_input_register_char  ("sec1/astring",sset);
 
   /* Verify that we can recover what we registered as default */
 
-  flag *= hpct_input_register_get_int   ("solver/aint",&igot);
-  flag *= hpct_input_register_get_float ("solver/afloat",&fgot);
-  flag *= hpct_input_register_get_double("solver/adouble",&dgot);
-  flag *= hpct_input_register_get_char  ("solver/astring",&sgot);
+  flag *= hpct_input_register_get_int   ("sec1/aint",&igot);
+  flag *= hpct_input_register_get_float ("sec1/afloat",&fgot);
+  flag *= hpct_input_register_get_double("sec1/adouble",&dgot);
+  flag *= hpct_input_register_get_char  ("sec1/astring",&sgot);
 
   if(flag == 0)
       exit(1);
@@ -49,6 +49,33 @@ int main(int argc, char **argv)
 
   if(strcmp(sgot,sset) != 0)
     exit(1);
-  
+
+
+  /* Verify that we can recover registered default variables when they
+     are not present in the input file */
+
+  hpct_input_toggle_messages(0);
+
+  igot=-1;
+  fgot=-1.;
+  dgot=-1.;
+  sgot=NULL;
+
+  flag *= hpct_input_fopen       ("./input-example.txt");
+  flag *= hpct_input_fread_int   ("sec1/aint",&igot);
+  flag *= hpct_input_fread_float ("sec1/afloat",&fgot);
+  flag *= hpct_input_fread_double("sec1/adouble",&dgot);
+  flag *= hpct_input_fread_char  ("sec1/astring",&sgot);
+  flag *= hpct_input_fclose      ();
+
+  if(flag == 0)
+      exit(1);
+
+  if(igot != iset || fgot != fset || dgot != dset)
+    exit(1);
+
+  if(strcmp(sgot,sset) != 0)
+    exit(1);
+
   return 0;
 }
