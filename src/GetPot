@@ -1643,7 +1643,8 @@ GetPot::print(const char* prefix) const
     it++;
     for(; it != argv.end(); ++it)
       {
-	std::cout << prefix << " ";
+	//	std::cout << prefix << " ";
+	std::cout << prefix;
         std::cout << *it << std::endl;
       }
     std::cout << std::endl;

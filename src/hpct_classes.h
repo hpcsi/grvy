@@ -93,6 +93,8 @@ class HPCT_Input_Class {
   int  Get_Var       (const char *varname, float  *var);
   int  Get_Var       (const char *varname, double *var);
   int  Get_Var       (const char *varname, char  **var);
+
+  void PrintRegVars  (const char *prefix);		
 };
 
 

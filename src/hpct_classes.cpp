@@ -58,7 +58,7 @@ int HPCT_Input_Class:: VerifyInit()
 {
   if(!initialized)
     {
-      printf("\n%s (%s): unitialized input file - verify file has been opened\n",
+      printf("\n%s (%s): uninitialized input file - verify file has been opened\n",
              _HPCT_emask,__func__);
       return 0;
     }
@@ -94,7 +94,8 @@ int HPCT_Input_Class:: Fdump()
 {
   if(! VerifyInit()) return 0;
 
-  ifile.print();
+  ifile.print();		// dump the raw file contents
+  PrintRegVars("");		// include any registered defaults
 
   return 1;
 }
@@ -104,7 +105,8 @@ int HPCT_Input_Class:: Fdump(const char *prefix)
 
   if(! VerifyInit()) return 0;
 
-  ifile.print(prefix);
+  ifile.print(prefix);		// dump the raw file contents
+  PrintRegVars(prefix);		// include any registered defaults
 
   return 1;
 }
@@ -118,10 +120,36 @@ int HPCT_Input_Class:: Fdump(const char *prefix, const char *filename)
   std::ofstream fout(filename,ios::app|ios::out);  // file for append
   std::cout.rdbuf(fout.rdbuf());                   // redirect cout to file        
 
-  ifile.print(prefix);
+  ifile.print(prefix);				   // dumpe the raw file contents
+  PrintRegVars(prefix);		                   // include any registered defaults
   std::cout.rdbuf(cout_sbuf);                      // restore cout stream
 
   return 1;
+}
+
+void HPCT_Input_Class::PrintRegVars(const char *prefix)
+{
+
+  map<std::string, int    > :: const_iterator int_index;
+  map<std::string, float  > :: const_iterator flt_index;
+  map<std::string, double > :: const_iterator dbl_index;
+  map<std::string, string > :: const_iterator str_index;
+
+  cout << prefix << "[HPCT Registered Variables]" << endl;
+
+  for(int_index=default_ints.begin(); int_index != default_ints.end(); ++int_index)
+    cout << prefix << (int_index->first).c_str() << "=" << int_index->second << endl;
+
+  for(flt_index=default_floats.begin(); flt_index != default_floats.end(); ++flt_index)
+    cout << prefix << (flt_index->first).c_str() << "=" << flt_index->second << endl;
+
+  for(dbl_index=default_doubles.begin(); dbl_index != default_doubles.end(); ++dbl_index)
+    cout << prefix << (dbl_index->first).c_str() << "=" << dbl_index->second << endl;
+
+  for(str_index=default_strings.begin(); str_index != default_strings.end(); ++str_index)
+    cout << prefix << (str_index->first).c_str() << "=" << str_index->second << endl;
+
+  cout << endl;
 }
 
 void HPCT_Input_Class:: ErrorMsg(const char *func_name,const char *var_name)
