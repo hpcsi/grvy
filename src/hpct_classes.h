@@ -31,31 +31,66 @@
 #include<map>
 #include<vector>
 #include<string>
+#include<GetPot>
 
 using namespace std;
 
 class HPCT_Input_Class {
  private:
-  //  GetPot ifile;		      // input file
-  int Initialized;		      // input file initialized?
-  map<std::string, int         > default_ints;      
+  GetPot    ifile;		                     // input file
+  short int initialized;	                     // input file initialized?
+  short int silent;				     // Silence error messages?
+
+  // Registry Maps
+
+  map<std::string, int         > default_ints;	    
   map<std::string, float       > default_floats;    
   map<std::string, double      > default_doubles;
   map<std::string, std::string > default_strings;
 
+  // GetPot Defaults
+
+  float  Float_Def;
+  double Double_Def;
+  int    Int_Def;
+  long   Long_Def;
+  char  *Char_Def;
+  char  *comment_start;
+  char  *comment_end;
+
  public:
-  void Initialize();
+  HPCT_Input_Class  ();
+  void Initialize   ();
+  int  VerifyInit   ();
+  int  Open         (const char *filename);
+  int  Close        ();
 
-  void Register_Var (const char *varname,    int var);
-  void Register_Var (const char *varname,  float var);
-  void Register_Var (const char *varname, double var);
-  void Register_Var (const char *varname,  char *var);
+  int  Fdump        ();
+  int  Fdump        (const char *prefix);
+  int  Fdump        (const char *prefix, const char *filename);
 
-  int Get_Var      (const char *varname,    int *var);
-  int Get_Var      (const char *varname,  float *var);
-  int Get_Var      (const char *varname, double *var);
-  int Get_Var      (const char *varname,  char **var);
+  // Numerical Read Functions
 
+  template <typename T> int Read_Var      (const char *var, T *value, T vardef);
+  template <typename T> int Read_Var_Vec  (const char *var, T *value, int nelems, T vardef);
+  template <typename T> int Read_Var_iVec (const char *var, T *value, int elem,   T vardef);
+
+  // String Read Functions
+
+  int Read_Var                            (const char *var, char **value);
+  int Read_Var_iVec                       (const char *var, char **value, int elem);
+
+  // Default Variable Registration Functions
+
+  void Register_Var  (const char *varname, int     var);
+  void Register_Var  (const char *varname, float   var);
+  void Register_Var  (const char *varname, double  var);
+  void Register_Var  (const char *varname, char   *var);
+		     
+  int  Get_Var       (const char *varname, int    *var);
+  int  Get_Var       (const char *varname, float  *var);
+  int  Get_Var       (const char *varname, double *var);
+  int  Get_Var       (const char *varname, char  **var);
 };
 
 

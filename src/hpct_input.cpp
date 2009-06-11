@@ -37,7 +37,6 @@ using namespace std;
 #include "hpct_classes.h"
 #include <GetPot>		
 
-
 // Define a Fortran string length argument 
 // list order.  Online docs indicate that SYSV
 // should be different then Linux; but this does
@@ -51,6 +50,8 @@ using namespace std;
 
 // GetPot constants to define typedefs and delimiters
 
+#if 1
+
 const float     Float_Def = -9999999.0f;
 const double   Double_Def = -9999999.0e1;
 const int         Int_Def = -9999999;
@@ -59,7 +60,8 @@ const char*      Char_Def = "unknown";
 const char *comment_start = "#";
 const char *comment_end   = "\n";
 
-static GetPot _hpct_ifile;               // input file 
+#endif
+
 static HPCT_Input_Class _HPCT_Input;     // input class
 static int _HPCT_Initialized;	         // input file initialized?
 const char *_Error_Mask   = "[*] Error"; // default error notification
@@ -69,242 +71,78 @@ const char *_Error_Mask   = "[*] Error"; // default error notification
 
 //static int _HPCT_Input_Output_Errors=1;  // flag to control output
 
-char *hpct_f2c_char   (char *input,int len);
-void hpct_input_error (const char *func_name,const char *var_name);
-
 //-----------------------------------------------------------------
 //                       ye ol' C Interfaces
 //-----------------------------------------------------------------
 
 extern "C" int hpct_input_fopen(const char *filename)
 {
-  _hpct_ifile = GetPot(filename,comment_start,comment_end);
-
-  if(_hpct_ifile.size() <= 1)
-    {
-      if(_HPCT_Input_Output_Errors)
-	printf("\n%s (%s): non-existent or empty file -> %s\n",_Error_Mask,__func__,filename);
-      return 0;
-    }
-  else 
-    {
-      _HPCT_Initialized=1;
-      return 1;
-    }
-
+  return( _HPCT_Input.Open(filename) );
 }
 
 extern "C" int hpct_input_fdump()
 {
-
-  if(_HPCT_Initialized)
-    {
-      _hpct_ifile.print();
-      return 1;
-    }
-  else
-    {
-      printf("\n%s (%s): unitialized file - verify file has been opened\n",
-	     _Error_Mask,__func__);
-      return 0;
-    }
-
+  return( _HPCT_Input.Fdump() );
 }
 
 extern "C" int hpct_input_fdump_delim(const char *prefix)
 {
-
-  if(_HPCT_Initialized)
-    {
-      _hpct_ifile.print(prefix);
-      return 1;
-    }
-  else
-    {
-      printf("\n%s (%s): unitialized file - verify file has been opened\n",
-	     _Error_Mask,__func__);
-      return 0;
-    }
-
+  return( _HPCT_Input.Fdump(prefix) );
 }
 
 extern "C" int hpct_input_fdump_file(const char *prefix, const char *filename)
 {
-
-  std::streambuf* cout_sbuf = std::cout.rdbuf();   // save original stdout buff
-  std::ofstream fout(filename,ios::app|ios::out);  // file for append
-  std::cout.rdbuf(fout.rdbuf());		   // redirect cout to file
-
-  if(_HPCT_Initialized)
-    {
-      _hpct_ifile.print(prefix);
-      std::cout.rdbuf(cout_sbuf); 	           // restore cout stream
-      return 1;
-    }
-  else
-    {
-      printf("\n%s (%s): uninitialized file - verify file has been opened\n",
-	     _Error_Mask,__func__);
-      std::cout.rdbuf(cout_sbuf); 	           // restore cout stream
-      return 0;
-    }
-
-#if 0
-
-  FILE *fp;
-
-  fp = freopen(filename,"a",stdout);
-  if(fp == NULL)
-    {
-      freopen("/dev/tty","w",stdout);
-
-      printf("\n%s (%s): unable to open output file %s\n",
-	     _Error_Mask,__func__,filename);
-      return 0;
-    }
-
-  if(_HPCT_Initialized)
-    {
-      _hpct_ifile.print(prefix);
-
-      fclose(fp);
-      freopen("/dev/tty","w",stdout);
-
-      return 1;
-    }
-  else
-    {
-      printf("\n%s (%s): uninitialized file - verify file has been opened\n",
-	     _Error_Mask,__func__);
-      return 0;
-    }
-#endif
-
+  return( _HPCT_Input.Fdump(prefix,filename) );
 }
 
 extern "C" int hpct_input_fclose()
 {
-  _HPCT_Initialized=0;
-  return 1;
-
+  return( _HPCT_Input.Close() );
 }
 
 extern "C" int hpct_input_fread_float(const char *var,float *value)
 {
-  *value = _hpct_ifile(var,Float_Def);
-  if(*value == Float_Def)
-    {
-      hpct_input_error("fread_float",var);
-      return 0;
-    }
-  else
-    return 1;
+  return( _HPCT_Input.Read_Var(var,value,Float_Def) );
 }
 
 extern "C" int hpct_input_fread_float_vec(const char *var,float *value,int nelems)
 {
-  int i;
+  return( _HPCT_Input.Read_Var_Vec(var,value,nelems,Float_Def) );
+}
 
-  for(i=0;i<nelems;i++)
-    {
-      value[i] = _hpct_ifile(var,Float_Def,i);
-
-      if(value[i] == Float_Def)
-	{
-	  hpct_input_error("fread_float_vec",var);
-	  return 0;
-	}
-    }
-  return 1;
+extern "C" int hpct_input_fread_float_ivec(const char *var,float *value,int elem)
+{
+  return( _HPCT_Input.Read_Var_iVec(var,value,elem,Float_Def) );
 }
 
 extern "C" int hpct_input_fread_double(const char *var,double *value)
 {
-  *value = _hpct_ifile(var,Double_Def);
-  if(*value == Double_Def)
-    {
-      hpct_input_error("fread_double",var);
-      return 0;
-    }
-  else
-    return 1;
+  return( _HPCT_Input.Read_Var(var,value,Double_Def) );
 }
-
 
 extern "C" int hpct_input_fread_double_vec(const char *var,double *value,int nelems)
 {
-  int i;
-
-  for(i=0;i<nelems;i++)
-    {
-      value[i] = _hpct_ifile(var,Double_Def,i);
-
-      if(value[i] == Double_Def)
-	{
-	  hpct_input_error("fread_double_vec",var);
-	  return 0;
-	}
-    }
-  return 1;
+  return( _HPCT_Input.Read_Var_Vec(var,value,nelems,Double_Def) );
 }
 
 extern "C" int hpct_input_fread_double_ivec(const char *var,double *value,int elem)
 {
-  int i;
-
-  *value = _hpct_ifile(var,Double_Def,elem);
-
-  if(*value == Double_Def)
-    {
-      hpct_input_error("fread_double_ivec",var);
-      return 0;
-    }
-
-  return 1;
+  return( _HPCT_Input.Read_Var_iVec(var,value,elem,Double_Def) );
 }
 
 extern "C" int hpct_input_fread_int(const char *var,int *value)
 {
-  *value = _hpct_ifile(var,Int_Def);
-  if(*value == Int_Def)
-    {
-      hpct_input_error("fread_int",var);
-      return 0;
-    }
-  else
-    return 1;
+  return( _HPCT_Input.Read_Var(var,value,Int_Def) );
 }
 
 extern "C" int hpct_input_fread_int_vec(const char *var,int *value,int nelems)
 {
-  int i;
-
-  for(i=0;i<nelems;i++)
-    {
-      value[i] = _hpct_ifile(var,Int_Def,i);
-
-      if(value[i] == Int_Def)
-	{
-	  hpct_input_error("fread_int_vec",var);
-	  return 0;
-	}
-    }
-  return 1;
+  return( _HPCT_Input.Read_Var_Vec(var,value,nelems,Int_Def) );
 }
 
 extern "C" int hpct_input_fread_int_ivec(const char *var,int *value,int elem)
 {
-  int i;
-
-  *value = _hpct_ifile(var,Int_Def,elem);
-
-  if(*value == Double_Def)
-    {
-      hpct_input_error("fread_int_ivec",var);
-      return 0;
-    }
-
-  return 1;
+  return( _HPCT_Input.Read_Var_iVec(var,value,elem,Int_Def) );
 }
 
 
@@ -324,37 +162,12 @@ extern "C" int hpct_input_fread_long(const char *var,int *value)
 
 extern "C" int hpct_input_fread_char(const char *var, char **value)
 {
-  string tstring;
-
-  tstring = _hpct_ifile(var,Char_Def);
-  *value = (char *) malloc(tstring.length()*sizeof(char)+1);
-  strcpy(value[0],tstring.c_str());
-
-  if(strcmp(*value,Char_Def) == 0)
-    {
-      hpct_input_error(__func__,var);
-      return 0;
-    }
-  else
-      return 1;
+  return( _HPCT_Input.Read_Var(var,value) );
 }
 
 extern "C" int hpct_input_fread_char_ivec(const char *var,char **value,int elem)
 {
-
-  string tstring;
-
-  tstring = _hpct_ifile(var,Char_Def,elem);
-  *value = (char *) malloc(tstring.length()*sizeof(char)+1);
-  strcpy(value[0],tstring.c_str());
-
-  if(strcmp(*value,Char_Def) == 0)
-    {
-      hpct_input_error(__func__,var);
-      return 0;
-    }
-  else
-    return 1;
+  return( _HPCT_Input.Read_Var_iVec(var,value,elem) );
 }
 
 // hpct_input_toggle_messages(): enable/disable error messages

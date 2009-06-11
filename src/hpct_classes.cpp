@@ -31,7 +31,206 @@
 #include "hpct_classes.h"
 #include "hpct_int.h"
 
+//-------------------------------------
 // HPCT_Input_Class:: Member Functions
+//-------------------------------------
+
+HPCT_Input_Class::HPCT_Input_Class()   // default constructor
+{
+
+#if 1
+  Float_Def     = -9999999.0f;
+  Double_Def    = -9999999.0e1;
+  Int_Def       = -9999999;
+  Long_Def      = -9999999;
+  Char_Def      = "unknown";
+  comment_start = "#";
+  comment_end   = "\n";
+#endif
+
+  initialized   = 0;
+  _HPCT_Input_Output_Errors = 1;
+}
+
+int HPCT_Input_Class:: VerifyInit()
+{
+  if(!initialized)
+    {
+      printf("\n%s (%s): unitialized input file - verify file has been opened\n",
+             _HPCT_emask,__func__);
+      return 0;
+    }
+  else
+    return 1;
+
+}
+
+int HPCT_Input_Class:: Open(const char *filename)
+{
+  ifile = GetPot(filename,comment_start,comment_end);
+
+  if(ifile.size() <= 1)
+    {
+      if(_HPCT_Input_Output_Errors)
+	printf("\n%s (%s): non-existent or empty file -> %s\n",_HPCT_emask,__func__,filename);
+      return 0;
+    }
+  else
+    {
+      initialized=1;
+      return 1;
+    }
+}
+
+int HPCT_Input_Class:: Close()
+{
+  initialized=0;
+  return 1;
+}
+
+int HPCT_Input_Class:: Fdump()
+{
+  if(! VerifyInit()) return 0;
+
+  ifile.print();
+
+  return 1;
+}
+
+int HPCT_Input_Class:: Fdump(const char *prefix)
+{
+
+  if(! VerifyInit()) return 0;
+
+  ifile.print(prefix);
+
+  return 1;
+}
+
+int HPCT_Input_Class:: Fdump(const char *prefix, const char *filename)
+{
+
+  if(! VerifyInit()) return 0;
+
+  std::streambuf *cout_sbuf = std::cout.rdbuf();   // save original stdout buff
+  std::ofstream fout(filename,ios::app|ios::out);  // file for append
+  std::cout.rdbuf(fout.rdbuf());                   // redirect cout to file        
+
+  ifile.print(prefix);
+  std::cout.rdbuf(cout_sbuf);                      // restore cout stream
+
+  return 1;
+}
+
+//-------------
+// Scalar Reads
+//-------------
+
+template <typename T> int HPCT_Input_Class:: Read_Var(const char *var, T *value, T Var_Def)
+{
+  if(! VerifyInit()) return 0;
+
+  *value = ifile(var,Var_Def);
+
+  if(*value == Var_Def)
+    {
+      hpct_input_error("fread",var);
+      return 0;
+    }
+  else
+    return 1;
+}
+
+//------------------
+// Vector Reads
+//------------------
+
+template <typename T> int HPCT_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelems,T Var_Def)
+{
+  int i;
+
+  if(! VerifyInit()) return 0;
+
+  for(i=0;i<nelems;i++)
+    {
+      value[i] = ifile(var,Var_Def,i);
+
+      if(value[i] == Var_Def)
+        {
+	  hpct_input_error("fread_ivec",var);
+          return 0;
+        }
+    }
+ 
+ return 1;
+}
+
+//------------------
+// ith Vector Reads
+//------------------
+
+template <typename T> int HPCT_Input_Class:: Read_Var_iVec(const char *var, T *value, int elem,T Var_Def)
+{
+  int i;
+
+  if(! VerifyInit()) return 0;
+
+  *value = ifile(var,Var_Def,elem);
+
+  if(*value == Var_Def)
+    {
+      hpct_input_error("fread_ivec",var);
+      return 0;
+    }
+ 
+ return 1;
+} 
+
+//------------------------
+// Character String Reads
+//------------------------
+
+int HPCT_Input_Class:: Read_Var(const char *var, char **value)
+{
+  string tstring;
+
+  if(! VerifyInit()) return 0;
+  
+  tstring = ifile(var,Char_Def);
+  *value = (char *) malloc(tstring.length()*sizeof(char)+1);
+  strcpy(value[0],tstring.c_str());
+
+  if(strcmp(*value,Char_Def) == 0)
+    {
+      hpct_input_error(__func__,var);
+      return 0;
+    }
+  else
+    return 1;
+}
+
+int HPCT_Input_Class:: Read_Var_iVec(const char *var, char **value, int elem)
+{
+  string tstring;
+
+  if(! VerifyInit()) return 0;
+  
+  tstring = ifile(var,Char_Def,elem);
+  *value = (char *) malloc(tstring.length()*sizeof(char)+1);
+  strcpy(value[0],tstring.c_str());
+
+  if(strcmp(*value,Char_Def) == 0)
+    {
+      hpct_input_error(__func__,var);
+      return 0;
+    }
+  else
+    return 1;
+}
+
+//---------------------------------------
+// Default Variable Value Registrations
+//---------------------------------------
 
 void HPCT_Input_Class:: Register_Var (const char *varname, int var)
 {
@@ -140,4 +339,18 @@ int HPCT_Input_Class:: Get_Var (const char *varname, char **var)
 
 }
 
+//------------------------------
+// Supported Function Templates
+//------------------------------
 
+template int HPCT_Input_Class::Read_Var <int>          (const char *var, int    *value, int    vardef);
+template int HPCT_Input_Class::Read_Var <float>        (const char *var, float  *value, float  vardef);
+template int HPCT_Input_Class::Read_Var <double>       (const char *var, double *value, double vardef);
+
+template int HPCT_Input_Class:: Read_Var_Vec <int>     (const char *var, int    *value, int nelem, int    Var_Def);
+template int HPCT_Input_Class:: Read_Var_Vec <float>   (const char *var, float  *value, int nelem, float  Var_Def);
+template int HPCT_Input_Class:: Read_Var_Vec <double>  (const char *var, double *value, int nelem, double Var_Def);
+
+template int HPCT_Input_Class:: Read_Var_iVec <int>    (const char *var, int    *value, int elem,  int    Var_Def);
+template int HPCT_Input_Class:: Read_Var_iVec <float>  (const char *var, float  *value, int elem,  float  Var_Def);
+template int HPCT_Input_Class:: Read_Var_iVec <double> (const char *var, double *value, int elem,  double Var_Def);
