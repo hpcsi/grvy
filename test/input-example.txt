@@ -59,4 +59,28 @@ lateral-side-distance = '2.1 m/s'
 control-interval      = '0.1 s'
 compensation-ratio    = '0.4e34 rad/(m*s)'
 
+[verify]
+
+# int reads
+
+ivar = 10
+ivec = '11 12 13 14'
+
+# float reads
+
+fvar = 100.
+fvec = '101. 102. 103.'
+
+# double reads
+
+dvar = 1.e20.
+dvec = '1.1e20 1.2e20 1.3e20'
+
+# char reads
+
+cvar = "superfly"
+cvec = "tori is cool"
+
+
+
 
