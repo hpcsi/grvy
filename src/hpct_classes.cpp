@@ -135,7 +135,7 @@ void HPCT_Input_Class::PrintRegVars(const char *prefix)
   map<std::string, double > :: const_iterator dbl_index;
   map<std::string, string > :: const_iterator str_index;
 
-  cout << prefix << "[HPCT Registered Variables]" << endl;
+  cout << prefix << "[HPCT Registered Variable Default Values]" << endl;
 
   for(int_index=default_ints.begin(); int_index != default_ints.end(); ++int_index)
     cout << prefix << (int_index->first).c_str() << "=" << int_index->second << endl;
