@@ -1,4 +1,5 @@
-Version 0.23
+Version 0.23 (June 2009)
+  * addition of routines to register default input variable values
   * added new file dump option which includes a user-specified delimiter
   * added automake style test suite ("make check")
   * added pkg-config support

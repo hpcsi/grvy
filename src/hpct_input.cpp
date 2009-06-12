@@ -35,6 +35,7 @@ using namespace std;
 #include<stdlib.h>
 #include "hpct_int.h"
 #include "hpct_classes.h"
+#include "hpct.h"
 #include <GetPot>		
 
 // Define a Fortran string length argument 
@@ -385,6 +386,65 @@ extern "C" void hpct_input_fread_char_ivec_(char *var,int _namelen,char *value,
 
   delete[] name;
   free(tmpvar);
+  return;
+}
+
+#ifdef FORTRAN_ORDER1
+extern "C" void hpct_input_register_int_(char *var,int *value,int *flag,int _namelen)
+#else
+extern "C" void hpct_input_register_int_(char *var,int _namelen,int *value,int *flag)
+#endif
+{
+
+  char *name = hpct_f2c_char(var,_namelen);
+  *flag = hpct_input_register_int(name,*value);
+
+  delete[] name;
+  return;
+}
+
+#ifdef FORTRAN_ORDER1
+extern "C" void hpct_input_register_float_(char *var,float *value,int *flag,int _namelen)
+#else
+extern "C" void hpct_input_register_float_(char *var,int _namelen,float *value,int *flag)
+#endif
+{
+
+  char *name = hpct_f2c_char(var,_namelen);
+  *flag = hpct_input_register_float(name,*value);
+
+  delete[] name;
+  return;
+}
+
+#ifdef FORTRAN_ORDER1
+extern "C" void hpct_input_register_double_(char *var,double *value,int *flag,int _namelen)
+#else
+extern "C" void hpct_input_register_double_(char *var,int _namelen,double *value,int *flag)
+#endif
+{
+
+  char *name = hpct_f2c_char(var,_namelen);
+  *flag = hpct_input_register_double(name,*value);
+
+  delete[] name;
+  return;
+}
+
+#ifdef FORTRAN_ORDER1
+extern "C" void hpct_input_register_char_(char *var,char *value,int *flag,int _namelen, int _storage)
+#else
+extern "C" void hpct_input_register_char_(char *var,int _namelen,char *value,int _storage, int *flag)
+#endif
+{
+
+  char *name   = hpct_f2c_char(var,  _namelen);
+  char *string = hpct_f2c_char(value,_storage);
+
+  *flag = hpct_input_register_char(name,string);
+
+  delete[] name;
+  delete[] string;
   return;
 }
 

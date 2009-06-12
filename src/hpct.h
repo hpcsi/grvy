@@ -38,15 +38,15 @@ extern "C" {
 
 /* C Interface */
 
-extern int hpct_input_fopen       (const char *filename);
-extern int hpct_input_fclose      ();
-extern int hpct_input_fdump       ();
-extern int hpct_input_fdump_delim (const char* prefix);
-extern int hpct_input_fdump_file  (const char* prefix, const char *filename);
-extern int hpct_input_fread_int   (const char* var, int *value);
-extern int hpct_input_fread_float (const char* var, float *value);
-extern int hpct_input_fread_double(const char* var, double *value);
-extern int hpct_input_fread_char  (const char* var, char **value);
+extern int hpct_input_fopen            (const char *filename);
+extern int hpct_input_fclose           ();
+extern int hpct_input_fdump            ();
+extern int hpct_input_fdump_delim      (const char* prefix);
+extern int hpct_input_fdump_file       (const char* prefix, const char *filename);
+extern int hpct_input_fread_int        (const char* var, int *value);
+extern int hpct_input_fread_float      (const char* var, float *value);
+extern int hpct_input_fread_double     (const char* var, double *value);
+extern int hpct_input_fread_char       (const char* var, char **value);
 
 extern int hpct_input_fread_float_vec  (const char* var, float *value,  int nelems);
 extern int hpct_input_fread_double_vec (const char* var, double *value, int nelems);
@@ -69,7 +69,7 @@ extern int hpct_input_register_get_float  (const char *var,  float *value);
 extern int hpct_input_register_get_double (const char *var, double *value);
 extern int hpct_input_register_get_char   (const char *var,  char **value);
 
-/* Output Control */
+/* Error Message Output Control */
 
 extern void hpct_input_toggle_messages(int flag);
 
