@@ -41,6 +41,13 @@ int main()
       hpct_timer_summarize();
       
       printf("\nExpecting %10.5e secs\n",Max_Iters*(Foo_Sleep+Poo_Sleep+Bar_Sleep)/1.e6);
+
+      printf("\n");
+      printf("Summary data should match hpct_timer_elapsedseconds data points:\n");
+      printf("\tbar: %10.5e secs\n",hpct_timer_elapsedseconds("bar"));
+      printf("\tfoo: %10.5e secs\n",hpct_timer_elapsedseconds("foo"));
+      printf("\tpoo: %10.5e secs\n",hpct_timer_elapsedseconds("poo"));
+      printf("\n");
     }
 
   return 0;

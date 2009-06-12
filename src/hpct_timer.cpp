@@ -39,6 +39,7 @@
 
 using namespace std;
 
+#include<algorithm>
 #include<sys/time.h>
 #include<time.h>
 #include<stdio.h>
@@ -53,12 +54,13 @@ static double _HPCT_Timer_Last        = 0.;      // timer value at last call
 static _HPCT_Type_TimerMap _HPCT_TimerMap;       // performance timer map
 const char *_HPCT_gtimer  = "HPCT_Unassigned";   // default global timer key
 
-extern "C" double hpct_timer           ();
-extern "C" void   hpct_timer_init      ();
-extern "C" void   hpct_timer_finalize  ();
-extern "C" void   hpct_timer_begin     (const char *id);
-extern "C" void   hpct_timer_end       (const char *id);
-extern "C" void   hpct_timer_summarize ();
+extern "C" double hpct_timer                ();
+extern "C" void   hpct_timer_init           ();
+extern "C" void   hpct_timer_finalize       ();
+extern "C" void   hpct_timer_begin          (const char *id);
+extern "C" void   hpct_timer_end            (const char *id);
+extern "C" double hpct_timer_elapsedseconds (const char *id);
+extern "C" void   hpct_timer_summarize      ();
 
 double hpct_timer (void)
 {
@@ -136,6 +138,23 @@ void hpct_timer_end(const char *id)
   return;
 }
 
+// hpct_timer_elapsedseconds(): Get seconds spent between ..._begin, ..._end
+
+double hpct_timer_elapsedseconds(const char *id)
+{
+  double elapsedseconds = 0;
+
+  _HPCT_Type_TimerMap :: const_iterator index = _HPCT_TimerMap.find(id);
+  if ( index == _HPCT_TimerMap.end() )
+    _HPCT_message(_HPCT_emask,__func__,"No timer data available for",id);
+  else if(index->second[1] != -1)
+    _HPCT_message(_HPCT_emask,__func__,"Timer still active for",id);
+  else
+    elapsedseconds = index->second[0];
+
+  return elapsedseconds;
+}
+
 // hpct_timer_init(): Define beginning of global portion to be monitored
 
 void hpct_timer_init()
@@ -171,6 +190,7 @@ void hpct_timer_summarize()
   double totaltime,subtime;
   double local_percentage, total_percentage;
   int global_time_defined = 0;
+  size_t display_id_width = 20;
 
   _HPCT_Type_TimerMapSortLH _HPCT_TimerMapSortLH;
   _HPCT_Type_TimerMapSortHL _HPCT_TimerMapSortHL;
@@ -212,6 +232,9 @@ void hpct_timer_summarize()
     {
       timings = index->second;
       _HPCT_TimerMapSortHL[timings] = index->first;
+
+      // Update display width if this identifier is longer
+      display_id_width = max(display_id_width, index->first.length()+1);
     }
 
   total_percentage = 0.0;
@@ -221,7 +244,7 @@ void hpct_timer_summarize()
   
   for(indexHL=_HPCT_TimerMapSortHL.begin(); indexHL != _HPCT_TimerMapSortHL.end(); ++indexHL)
     {
-      printf("--> %-20s: %10.5e secs",indexHL->second.c_str(),indexHL->first[0]);
+      printf("--> %-*s: %10.5e secs",(int)display_id_width,indexHL->second.c_str(),indexHL->first[0]);
       if(global_time_defined)
 	{
 	  local_percentage  = 100.*indexHL->first[0]/(totaltime);
