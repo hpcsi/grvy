@@ -1,8 +1,12 @@
-Version 0.23 (June 2009)
+Version 0.23 (12 June 2009)
+https://svn.ices.utexas.edu/repos/pecos/hpct/tags/0.23-release
+
   * addition of routines to register default input variable values
+  * extension of timer API to provide raw timing results for a specific timer
   * added new file dump option which includes a user-specified delimiter
   * added automake style test suite ("make check")
   * added pkg-config support
+  * bug fix for incorrect performance timing output with multiple init calls
 
 Version 0.22 (27 Feb 2009)
 https://svn.ices.utexas.edu/repos/pecos/hpct/tags/0.22-release
