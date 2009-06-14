@@ -10,7 +10,7 @@ Group: applications
 Source: hpct-%{version}.tar.gz
 Distribution: Koomie Linux
 Vendor: Koomie
-Packager: Koomie/ICES - karl@ices.utexas.edu
+Packager: karl@ices.utexas.edu
 BuildRoot: /var/tmp/%{name}-%{version}-buildroot
 
 %define _topdir /h1/karl/build/rpms/
