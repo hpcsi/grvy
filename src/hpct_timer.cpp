@@ -323,6 +323,10 @@ extern "C" void hpct_timer_init_() {
   hpct_timer_init();
 }
 
+extern "C" void hpct_timer_reset_() {
+  hpct_timer_reset();
+}
+
 extern "C" void hpct_timer_finalize_() {
   hpct_timer_finalize();
 }
