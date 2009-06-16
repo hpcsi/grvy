@@ -21,11 +21,14 @@ int main()
 
   for(itest=0;itest<num_repeat;itest++)
     {
-      hpct_timer_init();
+
+      hpct_timer_reset();
 
       for(i=0;i<Max_Iters;i++)
 	{
 	  
+	  hpct_timer_init();
+
 	  /* Define the beginning of the overall portion to be monitored */
 	  
 	  printf("Main iteration loop = %i\n",i);
@@ -33,12 +36,13 @@ int main()
 	  foo();
 	  bar();
 	  poo();
-	  
+
+	  hpct_timer_finalize();
+	  hpct_timer_summarize();
+
 	}
 
-      hpct_timer_finalize();
-      
-      hpct_timer_summarize();
+      //hpct_timer_summarize();
       
       printf("\nExpecting %10.5e secs\n",Max_Iters*(Foo_Sleep+Poo_Sleep+Bar_Sleep)/1.e6);
 
