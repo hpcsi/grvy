@@ -56,6 +56,7 @@ const char *_HPCT_gtimer  = "HPCT_Unassigned";   // default global timer key
 
 extern "C" double hpct_timer                ();
 extern "C" void   hpct_timer_init           ();
+extern "C" void   hpct_timer_reset          ();
 extern "C" void   hpct_timer_finalize       ();
 extern "C" void   hpct_timer_begin          (const char *id);
 extern "C" void   hpct_timer_end            (const char *id);
@@ -164,9 +165,13 @@ void hpct_timer_init()
 
   // first: reset accumulated time for any counters that have been 
   // defined previously
+  //
+  // Change on 7/16/09 - let the user decide if they want to reset via a new timer_reset() routine
 
+#if 0
   for(index=_HPCT_TimerMap.begin(); index != _HPCT_TimerMap.end(); ++index)
     index->second[0] = 0.0;
+#endif
 
   // initialize global timer region
 
@@ -174,7 +179,17 @@ void hpct_timer_init()
   return;
 }
 
-// hpct_timer_init(): Define beginning of global portion to be monitored
+void hpct_timer_reset()
+{
+  _HPCT_Type_TimerMap :: iterator index;
+
+  for(index=_HPCT_TimerMap.begin(); index != _HPCT_TimerMap.end(); ++index)
+    index->second[0] = 0.0;
+
+  return;
+}
+
+// hpct_timer_finalize(): Define end of global portion to be monitored
 
 void hpct_timer_finalize()
 {
@@ -205,6 +220,7 @@ void hpct_timer_summarize()
   // percentages.
 
   gindex = _HPCT_TimerMap.find(_HPCT_gtimer);
+
   if ( gindex != _HPCT_TimerMap.end() )
     {
       totaltime = gindex->second[0];
@@ -218,7 +234,7 @@ void hpct_timer_summarize()
 	if(index != gindex)
 	  subtime += index->second[0];
 
-      // Reset the global key to store the exclusive cumulative time 
+      // Temporarily reset the global key to store the exclusive cumulative time 
 
       timings[0] = totaltime - subtime;
       timings[1] = gindex->second[1];
@@ -234,6 +250,7 @@ void hpct_timer_summarize()
       _HPCT_TimerMapSortHL[timings] = index->first;
 
       // Update display width if this identifier is longer
+
       display_id_width = max(display_id_width, index->first.length()+1);
     }
 
@@ -265,6 +282,13 @@ void hpct_timer_summarize()
 	  printf("This likely means that you defined timer keys which are\n");
 	  printf("not mutually exclusive.\n");
 	}
+
+      // Restore the global key timing to store inclusive cumulative time 
+
+      timings[0] = gindex->second[0] + subtime;
+      timings[1] = gindex->second[1];
+      
+      _HPCT_TimerMap[_HPCT_gtimer] = timings;
 
     }
 

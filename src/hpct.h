@@ -79,6 +79,7 @@ extern void hpct_input_toggle_messages(int flag);
 
 extern double hpct_timer                (void);
 extern void   hpct_timer_init           ();
+extern void   hpct_timer_reset          ();
 extern void   hpct_timer_finalize       ();
 extern void   hpct_timer_begin          (const char *id);
 extern void   hpct_timer_end            (const char *id);
