@@ -14,7 +14,6 @@ void poo();
 int main()
 {
 
-
   int i,itest;
   int num_repeat = 2;
 
@@ -22,12 +21,12 @@ int main()
 
   for(itest=0;itest<num_repeat;itest++)
     {
+      hpct_timer_init();
+
       for(i=0;i<Max_Iters;i++)
 	{
 	  
 	  /* Define the beginning of the overall portion to be monitored */
-	  
-	  hpct_timer_init();
 	  
 	  printf("Main iteration loop = %i\n",i);
 	  
@@ -35,8 +34,9 @@ int main()
 	  bar();
 	  poo();
 	  
-	  hpct_timer_finalize();
 	}
+
+      hpct_timer_finalize();
       
       hpct_timer_summarize();
       
