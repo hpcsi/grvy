@@ -4,8 +4,8 @@ getpot_sources = GetPot
 
 lib_LTLIBRARIES         = libhpct.la
 library_includedir      = $(includedir)
-library_include_HEADERS = $(h_sources)
+library_include_HEADERS = hpct.h
 libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
-libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources)
+libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
 METASOURCES = AUTO
