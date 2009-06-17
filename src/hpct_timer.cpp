@@ -47,6 +47,7 @@ using namespace std;
 #include<iostream>
 #include<math.h>
 #include<string.h>
+#include<iomanip>
 
 const static double HPCT_TIMER_THRESH = 9.0e-8;  // low water mark for expected timer usage deltas
 const static double HPCT_PERC_TOL     = 1e-3;    // tolerance for defining acceptable global percentages
@@ -206,6 +207,7 @@ void hpct_timer_summarize()
   double local_percentage, total_percentage;
   int global_time_defined = 0;
   size_t display_id_width = 20;
+  const size_t max_stdout_width = 120;
 
   _HPCT_Type_TimerMapSortLH _HPCT_TimerMapSortLH;
   _HPCT_Type_TimerMapSortHL _HPCT_TimerMapSortHL;
@@ -249,19 +251,27 @@ void hpct_timer_summarize()
       timings = index->second;
       _HPCT_TimerMapSortHL[timings] = index->first;
 
-      // Update display width if this identifier is longer
+      // Update display width if this identifier is longer than default
 
       display_id_width = max(display_id_width, index->first.length()+1);
+      display_id_width = min(display_id_width, max_stdout_width - 35);
+
     }
 
   total_percentage = 0.0;
 
-  printf("\n-------------------------------------------------------\n");
+  printf("\n");
+  for(int i=0;i<display_id_width+35;i++)
+    printf("-");
+  printf("\n");
+
   printf("HPCT Wall Clock Performance Timings:\n");
   
   for(indexHL=_HPCT_TimerMapSortHL.begin(); indexHL != _HPCT_TimerMapSortHL.end(); ++indexHL)
     {
-      printf("--> %-*s: %10.5e secs",(int)display_id_width,indexHL->second.c_str(),indexHL->first[0]);
+      string varstring = indexHL->second.substr(0,display_id_width-1);
+      printf("--> %-*s: %10.5e secs",(int)display_id_width,varstring.c_str(),indexHL->first[0]);
+
       if(global_time_defined)
 	{
 	  local_percentage  = 100.*indexHL->first[0]/(totaltime);
@@ -274,7 +284,9 @@ void hpct_timer_summarize()
 
   if(global_time_defined)
     {
-      printf("\n %22s = %10.5e secs (%8.4f %%)\n","Total Measured Time",totaltime,total_percentage);
+      //      printf("\n %22s = %10.5e secs (%8.4f %%)\n","Total Measured Time",totaltime,total_percentage);
+      printf("\n %*s = %10.5e secs (%8.4f %%)\n",(int)display_id_width+2,"Total Measured Time",
+	     totaltime,total_percentage);
 
       if( fabs(total_percentage - 100.0) > HPCT_PERC_TOL )
 	{
@@ -292,8 +304,9 @@ void hpct_timer_summarize()
 
     }
 
-  printf("-------------------------------------------------------\n\n");
-
+  for(int i=0;i<display_id_width+35;i++)
+    printf("-");
+  printf("\n\n");
 
   return;
 }
