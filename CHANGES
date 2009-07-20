@@ -1,3 +1,8 @@
+Version 0.23 ( July 2009)
+
+  * inclusion of basic statistics for performance timers (mean/variance/count)
+  * now requires Boost library linkage
+
 Version 0.23 (12 June 2009)
 https://svn.ices.utexas.edu/repos/pecos/hpct/tags/0.23-release
 
