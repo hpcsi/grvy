@@ -28,15 +28,16 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
-using namespace std;
-
 #define _HPCT_GLOBAL_DEF
 
 #include<stdlib.h>
-#include "hpct_int.h"
-#include "hpct_classes.h"
-#include "hpct.h"
-#include <GetPot>		
+#include<hpct_classes.h>
+#include<hpct_int.h>
+#include<hpct.h>
+#include<GetPot>		
+
+using namespace std;
+using namespace HPCT;
 
 // Define a Fortran string length argument 
 // list order.  Online docs indicate that SYSV

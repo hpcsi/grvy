@@ -31,10 +31,15 @@
 // Notes: these are for internal use by HPCT functions.  Hint: these
 // are probably not the external droids you are looking for.
 
-using namespace std;
+
 #include<stdio.h>
 #include<string.h>
-#include "hpct_int.h"
+#include<hpct_classes.h>
+#include<hpct_int.h>
+
+using namespace std;
+
+namespace HPCT {
 
 //------------------------------------
 // Basic stdout warning/error messages                      
@@ -89,4 +94,7 @@ char *hpct_f2c_char(char*input,int len)
   strncpy(name,input,len);
   name[len]='\0';
   return(name);
+}
+
+
 }

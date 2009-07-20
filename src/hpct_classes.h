@@ -32,8 +32,20 @@
 #include<vector>
 #include<string>
 #include<GetPot>
+#include<boost/accumulators/accumulators.hpp>
+#include<boost/accumulators/statistics/mean.hpp>
+#include<boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/count.hpp>
+#include<boost/accumulators/statistics/variance.hpp>
 
 using namespace std;
+using namespace boost::accumulators;
+
+namespace HPCT {
+
+//---------------------
+// Input Parsing Class
+//---------------------
 
 class HPCT_Input_Class {
  private:
@@ -54,9 +66,9 @@ class HPCT_Input_Class {
   double Double_Def;
   int    Int_Def;
   long   Long_Def;
-  char  *Char_Def;
-  char  *comment_start;
-  char  *comment_end;
+  const char  *Char_Def;
+  const char  *comment_start;
+  const char  *comment_end;
 
  public:
   HPCT_Input_Class  ();
@@ -97,4 +109,37 @@ class HPCT_Input_Class {
   void PrintRegVars  (const char *prefix);		
 };
 
+//--------------------------
+// Performance Timing Class
+//--------------------------
 
+typedef struct HPCT_Timer_Data {
+  double timings[2];
+  accumulator_set <double,stats<tag::mean,tag::count,tag::variance> > stats;
+} tTimer_Data;
+
+typedef map <std::string, HPCT_Timer_Data > _HPCT_Type_TimerMap2;
+
+class HPCT_Timer_Class {
+ private:
+  short int initialized;	  // class is initialized
+  double timer_last;              // timer value at last call
+  _HPCT_Type_TimerMap2 TimerMap;  // Map used to store performance timers for each defined key
+
+  accumulator_set <double,stats<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
+
+ public:
+  HPCT_Timer_Class      ();
+  void Initialize       ();
+  void Reset            ();
+  void Summarize        ();
+  void VerifyInit       ();
+
+  void BeginTimer       (const char *name);
+  void EndTimer         (const char *name);
+
+  double ElapsedSeconds (const char *id);
+  double RawTimer       ();
+};
+
+}

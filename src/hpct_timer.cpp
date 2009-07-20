@@ -27,166 +27,75 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
-// Notes: for portability concerns, we will go with a simple timeofday
-// based timer.  This should give resolution that is order
-// micro-seconds on desired systems.  Note that this also avoids any
-// issues that cycle-based counters face due to cpu freqeuncy
-// throttling or SMP issues due to potential thread migration.
-//
-// A check is included to potentially warn against accuracy
-// problems when the timer is used at a level below anticipated 
-// threshold accuracy.
+#include<stdio.h>
+#include<hpct_classes.h>
+#include<hpct_int.h>
+#include<hpct.h>
+#include<string>
 
 using namespace std;
+using namespace HPCT;
 
-#include<algorithm>
-#include<sys/time.h>
-#include<time.h>
-#include<stdio.h>
-#include"hpct_int.h"
-#include<iostream>
-#include<math.h>
-#include<string.h>
-#include<iomanip>
+HPCT_Timer_Class *_HPCT_TimerMap;                // performance timer map
 
-const static double HPCT_TIMER_THRESH = 9.0e-8;  // low water mark for expected timer usage deltas
-const static double HPCT_PERC_TOL     = 1e-3;    // tolerance for defining acceptable global percentages
-static double _HPCT_Timer_Last        = 0.;      // timer value at last call
-static _HPCT_Type_TimerMap _HPCT_TimerMap;       // performance timer map
-const char *_HPCT_gtimer  = "HPCT_Unassigned";   // default global timer key
+#if 0
+using namespace boost::accumulators;
+accumulator_set <double,stats<tag::mean,
+			      tag::variance> > _Timer_Stats;
+#endif
 
-extern "C" double hpct_timer                ();
-extern "C" void   hpct_timer_init           ();
-extern "C" void   hpct_timer_reset          ();
-extern "C" void   hpct_timer_finalize       ();
-extern "C" void   hpct_timer_begin          (const char *id);
-extern "C" void   hpct_timer_end            (const char *id);
-extern "C" double hpct_timer_elapsedseconds (const char *id);
-extern "C" void   hpct_timer_summarize      ();
-
-double hpct_timer (void)
+double hpct_timer ()
 {
-  int rc;
-  struct timeval tv;
-
-  rc = gettimeofday (&tv, NULL);
-  if (rc == -1) {
-    printf("tmrc: gettimeofday\n");
-    _HPCT_message(_HPCT_emask,__func__,"Unable to use gettimeofday");
-    return -1.;
-  }
-
-  double t1 =  ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec);
-
-  if( (t1 - _HPCT_Timer_Last) <= HPCT_TIMER_THRESH )
-      _HPCT_message(_HPCT_wmask,__func__,"Timer accuracy may be insufficient - just measured:",
-		    t1-_HPCT_Timer_Last);
-
-  _HPCT_Timer_Last = t1;
-  return t1;
+  return( _HPCT_Timers->RawTimer() );
 }
 
 
 void hpct_timer_begin(const char *id)
 {
-  vector <double> timings(2);
-  double mytime;
-  _HPCT_Type_TimerMap :: const_iterator index;
-
-  mytime = hpct_timer();
-
-  // Is this the first call for this id?
-
-  index = _HPCT_TimerMap.find(id);
-
-  if ( index == _HPCT_TimerMap.end() )
-    {
-      timings[0] = 0.0;	       // stores accumulated time
-      timings[1] = mytime;     // stores latest timestamp
-    }
-  else
-    {
-      timings[0] = index->second[0];
-      timings[1] = mytime;	
-    }
-
-  _HPCT_TimerMap[id] = timings;
+  //_HPCT_Timers->VerifyInit();
+  _HPCT_Timers->BeginTimer(id);
 
   return;
 }
+
 
 void hpct_timer_end(const char *id)
 {
-  vector <double> timings(2);
-  double mytime;
-  _HPCT_Type_TimerMap :: const_iterator index;
-
-  mytime = hpct_timer();
-  index  = _HPCT_TimerMap.find(id);
-
-  if ( index == _HPCT_TimerMap.end() )
-    _HPCT_message(_HPCT_emask,__func__,"No timer data available for",id);
-  else if(index->first[1] < 0)
-    _HPCT_message(_HPCT_emask,__func__,"No matching begin timer call for",id);
-  else
-    {
-
-      timings[0] = index->second[0] +  (mytime - index->second[1]);
-      timings[1]  = -1.;
-
-      _HPCT_TimerMap[id] = timings;
-    }
-
+  //  _HPCT_Timers->VerifyInit();
+  _HPCT_Timers->EndTimer(id);
   return;
 }
+
 
 // hpct_timer_elapsedseconds(): Get seconds spent between ..._begin, ..._end
 
 double hpct_timer_elapsedseconds(const char *id)
 {
-  double elapsedseconds = 0;
-
-  _HPCT_Type_TimerMap :: const_iterator index = _HPCT_TimerMap.find(id);
-  if ( index == _HPCT_TimerMap.end() )
-    _HPCT_message(_HPCT_emask,__func__,"No timer data available for",id);
-  else if(index->second[1] != -1)
-    _HPCT_message(_HPCT_emask,__func__,"Timer still active for",id);
-  else
-    elapsedseconds = index->second[0];
-
-  return elapsedseconds;
+  _HPCT_Timers->VerifyInit();
+  return( _HPCT_Timers->ElapsedSeconds(id) );
 }
+
 
 // hpct_timer_init(): Define beginning of global portion to be monitored
 
 void hpct_timer_init()
 {
 
-  _HPCT_Type_TimerMap :: iterator index;
+  // create new timer on 1st call
 
-  // first: reset accumulated time for any counters that have been 
-  // defined previously
-  //
-  // Change on 7/16/09 - let the user decide if they want to reset via a new timer_reset() routine
-
-#if 0
-  for(index=_HPCT_TimerMap.begin(); index != _HPCT_TimerMap.end(); ++index)
-    index->second[0] = 0.0;
-#endif
+  if(_HPCT_Timers == NULL)
+    _HPCT_Timers = new HPCT_Timer_Class();
 
   // initialize global timer region
 
-  hpct_timer_begin(_HPCT_gtimer);
+  _HPCT_Timers->BeginTimer(_HPCT_gtimer);
+
   return;
 }
 
 void hpct_timer_reset()
 {
-  _HPCT_Type_TimerMap :: iterator index;
-
-  for(index=_HPCT_TimerMap.begin(); index != _HPCT_TimerMap.end(); ++index)
-    index->second[0] = 0.0;
-
+  _HPCT_Timers->Reset();
   return;
 }
 
@@ -194,7 +103,8 @@ void hpct_timer_reset()
 
 void hpct_timer_finalize()
 {
-  hpct_timer_end(_HPCT_gtimer);
+  //  _HPCT_Timers->VerifyInit();
+  _HPCT_Timers->EndTimer(_HPCT_gtimer);
   return;
 }
 
@@ -202,112 +112,8 @@ void hpct_timer_finalize()
 
 void hpct_timer_summarize()
 {
-  vector <double> timings(2);
-  double totaltime,subtime;
-  double local_percentage, total_percentage;
-  int global_time_defined = 0;
-  size_t display_id_width = 20;
-  const size_t max_stdout_width = 120;
-
-  _HPCT_Type_TimerMapSortLH _HPCT_TimerMapSortLH;
-  _HPCT_Type_TimerMapSortHL _HPCT_TimerMapSortHL;
-
-  _HPCT_Type_TimerMapSortLH :: iterator indexLH;
-  _HPCT_Type_TimerMapSortHL :: iterator indexHL;
-
-  _HPCT_Type_TimerMap :: iterator index,gindex;
-
-  // Was a global timing region defined via HPCT_timer_init() and
-  // HPCT_timer_end()?  If so, use the total time to define runtime
-  // percentages.
-
-  gindex = _HPCT_TimerMap.find(_HPCT_gtimer);
-
-  if ( gindex != _HPCT_TimerMap.end() )
-    {
-      totaltime = gindex->second[0];
-      global_time_defined = 1;
-
-      // Sum the timings from all subordinate keys
-
-      subtime = 0.0;
-
-      for(index=_HPCT_TimerMap.begin(); index != _HPCT_TimerMap.end(); ++index)
-	if(index != gindex)
-	  subtime += index->second[0];
-
-      // Temporarily reset the global key to store the exclusive cumulative time 
-
-      timings[0] = totaltime - subtime;
-      timings[1] = gindex->second[1];
-      _HPCT_TimerMap[_HPCT_gtimer] = timings;
-
-    }
-  
-  // sort the list via timings for output to the masses
-
-  for(index=_HPCT_TimerMap.begin(); index != _HPCT_TimerMap.end(); ++index)
-    {
-      timings = index->second;
-      _HPCT_TimerMapSortHL[timings] = index->first;
-
-      // Update display width if this identifier is longer than default
-
-      display_id_width = max(display_id_width, index->first.length()+1);
-      display_id_width = min(display_id_width, max_stdout_width - 35);
-
-    }
-
-  total_percentage = 0.0;
-
-  printf("\n");
-  for(int i=0;i<display_id_width+35;i++)
-    printf("-");
-  printf("\n");
-
-  printf("HPCT Wall Clock Performance Timings:\n");
-  
-  for(indexHL=_HPCT_TimerMapSortHL.begin(); indexHL != _HPCT_TimerMapSortHL.end(); ++indexHL)
-    {
-      string varstring = indexHL->second.substr(0,display_id_width-1);
-      printf("--> %-*s: %10.5e secs",(int)display_id_width,varstring.c_str(),indexHL->first[0]);
-
-      if(global_time_defined)
-	{
-	  local_percentage  = 100.*indexHL->first[0]/(totaltime);
-	  total_percentage += local_percentage;
-	  printf(" (%8.4f %%)\n",local_percentage);
-	}
-      else
-	printf("\n");
-    }
-
-  if(global_time_defined)
-    {
-      //      printf("\n %22s = %10.5e secs (%8.4f %%)\n","Total Measured Time",totaltime,total_percentage);
-      printf("\n %*s = %10.5e secs (%8.4f %%)\n",(int)display_id_width+2,"Total Measured Time",
-	     totaltime,total_percentage);
-
-      if( fabs(total_percentage - 100.0) > HPCT_PERC_TOL )
-	{
-	  printf("\n%s: Profile percentages do not sum to 100 %%.\n",_HPCT_wmask);
-	  printf("This likely means that you defined timer keys which are\n");
-	  printf("not mutually exclusive.\n");
-	}
-
-      // Restore the global key timing to store inclusive cumulative time 
-
-      timings[0] = gindex->second[0] + subtime;
-      timings[1] = gindex->second[1];
-      
-      _HPCT_TimerMap[_HPCT_gtimer] = timings;
-
-    }
-
-  for(int i=0;i<display_id_width+35;i++)
-    printf("-");
-  printf("\n\n");
-
+  _HPCT_Timers->VerifyInit();
+  _HPCT_Timers->Summarize();
   return;
 }
 

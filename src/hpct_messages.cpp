@@ -27,11 +27,13 @@
 //
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
-
-using namespace std;
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+
+using namespace std;
+
+namespace HPCT {
 
 static int _HPCT_Message_Mode = 0;
 static int _HPCT_Message_Initialized = 0;
@@ -66,4 +68,4 @@ extern "C" void HPCT_initialize()
   _HPCT_Message_Initialized = 1;
 }
 
-
+}
