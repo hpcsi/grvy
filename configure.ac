@@ -5,7 +5,7 @@ AC_PREREQ(2.61)
 AC_INIT(hpct, 0.24, karl@ices.utexas.edu)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE(hpct,0.23)
+AM_INIT_AUTOMAKE(hpct,0.24)
 
 ######AC_PROG_FC
 

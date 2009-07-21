@@ -16,6 +16,7 @@ BuildRoot: /var/tmp/%{name}-%{version}-buildroot
 %define _topdir /h1/karl/build/rpms/
 %define APPS /h1/karl/public
 %define MODULES modulefiles
+%define BOOST_DIR /org/centers/pecos/LIBRARIES/BOOST/boost-1.37.0-gcc-4.3.2-ubuntu-amd64
 
 %define INSTALL_DIR %{APPS}/%{name}/%{version}
 %define MODULE_DIR  %{APPS}/%{MODULES}/%{name}
@@ -44,7 +45,7 @@ mkdir -p $RPM_BUILD_ROOT/%{INSTALL_DIR}
 
 %build
 
-./configure --prefix=$RPM_BUILD_ROOT/%{INSTALL_DIR}
+./configure --prefix=$RPM_BUILD_ROOT/%{INSTALL_DIR} --with-boost=%{BOOST_DIR}
 make
 make install
 
