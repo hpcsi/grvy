@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS          = src examples test
-DISTDIRS         = src examples 
+DISTDIRS         = src examples
 EXTRA_DIST       = autogen.sh
 
 pkgconfigdir     = $(libdir)/pkgconfig
