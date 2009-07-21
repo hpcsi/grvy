@@ -2,16 +2,18 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(hpct, 0.23, karl@ices.utexas.edu)
-AM_INIT_AUTOMAKE(hpct,0.23)
+AC_INIT(hpct, 0.24, karl@ices.utexas.edu)
 AC_CONFIG_HEADER(config.h)
+AC_CONFIG_AUX_DIR([build-aux])
+AM_INIT_AUTOMAKE(hpct,0.23)
+
 ######AC_PROG_FC
 
 # Release versioning
 
 GENERIC_MAJOR_VERSION=0
 GENERIC_MINOR_VERSION=2
-GENERIC_MICRO_VERSION=3
+GENERIC_MICRO_VERSION=4
 
 #GENERIC_API_VERSION=1.0
 #AC_SUBST(GENERIC_API_VERSION)
@@ -27,6 +29,9 @@ GENERIC_MICRO_VERSION=3
 GENERIC_RELEASE=$GENERIC_MAJOR_VERSION.$GENERIC_MINOR_VERSION
 AC_SUBST(GENERIC_RELEASE)
 
+# Required for some macros
+#AX_AM_MACROS
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_CXX
@@ -39,6 +44,13 @@ AM_SANITY_CHECK
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_HEADER_STDBOOL
+
+# Check for boost
+
+AC_LANG([C++])
+AX_BOOST_BASE(1.35)
+AX_BOOST_PROGRAM_OPTIONS
+AC_CACHE_SAVE
 
 # Checks for library functions.
 AC_FUNC_MALLOC
