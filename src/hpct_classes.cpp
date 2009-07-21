@@ -634,18 +634,19 @@ void HPCT_Timer_Class:: Summarize()
 
   for(index=TimerMap.begin(); index != TimerMap.end(); ++index)
     {
-      timings[0] = (index->second).timings[0];
-      timings[1] = (index->second).timings[1];
 
-      _HPCT_TimerMapSortHL[timings] = index->first;
+      if( index->first != gindex->first)
+	{
+	  timings[0] = (index->second).timings[0];
+	  timings[1] = (index->second).timings[1];
 
-      //_HPCT_TimerMapSortHL.insert( pair<vector,string>(timings,index->first) );
+	  _HPCT_TimerMapSortHL[timings] = index->first;
 
-      // Update display width if this identifier is longer than default
+	  // Update display width if this identifier is longer than default
 
-      display_id_width = max(display_id_width, index->first.length()+1);
-      display_id_width = min(display_id_width, max_stdout_width - 35);
-
+	  display_id_width = max(display_id_width, index->first.length()+1);
+	  display_id_width = min(display_id_width, max_stdout_width - 35);
+	}
     }
 
   total_percentage = 0.0;
@@ -671,8 +672,11 @@ void HPCT_Timer_Class:: Summarize()
 
   printf("\n");
 
+  // Print results for all user-defined timer keys
+
   for(indexHL=_HPCT_TimerMapSortHL.begin(); indexHL != _HPCT_TimerMapSortHL.end(); ++indexHL)
     {
+
       string varstring = indexHL->second.substr(0,display_id_width-1);
       printf("--> %-*s: %10.5e secs",(int)display_id_width,varstring.c_str(),indexHL->first[0]);
 
@@ -682,7 +686,7 @@ void HPCT_Timer_Class:: Summarize()
 	  total_percentage += local_percentage;
 	  printf(" (%8.4f %%)",local_percentage);
 	}
-
+      
       if(show_statistics)
 	{
 	  if(indexHL->second !=  _HPCT_gtimer )
@@ -699,6 +703,24 @@ void HPCT_Timer_Class:: Summarize()
       
     }
 
+  // Print results for left-over contribution in main timer
+
+  gindex = TimerMap.find(_HPCT_gtimer);
+
+  printf("--> %-*s: %10.5e secs",(int)display_id_width,_HPCT_gtimer,
+	 (gindex->second).timings[0]);
+
+  if(global_time_defined)
+    {
+      local_percentage  = 100.*(gindex->second).timings[0]/(totaltime);
+      total_percentage += local_percentage;
+      printf(" (%8.4f %%)",local_percentage);
+    }
+
+  printf("\n");
+
+  // A little sanity checking on the results
+      
   if(global_time_defined)
     {
       printf("\n %*s = %10.5e secs (%8.4f %%)\n",(int)display_id_width+2,"Total Measured Time",
@@ -710,10 +732,8 @@ void HPCT_Timer_Class:: Summarize()
 	  printf("This likely means that you defined timer keys which are\n");
 	  printf("not mutually exclusive.\n");
 	}
-
+      
       // Restore the global key timing to store inclusive cumulative time 
-
-      gindex = TimerMap.find(_HPCT_gtimer);
 
       (gindex->second).timings[0] += subtime;
 
