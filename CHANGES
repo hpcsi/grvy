@@ -1,5 +1,6 @@
-Version 0.23 ( July 2009)
+Version 0.24 ( July 2009)
 
+  * API change for hpct_timer_init (char *name) - name required
   * inclusion of basic statistics for performance timers (mean/variance/count)
   * now requires Boost library linkage
 
