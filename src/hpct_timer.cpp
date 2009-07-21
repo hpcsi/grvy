@@ -136,9 +136,12 @@ extern "C" void hpct_asci_time_(char *timestring,int _namelen) {
 }
 
 
-//extern "C" void hpct_timer_init_() {
-//  hpct_timer_init();
-//}
+extern "C" void hpct_timer_init_(char *id,int _namelen) {
+  char *name = hpct_f2c_char(id,_namelen);
+  hpct_timer_init(name);
+
+  delete[] name;
+}
 
 extern "C" void hpct_timer_reset_() {
   hpct_timer_reset();
