@@ -77,8 +77,8 @@ extern void hpct_input_toggle_messages(int flag);
  * Basic API Definition for Performance Timers
  */
 
-extern double hpct_timer                (void);
-extern void   hpct_timer_init           ();
+extern double hpct_timer                ();
+extern void   hpct_timer_init           (const char *id);
 extern void   hpct_timer_reset          ();
 extern void   hpct_timer_finalize       ();
 extern void   hpct_timer_begin          (const char *id);

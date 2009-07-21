@@ -462,6 +462,12 @@ void HPCT_Timer_Class:: VerifyInit ()
 
 }
 
+void HPCT_Timer_Class:: SaveTimerName (const char *id)
+{
+  timer_name = id;
+  return;
+}
+
 void HPCT_Timer_Class:: BeginTimer (const char *id)
 {
   double mytime;
@@ -585,8 +591,10 @@ void HPCT_Timer_Class:: Summarize()
   vector <double> timings(2);
   double totaltime,subtime;
   double local_percentage, total_percentage;
-  int global_time_defined = 0;
+  int    global_time_defined = 0;
+  int    max_timer_name_width;
   size_t display_id_width = 20;
+  size_t timer_name_width;
   const size_t max_stdout_width = 120;
 
   _HPCT_Type_TimerMapSortLH _HPCT_TimerMapSortLH;
@@ -652,12 +660,17 @@ void HPCT_Timer_Class:: Summarize()
 
   printf("\n");
 
-  printf("HPCT Wall Clock Performance Timings:");
+  max_timer_name_width = display_id_width + 13;
+
+  string varstring = timer_name.substr(0,max_timer_name_width-1);
+
+  printf("%s - %-*s ",varstring.c_str(),display_id_width+32-varstring.length(),"Performance Timings:");
+
   if(show_statistics)
-    printf("%*s      Mean      Variance       Count",display_id_width+1,"|");
+    printf("|      Mean      Variance       Count");
 
   printf("\n");
-  
+
   for(indexHL=_HPCT_TimerMapSortHL.begin(); indexHL != _HPCT_TimerMapSortHL.end(); ++indexHL)
     {
       string varstring = indexHL->second.substr(0,display_id_width-1);

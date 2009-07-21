@@ -123,18 +123,19 @@ typedef map <std::string, HPCT_Timer_Data > _HPCT_Type_TimerMap2;
 class HPCT_Timer_Class {
  private:
   short int initialized;	  // class is initialized
-  double timer_last;              // timer value at last call
-  _HPCT_Type_TimerMap2 TimerMap;  // Map used to store performance timers for each defined key
+  double    timer_last;           // timer value at last call
+  string    timer_name;		  // user name supplied for the timer
+  _HPCT_Type_TimerMap2 TimerMap;  // map used to store performance timers for each defined key
 
   accumulator_set <double,stats<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
 
  public:
   HPCT_Timer_Class      ();
-  void Initialize       ();
   void Reset            ();
   void Summarize        ();
   void VerifyInit       ();
 
+  void SaveTimerName    (const char *id);
   void BeginTimer       (const char *name);
   void EndTimer         (const char *name);
 

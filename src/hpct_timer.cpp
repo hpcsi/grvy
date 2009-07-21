@@ -38,12 +38,6 @@ using namespace HPCT;
 
 HPCT_Timer_Class *_HPCT_TimerMap;                // performance timer map
 
-#if 0
-using namespace boost::accumulators;
-accumulator_set <double,stats<tag::mean,
-			      tag::variance> > _Timer_Stats;
-#endif
-
 double hpct_timer ()
 {
   return( _HPCT_Timers->RawTimer() );
@@ -78,13 +72,17 @@ double hpct_timer_elapsedseconds(const char *id)
 
 // hpct_timer_init(): Define beginning of global portion to be monitored
 
-void hpct_timer_init()
+void hpct_timer_init(const char *id)
 {
 
   // create new timer on 1st call
 
   if(_HPCT_Timers == NULL)
     _HPCT_Timers = new HPCT_Timer_Class();
+
+  // register the name for the timer
+
+  _HPCT_Timers->SaveTimerName(id);
 
   // initialize global timer region
 
@@ -138,9 +136,9 @@ extern "C" void hpct_asci_time_(char *timestring,int _namelen) {
 }
 
 
-extern "C" void hpct_timer_init_() {
-  hpct_timer_init();
-}
+//extern "C" void hpct_timer_init_() {
+//  hpct_timer_init();
+//}
 
 extern "C" void hpct_timer_reset_() {
   hpct_timer_reset();

@@ -3,7 +3,7 @@
 #include "hpct.h"
 
 /*----------------------------------------------
-/* Simple C example to illustre basic input 
+/* Simple C example to illustrate basic input 
  * file parsing via HPCT.
  *
  * $Id$

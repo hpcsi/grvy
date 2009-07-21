@@ -2,6 +2,9 @@
 #include<stdio.h>
 #include<unistd.h>
 
+#include<sys/time.h>
+#include<time.h>
+
 double Foo_Sleep = 0.3 * 1.e6;
 double Bar_Sleep = 0.05 * 1.e6;
 double Poo_Sleep = 0.1167 * 1.e6;
@@ -26,8 +29,8 @@ int main()
 
       for(i=0;i<Max_Iters;i++)
 	{
-	  
-	  hpct_timer_init();
+
+	  hpct_timer_init("HPCT");
 
 	  /* Define the beginning of the overall portion to be monitored */
 	  
@@ -42,8 +45,6 @@ int main()
 
 	}
 
-      //hpct_timer_summarize();
-      
       printf("\nExpecting %10.5e secs\n",Max_Iters*(Foo_Sleep+Poo_Sleep+Bar_Sleep)/1.e6);
 
       printf("\n");
@@ -60,10 +61,16 @@ int main()
 
 void foo()
 {
-  
+
+  char *id = "koomie is the coolest cranes are better";
+
   hpct_timer_begin(__func__);
+  //hpct_timer_begin(id);
+
   usleep(Foo_Sleep);
+
   hpct_timer_end(__func__);
+  //hpct_timer_end(id);
 
   return;
     
