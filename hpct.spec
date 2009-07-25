@@ -4,7 +4,7 @@
 Summary: HPCT is a toolkit for HPC Application Development
 Name: hpct
 Version: 0.24
-Release: 1
+Release: 3
 License: GPL
 Group: applications
 Source: hpct-%{version}.tar.gz
@@ -45,9 +45,9 @@ mkdir -p $RPM_BUILD_ROOT/%{INSTALL_DIR}
 
 %build
 
-./configure --prefix=$RPM_BUILD_ROOT/%{INSTALL_DIR} --with-boost=%{BOOST_DIR}
+./configure --prefix=%{INSTALL_DIR} --with-boost=%{BOOST_DIR}
 make
-make install
+make DESTDIR=$RPM_BUILD_ROOT install
 
 rm -rf $RPM_BUILD_ROOT/%{MODULE_DIR}
 mkdir -p $RPM_BUILD_ROOT/%{MODULE_DIR}
@@ -98,7 +98,6 @@ EOF
 
 %files
 %defattr(-,karl,pecos)
-
 %{INSTALL_DIR}
 %{MODULE_DIR}
 
