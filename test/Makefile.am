@@ -12,7 +12,7 @@ C_input_read_missing_variable_SOURCES          = input-missing-var.c
 C_input_register_variables_SOURCES             = input-register.c
 C_input_register_read_missing_variable_SOURCES = input-reg-missing-var.c
 
-EXTRA_DIST       = init.sh finalize.sh
+EXTRA_DIST       = init.sh finalize.sh input-example.txt
 
 # Fortran Tests
 
