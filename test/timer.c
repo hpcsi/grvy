@@ -14,7 +14,7 @@ double Foo_Sleep = 0.03 * 1.e6;
 double Bar_Sleep = 0.005 * 1.e6;
 double Poo_Sleep = 0.11 * 1.e6;
 double Max_Iters = 8;
-double Tolerance = 1e-3;	/* coarse-grained check */
+double Tolerance = 8e-3;	/* a coarse-grained check only to catch major issues */
 
 void foo();
 void bar();
