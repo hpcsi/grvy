@@ -115,7 +115,7 @@ class HPCT_Input_Class {
 
 typedef struct HPCT_Timer_Data {
   double timings[2];
-  accumulator_set <double,stats<tag::mean,tag::count,tag::variance> > stats;
+  accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats;
 } tTimer_Data;
 
 typedef map <std::string, HPCT_Timer_Data > _HPCT_Type_TimerMap2;
@@ -127,7 +127,7 @@ class HPCT_Timer_Class {
   string    timer_name;		  // user name supplied for the timer
   _HPCT_Type_TimerMap2 TimerMap;  // map used to store performance timers for each defined key
 
-  accumulator_set <double,stats<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
+  accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
 
  public:
   HPCT_Timer_Class      ();

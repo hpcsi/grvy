@@ -49,6 +49,7 @@ extern "C" {
 #include <string>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 #include <iostream> // not every compiler distribution includes <iostream> 
 //                  // with <fstream>
 
@@ -1525,7 +1526,7 @@ GetPot::__record_argument_request(const std::string& Name)
     // (*) record considered section for ufo detection
     STRING_VECTOR      STree = __get_section_tree(Name);
     victorate(std::string, STree, it)
-        if( find(_requested_sections.begin(), _requested_sections.end(), *it) == _requested_sections.end() )
+      if( find(_requested_sections.begin(), _requested_sections.end(), *it) == _requested_sections.end() )
             if( section.length() != 0 ) _requested_sections.push_back(*it);
 }
 
