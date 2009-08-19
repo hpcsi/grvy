@@ -10,11 +10,11 @@
  * $Id$
  *----------------------------------------------*/
 
-double Foo_Sleep = 0.03 * 1.e6;
-double Bar_Sleep = 0.005 * 1.e6;
-double Poo_Sleep = 0.11 * 1.e6;
-double Max_Iters = 8;
-double Tolerance = 8e-3;	/* a coarse-grained check only to catch major issues */
+double Foo_Sleep = 0.098 * 1.e6;
+double Bar_Sleep = 0.075 * 1.e6;
+double Poo_Sleep = 0.23  * 1.e6;
+double Max_Iters = 3;
+double Tolerance = 5e-3;	/* a coarse-grained check only to catch major issues */
 
 void foo();
 void bar();
