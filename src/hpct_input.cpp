@@ -390,6 +390,12 @@ extern "C" void hpct_input_fread_char_ivec_(char *var,int _namelen,char *value,
   return;
 }
 
+extern "C" void hpct_input_toggle_messages_(int *flag)
+{
+  hpct_input_toggle_messages(*flag);
+  return;
+}
+
 #ifdef FORTRAN_ORDER1
 extern "C" void hpct_input_register_int_(char *var,int *value,int *flag,int _namelen)
 #else
