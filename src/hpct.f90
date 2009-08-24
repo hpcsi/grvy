@@ -1,13 +1,7 @@
 
 module hpct
-  use iso_c_binding
+!  use iso_c_binding
   interface
-
-!      subroutine hpct_input_fopen(filename,flag) bind(C,name="hpct_input_fopen")
-!        import c_int
-!        character :: filename
-!        integer(c_int),value :: flag
-!      end subroutine hpct_input_fopen
 
      ! ----------------------
      ! Input Parsing Support
@@ -114,7 +108,7 @@ module hpct
      end subroutine hpct_input_toggle_messages
 
      ! ---------------------------------
-     ! Default input value registration
+     ! Default Input Value Registrations
      ! ---------------------------------
 
      subroutine hpct_input_register_int(var,value,flag)
@@ -142,7 +136,7 @@ module hpct
      end subroutine hpct_input_register_char
 
      ! ---------------
-     ! Timer routines
+     ! Timing Routines
      ! ---------------
 
      subroutine hpct_asci_time(timestring)
@@ -173,6 +167,12 @@ module hpct
      subroutine hpct_timer(value)
        real*8 :: value
      end subroutine hpct_timer
+
+!      subroutine hpct_input_fopen(filename,flag) bind(C,name="hpct_input_fopen")
+!        import c_int
+!        character :: filename
+!        integer(c_int),value :: flag
+!      end subroutine hpct_input_fopen
 
   end interface
 end module hpct
