@@ -15,7 +15,7 @@ libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 #--------------------------
 
 noinst_PROGRAMS         = test
-nodist_test_SOURCES     = hpct.f90 main.f90
+test_SOURCES            = hpct.f90 main.f90
 moduledir               = @prefix@/lib
 module_DATA             = hpct.mod
 
