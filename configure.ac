@@ -2,10 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(hpct, 0.24, karl@ices.utexas.edu)
+AC_INIT(hpct, 0.25, karl@ices.utexas.edu)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE(hpct,0.24)
+AM_INIT_AUTOMAKE(hpct,0.25)
 
 ######AC_PROG_FC
 
@@ -13,7 +13,7 @@ AM_INIT_AUTOMAKE(hpct,0.24)
 
 GENERIC_MAJOR_VERSION=0
 GENERIC_MINOR_VERSION=2
-GENERIC_MICRO_VERSION=4
+GENERIC_MICRO_VERSION=5
 
 #GENERIC_API_VERSION=1.0
 #AC_SUBST(GENERIC_API_VERSION)
