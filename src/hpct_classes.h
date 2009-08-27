@@ -35,7 +35,7 @@
 #include<boost/accumulators/accumulators.hpp>
 #include<boost/accumulators/statistics/mean.hpp>
 #include<boost/accumulators/statistics/stats.hpp>
-#include <boost/accumulators/statistics/count.hpp>
+#include<boost/accumulators/statistics/count.hpp>
 #include<boost/accumulators/statistics/variance.hpp>
 
 using namespace std;
@@ -122,8 +122,9 @@ typedef map <std::string, HPCT_Timer_Data > _HPCT_Type_TimerMap2;
 
 class HPCT_Timer_Class {
  private:
-  short int initialized;	  // class is initialized
-  double    timer_last;           // timer value at last call
+  short int initialized;	  // initialized?
+  double    timer_last;           // raw timer value of last call
+  double    timer_finalize;       // raw timer value at time of finalize()
   string    timer_name;		  // user name supplied for the timer
   _HPCT_Type_TimerMap2 TimerMap;  // map used to store performance timers for each defined key
 
@@ -140,6 +141,7 @@ class HPCT_Timer_Class {
   void EndTimer         (const char *name);
 
   double ElapsedSeconds (const char *id);
+  double ElapsedGlobal  ();
   double RawTimer       ();
 };
 

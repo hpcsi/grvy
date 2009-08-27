@@ -43,6 +43,7 @@ double hpct_timer ()
   return( _HPCT_Timers->RawTimer() );
 }
 
+// hpct_timer_begin(): Defines beginning of a specific timing region
 
 void hpct_timer_begin(const char *id)
 {
@@ -52,6 +53,7 @@ void hpct_timer_begin(const char *id)
   return;
 }
 
+// hpct_timer_end(): Defines end of a specific timing region
 
 void hpct_timer_end(const char *id)
 {
@@ -59,7 +61,6 @@ void hpct_timer_end(const char *id)
   _HPCT_Timers->EndTimer(id);
   return;
 }
-
 
 // hpct_timer_elapsedseconds(): Get seconds spent between ..._begin, ..._end
 
@@ -69,8 +70,17 @@ double hpct_timer_elapsedseconds(const char *id)
   return( _HPCT_Timers->ElapsedSeconds(id) );
 }
 
+// hpct_timer_elapsed_global: provides elapsed time since first init() call
 
-// hpct_timer_init(): Define beginning of global portion to be monitored
+double hpct_timer_elapsed_global()
+{
+  _HPCT_Timers->VerifyInit();
+  return ( _HPCT_Timers->ElapsedGlobal() );
+}
+
+
+// hpct_timer_init(): Define beginning of global portion to be
+// monitored
 
 void hpct_timer_init(const char *id)
 {
@@ -90,6 +100,8 @@ void hpct_timer_init(const char *id)
 
   return;
 }
+
+// hpct_timer_reset(): Reset a global counter to start at zero
 
 void hpct_timer_reset()
 {
@@ -132,9 +144,7 @@ extern "C" void hpct_asci_time_(char *timestring,int _namelen) {
   strncpy(timestring,asctime(ptr),strlen(asctime(ptr)) - 1);
 
   return;
-
 }
-
 
 extern "C" void hpct_timer_init_(char *id,int _namelen) {
   char *name = hpct_f2c_char(id,_namelen);
@@ -177,6 +187,13 @@ extern "C" void hpct_timer_end_(char *id,int _namelen)
 extern "C" void hpct_timer_(double *value)
 {
   *value = hpct_timer();
+  return;
+}
+
+
+extern "C" void hpct_timer_elapsed_global_(double *value)
+{
+  *value = hpct_timer_elapsed_global();
   return;
 }
 

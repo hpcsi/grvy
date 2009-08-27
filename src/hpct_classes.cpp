@@ -441,8 +441,9 @@ template int HPCT_Input_Class:: Read_Var_iVec <double> (const char *var, double 
 
 HPCT_Timer_Class::HPCT_Timer_Class()   // default constructor
 {
-  initialized = 1;
-  timer_last  = 0.0;
+  initialized    = 1;
+  timer_last     = 0.0;
+  timer_finalize = -1;
 }
 
 void HPCT_Timer_Class:: VerifyInit ()
@@ -524,6 +525,13 @@ void HPCT_Timer_Class:: EndTimer (const char *id)
       (index->second).stats(increment);
     }
 
+  // Store the latest raw timer snapshot for the global timer region
+  // to allow users to query the global elapsed time after an
+  // hpct_timer_finalize()
+
+  if ( strcmp(id,_HPCT_gtimer) == 0 )
+    timer_finalize = RawTimer();
+
   return;
 }
 
@@ -582,6 +590,40 @@ double HPCT_Timer_Class:: ElapsedSeconds(const char *id)
     _HPCT_message(_HPCT_emask,__func__,"Timer still active for",id);
   else
     elapsedseconds = (index->second).timings[0];
+
+  return elapsedseconds;
+}
+
+double HPCT_Timer_Class:: ElapsedGlobal()
+{
+  double elapsedseconds = 0.0;
+  double mytime;
+
+  // grab the current global accumulation
+
+  //  printf("pre\n");
+  //  elapsedseconds = ElapsedSeconds(_HPCT_gtimer);
+  //  printf("post\n");
+
+  // compute the elapsed time since the last global
+  // timer was updated
+
+  mytime = RawTimer();
+
+  _HPCT_Type_TimerMap2 :: const_iterator index = TimerMap.find(_HPCT_gtimer);
+
+  if ( index == TimerMap.end() )
+    _HPCT_message(_HPCT_emask,__func__,"No timer data available for",_HPCT_gtimer);
+  else if( (index->second).timings[1] != -1)     // inside active timer
+    elapsedseconds = mytime - (index->second).timings[1];
+  else if( (index->second).timings[1] == -1)     // outside active timer
+    elapsedseconds = (index->second).timings[0];
+
+  // if we are being called after a finalize(), compute the elapsed
+  // time since the last global timer was updated
+
+  if (timer_finalize > 0)
+    elapsedseconds += mytime - timer_finalize;
 
   return elapsedseconds;
 }

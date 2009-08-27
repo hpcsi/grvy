@@ -84,6 +84,7 @@ extern void   hpct_timer_finalize       ();
 extern void   hpct_timer_begin          (const char *id);
 extern void   hpct_timer_end            (const char *id);
 extern double hpct_timer_elapsedseconds (const char *id);
+extern double hpct_timer_elapsed_global ();
 extern void   hpct_timer_summarize      ();
 
 
