@@ -3,8 +3,8 @@
 #include "hpct.h"
 
 /*----------------------------------------------
-/* Simple C example on creation of parent 
- * directories for output files via HPCT.
+/* Simple C example illustrating creation of 
+ * parent directories for output files via HPCT.
  *
  * $Id$
  *----------------------------------------------*/
