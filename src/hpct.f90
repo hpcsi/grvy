@@ -50,7 +50,7 @@ module hpct
 
      subroutine hpct_input_fread_int_vec(var,value,nelems,flag)
        character :: var
-       integer   :: value
+       integer   :: value(:)
        integer   :: nelems
        integer   :: flag
      end subroutine hpct_input_fread_int_vec
@@ -64,7 +64,7 @@ module hpct
 
      subroutine hpct_input_fread_real_vec(var,value,nelems,flag)
        character :: var
-       real      :: value
+       real      :: value(:)
        integer   :: nelems
        integer   :: flag
      end subroutine hpct_input_fread_real_vec
@@ -78,7 +78,7 @@ module hpct
 
      subroutine hpct_input_fread_double_vec(var,value,nelems,flag)
        character :: var
-       real*8    :: value
+       real*8    :: value(:)
        integer   :: nelems
        integer   :: flag
      end subroutine hpct_input_fread_double_vec
@@ -167,6 +167,10 @@ module hpct
      subroutine hpct_timer(value)
        real*8 :: value
      end subroutine hpct_timer
+
+     subroutine hpct_timer_elapsed_global(value)
+       real*8 :: value
+     end subroutine hpct_timer_elapsed_global
 
 !      subroutine hpct_input_fopen(filename,flag) bind(C,name="hpct_input_fopen")
 !        import c_int
