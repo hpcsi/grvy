@@ -52,6 +52,8 @@ int main()
       printf("\tbar: %10.5e secs\n",hpct_timer_elapsedseconds("bar"));
       printf("\tfoo: %10.5e secs\n",hpct_timer_elapsedseconds("foo"));
       printf("\tpoo: %10.5e secs\n",hpct_timer_elapsedseconds("poo"));
+
+      printf("\nElapsed global time = %10.5e\n",hpct_timer_elapsed_global());
       printf("\n");
     }
 
