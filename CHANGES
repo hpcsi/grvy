@@ -1,4 +1,5 @@
 Version 0.25 (August 2009)
+https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.25
 
   * compile-time bug fixes for gcc 4.3.x
   * inclusiion of toggle_message() option in Fortran interface
