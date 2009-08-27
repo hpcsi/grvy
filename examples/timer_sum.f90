@@ -1,5 +1,6 @@
 
 program main
+  use hpct
 
   integer :: Foo_Sleep = 1
   integer :: Bar_Sleep = 2
@@ -13,7 +14,6 @@ program main
   call hpct_asci_time(timestring)
 
   write(*,'(a,a26)') 'Run on: ',trim(timestring)
-  print*,'koomie'
 
   ! Primary Iteration Loop 
 
@@ -21,11 +21,15 @@ program main
 
      ! Define the beginning of the overall portion to be monitored
 
-     call hpct_timer_init();
+     call hpct_timer_init('Fortran is the best!');
 
      print*,'Main iteration loop = ',i
      
      call foo(Foo_Sleep);
+
+     call hpct_timer_elapsed_global(igot)
+     print*,'Elapsed time since global init is: ',igot
+
      call bar(Bar_Sleep);
      call poo(Poo_Sleep);
      
@@ -46,6 +50,10 @@ program main
 
   print*,' '
   print*,'Measured ',igot2-igot,' secs (expected 1.0)'
+
+  call hpct_timer_elapsed_global(igot)
+  print*,' '
+  print*,'The total elapsed time since init is: ',igot
 
   stop
 end program main
