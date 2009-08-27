@@ -599,15 +599,6 @@ double HPCT_Timer_Class:: ElapsedGlobal()
   double elapsedseconds = 0.0;
   double mytime;
 
-  // grab the current global accumulation
-
-  //  printf("pre\n");
-  //  elapsedseconds = ElapsedSeconds(_HPCT_gtimer);
-  //  printf("post\n");
-
-  // compute the elapsed time since the last global
-  // timer was updated
-
   mytime = RawTimer();
 
   _HPCT_Type_TimerMap2 :: const_iterator index = TimerMap.find(_HPCT_gtimer);
@@ -619,7 +610,7 @@ double HPCT_Timer_Class:: ElapsedGlobal()
   else if( (index->second).timings[1] == -1)     // outside active timer
     elapsedseconds = (index->second).timings[0];
 
-  // if we are being called after a finalize(), compute the elapsed
+  // if we are being called after a finalize(), include the elapsed
   // time since the last global timer was updated
 
   if (timer_finalize > 0)
