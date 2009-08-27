@@ -1,8 +1,9 @@
 program main
+  use hpct
   integer flag
   real reyn
   integer iter_max
-  integer switches(3)
+  integer switches(4)
   character :: filename*100 = ''
   character :: key1*100 = ''
   character :: key2*100 = ''

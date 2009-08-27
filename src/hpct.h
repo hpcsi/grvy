@@ -87,6 +87,12 @@ extern double hpct_timer_elapsedseconds (const char *id);
 extern double hpct_timer_elapsed_global ();
 extern void   hpct_timer_summarize      ();
 
+/*
+ * Miscellaneous Utilities
+ */
+
+extern int    hpct_check_file_path      (const char *pathname);
+
 
 #ifdef __cplusplus
 }

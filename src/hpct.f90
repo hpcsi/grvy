@@ -199,11 +199,13 @@ module hpct
        real*8 :: value
      end subroutine hpct_timer_elapsed_global
 
-!      subroutine hpct_input_fopen(filename,flag) bind(C,name="hpct_input_fopen")
-!        import c_int
-!        character :: filename
-!        integer(c_int),value :: flag
-!      end subroutine hpct_input_fopen
+     ! ---------------
+     ! Miscellaneous
+     ! ---------------
+
+     subroutine hpct_check_file_path(pathname)
+       character :: pathname
+     end subroutine hpct_check_file_path
 
   end interface
 end module hpct

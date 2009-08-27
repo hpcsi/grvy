@@ -41,58 +41,60 @@ namespace HPCT {
 #define GLOBAL extern
 #endif
 
-// Internal Routines
+  // Internal Routines
 
-extern void _HPCT_message (const char *mask, const char *func, const char *message);
-extern void _HPCT_message (const char *mask, const char *func, const char *message, const char *char_item);
-extern void _HPCT_message (const char *mask, const char *func, const char *message, int int_item);
-extern void _HPCT_message (const char *mask, const char *func, const char *message, float float_item);
-extern void _HPCT_message (const char *mask, const char *func, const char *message, double double_item);
+  extern void _HPCT_message (const char *mask, const char *func, const char *message);
+  extern void _HPCT_message (const char *mask, const char *func, const char *message, const char *char_item);
+  extern void _HPCT_message (const char *mask, const char *func, const char *message, int int_item);
+  extern void _HPCT_message (const char *mask, const char *func, const char *message, float float_item);
+  extern void _HPCT_message (const char *mask, const char *func, const char *message, double double_item);
 
-extern char *hpct_f2c_char(char*input,int len);
+  extern int _HPCT_CheckDir      (const char *dirname);
 
-// Evil Globals Vars
+  extern char *hpct_f2c_char(char*input,int len);
+
+  // Evil Globals Vars
 
 #ifdef _HPCT_GLOBAL_DEF
 
-GLOBAL const char *_HPCT_emask   = "[*] Error";        // default error mask
-GLOBAL const char *_HPCT_wmask   = "[*] Warning";      // default warning mask
-GLOBAL const char *_HPCT_imask   = "[*] Info";         // default info mask
-GLOBAL const char *_HPCT_gtimer  = "HPCT_Unassigned";  // default global timer key
+  GLOBAL const char *_HPCT_emask   = "[*] Error";        // default error mask
+  GLOBAL const char *_HPCT_wmask   = "[*] Warning";      // default warning mask
+  GLOBAL const char *_HPCT_imask   = "[*] Info";         // default info mask
+  GLOBAL const char *_HPCT_gtimer  = "HPCT_Unassigned";  // default global timer key
 
-HPCT_Timer_Class *_HPCT_Timers               =  NULL;   // performance timer 
-GLOBAL double _HPCT_TIMER_THRESH       = 9.0e-8;  // low water mark for expected timer usage deltas        
-GLOBAL double _HPCT_PERC_TOL           = 1e-3;    // tolerance for defining acceptable global percentages
+  HPCT_Timer_Class *_HPCT_Timers               =  NULL;   // performance timer 
+  GLOBAL double _HPCT_TIMER_THRESH       = 9.0e-8;  // low water mark for expected timer usage deltas        
+  GLOBAL double _HPCT_PERC_TOL           = 1e-3;    // tolerance for defining acceptable global percentages
 
 #else
 
-GLOBAL const char *_HPCT_emask;
-GLOBAL const char *_HPCT_wmask;
-GLOBAL const char *_HPCT_imask;
-GLOBAL const char *_HPCT_gtimer;
+  GLOBAL const char *_HPCT_emask;
+  GLOBAL const char *_HPCT_wmask;
+  GLOBAL const char *_HPCT_imask;
+  GLOBAL const char *_HPCT_gtimer;
 
-GLOBAL HPCT_Timer_Class *_HPCT_Timers;
-GLOBAL double _HPCT_TIMER_THRESH;
-GLOBAL double _HPCT_PERC_TOL;
+  GLOBAL HPCT_Timer_Class *_HPCT_Timers;
+  GLOBAL double _HPCT_TIMER_THRESH;
+  GLOBAL double _HPCT_PERC_TOL;
 
 #endif
 
-// Classes/Typedefs
+  // Classes/Typedefs
 
-class TimerCmpHighLow {
- public:
-  bool operator()(const vector <double> v1, const vector <double> v2 )  {
-    return ( v1[0] - v2[0] ) > 0; }
-};
+  class TimerCmpHighLow {
+  public:
+    bool operator()(const vector <double> v1, const vector <double> v2 )  {
+      return ( v1[0] - v2[0] ) > 0; }
+  };
 
-class TimerCmpLowHigh {
- public:
-  bool operator()(const vector <double> v1, const vector <double> v2 )  {
-    return ( v1[0] - v2[0] ) < 0; }
-};
+  class TimerCmpLowHigh {
+  public:
+    bool operator()(const vector <double> v1, const vector <double> v2 )  {
+      return ( v1[0] - v2[0] ) < 0; }
+  };
 
-typedef map<std::string,vector <double> >                      _HPCT_Type_TimerMap;
-typedef map<std::vector <double>,std::string,TimerCmpHighLow > _HPCT_Type_TimerMapSortHL;  
-typedef map<std::vector <double>,std::string,TimerCmpLowHigh > _HPCT_Type_TimerMapSortLH;  
+  typedef map<std::string,vector <double> >                      _HPCT_Type_TimerMap;
+  typedef map<std::vector <double>,std::string,TimerCmpHighLow > _HPCT_Type_TimerMapSortHL;  
+  typedef map<std::vector <double>,std::string,TimerCmpLowHigh > _HPCT_Type_TimerMapSortLH;  
 
 }
