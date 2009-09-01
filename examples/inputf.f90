@@ -1,12 +1,13 @@
 program main
   use hpct
-  integer flag
-  real reyn
-  integer iter_max
-  integer switches(4)
-  character :: filename*100 = ''
-  character :: key1*100 = ''
-  character :: key2*100 = ''
+  integer              :: flag
+  real                 :: reyn
+  integer              :: iter_max
+  integer              :: switches(4)
+  integer, allocatable :: switches2(:)
+  character            :: filename*100 = ''
+  character            :: key1*100 = ''
+  character            :: key2*100 = ''
 
 !------------------------------------------------
 ! Simple C example to illustre basic input 
@@ -39,8 +40,11 @@ program main
   print*,'gridfile            = ',trim(filename)
 
   call hpct_input_fread_int_vec ("solver/switches",switches,4,flag)
+  print*,'aa:switches            = ',switches(1),switches(2),switches(3),switches(4)
 
-  print*,'switches            = ',switches(1),switches(2),switches(3),switches(4)
+  allocate(switches2(4))
+  call hpct_input_fread_int_vec ("solver/switches",switches2,4,flag)
+  print*,'bb:switches2           = ',switches2(1),switches2(2),switches2(3),switches2(4)
 
   call hpct_input_fread_char_ivec("solver/keywords",key1,1,flag)
   call hpct_input_fread_char_ivec("solver/keywords",key2,2,flag)
