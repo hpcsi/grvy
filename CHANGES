@@ -2,7 +2,7 @@ Version 0.25 (August 2009)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.25
 
   * compile-time bug fixes for gcc 4.3.x
-  * inclusiion of toggle_message() option in Fortran interface
+  * inclusion of toggle_message() option in Fortran interface
   * creation of f90 hpct module interface to provide type checking (include "use hpct" to access)
   * new function to query global elapsed time 
   * new function to create parent directories for desired output file
