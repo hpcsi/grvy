@@ -7,8 +7,6 @@ AC_CONFIG_HEADER(config.h)
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE(hpct,0.25.1)
 
-######AC_PROG_FC
-
 # Release versioning
 
 GENERIC_MAJOR_VERSION=0
@@ -32,14 +30,15 @@ AC_SUBST(GENERIC_RELEASE)
 # Required for some macros
 #AX_AM_MACROS
 
-# Checks for programs.
+#------------------------------
+# Checks for required programs
+#------------------------------
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_FC
 AC_PROG_F77
 AC_PROG_LIBTOOL
 AM_SANITY_CHECK
-#AC_LANG_CPLUSPLUS
 
 # Checks for libraries.
 
@@ -47,7 +46,9 @@ AM_SANITY_CHECK
 AC_C_CONST
 AC_HEADER_STDBOOL
 
+#----------------
 # Check for boost
+#----------------
 
 AC_LANG([C++])
 AX_BOOST_BASE(1.35)
@@ -57,4 +58,21 @@ AC_CACHE_SAVE
 # Checks for library functions.
 AC_FUNC_MALLOC
 
-AC_OUTPUT(Makefile src/Makefile examples/Makefile test/Makefile hpct.pc)
+#----------------
+# Doxygen support
+#----------------
+
+DX_HTML_FEATURE(ON)
+DX_CHM_FEATURE(OFF)
+DX_CHI_FEATURE(OFF)
+DX_MAN_FEATURE(OFF)
+DX_RTF_FEATURE(OFF)
+DX_XML_FEATURE(OFF)
+DX_PDF_FEATURE(ON)
+DX_PS_FEATURE(OFF)
+
+#DX_INIT_DOXYGEN(HPCT-$(VERSION), doxygen/hpct.dox, docs)
+DX_INIT_DOXYGEN(HPCT, doxygen/hpct.dox, docs)
+
+AC_OUTPUT(Makefile src/Makefile examples/Makefile test/Makefile hpct.pc \
+	  doxygen/hpct.page )

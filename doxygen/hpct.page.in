@@ -4,21 +4,20 @@
     <br>
     <table>
         <tr><th>Toolkit      <td>The HPCT Library
-        <tr><th>Version      <td>0.4
+        <tr><th>Version      <td>@VERSION@
         <tr><th>Release Date <td>September 2009
-        <tr><th>Author(s)    <td>The PECOS Team http://pecos.ices.utexas.edu
+        <tr><th>Author(s)    <td>The PECOS Devlopment Team http://pecos.ices.utexas.edu
         <tr><th>Copyright    <td>(C) 2008-2009 The PECOS Team http://pecos.ices.utexas.edu
     </table>
 
     The HPC Toolkit (HPCT) is a library used to house various support
     functions often required for application development of
     high-performance, scientific applications.  The library is written
-    in C++ but provides an API for development in C and Fortran.
-
+    in C++, but provides an API for development in C and Fortran.
 
     @section bugs Reporting Bugs
 
-    Bugs in the code and errors or omissions in the documentation can be reported to pecos-maint@ices.utexas.edu.
+    Bugs in the code and errors or omissions in the documentation can be reported to karl@ices.utexas.edu.
     Requests and contributions are welcome at the same e-mail address.
     All bug reports should include:
     <ul>
@@ -45,19 +44,4 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-    @section disclaimer Disclaimer
- 
-    THE PECOS TOOLKIT FOR PREDICTIVE ENGINEERING WAS PREPARED AS AN ACCOUNT OF A JOINT WORK
-    BETWEEN THE UNIVERSITY OF TEXAS AT AUSTIN AND AN AGENCY OF THE UNITED STATES GOVERNMENT.
-    NEITHER THE UNITED STATES GOVERNMENT NOR ANY AGENCY THEREOF, NOR THE UNIVERSITY OF TEXAS
-    AT AUSTIN, NOR ANY OF THEIR EMPLOYEES OR OFFICERS, MAKES ANY WARRANTY, EXPRESS OR IMPLIED,
-    OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR
-    USEFULNESS OF ANY INFORMATION, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS
-    THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS. REFERENCE HEREIN TO ANY SPECIFIC
-    COMMERCIAL PRODUCT, PROCESS, OR SERVICE BY TRADE NAME, TRADEMARK, MANUFACTURER, OR OTHERWISE,
-    DOES NOT NECESSARILY CONSTITUTE OR IMPLY ITS ENDORSEMENT, RECOMMENDATION, OR FAVORING BY
-    THE UNIVERSITY OF TEXAS AT AUSTIN, THE UNITED STATES GOVERNMENT OR ANY AGENCY THEREOF.
-    THE VIEW AND OPINIONS OF AUTHORS EXPRESSED HEREIN DO NOT NECESSARILY STATE OR REFLECT
-    THOSE OF THE UNIVERSITY OF TEXAS AT AUSTIN, THE UNITED STATES GOVERNMENT OR ANY AGENCY
-    THEREOF.
  */
