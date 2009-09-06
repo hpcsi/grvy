@@ -1,4 +1,9 @@
-Version 0.25 (August 2009)
+Version 0.25.1 (05 September 2009)
+https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.25.1
+
+  * bug fix for F90 interface version of vector reads (for static arrays)
+
+Version 0.25 (27 August 2009)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.25
 
   * compile-time bug fixes for gcc 4.3.x

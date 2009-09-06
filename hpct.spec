@@ -3,8 +3,8 @@
 #
 Summary: HPCT is a toolkit for HPC Application Development
 Name: hpct
-Version: 0.25
-Release: 2
+Version: 0.25.1
+Release: 1
 License: GPL
 Group: applications
 Source: hpct-%{version}.tar.gz
