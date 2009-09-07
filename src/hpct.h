@@ -28,16 +28,6 @@
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 
-/* 
- * \file
- * \brief HPCT C/C++ Header File
- *
- * This section outlines the available HPCT functions for C/C++.  To
- * use, make sure to \#include <hpct.h> within your source code
- * files. Several simple examples using these functions are provided
- * in the examples section.
- */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,17 +38,10 @@ extern "C" {
    * use, make sure to \#include <hpct.h> within your source code
    * files. Several simple examples using these functions are provided
    * in the examples section.  Functions which have an integer return
-   * value return "0" upon success.
+   * value return "0" upon success. To illustrate the organizatinal
+   * flexibility of the input file parsing, a 
+   * \ref inputFile "sample input file" is also provided.  
    * <hr>
-   */
-
-  /* @defgroup Capi C API Definition for ASCII Input File Parsing 
-   *
-   * These routines are used to open/close an input file for parsing,
-   * and to read a character string or individual/vector values of
-   * integers, reals, or doubles.
-   * 
-   * @{
    */
 
   /*
@@ -67,26 +50,26 @@ extern "C" {
 
   /* C Interface */
 
-  extern int hpct_input_fopen            (const char *filename);
-  extern int hpct_input_fclose           ();
-
-  extern int hpct_input_fread_char       (const char* var, char **value);
-  extern int hpct_input_fread_char_ivec  (const char* var, char **value,  int elem);
-
-  extern int hpct_input_fread_int        (const char* var, int *value);
-  extern int hpct_input_fread_int_vec    (const char* var, int *value,    int nelems);
-  extern int hpct_input_fread_int_ivec   (const char* var, int *value,    int elem);
-
-  extern int hpct_input_fread_float      (const char* var, float *value);
-  extern int hpct_input_fread_float_vec  (const char* var, float *value,  int nelems);
-
-  extern int hpct_input_fread_double     (const char* var, double *value);
-  extern int hpct_input_fread_double_vec (const char* var, double *value, int nelems);
-  extern int hpct_input_fread_double_ivec(const char* var, double *value, int elem);
-
-  extern int hpct_input_fdump            ();
-  extern int hpct_input_fdump_delim      (const char* prefix);
-  extern int hpct_input_fdump_file       (const char* prefix, const char *filename);
+  extern int hpct_input_fopen               (const char *filename);
+  extern int hpct_input_fclose              ();
+					    
+  extern int hpct_input_fread_char          (const char* var, char **value);
+  extern int hpct_input_fread_char_ivec     (const char* var, char **value,  int elem);
+					    
+  extern int hpct_input_fread_int           (const char* var, int *value);
+  extern int hpct_input_fread_int_vec       (const char* var, int *value,    int nelems);
+  extern int hpct_input_fread_int_ivec      (const char* var, int *value,    int elem);
+					    
+  extern int hpct_input_fread_float         (const char* var, float *value);
+  extern int hpct_input_fread_float_vec     (const char* var, float *value,  int nelems);
+					    
+  extern int hpct_input_fread_double        (const char* var, double *value);
+  extern int hpct_input_fread_double_vec    (const char* var, double *value, int nelems);
+  extern int hpct_input_fread_double_ivec   (const char* var, double *value, int elem);
+					    
+  extern int hpct_input_fdump               ();
+  extern int hpct_input_fdump_delim         (const char* prefix);
+  extern int hpct_input_fdump_file          (const char* prefix, const char *filename);
 
   /* \subpage input_register Default Value Registration Functions */
 
@@ -136,22 +119,22 @@ extern "C" {
    *
    * <b>Open/close HPCT input file:</b>
    * \code 
-   * int hpct_input_fopen            (const char *filename);
-   * int hpct_input_fclose           ();
+   * int hpct_input_fopen             (const char *filename);
+   * int hpct_input_fclose            ();
    * \endcode
    *
    * <b>Read a single int, float, or double for input keyword \e var:</b>
    * \code
-   * int hpct_input_fread_int        (const char* var, int    *value);
-   * int hpct_input_fread_float      (const char* var, float  *value);
-   * int hpct_input_fread_double     (const char* var, double *value);
+   * int hpct_input_fread_int         (const char* var, int    *value);
+   * int hpct_input_fread_float       (const char* var, float  *value);
+   * int hpct_input_fread_double      (const char* var, double *value);
    * \endcode
    *
    * <b>Read a vector of  ints, floats, or doubles for input keyword \e var:</b>
    * \code
-   * int hpct_input_fread_int_vec    (const char* var, int    *value, int nelems);
-   * int hpct_input_fread_float_vec  (const char* var, float  *value, int nelems);
-   * int hpct_input_fread_double_vec (const char* var, double *value, int nelems);
+   * int hpct_input_fread_int_vec     (const char* var, int    *value, int nelems);
+   * int hpct_input_fread_float_vec   (const char* var, float  *value, int nelems);
+   * int hpct_input_fread_double_vec  (const char* var, double *value, int nelems);
    * \endcode
    *
    * \section timing Performance Timing Routines

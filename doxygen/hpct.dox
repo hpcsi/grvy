@@ -27,7 +27,6 @@ DOXYFILE_ENCODING      = UTF-8
 
 PROJECT_NAME           = $(PROJECT)-$(VERSION)
 #PROJECT_NAME           = $(PROJECT)
-#PROJECT_NAME           = "HPCT" $(PROJECT)-$(VERSION)
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. 
 # This could be handy for archiving the generated documentation or 
@@ -566,7 +565,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = doxygen/hpct.page src/hpct.h
+INPUT                  = doxygen/hpct.page src/hpct.h examples/pecos-input.txt
 #INPUT                  = hpct.page src examples
 
 # This tag can be used to specify the character encoding of the source files 
@@ -584,7 +583,7 @@ INPUT_ENCODING         = UTF-8
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx 
 # *.hpp *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm *.py *.f90
 
-FILE_PATTERNS          = *.cpp *.f90 *.F90 *.h *.c
+FILE_PATTERNS          = *.cpp *.f90 *.F90 *.h *.c *.txt
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 
@@ -624,7 +623,7 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = 
+EXAMPLE_PATH           = /Users/karl/projects/pecos/hpct/trunk/examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

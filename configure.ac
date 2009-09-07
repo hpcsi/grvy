@@ -74,5 +74,4 @@ DX_PS_FEATURE(OFF)
 #DX_INIT_DOXYGEN(HPCT-$(VERSION), doxygen/hpct.dox, docs)
 DX_INIT_DOXYGEN(HPCT, doxygen/hpct.dox, docs)
 
-AC_OUTPUT(Makefile src/Makefile examples/Makefile test/Makefile hpct.pc \
-	  doxygen/hpct.page )
+AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile hpct.pc )

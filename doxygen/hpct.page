@@ -17,8 +17,17 @@ with basic statistics.
 Thanks for your interest in HPCT. To aid in usage, this manual is
 further divided into the following subsections:
 
-<!-- \subpage installation Installation -->
-\subpage apiC "C/C++ Library Interface "
+<ul>
+<li> \subpage installation
+<li> \subpage apiC "C/C++ Library Interface"
+<li> \subpage random "Testing Model Definition"
+</ul>
+
+<!-- define remaining subpaged !-->
+
+<!-- \subpage inputFile  Example Input File -->
+
+
 <!-- \subpage apiF Fortran API -->
 <!-- \subpage examples Examples -->
 
@@ -57,14 +66,10 @@ Number \e DE-FC52-08NA28615.
 
 @section pecos-center More Information About PECOS
 
-<!-- \image html pecos-logo-small.png   -->
-
-
-<!-- <img src="pecos-logo-small.png" width="200" height="150"> -->
-<!-- <img src="pecos-logo-small.png" ALIGN=LEFT >  -->
+<!-- \image html pecos-logo-small.png</td> -->
 
 <table border="0" width="650" >
-    <tr><td> \image html pecos-logo-small.png </td>
+    <tr><td> <img src="/Users/karl/projects/pecos/hpct/trunk/doxygen/images/pecos-logo-small.png" /> </td>
         <td>
 	The <a href="http://pecos.ices.utexas.edu">Center for
 	Predictive Engineering and Computational Sciences</a> (PECOS)
@@ -81,17 +86,212 @@ Number \e DE-FC52-08NA28615.
      </tr>	    
 </table>
 
-<!-- PECOS brings together an interdisciplinary, multi-university team -->
-<!-- including strong ties with the DOE National Labs and NASA. The goal of -->
-<!-- the PECOS Center is to develop the next generation of advanced -->
-<!-- computational methods for predictive simulation of multiscale, -->
-<!-- multiphysics phenomena, and to apply these methods to the simulation of -->
-<!-- reentry vehicles into the atmosphere.  Simulation of vehicle -->
-<!-- reentry into the atmosphere is a challenging problem involving many -->
-<!-- complex physical phenomena; such as, aerothermochemistry, thermal -->
-<!-- radiation, turbulence and the response of complex materials to extreme -->
-<!-- conditions. These arise from the interaction of extremely high -->
-<!-- temperature gas flows with the vehicle's thermal protection system. -->
-
+\latexonly
+The <a href="http://pecos.ices.utexas.edu">Center for Predictive
+Engineering and Computational Sciences</a> (PECOS) is one of five US
+centers sponsored under the Predictive Science Academic Alliance
+Program (PSAAP) of the National Nuclear Security Administration's
+Advanced Simulation and Computing Program. The PECOS center is housed
+within the <a href="http://www.ices.utexas.edu">Institute for
+Computational Engineering and Sciences</a> (ICES) at
+the <a href="http://www.utexas.edu">University of Texas at Austin</a>.
+For additional information or questions regarding the PECOS center,
+please contact info@pecos.ices.utexas.edu.
+\endlatexonly
 
  */
+
+
+/*! \page inputFile Example HPCT Input File
+
+This is an example input file for use with the HPCT parsing mechanism.
+Behing the scenes, the library is using
+the <a href="http://getpot.sourceforge.net/">GetPot</a> parsing tool
+to provide a flexible parsing mechanism for C/C++ and Fortran.  Note
+that the default comment delimiter is defined as the \# sign and
+comments can begin at the beginning of a line or after a variable
+declaration to aid in documenting the input file.  The parsing
+mechansism is keyword driven and can be organized into multiple
+sections.  Consequently, you are allowed to have variables of the same
+name so long as they are within unique section definitions.  Note also
+that because the parsing mechanism is keyword driven, the input
+directives can be specified in \e arbitrary order.  There is no
+requirement to maintain a specific variable declaration pattern.
+
+<b>Important Note for Fortran Programmers</b> The input parser can
+handle double precision input using standard C style notation;
+however, it will not support Fortran's "d" delimiter. So, please specify
+double precision values as \e 1.2345e6 as opposed to \e 1.2345d6.
+
+<hr>
+
+\include pecos-input.txt
+
+*/
+
+/*! \page installation Installation/Linkage
+
+HPCT uses the GNU autotools suite (autoconf, automake, and libtool)
+for its development build system.  This system is popular among the
+Linux development community and provides a familiar build environment
+for end users.  
+
+To build HPCT starting from a release distribution, untar the distribution and
+enter the top-level directory.
+
+ 
+<tt> 
+   > tar xvfz hpct-$(VERSION).tar.gz  <br>
+   > cd hpct-$(VERSION)/              <br>
+</tt> 
+
+<h2>Configuration Requirements</h2>
+
+HPCT requires that the <a href="http://www.boost.org/">Boost C++
+library</a> be available locally. If Boost is installed and available
+within your default login environment, then HPCT should automatically configure
+against the available installation.  If, however, your Boost
+installation is in a non-standard location, use
+the <tt>--with-boost</tt> option to specify the location.
+
+Since HPCT provides a Fortran interface, a valid Fortran90 compiler is
+also required.  To date, HPCT has been successfully tested with \e
+gfortran and the Intel \e ifort compilers.  The configuration step
+will look for available compilers in the user environment but as with
+any \e autoconf based configuration, these can be overridden with
+command line arguments (by setting \c CXX, \c FC, and \c F77
+appropriately).
+
+<b>Installation Directory</b>: Use the <tt>--prefix</tt> option to
+specify your desired top-level installation directory for HPCT.  The
+examples below all configure HPCT to be installed in the user's ~/bin/hpct
+directory.
+
+<em>Configure with Boost from default login environment:</em> <br>
+
+<tt> > ./configure --prefix=$HOME/bin/hpct </tt>             <br>
+
+<em>Or, configure with Boost from a specific directory:</em>        <br>
+
+<tt> > ./configure --prefix=$HOME/bin/hpct --with-boost=/org/centers/pecos/LIBRARIES/BOOST/boost-1.37.0 </tt> 
+
+<em>Or, configure with specific compilers:</em>        <br>
+
+<tt> > ./configure CXX=g++ FC=ifort --prefix=$HOME/bin/hpct </tt> 
+
+<h2> Library Build </h2>
+
+Once configured, issue a <tt>make</tt> to build the software. If successful, this
+will build the HPCT library (static and dynamic versions) and several
+examples.
+
+<tt> > make </tt>
+
+<b> Verifying the build:</b> To verify that the software is working
+properly, a test option is provided to run a short suite of
+functionality tests against the local build.  To run, issue a <tt>make
+check</tt> to run the tests.  If successfull, output similar to the
+following will be generated.
+
+<tt>
+ > make check <br>
+------------------------------------------------------- <br>
+ Initializing HPCT Tests			        <br>
+------------------------------------------------------- <br>
+PASS: init.sh					        <br>
+PASS: C_input_read_variables			        <br>
+PASS: C_input_nofile_available			        <br>
+PASS: C_input_read_missing_variable		        <br>
+PASS: C_input_register_variables		        <br>
+PASS: C_input_register_read_missing_variable	        <br>
+PASS: C_timer_sum				        <br>
+------------------------------------------------------- <br>
+ Finalizing HPCT Tests, have a groovy day 	        <br>
+------------------------------------------------------- <br>
+<br>
+PASS: finalize.sh  <br>
+================== <br>
+All 8 tests passed <br>
+================== <br>
+</tt>
+
+<h2> Installation </h2>
+
+After the build is complete, issue a <tt>make install</tt> to install
+the library.  The installation will consist of three top-level
+directories housing the library, include files, and
+example files.  An example of the top-level directories after
+installation is shown below:
+
+<tt> > make install </tt> <br>
+
+Top-level HPCT installation directory:
+
+<tt> > ls $HOME/bin/hpct/ <br>
+    examples/  include/  lib/
+</tt>
+
+<h2>Library Linkage</h2>
+
+
+*/
+
+/*! \page random
+
+ Here I am koomie. you are the best.  How about we include some latex here?
+
+\latexonly
+
+\begin{center}
+\bf RADIATION MODEL: \rm
+\end{center}
+\begin{center}
+\bf EQUATIONS FOR CODE IMPLEMENTATION \rm
+\end{center}
+$$ $$
+
+\bf Abstract \rm 
+$$ $$
+
+\it This report presents the necessary equations to implement the
+discrete transfer radiation model in a computer code. \rm
+
+$$ $$
+
+\bf 1. Basic equations of radiative heat transfer in emitting
+absorbing non-scattering participating media \rm
+
+$$ $$ 
+
+Consider the path length $ S $ in the absorbing emitting
+non-scattering medium in the domain $ \Omega $ with boundary $
+\partial \Omega $, shown in figure 1. The intensity of radiation at
+point ${p}$ in the direction of the solid angle $ d\omega
+$ is obtained by solving the radiative transfer equation (RTE) along
+the path $ S $ from the bondary $ \partial \Omega $ to the point $
+{p} $. The RTE to a emitting absorbing non-scattering
+medium in local thermodynamic equilibrium is
+
+\begin{equation} \frac{dI_{\lambda}(S,\omega)}{dS} =
+a_{\lambda}(S,\omega) I_{\lambda,b}(S,\omega) - a_{\lambda}(S,\omega)
+I_{\lambda}(S,\omega) \end{equation}where the spectral absorption
+coefficient $ a_{\lambda}(S,\omega) = a_{\lambda}(\lambda, T(S), P(S),
+Y_{1}(S), Y_{2}(S),..., Y_{n}(S)) $, $\lambda$ is the wavelength,
+$T(S) $ and $ P(S) $ are, respectively, temperature and pressure in
+function of the location $ S $, and $ Y_{1} (S)$, $ Y_{2}(S) $,...,$
+Y_{n}(S) $, are the concentration of each one of the $ n $ chemical
+species that constitute the medium. $ I_{\lambda,b}(S,\omega) $ is the
+spectral blackbody intensity of radiation given by the Planck
+distribution:
+
+\begin{equation} I_{\lambda,b}(\lambda_{0},T) = \frac{2hc_{0}^{2}}
+{\lambda_{0}^{5}(e^{\frac{hc_{0}}{k\lambda_{0}T}}-1)}
+\end{equation}where $ h $ and $ k $ are respectively Planck and
+Boltzmann constants, $ c $ is the light speed and the sub-index $ 0 $
+in $ \lambda_{0} $ and $ c_{0} $ relates to vacuum.  $$ $$
+
+\endlatexonly
+
+
+*/
+
