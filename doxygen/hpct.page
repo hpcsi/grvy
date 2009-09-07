@@ -1,35 +1,7 @@
 /*! \mainpage The HPCT Library
-
-<br>
-<br>
-
-<!-- <table border="1"> -->
-<!-- <tr> -->
-<!-- <th>Column 1</th> -->
-<!-- <th>Column 2</th> -->
-<!-- <th>Column 3</th> -->
-<!-- </tr> -->
-<!-- <tr><td rowspan="2">Row 1 Cell 1</td> -->
-<!-- <td>Row 1 Cell 2</td><td>Row 1 Cell 3</td></tr> -->
-<!-- <tr><td>Row 2 Cell 2</td><td>Row 2 Cell 3</td></tr> -->
-<!-- <tr><td colspan="3">Row 3 Cell 1</td></tr> -->
-<!-- </table> -->
-
-<!-- <table border="1"> -->
-<!-- <tr> <td rowspan="2"> Hello Koomie </td> -->
-<!--      <td> Toolkit </td> <td>The HPCT Library</td>  </tr> -->
-<!-- <tr> <td> Version </td> <td>0.25.1</td> </tr> -->
-<!-- </table> -->
-
-
-<table border="1">
-    <tr><th>Toolkit      <td>The HPCT Library
-    <tr><th>Version      <td>\version
-    <tr><th>Release Date <td>September 2009
-    <tr><th>Author(s)    <td>The PECOS Development Team
-    <tr><th>Copyright    <td>(C) 2008-2009 The PECOS Team
-
-</table>
+<center><b>Version \version</b> </center>
+<center>September 2009</center>
+<hr>
 
 @section overview Overview
 
@@ -63,7 +35,9 @@ All bug reports should include:
 <li>a short program which reproduces the bug.
 </ul>
 
-@section licence GNU General Public License
+@section licence License
+
+Copyright (C) 2008,2009 The PECOS Development Team
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -72,12 +46,8 @@ your option) any later version.
 
 This program is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+<a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License</a> for more details.
 
 @section acknowledgements Acknowledgements
 
@@ -93,14 +63,23 @@ Number \e DE-FC52-08NA28615.
 <!-- <img src="pecos-logo-small.png" width="200" height="150"> -->
 <!-- <img src="pecos-logo-small.png" ALIGN=LEFT >  -->
 
-The <a href="http://pecos.ices.utexas.edu">Center for Predictive Engineering and Computational Sciences</a>
-(PECOS) is one of five US centers sponsored under the Predictive
-Science Academic Alliance Program (PSAAP) of the National Nuclear
-Security Administration's Advanced Simulation and Computing
-Program. The PECOS center is housed within the <a href="http://www.ices.utexas.edu">Institute for Computational
-Engineering and Sciences</a> (ICES) at the <a href="http://www.utexas.edu">University of Texas at Austin</a>.
-For additional information or questions regarding the PECOS center,
-please contact info@pecos.ices.utexas.edu.
+<table border="0" width="650" >
+    <tr><td> \image html pecos-logo-small.png </td>
+        <td>
+	The <a href="http://pecos.ices.utexas.edu">Center for
+	Predictive Engineering and Computational Sciences</a> (PECOS)
+	is one of five US centers sponsored under the Predictive
+	Science Academic Alliance Program (PSAAP) of the National
+	Nuclear Security Administration's Advanced Simulation and
+	Computing Program. The PECOS center is housed within
+	the <a href="http://www.ices.utexas.edu">Institute for
+	Computational Engineering and Sciences</a> (ICES) at
+	the <a href="http://www.utexas.edu">University of Texas at
+	Austin</a>.  For additional information or questions regarding
+	the PECOS center, please contact info@pecos.ices.utexas.edu.
+	</td>
+     </tr>	    
+</table>
 
 <!-- PECOS brings together an interdisciplinary, multi-university team -->
 <!-- including strong ties with the DOE National Labs and NASA. The goal of -->
