@@ -9,8 +9,8 @@ The HPC Toolkit (HPCT) is a library used to house various support
 functions often required for application development of
 high-performance, scientific applications.  The library is written in
 C++, but provides an API for development in C and Fortran.  The
-primary functions presently provided are a \e flexible input file
-parsing method for ascii-files and a performance timing mechanism to
+primary functions provided currently are a \e flexible input file
+parsing method for ascii-files and a <em> performance timing mechanism </em> to
 provide a simple summary of individual code section performance along
 with basic statistics.  
 
@@ -18,9 +18,10 @@ Thanks for your interest in HPCT. To aid in usage, this manual is
 further divided into the following subsections:
 
 <ul>
+<li> \subpage model "Model Overview (if available)"
 <li> \subpage installation
-<li> \subpage apiC "C/C++ Library Interface"
-<li> \subpage random "Testing Model Definition"
+<li> \subpage apiC "C/C++ Library Interface (if available)"
+<li> \subpage apiF "Fortran Library Interface (if available)"
 </ul>
 
 <!-- define remaining subpaged !-->
@@ -69,7 +70,7 @@ Number \e DE-FC52-08NA28615.
 <!-- \image html pecos-logo-small.png</td> -->
 
 <table border="0" width="650" >
-    <tr><td> <img src="/Users/karl/projects/pecos/hpct/trunk/doxygen/images/pecos-logo-small.png" /> </td>
+    <tr><td> <img src="../../doxygen/images/pecos-logo-small.png" /> </td>
         <td>
 	The <a href="http://pecos.ices.utexas.edu">Center for
 	Predictive Engineering and Computational Sciences</a> (PECOS)
