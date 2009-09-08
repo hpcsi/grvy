@@ -69,6 +69,7 @@ Number \e DE-FC52-08NA28615.
 
 <!-- \image html pecos-logo-small.png</td> -->
 
+\htmlonly
 <table border="0" width="650" >
     <tr><td> <img src="../../doxygen/images/pecos-logo-small.png" /> </td>
         <td>
@@ -86,16 +87,20 @@ Number \e DE-FC52-08NA28615.
 	</td>
      </tr>	    
 </table>
+\endhtmlonly
 
 \latexonly
-The <a href="http://pecos.ices.utexas.edu">Center for Predictive
-Engineering and Computational Sciences</a> (PECOS) is one of five US
+
+\href{http://pecos.ices.utexas.edu}{Center for Predictive Engineering}
+
+The \href{http://pecos.ices.utexas.edu}{Center for Predictive
+Engineering and Computational Sciences} (PECOS) is one of five US
 centers sponsored under the Predictive Science Academic Alliance
 Program (PSAAP) of the National Nuclear Security Administration's
 Advanced Simulation and Computing Program. The PECOS center is housed
-within the <a href="http://www.ices.utexas.edu">Institute for
-Computational Engineering and Sciences</a> (ICES) at
-the <a href="http://www.utexas.edu">University of Texas at Austin</a>.
+within the \href{http://www.ices.utexas.edu}{Institute for
+Computational Engineering and Sciences} (ICES) at
+the \href{http://www.utexas.edu"}{University of Texas at Austin}.
 For additional information or questions regarding the PECOS center,
 please contact info@pecos.ices.utexas.edu.
 \endlatexonly
@@ -185,7 +190,7 @@ Once configured, issue a <tt>make</tt> to build the software. If successful, thi
 will build the HPCT library (static and dynamic versions) and several
 examples.
 
-<tt> > make </tt>
+\code > make \endcode
 
 <b> Verifying the build:</b> To verify that the software is working
 properly, a test option is provided to run a short suite of
@@ -193,27 +198,27 @@ functionality tests against the local build.  To run, issue a <tt>make
 check</tt> to run the tests.  If successfull, output similar to the
 following will be generated.
 
-<tt>
- > make check <br>
-------------------------------------------------------- <br>
- Initializing HPCT Tests			        <br>
-------------------------------------------------------- <br>
-PASS: init.sh					        <br>
-PASS: C_input_read_variables			        <br>
-PASS: C_input_nofile_available			        <br>
-PASS: C_input_read_missing_variable		        <br>
-PASS: C_input_register_variables		        <br>
-PASS: C_input_register_read_missing_variable	        <br>
-PASS: C_timer_sum				        <br>
-------------------------------------------------------- <br>
- Finalizing HPCT Tests, have a groovy day 	        <br>
-------------------------------------------------------- <br>
-<br>
-PASS: finalize.sh  <br>
-================== <br>
-All 8 tests passed <br>
-================== <br>
-</tt>
+\code
+ > make check
+------------------------------------------------------- 
+ Initializing HPCT Tests			        
+------------------------------------------------------- 
+PASS: init.sh					        
+PASS: C_input_read_variables			        
+PASS: C_input_nofile_available			        
+PASS: C_input_read_missing_variable		        
+PASS: C_input_register_variables		        
+PASS: C_input_register_read_missing_variable	        
+PASS: C_timer_sum				        
+------------------------------------------------------- 
+ Finalizing HPCT Tests, have a groovy day 	        
+------------------------------------------------------- 
+
+PASS: finalize.sh  
+================== 
+All 8 tests passed 
+================== 
+\endcode
 
 <h2> Installation </h2>
 
@@ -223,13 +228,14 @@ directories housing the library, include files, and
 example files.  An example of the top-level directories after
 installation is shown below:
 
-<tt> > make install </tt> <br>
+\code > make install \endcode
 
 Top-level HPCT installation directory:
 
-<tt> > ls $HOME/bin/hpct/ <br>
-    examples/  include/  lib/
-</tt>
+\code
+ > ls $HOME/bin/hpct/
+ examples/  include/  lib/
+\endcode
 
 <h2>Library Linkage</h2>
 
