@@ -106,7 +106,7 @@ please contact info@pecos.ices.utexas.edu.
 /*! \page inputFile Example HPCT Input File
 
 This is an example input file for use with the HPCT parsing mechanism.
-Behing the scenes, the library is using
+Behind the scenes, the library is using
 the <a href="http://getpot.sourceforge.net/">GetPot</a> parsing tool
 to provide a flexible parsing mechanism for C/C++ and Fortran.  Note
 that the default comment delimiter is defined as the \# sign and
