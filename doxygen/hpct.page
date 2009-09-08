@@ -140,11 +140,10 @@ for end users.
 To build HPCT starting from a release distribution, untar the distribution and
 enter the top-level directory.
 
- 
-<tt> 
-   > tar xvfz hpct-$(VERSION).tar.gz  <br>
-   > cd hpct-$(VERSION)/              <br>
-</tt> 
+\code
+   > tar xvfz hpct-$(VERSION).tar.gz
+   > cd hpct-$(VERSION)/            
+\endcode
 
 <h2>Configuration Requirements</h2>
 
@@ -170,15 +169,15 @@ directory.
 
 <em>Configure with Boost from default login environment:</em> <br>
 
-<tt> > ./configure --prefix=$HOME/bin/hpct </tt>             <br>
+\code > ./configure --prefix=$HOME/bin/hpct \endcode
 
 <em>Or, configure with Boost from a specific directory:</em>        <br>
 
-<tt> > ./configure --prefix=$HOME/bin/hpct --with-boost=/org/centers/pecos/LIBRARIES/BOOST/boost-1.37.0 </tt> 
+\code > ./configure --prefix=$HOME/bin/hpct --with-boost=$MY_BOOST_DIR/boost-1.37.0 \endcode
 
 <em>Or, configure with specific compilers:</em>        <br>
 
-<tt> > ./configure CXX=g++ FC=ifort --prefix=$HOME/bin/hpct </tt> 
+\code > ./configure CXX=g++ FC=ifort --prefix=$HOME/bin/hpct \endcode
 
 <h2> Library Build </h2>
 
