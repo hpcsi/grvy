@@ -503,6 +503,7 @@ void HPCT_Timer_Class:: EndTimer (const char *id)
 {
   double      mytime, increment;
   tTimer_Data Data;
+  char temp_string[120];
 
   _HPCT_Type_TimerMap2 :: iterator index;
 
@@ -518,6 +519,14 @@ void HPCT_Timer_Class:: EndTimer (const char *id)
       // update map with latest increment info
 
       increment = mytime - (index->second).timings[1];
+
+      // warn against potential measurements that are too small
+
+      if( increment <= _HPCT_TIMER_THRESH )
+	{
+	  sprintf(temp_string,"Timer accuracy may be insufficient (%.30s) - just measured",id);
+	  _HPCT_message(_HPCT_wmask,__func__,temp_string,increment);
+	}
 
       (index->second).timings[0] += increment;
       (index->second).timings[1]  = -1.;
@@ -569,9 +578,11 @@ double HPCT_Timer_Class:: RawTimer()
 
   double t1 =  ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec);
 
-  if( (t1 - timer_last) <= _HPCT_TIMER_THRESH )
-    _HPCT_message(_HPCT_wmask,__func__,"Timer accuracy may be insufficient - just measured:",
-		  t1-timer_last);
+  // moved warning check to EndTimer
+  //
+  //  if( (t1 - timer_last) <= _HPCT_TIMER_THRESH )
+  //    _HPCT_message(_HPCT_wmask,__func__,"Timer accuracy may be insufficient - just measured:",
+  //		  t1-timer_last);
   
   timer_last = t1;
   return(t1);
