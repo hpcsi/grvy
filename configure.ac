@@ -2,22 +2,21 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(hpct, 0.25.1, karl@ices.utexas.edu)
+AC_INIT(hpct, 0.25.2, karl@ices.utexas.edu)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE(hpct,0.25.1)
+AM_INIT_AUTOMAKE(hpct,0.25.2)
 
 # Release versioning
 
 GENERIC_MAJOR_VERSION=0
 GENERIC_MINOR_VERSION=25
-GENERIC_MICRO_VERSION=1
+GENERIC_MICRO_VERSION=2
 
 #GENERIC_API_VERSION=1.0
 #AC_SUBST(GENERIC_API_VERSION)
 
 #shared library versioning
-
 #AC_SUBST(GENERIC_LIBRARY_VERSION)
 
 #PACKAGE=$GENERIC_LIBRARY_NAME
