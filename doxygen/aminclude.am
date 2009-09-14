@@ -1,3 +1,10 @@
+#-----------------------------------
+# PECOS - add any additional doxygen
+# dependencies here.
+#-----------------------------------
+
+PECOS_extra_dependencies = doxygen/hpct.page
+
 ## --------------------------------- ##
 ## Format-independent Doxygen rules. ##
 ## --------------------------------- ##
@@ -136,7 +143,10 @@ doxygen-run: @DX_DOCDIR@/@PACKAGE@.tag
 
 doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
 
-@DX_DOCDIR@/@PACKAGE@.tag: $(DX_CONFIG) $(pkginclude_HEADERS)
+doc:  doxygen-doc
+docs: doxygen-doc
+
+@DX_DOCDIR@/@PACKAGE@.tag: $(DX_CONFIG) $(pkginclude_HEADERS) $(PECOS_extra_dependencies)
 	  rm -rf @DX_DOCDIR@
 	  $(DX_ENV) $(DX_DOXYGEN) $(srcdir)/$(DX_CONFIG)
 

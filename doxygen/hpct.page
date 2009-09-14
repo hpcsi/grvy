@@ -71,7 +71,7 @@ Number \e DE-FC52-08NA28615.
 
 \htmlonly
 <table border="0" width="650" >
-    <tr><td> <img src="../../doxygen/images/pecos-logo-small.png" /> </td>
+    <tr><td> <img src="../../doxygen/fig_common/circle-logo-small.png" /> </td>
         <td>
 	The <a href="http://pecos.ices.utexas.edu">Center for
 	Predictive Engineering and Computational Sciences</a> (PECOS)
@@ -90,20 +90,21 @@ Number \e DE-FC52-08NA28615.
 \endhtmlonly
 
 \latexonly
-
-\href{http://pecos.ices.utexas.edu}{Center for Predictive Engineering}
-
+\begin{tabular}{m{2.2cm} m{0.80\textwidth} }
+\includegraphics[width=2cm]{../../doxygen/fig_common/circle-logo.pdf} &
 The \href{http://pecos.ices.utexas.edu}{Center for Predictive
 Engineering and Computational Sciences} (PECOS) is one of five US
 centers sponsored under the Predictive Science Academic Alliance
 Program (PSAAP) of the National Nuclear Security Administration's
 Advanced Simulation and Computing Program. The PECOS center is housed
 within the \href{http://www.ices.utexas.edu}{Institute for
-Computational Engineering and Sciences} (ICES) at
-the \href{http://www.utexas.edu"}{University of Texas at Austin}.
-For additional information or questions regarding the PECOS center,
-please contact info@pecos.ices.utexas.edu.
+Computational Engineering and Sciences} (ICES) at the
+\href{http://www.utexas.edu"}{University of Texas at Austin}.  For
+additional information or questions regarding the PECOS center, please
+contact info@pecos.ices.utexas.edu.
+\end{tabular}
 \endlatexonly
+
 
  */
 
@@ -145,10 +146,10 @@ for end users.
 To build HPCT starting from a release distribution, untar the distribution and
 enter the top-level directory.
 
-\code
-   > tar xvfz hpct-$(VERSION).tar.gz
-   > cd hpct-$(VERSION)/            
-\endcode
+<div class="fragment"><pre class="fragment">
+ > tar xvfz hpct-$(VERSION).tar.gz
+ > cd hpct-$(VERSION)/            
+</pre></div>
 
 <h2>Configuration Requirements</h2>
 
