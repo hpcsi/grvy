@@ -3,7 +3,7 @@
 <center>September 2009</center>
 <hr>
 
-@section overview Overview
+\section overview Overview
 
 The HPC Toolkit (HPCT) is a library used to house various support
 functions often required for application development of
@@ -18,10 +18,10 @@ Thanks for your interest in HPCT. To aid in usage, this manual is
 further divided into the following subsections:
 
 <ul>
-<li> \subpage model "Model Overview (if available)"
+<li> \subpage model "Library Overview"
 <li> \subpage installation
-<li> \subpage apiC "C/C++ Library Interface (if available)"
-<li> \subpage apiF "Fortran Library Interface (if available)"
+<li> \subpage apiC "C/C++ Interface"
+<li> \subpage apiF "Fortran Interface"
 </ul>
 
 <!-- define remaining subpaged !-->
@@ -32,7 +32,7 @@ further divided into the following subsections:
 <!-- \subpage apiF Fortran API -->
 <!-- \subpage examples Examples -->
 
-@section bugs Reporting Bugs
+\section bugs Reporting Bugs
 
 Bugs in the code and errors or omissions in the documentation can be reported to karl@ices.utexas.edu.
 Requests and contributions are welcome at the same e-mail address.
@@ -59,19 +59,16 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
 <a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License</a> for more details.
 
-@section acknowledgements Acknowledgements
+\section acknowledgements Acknowledgements
 
 This material is based in part upon work supported by the Department
 of Energy National Nuclear Security Administration under Award
 Number \e DE-FC52-08NA28615.
 
-@section pecos-center More Information About PECOS
+\section pecos-center More Information About PECOS
 
-<!-- \image html pecos-logo-small.png</td> -->
-
-\htmlonly
 <table border="0" width="650" >
-    <tr><td> <img src="../../doxygen/fig_common/circle-logo-small.png" /> </td>
+    <tr><td> \image html circle-logo-small.png  </td>
         <td>
 	The <a href="http://pecos.ices.utexas.edu">Center for
 	Predictive Engineering and Computational Sciences</a> (PECOS)
@@ -79,15 +76,29 @@ Number \e DE-FC52-08NA28615.
 	Science Academic Alliance Program (PSAAP) of the National
 	Nuclear Security Administration's Advanced Simulation and
 	Computing Program. The PECOS center is housed within
-	the <a href="http://www.ices.utexas.edu">Institute for
-	Computational Engineering and Sciences</a> (ICES) at
-	the <a href="http://www.utexas.edu">University of Texas at
-	Austin</a>.  For additional information or questions regarding
-	the PECOS center, please contact info@pecos.ices.utexas.edu.
 	</td>
      </tr>	    
 </table>
-\endhtmlonly
+
+<!-- \htmlonly -->
+<!-- <table border="0" width="650" > -->
+<!--     <tr><td> <img src="../../doxygen/fig_common/circle-logo-small.png" /> </td> -->
+<!--         <td> -->
+<!-- 	The <a href="http://pecos.ices.utexas.edu">Center for -->
+<!-- 	Predictive Engineering and Computational Sciences</a> (PECOS) -->
+<!-- 	is one of five US centers sponsored under the Predictive -->
+<!-- 	Science Academic Alliance Program (PSAAP) of the National -->
+<!-- 	Nuclear Security Administration's Advanced Simulation and -->
+<!-- 	Computing Program. The PECOS center is housed within -->
+<!-- 	the <a href="http://www.ices.utexas.edu">Institute for -->
+<!-- 	Computational Engineering and Sciences</a> (ICES) at -->
+<!-- 	the <a href="http://www.utexas.edu">University of Texas at -->
+<!-- 	Austin</a>.  For additional information or questions regarding -->
+<!-- 	the PECOS center, please contact info@pecos.ices.utexas.edu. -->
+<!-- 	</td> -->
+<!--      </tr>	     -->
+<!-- </table> -->
+<!-- \endhtmlonly -->
 
 \latexonly
 \begin{tabular}{m{2.2cm} m{0.80\textwidth} }
@@ -243,61 +254,6 @@ Top-level HPCT installation directory:
 
 */
 
-/*! \page random
-
- Here I am koomie. you are the best.  How about we include some latex here?
-
-\latexonly
-
-\begin{center}
-\bf RADIATION MODEL: \rm
-\end{center}
-\begin{center}
-\bf EQUATIONS FOR CODE IMPLEMENTATION \rm
-\end{center}
-$$ $$
-
-\bf Abstract \rm 
-$$ $$
-
-\it This report presents the necessary equations to implement the
-discrete transfer radiation model in a computer code. \rm
-
-$$ $$
-
-\bf 1. Basic equations of radiative heat transfer in emitting
-absorbing non-scattering participating media \rm
-
-$$ $$ 
-
-Consider the path length $ S $ in the absorbing emitting
-non-scattering medium in the domain $ \Omega $ with boundary $
-\partial \Omega $, shown in figure 1. The intensity of radiation at
-point ${p}$ in the direction of the solid angle $ d\omega
-$ is obtained by solving the radiative transfer equation (RTE) along
-the path $ S $ from the bondary $ \partial \Omega $ to the point $
-{p} $. The RTE to a emitting absorbing non-scattering
-medium in local thermodynamic equilibrium is
-
-\begin{equation} \frac{dI_{\lambda}(S,\omega)}{dS} =
-a_{\lambda}(S,\omega) I_{\lambda,b}(S,\omega) - a_{\lambda}(S,\omega)
-I_{\lambda}(S,\omega) \end{equation}where the spectral absorption
-coefficient $ a_{\lambda}(S,\omega) = a_{\lambda}(\lambda, T(S), P(S),
-Y_{1}(S), Y_{2}(S),..., Y_{n}(S)) $, $\lambda$ is the wavelength,
-$T(S) $ and $ P(S) $ are, respectively, temperature and pressure in
-function of the location $ S $, and $ Y_{1} (S)$, $ Y_{2}(S) $,...,$
-Y_{n}(S) $, are the concentration of each one of the $ n $ chemical
-species that constitute the medium. $ I_{\lambda,b}(S,\omega) $ is the
-spectral blackbody intensity of radiation given by the Planck
-distribution:
-
-\begin{equation} I_{\lambda,b}(\lambda_{0},T) = \frac{2hc_{0}^{2}}
-{\lambda_{0}^{5}(e^{\frac{hc_{0}}{k\lambda_{0}T}}-1)}
-\end{equation}where $ h $ and $ k $ are respectively Planck and
-Boltzmann constants, $ c $ is the light speed and the sub-index $ 0 $
-in $ \lambda_{0} $ and $ c_{0} $ relates to vacuum.  $$ $$
-
-\endlatexonly
 
 
 */
