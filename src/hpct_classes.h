@@ -145,5 +145,23 @@ class HPCT_Timer_Class {
   double RawTimer       ();
 };
 
+//--------------------------
+// Math Class
+//--------------------------
+
+class HPCT_Math_Class {
+ private:
+
+ public:
+  HPCT_Math_Class      ();
+  int isnan            (double val);
+  int isinf            (double val);
+
+  int isnan            (float  val);
+  int isinf            (float  val);
+
+};
+
+
 
 }
