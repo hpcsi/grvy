@@ -17,7 +17,8 @@ libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 noinst_PROGRAMS         = test
 test_SOURCES            = hpct.f90 main.f90
 test_LIBTOOLFLAGS       = --tag=FC
-moduledir               = @prefix@/lib
+moduledir               = @libdir@
 module_DATA             = hpct.mod
+CLEANFILES              = hpct.mod
 
 METASOURCES = AUTO
