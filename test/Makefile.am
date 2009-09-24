@@ -1,8 +1,9 @@
-check_PROGRAMS    = C_input_read_variables C_input_nofile_available \
-	            C_input_read_missing_variable C_input_register_variables \
-	            C_input_register_read_missing_variable C_timer_sum
-INCLUDES	  = -I$(top_srcdir)/src
-LIBS              = -L$(top_builddir)/src/.libs -lhpct
+check_PROGRAMS = C_input_read_variables C_input_nofile_available \
+				C_input_read_missing_variable C_input_register_variables \
+				C_input_register_read_missing_variable C_timer_sum \
+				C_create_temp_dir
+INCLUDES      = -I$(top_srcdir)/src
+LIBS          = -L$(top_builddir)/src -lhpct
 
 # C Tests
 
@@ -12,6 +13,7 @@ C_input_read_missing_variable_SOURCES          = input-missing-var.c examplefile
 C_input_register_variables_SOURCES             = input-register.c examplefile.c
 C_input_register_read_missing_variable_SOURCES = input-reg-missing-var.c
 C_timer_sum_SOURCES                            = timer.c
+C_create_temp_dir_SOURCES                      = temp_dir.c
 
 EXTRA_DIST       = init.sh finalize.sh input-example.txt
 
@@ -27,4 +29,5 @@ TESTS            =  init.sh C_input_read_variables \
 		    C_input_register_variables             \
 		    C_input_register_read_missing_variable \
 		    C_timer_sum \
+			C_create_temp_dir \
 		    finalize.sh

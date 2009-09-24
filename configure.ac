@@ -33,6 +33,7 @@ AC_SUBST(GENERIC_RELEASE)
 # Checks for required programs
 #------------------------------
 AC_PROG_CC
+gl_EARLY
 AC_PROG_CXX
 AC_PROG_FC
 AC_PROG_F77
@@ -40,6 +41,7 @@ AC_PROG_LIBTOOL
 AM_SANITY_CHECK
 
 # Checks for libraries.
+gl_INIT
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -73,4 +75,4 @@ DX_PS_FEATURE(OFF)
 #DX_INIT_DOXYGEN(HPCT-$(VERSION), doxygen/hpct.dox, docs)
 DX_INIT_DOXYGEN(HPCT, doxygen/hpct.dox, docs)
 
-AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile hpct.pc hpct.spec )
+AC_OUTPUT( Makefile lib/Makefile src/Makefile examples/Makefile test/Makefile hpct.pc hpct.spec )

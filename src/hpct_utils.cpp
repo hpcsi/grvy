@@ -32,6 +32,7 @@
 // may not be the external droids you are looking for.
 
 
+#include<errno.h>
 #include<stdio.h>
 #include<string.h>
 #include<hpct_classes.h>
@@ -97,6 +98,16 @@ namespace HPCT {
     free(dirstring);
   
     return(1);
+  }
+
+  extern "C" int hpct_create_temp_dir(char *name_template)
+  {
+    if (name_template == NULL)
+      return EINVAL;
+    else if (mkdtemp(name_template) == NULL)
+      return errno;
+    else
+      return 0;
   }
   
   int _HPCT_CheckDir(const char *dirname)
