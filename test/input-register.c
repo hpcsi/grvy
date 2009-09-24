@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hpct.h"
+#include "examplefile.h"
 
 /*----------------------------------------------
  * HPCT Test Suite
@@ -20,6 +21,7 @@ int main(int argc, char **argv)
   float  fset  = 456.7;
   double dset  = 123.e10;
   char  sset[] = "shoplifters-unit"; 
+  char *input_example_file_path;
 
   int    igot;
   float  fgot;
@@ -61,7 +63,9 @@ int main(int argc, char **argv)
   dgot=-1.;
   sgot=NULL;
 
-  flag *= hpct_input_fopen       ("./input-example.txt");
+  input_example_file_path = build_example_file_path();
+  flag *= hpct_input_fopen(input_example_file_path);
+  free(input_example_file_path);
   flag *= hpct_input_fread_int   ("sec1/aint",&igot);
   flag *= hpct_input_fread_float ("sec1/afloat",&fgot);
   flag *= hpct_input_fread_double("sec1/adouble",&dgot);

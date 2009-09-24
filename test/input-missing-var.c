@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hpct.h"
+#include "examplefile.h"
 
 /*----------------------------------------------
  * HPCT Test Suite
@@ -14,6 +15,7 @@ int main(int argc, char **argv)
 {
   float reyn;
   int flag = 1;
+  char *input_example_file_path;
 
   /* Silence warning/error messages */
 
@@ -21,7 +23,9 @@ int main(int argc, char **argv)
 
   /* Initialize/read the file */
 
-  flag *= hpct_input_fopen("./input-example.txt");
+  input_example_file_path = build_example_file_path();
+  flag *= hpct_input_fopen(input_example_file_path);
+  free(input_example_file_path);
 
   /* Read specific variables and echo locally */
 

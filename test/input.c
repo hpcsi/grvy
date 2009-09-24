@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hpct.h"
+#include "examplefile.h"
 
 /*----------------------------------------------
  * HPCT Test Suite
@@ -18,6 +19,7 @@ int main(int argc, char **argv)
 {
   float reyn,mach,aoa,A[3];
   int iter_max,turbulent;
+  char *input_example_file_path;
   char *gridfile;
   char *key1, *key2;
 
@@ -33,7 +35,9 @@ int main(int argc, char **argv)
 
   /* Initialize/read the file */
 
-  flag *= hpct_input_fopen("./input-example.txt");
+  input_example_file_path = build_example_file_path();
+  flag *= hpct_input_fopen(input_example_file_path);
+  free(input_example_file_path);
 
   /* Read specific variables and echo locally */
 
@@ -104,7 +108,7 @@ int main(int argc, char **argv)
 
   if(flag == 0)
       exit (1);
-  else 
+  else
     exit (0);
 
 }
