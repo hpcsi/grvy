@@ -3,7 +3,10 @@
 # dependencies here.
 #-----------------------------------
 
-PECOS_extra_dependencies = doxygen/hpct.page
+PECOS_extra_dependencies = doxygen/hpct.page \
+			   doxygen/txt_common/about.page \
+			   doxygen/txt_common/gpl.page \
+			   doxygen/txt_common/acknowledgement.page
 
 ## --------------------------------- ##
 ## Format-independent Doxygen rules. ##

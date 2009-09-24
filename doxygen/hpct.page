@@ -1,4 +1,5 @@
 /*! \mainpage The HPCT Library
+
 <center><b>Version \version</b> </center>
 <center>September 2009</center>
 <hr>
@@ -45,85 +46,21 @@ All bug reports should include:
 <li>a short program which reproduces the bug.
 </ul>
 
-@section licence License
+\section licence License
+\copydoc License
 
-Copyright (C) 2008,2009 The PECOS Development Team
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or (at
-your option) any later version.
-
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
-<a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License</a> for more details.
-
-\section acknowledgements Acknowledgements
-
-This material is based in part upon work supported by the Department
-of Energy National Nuclear Security Administration under Award
-Number \e DE-FC52-08NA28615.
+\section acknowledgements Acknowledgments
+\copydoc Acknowledgments
 
 \section pecos-center More Information About PECOS
-
-<table border="0" width="650" >
-    <tr><td> \image html circle-logo-small.png  </td>
-        <td>
-	The <a href="http://pecos.ices.utexas.edu">Center for
-	Predictive Engineering and Computational Sciences</a> (PECOS)
-	is one of five US centers sponsored under the Predictive
-	Science Academic Alliance Program (PSAAP) of the National
-	Nuclear Security Administration's Advanced Simulation and
-	Computing Program. The PECOS center is housed within
-	</td>
-     </tr>	    
-</table>
-
-<!-- \htmlonly -->
-<!-- <table border="0" width="650" > -->
-<!--     <tr><td> <img src="../../doxygen/fig_common/circle-logo-small.png" /> </td> -->
-<!--         <td> -->
-<!-- 	The <a href="http://pecos.ices.utexas.edu">Center for -->
-<!-- 	Predictive Engineering and Computational Sciences</a> (PECOS) -->
-<!-- 	is one of five US centers sponsored under the Predictive -->
-<!-- 	Science Academic Alliance Program (PSAAP) of the National -->
-<!-- 	Nuclear Security Administration's Advanced Simulation and -->
-<!-- 	Computing Program. The PECOS center is housed within -->
-<!-- 	the <a href="http://www.ices.utexas.edu">Institute for -->
-<!-- 	Computational Engineering and Sciences</a> (ICES) at -->
-<!-- 	the <a href="http://www.utexas.edu">University of Texas at -->
-<!-- 	Austin</a>.  For additional information or questions regarding -->
-<!-- 	the PECOS center, please contact info@pecos.ices.utexas.edu. -->
-<!-- 	</td> -->
-<!--      </tr>	     -->
-<!-- </table> -->
-<!-- \endhtmlonly -->
-
-\latexonly
-\begin{tabular}{m{2.2cm} m{0.80\textwidth} }
-\includegraphics[width=2cm]{../../doxygen/fig_common/circle-logo.pdf} &
-The \href{http://pecos.ices.utexas.edu}{Center for Predictive
-Engineering and Computational Sciences} (PECOS) is one of five US
-centers sponsored under the Predictive Science Academic Alliance
-Program (PSAAP) of the National Nuclear Security Administration's
-Advanced Simulation and Computing Program. The PECOS center is housed
-within the \href{http://www.ices.utexas.edu}{Institute for
-Computational Engineering and Sciences} (ICES) at the
-\href{http://www.utexas.edu"}{University of Texas at Austin}.  For
-additional information or questions regarding the PECOS center, please
-contact info@pecos.ices.utexas.edu.
-\end{tabular}
-\endlatexonly
-
+\copydoc About
 
  */
-
 
 /*! \page inputFile Example HPCT Input File
 
 This is an example input file for use with the HPCT parsing mechanism.
-Behind the scenes, the library is using
+Note that hehind the scenes, the library is using
 the <a href="http://getpot.sourceforge.net/">GetPot</a> parsing tool
 to provide a flexible parsing mechanism for C/C++ and Fortran.  Note
 that the default comment delimiter is defined as the \# sign and
@@ -254,7 +191,4 @@ Top-level HPCT installation directory:
 
 */
 
-
-
-*/
 
