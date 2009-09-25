@@ -51,31 +51,31 @@ namespace HPCT {
   extern "C" int hpct_check_file_path(const char *pathname)
   {
     const int MAX_DEPTH = 50;
-  
+
     char *pathlocal;
     char *parents;
     char *dirstring;
     char *token;
     int depth = 0;
-  
-    // Save a copy of pathname and look for the parent directories.                 
-  
+
+    // Save a copy of pathname and look for the parent directories.
+
     pathlocal = strdup(pathname);
     dirstring = strdup(pathname);
     parents   = dirname(pathlocal);
 
     if(strcmp(parents,".") == 0)
       return(1);
-  
+
     if( (token = strtok(parents,"/")) != NULL )
       {
 	if ( !_HPCT_CheckDir(token) )
 	  return(-1);
-      
-	// Now, search for any remaining parent directories.                        
-      
+
+	// Now, search for any remaining parent directories.
+
 	sprintf(dirstring,"%s",token);
-      
+
 	while ( (token = strtok(0,"/")) && (depth < MAX_DEPTH) )
 	  {
 	    dirstring = strcat(dirstring,"/");
@@ -83,20 +83,20 @@ namespace HPCT {
 	      return(-1);
 	    depth++;
 	  };
-      
+
 	if(depth >= MAX_DEPTH )
 	  {
 	    _HPCT_message(_HPCT_emask,__func__,"Max directory depth exceeded, limite =",MAX_DEPTH);
 	    return(-1);
 	  }
-      
+
       }
-  
-    // Clean Up                                                                     
-  
+
+    // Clean Up
+
     free(pathlocal);
     free(dirstring);
-  
+
     return(1);
   }
 
@@ -109,12 +109,12 @@ namespace HPCT {
     else
       return 0;
   }
-  
+
   int _HPCT_CheckDir(const char *dirname)
   {
     struct stat st;
     int status = 0;
-    
+
     if(stat(dirname,&st) != 0)
       {
 	if( mkdir(dirname,0700) != 0 )
@@ -123,12 +123,12 @@ namespace HPCT {
 	    return(-1);
 	  }
       }
-    
+
     return(1);
   }
 
   //------------------------------------
-  // Basic stdout warning/error messages                      
+  // Basic stdout warning/error messages
   //------------------------------------
 
   void _HPCT_message(char *message)
@@ -180,7 +180,18 @@ namespace HPCT {
     delete[] name;
     return;
   }
-  
+
+//  extern "C" void hpct_create_unique_dir_(char *name_template,int _namelen)
+//  {
+//    char *name = hpct_f2c_char(pathname,_namelen);
+
+
+//    hpct_check_file_path(name);
+
+//    delete[] name;
+//    return;
+//  }
+
   // ----------------------------------------------------------------
   // -------------------- Convenience Functions ---------------------
   // ----------------------------------------------------------------
@@ -190,7 +201,7 @@ namespace HPCT {
   char *hpct_f2c_char(char*input,int len)
   {
     char* name = new char[len+1];
-  
+
     strncpy(name,input,len);
     name[len]='\0';
     return(name);

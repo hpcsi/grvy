@@ -44,9 +44,4 @@ echo "- automake."            && \
 automake --add-missing --copy && \
 exit 0
 
-# Have chosen to commit gnulib's generated source to avoid gnulib
-# dependency on full check out.  Maintainer may wish to run
-# 'gnulib-tool --update' periodically.
-# See http://www.gnu.org/software/gnulib/manual/gnulib.html#VCS-Issues
-
 exit 1

@@ -3,7 +3,7 @@ cc_sources              = hpct_input.cpp hpct_classes.cpp hpct_timer.cpp \
 			  hpct_utils.cpp hpct_messages.cpp
 getpot_sources          = GetPot
 
-INCLUDES          = -I$(top_srcdir)/lib -I$(top_builddir)/lib
+INCLUDES          = 
 AM_FCFLAGS        = $(INCLUDES)
 AM_CFLAGS         = $(INCLUDES)
 AM_CPPFLAGS       = $(INCLUDES) $(BOOST_CPPFLAGS)
@@ -13,7 +13,6 @@ library_includedir      = $(includedir)
 library_include_HEADERS = hpct.h
 libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
 libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
-libhpct_la_LIBADD       = ../lib/libgnu.la
 
 #--------------------------
 # Fortran Module Interface

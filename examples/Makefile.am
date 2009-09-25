@@ -4,8 +4,7 @@ example_DATA      = input.c inputf.f90 pecos-input.txt \
 EXTRA_DIST	  = input.c inputf.f90 pecos-input.txt \
 			timer_sum.c timer_sum.f90
 
-INCLUDES          = -I$(top_srcdir)/lib -I$(top_builddir)/lib
-INCLUDES         += -I$(top_srcdir)/src -I$(top_builddir)/src
+INCLUDES          = -I$(top_srcdir)/src -I$(top_builddir)/src
 AM_FCFLAGS        = $(INCLUDES)
 AM_CFLAGS         = $(INCLUDES)
 AM_CPPFLAGS       = $(INCLUDES)
