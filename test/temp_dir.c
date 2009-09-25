@@ -19,11 +19,6 @@ int main(int argc, char **argv)
 {
   int flag = 1;
 
-  /* Unable to create a directory on NULL template name, but no segfault */
-  {
-    flag *= (0 != hpct_create_unique_dir(NULL));
-  }
-
   /* Unable to create a directory on invalid template */
   {
     char invalid_template[] = "doesNotHaveSixTrailingExes";

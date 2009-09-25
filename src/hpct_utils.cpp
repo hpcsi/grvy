@@ -40,6 +40,8 @@
 #include<libgen.h>
 #include<sys/stat.h>
 
+#include"fortran_string_order.h"
+
 using namespace std;
 
 namespace HPCT {
@@ -181,16 +183,19 @@ namespace HPCT {
     return;
   }
 
-//  extern "C" void hpct_create_unique_dir_(char *name_template,int _namelen)
-//  {
-//    char *name = hpct_f2c_char(pathname,_namelen);
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
+extern "C" void hpct_create_unique_dir_(char *name_template,int *flag,int _namelen)
+#else
+extern "C" void hpct_create_unique_dir_(char *name_template,int _namelen,int *flag)
+#endif
+  {
+    char *c_name_template = hpct_f2c_char(name_template,_namelen);
 
+    *flag = hpct_check_file_path(c_name_template);
+    strncpy(name_template,c_name_template,_namelen);
 
-//    hpct_check_file_path(name);
-
-//    delete[] name;
-//    return;
-//  }
+    delete[] c_name_template;
+  }
 
   // ----------------------------------------------------------------
   // -------------------- Convenience Functions ---------------------
@@ -200,11 +205,11 @@ namespace HPCT {
 
   char *hpct_f2c_char(char*input,int len)
   {
-    char* name = new char[len+1];
+    char* output = new char[len+1];
+    strncpy(output,input,len);
+    output[len]='\0';
 
-    strncpy(name,input,len);
-    name[len]='\0';
-    return(name);
+    return(output);
   }
 
 

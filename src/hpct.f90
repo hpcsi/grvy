@@ -221,5 +221,10 @@ module hpct
        character :: pathname
      end subroutine hpct_check_file_path
 
+     subroutine hpct_create_unique_dir(name_template,flag)
+       character :: name_template
+       integer   :: flag
+     end subroutine hpct_create_unique_dir
+
   end interface
 end module hpct
