@@ -121,7 +121,7 @@ extern "C" {
    */
 
   extern int    hpct_check_file_path      (const char *pathname);
-  extern int    hpct_create_temp_dir      (      char *name_template);
+  extern int    hpct_create_unique_dir    (      char *name_template);
 
   /* 
    * Doxygen API Definitions 
@@ -168,8 +168,8 @@ extern "C" {
    * \code
    * int    hpct_check_file_path      (const char *pathname);
    * \endcode
-   * <b>hpct_create_temp_dir: Create a unique temporary directory with 0700 permissions using the provided template name.  The last six characters of name_template must be XXXXXX, and name_template is modified with the unique name upon return.</b>
-   * int    hpct_create_temp_dir      (      char *name_template);
+   * <b>hpct_create_unique_dir: Create a new, unique directory with 0700 permissions using the provided template name.  The last six characters of name_template must be XXXXXX, and name_template is modified with the unique name upon return.</b>
+   * int    hpct_create_unique_dir      (char *name_template);
    */
 
 

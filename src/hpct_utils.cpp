@@ -100,7 +100,7 @@ namespace HPCT {
     return(1);
   }
 
-  extern "C" int hpct_create_temp_dir(char *name_template)
+  extern "C" int hpct_create_unique_dir(char *name_template)
   {
     if (name_template == NULL)
       return EINVAL;
