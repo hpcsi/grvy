@@ -34,7 +34,6 @@
 #include<hpct.h>
 #include<hpct_int.h>
 
-
 namespace HPCT {
 
 int show_statistics = 1;
@@ -793,5 +792,14 @@ void HPCT_Timer_Class:: Summarize()
 
   printf("\n\n");
 }
+
+//-------------------------------------
+// HPCT_Math_Class:: Member Functions
+//-------------------------------------
+
+  HPCT_Math_Class::HPCT_Math_Class( ) // default constructor
+  {
+    return;
+  }
 
 }

@@ -1,6 +1,6 @@
 h_sources               = hpct.h hpct_classes.h hpct_int.h
 cc_sources              = hpct_input.cpp hpct_classes.cpp hpct_timer.cpp \
-			  hpct_utils.cpp hpct_messages.cpp
+			  hpct_utils.cpp hpct_messages.cpp hpct_math.cpp
 getpot_sources          = GetPot
 
 INCLUDES          = 

@@ -37,6 +37,7 @@
 #include<boost/accumulators/statistics/stats.hpp>
 #include<boost/accumulators/statistics/count.hpp>
 #include<boost/accumulators/statistics/variance.hpp>
+#include<boost/math/special_functions.hpp>
 
 using namespace std;
 using namespace boost::accumulators;
@@ -154,14 +155,34 @@ class HPCT_Math_Class {
 
  public:
   HPCT_Math_Class      ();
-  int isnan            (double val);
-  int isinf            (double val);
 
-  int isnan            (float  val);
-  int isinf            (float  val);
+  // Inlining the function so have both delcaration and definition here
+  template< typename T >
+  inline int isnan(T val)
+  {
+    // Parentheses are important to ensure we don't collide
+    // with isnan() from other stuff. See Boost documentation for more detail.
+    bool is_val_a_nan = (boost::math::isnan)( val );
+    
+    // C++ implicit conversion from bool to int here
+    return is_val_a_nan;
+    
+  }
+  
+  // Inlining the function so have both delcaration and definition here
+  template< typename T >
+  inline int isinf(T val)
+  {
+    // Parentheses are important to ensure we don't collide
+    // with isnan() from other stuff. See Boost documentation for more detail.
+    bool is_val_inf = (boost::math::isinf)( val );
+    
+    // C++ implicit conversion from bool to int here
+    return is_val_inf;
+    
+  }
 
 };
-
 
 
 }

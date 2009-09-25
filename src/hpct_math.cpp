@@ -27,12 +27,52 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
-#include<stdio.h>
 #include<hpct_classes.h>
-#include<hpct_int.h>
 #include<hpct.h>
-#include<string>
 
-using namespace std;
 using namespace HPCT;
 
+HPCT_Math_Class _HPCT_Math; //math class
+
+//-----------------------------------------------------------------
+//                       ye ol' C Interfaces
+//-----------------------------------------------------------------
+
+int hpct_double_isnan(double *val)
+{
+  return( _HPCT_Math.isnan<double>( *val ) );
+}
+
+int hpct_double_isinf(double *val)
+{
+  return( _HPCT_Math.isinf<double>( *val ) );
+}
+
+int hpct_float_isnan(float *val)
+{
+  return( _HPCT_Math.isnan<float>( *val ) );
+}
+
+int hpct_float_isinf(float *val)
+{
+  return( _HPCT_Math.isinf<float>( *val ) );
+}
+
+//-----------------------------------------------------------------
+//                     Fortran Interfaces
+//-----------------------------------------------------------------
+extern "C" void hpct_double_isnan_(double *val, int *val_is_nan)
+{
+
+  *val_is_nan = _HPCT_Math.isnan<double>( *val );
+
+  return;
+}
+
+extern "C" void hpct_double_isinf_(double *val, int *val_is_inf)
+{
+
+  *val_is_inf = _HPCT_Math.isinf<double>( *val );
+
+   return;
+}

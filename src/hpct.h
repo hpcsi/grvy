@@ -108,13 +108,11 @@ extern "C" {
    * Basic API Definition for Math Utilities
    */
 
-  // paul, these are some ideas; modify as desired.....
+  extern int hpct_double_isnan            (double *val);
+  extern int hpct_double_isinf            (double *val);
 
-  extern int hpct_double_isnan            (double val);
-  extern int hpct_double_isinf            (double val);
-
-  extern int hpct_float_isnan             (float  val);
-  extern int hpct_float_isinf             (float  val);
+  extern int hpct_float_isnan             (float  *val);
+  extern int hpct_float_isinf             (float  *val);
 
   /*
    * Miscellaneous Utilities

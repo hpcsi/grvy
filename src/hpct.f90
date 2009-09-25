@@ -200,6 +200,20 @@ module hpct
      end subroutine hpct_timer_elapsed_global
 
      ! ---------------
+     ! Math
+     ! ---------------
+
+     subroutine hpct_double_isnan( value, return_flag )
+       real*8  :: value
+       integer :: return_flag
+     end subroutine hpct_double_isnan
+
+     subroutine hpct_double_isinf( value, return_flag )
+       real*8  :: value
+       integer :: return_flag
+     end subroutine hpct_double_isinf
+
+     ! ---------------
      ! Miscellaneous
      ! ---------------
 
