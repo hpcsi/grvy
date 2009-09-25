@@ -34,21 +34,12 @@
 #include<hpct_classes.h>
 #include<hpct_int.h>
 #include<hpct.h>
-#include<GetPot>		
+#include<GetPot>
+
+#include"fortran_string_order.h"
 
 using namespace std;
 using namespace HPCT;
-
-// Define a Fortran string length argument 
-// list order.  Online docs indicate that SYSV
-// should be different then Linux; but this does
-// not necessarily seem to be true.  If the Fortran
-// interface blows up on a new platform, it is most
-// likely due to this ordering.
-
-#if defined __APPLE_CC__ || defined __linux__
-#define FORTRAN_ORDER1
-#endif
 
 // GetPot constants
 
@@ -156,7 +147,7 @@ extern "C" void hpct_input_toggle_messages(int flag)
 //                     Fortran Interfaces
 //-----------------------------------------------------------------
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fopen_(char *filename,int *flag,int _namelen)
 #else
 extern "C" void hpct_input_fopen_(char *filename,int _namelen,int *flag)
@@ -182,7 +173,7 @@ extern "C" void hpct_input_fdump_(int *flag)
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fdump_delim_(char *prefix, int *flag, int _namelen )
 #else
 extern "C" void hpct_input_fdump_delim_(char *prefix, int _namelen, int *flag)
@@ -193,7 +184,7 @@ extern "C" void hpct_input_fdump_delim_(char *prefix, int _namelen, int *flag)
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fdump_file_(char *prefix, char *filename, int *flag, int _namelen, int _filelen )
 #else
 extern "C" void hpct_input_fdump_file_(char *prefix, int _namelen, char *filename, int _filelen, int *flag)
@@ -206,7 +197,7 @@ extern "C" void hpct_input_fdump_file_(char *prefix, int _namelen, char *filenam
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fread_real_(char *var,float *value,int *flag,int _namelen)
 #else
 extern "C" void hpct_input_fread_real_(char *var,int _namelen,float *value,int *flag)
@@ -220,7 +211,7 @@ extern "C" void hpct_input_fread_real_(char *var,int _namelen,float *value,int *
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fread_double_(char *var,double *value,int *flag,int _namelen)
 #else
 extern "C" void hpct_input_fread_double_(char *var,int _namelen,double *value,int *flag)
@@ -235,7 +226,7 @@ extern "C" void hpct_input_fread_double_(char *var,int _namelen,double *value,in
 }
 
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fread_int_(char *var,int *value,int *flag,int _namelen)
 #else
 extern "C" void hpct_input_fread_int_(char *var,int _namelen,int *value,int *flag)
@@ -249,7 +240,7 @@ extern "C" void hpct_input_fread_int_(char *var,int _namelen,int *value,int *fla
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fread_int_vec_(char *var,int *value,int *nelems,int *flag,int _namelen)
 #else
 extern "C" void hpct_input_fread_int_vec_(char *var,int _namelen,int *value,int *nelems, int *flag)
@@ -263,7 +254,7 @@ extern "C" void hpct_input_fread_int_vec_(char *var,int _namelen,int *value,int 
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fread_int_ivec_(char *var,int *value,int *elem,
 					   int *flag,int _namelen)
 #else
@@ -286,7 +277,7 @@ extern "C" void hpct_input_fread_int_ivec_(char *var,int _namelen,int *value,
 }
 
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fread_real_vec_(char *var,float *value,int *nelems,int *flag,int _namelen)
 #else
 extern "C" void hpct_input_fread_real_vec_(char *var,int _namelen,float *value,int *nelems, int *flag)
@@ -300,7 +291,7 @@ extern "C" void hpct_input_fread_real_vec_(char *var,int _namelen,float *value,i
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fread_double_vec_(char *var,double *value,int *nelems,
 					     int *flag,int _namelen)
 #else
@@ -316,7 +307,7 @@ extern "C" void hpct_input_fread_double_vec_(char *var,int _namelen,double *valu
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fread_double_ivec_(char *var,double *value,int *elem,
 					     int *flag,int _namelen)
 #else
@@ -338,7 +329,7 @@ extern "C" void hpct_input_fread_double_ivec_(char *var,int _namelen,double *val
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fread_char_(char *var,char *value,int *flag,int _namelen, int _storage)
 #else
 extern "C" void hpct_input_fread_char_(char *var,int _namelen,char *value,int _storage,int *flag)
@@ -362,7 +353,7 @@ extern "C" void hpct_input_fread_char_(char *var,int _namelen,char *value,int _s
 }
 
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_fread_char_ivec_(char *var,char *value,int *elem,int *flag,
 					    int _namelen, int _storage)
 #else
@@ -396,7 +387,7 @@ extern "C" void hpct_input_toggle_messages_(int *flag)
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_register_int_(char *var,int *value,int *flag,int _namelen)
 #else
 extern "C" void hpct_input_register_int_(char *var,int _namelen,int *value,int *flag)
@@ -410,7 +401,7 @@ extern "C" void hpct_input_register_int_(char *var,int _namelen,int *value,int *
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_register_float_(char *var,float *value,int *flag,int _namelen)
 #else
 extern "C" void hpct_input_register_float_(char *var,int _namelen,float *value,int *flag)
@@ -424,7 +415,7 @@ extern "C" void hpct_input_register_float_(char *var,int _namelen,float *value,i
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_register_double_(char *var,double *value,int *flag,int _namelen)
 #else
 extern "C" void hpct_input_register_double_(char *var,int _namelen,double *value,int *flag)
@@ -438,7 +429,7 @@ extern "C" void hpct_input_register_double_(char *var,int _namelen,double *value
   return;
 }
 
-#ifdef FORTRAN_ORDER1
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_register_char_(char *var,char *value,int *flag,int _namelen, int _storage)
 #else
 extern "C" void hpct_input_register_char_(char *var,int _namelen,char *value,int _storage, int *flag)
@@ -465,7 +456,7 @@ extern "C" void hpct_input_register_char_(char *var,int _namelen,char *value,int
 char *hpct_f2c_char(char*input,int len)
 {
   char* name = new char[len+1];
-  
+
   std::strncpy(name,input,len);
   name[len]='\0';
   return(name);
