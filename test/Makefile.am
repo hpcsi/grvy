@@ -1,7 +1,7 @@
 check_PROGRAMS = C_input_read_variables C_input_nofile_available \
 				C_input_read_missing_variable C_input_register_variables \
 				C_input_register_read_missing_variable C_timer_sum \
-				C_create_temp_dir C_math_isnan C_math_isinf
+				C_temp_dir C_math_isnan C_math_isinf
 
 INCLUDES      = -I$(top_srcdir)/src
 LIBS          = -L$(top_builddir)/src -lhpct
@@ -32,7 +32,7 @@ TESTS            =  init.sh C_input_read_variables \
 		    C_input_register_variables             \
 		    C_input_register_read_missing_variable \
 		    C_timer_sum  \
-	            C_create_temp_dir \
+	            C_temp_dir \
                     C_math_isnan \
                     C_math_isinf \
 		    finalize.sh
