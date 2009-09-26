@@ -498,6 +498,13 @@ AC_DEFUN([BOOST_HASH],
 [BOOST_FIND_HEADER([boost/functional/hash.hpp])])
 
 
+# BOOST_MATH()
+# ---------------
+# Look for Boost.Math
+AC_DEFUN([BOOST_MATH],
+[BOOST_FIND_HEADER([boost/math/special_functions.hpp])])
+
+
 # BOOST_LAMBDA()
 # --------------
 # Look for Boost.Lambda
