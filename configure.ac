@@ -39,11 +39,16 @@ AC_PROG_F77
 AC_PROG_LIBTOOL
 AM_SANITY_CHECK
 
+#----------------------
 # Checks for libraries.
+#----------------------
 
+#---------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
+#---------------------------------------------------------------
 AC_C_CONST
 AC_HEADER_STDBOOL
+AX_TLS
 
 #----------------
 # Check for boost
