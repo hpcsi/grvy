@@ -55,11 +55,14 @@ AX_TLS
 #----------------
 
 AC_LANG([C++])
-AX_BOOST_BASE(1.35)
-AX_BOOST_PROGRAM_OPTIONS
+BOOST_REQUIRE([1.35])
+BOOST_PROGRAM_OPTIONS
 AC_CACHE_SAVE
 
+#------------------------------
 # Checks for library functions.
+#------------------------------
+
 AC_FUNC_MALLOC
 
 #----------------
