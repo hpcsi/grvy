@@ -9,10 +9,16 @@ The HPC Toolkit (HPCT) is a library used to house various support
 functions often required for application development of
 high-performance, scientific applications.  The library is written in
 C++, but provides an API for development in C and Fortran.  The
-primary functions provided currently are a \e flexible input file
-parsing method for ascii-files and a <em> performance timing mechanism </em> to
-provide a simple summary of individual code section performance along
-with basic statistics.  
+primary functionality provided by the library is categorized as follows:
+
+<ul>
+<li>a flexible method for
+parsing ascii-files input files (with backwards-compatibility support)
+<li>a performance timing mechanism to provide a simple
+summary of individual code section performance along with basic
+statistics
+<li> miscellaneous file handling and math utilities
+</ul>
 
 Thanks for your interest in HPCT. To aid in usage, this manual is
 further divided into the following subsections:
@@ -24,8 +30,6 @@ further divided into the following subsections:
 <li> \subpage apiF "Fortran Interface"
 </ul>
 
-<!-- define remaining subpaged !-->
-
 <!-- \subpage inputFile  Example Input File -->
 
 
@@ -34,9 +38,9 @@ further divided into the following subsections:
 
 \section bugs Reporting Bugs
 
-Bugs in the code and errors or omissions in the documentation can be reported to karl@ices.utexas.edu.
-Requests and contributions are welcome at the same e-mail address.
-All bug reports should include:
+Bugs in the code and errors or omissions in the documentation can be
+reported to karl@ices.utexas.edu.  Requests and contributions are
+welcome at the same e-mail address.  All bug reports should include:
 <ul>
 <li>the version number of the HPCT library,
 <li>the hardware and operating system,
@@ -186,6 +190,39 @@ Top-level HPCT installation directory:
 \endcode
 
 <h2>Library Linkage</h2>
+
+To link an external C/C++ or Fortran application with the library, the
+\c include directory must be added to the compilers include search
+path in order to access the hpct.h header file (or for Fortran, the \c
+lib directory should be added to access the pre-compiled
+hpct F90 module).  The \c lib directory should also be added
+to the linker search path along with a request to link against the
+HPCT library.  Several example link steps are provided below.  These
+examples assume that the HPCT library has been successfully built and
+installed previously in the users's ~/bin/hpct directory:
+
+<h3>C/C++ Example</h3>
+
+\code > $(CC) -I$HOME/bin/hpct/include app.c -L$HOME/bin/hpct/lib -lhpct \endcode
+
+<h3>Fortran Example</h3>
+
+\code > $(FC) -I$HOME/bin/hpct/lib app.f90 -L$HOME/bin/hpct/lib -lhpct \endcode
+
+To embed the dynamic library search path for the HPCT library
+directly into the application executable, use an additional linker
+option as follows:
+
+<h3>C/C++ Example</h3>
+
+\code > $(CC) -I$HOME/bin/hpct/include app.c -L$HOME/bin/hpct/lib \
+         -Wl,-rpath,$HOME/bin/hpct/lib -lhpct \endcode
+
+
+<b>Important Note:</b> F90 module file formats are not consistent
+across multiple compilers. Therefore, a Fortran application and the HPCT
+F90 interface \em must be built with the same Fortran compiler family to ensure
+compatibility.
 
 
 */
