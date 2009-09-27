@@ -19,10 +19,13 @@ int main(int argc, char **argv)
   float  fzero = 0.0;
   double dzero = 0.0;
 
-  float should_be_f_inf = fone/fzero;
+  float should_be_f_pos_inf = fone/fzero;
+  float should_be_f_neg_inf = (-1*fone)/fzero;
   float should_not_be_f_inf = 5.0;
 
-  double should_be_d_inf = done/dzero;
+
+  double should_be_d_pos_inf = done/dzero;
+  double should_be_d_neg_inf = (-1*done)/dzero;
   double should_not_be_d_inf = 6.0 ;
 
   float *fval;
@@ -32,8 +35,18 @@ int main(int argc, char **argv)
 
   int flag = 0;
 
-  /* Make sure we get float inf */
-  fval = &should_be_f_inf;
+  /* Make sure we got separate float positive and negative infinities */
+  if (should_be_f_pos_inf == should_be_f_neg_inf)
+    flag = 1;
+
+  /* Make sure we get float positive inf */
+  fval = &should_be_f_pos_inf;
+  is_my_val_inf = hpct_float_isinf( fval );
+  if( is_my_val_inf == 0 )
+    flag = 1;
+
+  /* Make sure we get float negative inf */
+  fval = &should_be_f_neg_inf;
   is_my_val_inf = hpct_float_isinf( fval );
   if( is_my_val_inf == 0 )
     flag = 1;
@@ -44,8 +57,18 @@ int main(int argc, char **argv)
   if( is_my_val_inf == 1 )
     flag = 1;
 
-  /* Make sure we get double isnan */
-  dval = &should_be_d_inf;
+  /* Make sure we got separate double positive and negative infinities */
+  if (should_be_d_pos_inf == should_be_d_neg_inf)
+    flag = 1;
+
+  /* Make sure we get double positive inf */
+  dval = &should_be_d_pos_inf;
+  is_my_val_inf = hpct_double_isinf( dval );
+  if( is_my_val_inf == 0 )
+    flag = 1;
+
+  /* Make sure we get double negative inf */
+  dval = &should_be_d_neg_inf;
   is_my_val_inf = hpct_double_isinf( dval );
   if( is_my_val_inf == 0 )
     flag = 1;
