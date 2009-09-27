@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "hpct.h"
 
 /*----------------------------------------------
@@ -20,13 +21,15 @@ int main(int argc, char **argv)
   double dzero = 0.0;
 
   float should_be_f_pos_inf = fone/fzero;
-  float should_be_f_neg_inf = (-1*fone)/fzero;
+  float should_be_f_neg_inf = (-1 *fone)/fzero;
   float should_not_be_f_inf = 5.0;
+  float should_be_f_nan     = sqrt( -1 *fone );
 
 
   double should_be_d_pos_inf = done/dzero;
-  double should_be_d_neg_inf = (-1*done)/dzero;
-  double should_not_be_d_inf = 6.0 ;
+  double should_be_d_neg_inf = (-1 *done)/dzero;
+  double should_not_be_d_inf = 6.0;
+  double should_be_d_nan     = sqrt( -1 *done );
 
   float *fval;
   double *dval;
@@ -51,8 +54,14 @@ int main(int argc, char **argv)
   if( is_my_val_inf == 0 )
     flag = 1;
 
-  /* Make sure we don't get a false positive */
+  /* Make sure we don't get a false positive for finite values */
   fval = &should_not_be_f_inf;
+  is_my_val_inf = hpct_float_isinf( fval );
+  if( is_my_val_inf == 1 )
+    flag = 1;
+
+  /* Make sure we don't get a false positive for NaN */
+  fval = &should_be_f_nan;
   is_my_val_inf = hpct_float_isinf( fval );
   if( is_my_val_inf == 1 )
     flag = 1;
@@ -73,11 +82,18 @@ int main(int argc, char **argv)
   if( is_my_val_inf == 0 )
     flag = 1;
 
-  /* Make sure we don't get a false positive */
+  /* Make sure we don't get a false positive for finite values */
   dval = &should_not_be_d_inf;
   is_my_val_inf = hpct_double_isinf( dval );
   if( is_my_val_inf == 1 )
     flag = 1;
+
+  /* Make sure we don't get a false positive for NaN */
+  fval = &should_be_f_nan;
+  is_my_val_inf = hpct_float_isinf( fval );
+  if( is_my_val_inf == 1 )
+    flag = 1;
+
 
   if(flag == 0){
       exit (0);}
