@@ -28,6 +28,7 @@
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 
+#include<limits>
 #include<map>
 #include<vector>
 #include<string>
@@ -50,14 +51,14 @@ namespace HPCT {
 
 class HPCT_Input_Class {
  private:
-  GetPot    ifile;		                     // input file
-  short int initialized;	                     // input file initialized?
-  short int silent;				     // Silence error messages?
+  GetPot    ifile;                           // input file
+  short int initialized;                         // input file initialized?
+  short int silent;                  // Silence error messages?
 
   // Registry Maps
 
-  map<std::string, int         > default_ints;	    
-  map<std::string, float       > default_floats;    
+  map<std::string, int         > default_ints;
+  map<std::string, float       > default_floats;
   map<std::string, double      > default_doubles;
   map<std::string, std::string > default_strings;
 
@@ -101,13 +102,13 @@ class HPCT_Input_Class {
   void Register_Var  (const char *varname, float   var);
   void Register_Var  (const char *varname, double  var);
   void Register_Var  (const char *varname, char   *var);
-		     
+
   int  Get_Var       (const char *varname, int    *var);
   int  Get_Var       (const char *varname, float  *var);
   int  Get_Var       (const char *varname, double *var);
   int  Get_Var       (const char *varname, char  **var);
 
-  void PrintRegVars  (const char *prefix);		
+  void PrintRegVars  (const char *prefix);
 };
 
 //--------------------------
@@ -123,10 +124,10 @@ typedef map <std::string, HPCT_Timer_Data > _HPCT_Type_TimerMap2;
 
 class HPCT_Timer_Class {
  private:
-  short int initialized;	  // initialized?
+  short int initialized;      // initialized?
   double    timer_last;           // raw timer value of last call
   double    timer_finalize;       // raw timer value at time of finalize()
-  string    timer_name;		  // user name supplied for the timer
+  string    timer_name;       // user name supplied for the timer
   _HPCT_Type_TimerMap2 TimerMap;  // map used to store performance timers for each defined key
 
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
@@ -156,31 +157,55 @@ class HPCT_Math_Class {
  public:
   HPCT_Math_Class      ();
 
-  // Inlining the function so have both delcaration and definition here
+// See http://software.intel.com/en-us/forums/intel-c-compiler/topic/64188/
+#if    (defined __INTEL_COMPILER)                    \
+    && (__INTEL_COMPILER <= 1010)                    \
+    && ((__INTEL_COMPILER_BUILD_DATE/10000) <= 2009) \
+    && (defined __GLIBCXX__)                         \
+    && (__GLIBCXX__ == 20090316)
+
+  template< typename T >
+  inline int isnan(T val)
+  {
+    return val != val;
+  }
+
+  template< typename T >
+  inline int isinf(T val)
+  {
+      return val <= std::numeric_limits<T>::min()
+          || val >= std::numeric_limits<T>::max();
+  }
+
+#else
+
+  // Inlining the function so have both declaration and definition here
   template< typename T >
   inline int isnan(T val)
   {
     // Parentheses are important to ensure we don't collide
     // with isnan() from other stuff. See Boost documentation for more detail.
     bool is_val_a_nan = (boost::math::isnan)( val );
-    
+
     // C++ implicit conversion from bool to int here
     return is_val_a_nan;
-    
+
   }
-  
-  // Inlining the function so have both delcaration and definition here
+
+  // Inlining the function so have both declaration and definition here
   template< typename T >
   inline int isinf(T val)
   {
     // Parentheses are important to ensure we don't collide
     // with isnan() from other stuff. See Boost documentation for more detail.
     bool is_val_inf = (boost::math::isinf)( val );
-    
+
     // C++ implicit conversion from bool to int here
     return is_val_inf;
-    
+
   }
+
+#endif // End http://software.intel.com/en-us/forums/intel-c-compiler/topic/64188/
 
 };
 
