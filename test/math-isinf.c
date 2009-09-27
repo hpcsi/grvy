@@ -89,8 +89,8 @@ int main(int argc, char **argv)
     flag = 1;
 
   /* Make sure we don't get a false positive for NaN */
-  fval = &should_be_f_nan;
-  is_my_val_inf = hpct_float_isinf( fval );
+  dval = &should_be_d_nan;
+  is_my_val_inf = hpct_double_isinf( dval );
   if( is_my_val_inf == 1 )
     flag = 1;
 
