@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <error.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,7 +15,9 @@ char * build_example_file_path()
       retval = strdup(filename);
       if (retval == NULL)
         {
-          error_at_line(1, ENOMEM, __FILE__, __LINE__, "A");
+          fprintf(stderr, "%s:%d %s\n", __FILE__, __LINE__, strerror(ENOMEM));
+          fflush(stderr);
+          exit(1);
         }
     }
   else
@@ -24,7 +27,9 @@ char * build_example_file_path()
       retval = malloc(len*sizeof(char));
       if (retval == NULL)
         {
-          error_at_line(1, ENOMEM, __FILE__, __LINE__, "A");
+          fprintf(stderr, "%s:%d %s\n", __FILE__, __LINE__, strerror(ENOMEM));
+          fflush(stderr);
+          exit(1);
         }
       strcpy(retval, input_dir);
       strcat(retval, "/");
