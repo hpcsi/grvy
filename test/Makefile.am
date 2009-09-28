@@ -27,7 +27,7 @@ EXTRA_DIST       = init.sh finalize.sh input-example.txt
 #message_SOURCES   = messages.c
 
 TESTS_ENVIRONMENT = HPCT_INPUT_EXAMPLE_DIR=$(srcdir)
-TESTS             = init.sh \ 
+TESTS             = init.sh \
 		    C_input_read_variables \
 		    C_input_nofile_available \
 		    C_input_read_missing_variable \
