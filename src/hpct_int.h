@@ -49,7 +49,11 @@ namespace HPCT {
   extern void _HPCT_message (const char *mask, const char *func, const char *message, float float_item);
   extern void _HPCT_message (const char *mask, const char *func, const char *message, double double_item);
 
-  extern int _HPCT_CheckDir      (const char *dirname);
+  extern int  _HPCT_CheckDir      (const char *dirname);
+
+  extern void _HPCT_create_scratch_dir_atexit_handler();
+  extern int  _HPCT_RemoveAll            (const char *path);
+  extern int  _HPCT_RemoveAll_nftw_helper(const char *path, const struct stat * st, int flag, struct FTW *f);
 
   extern char *hpct_f2c_char(char*input,int len);
 

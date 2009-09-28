@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 
   /* Unable to create a directory on invalid template */
   {
-    char invalid_template[] = "doesNotHaveSixTrailingExes";
+    char invalid_template[] = "TempDir_doesNotHaveSixTrailingExes";
     char *template_backup;
     DIR *dir_handle;
 
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
   /* Create a directory on valid template, and check for existence */
   {
-    char valid_template[]   = "hasSixTrailingExesXXXXXX";
+    char valid_template[]   = "TempDir_hasSixTrailingExesXXXXXX";
     char *template_backup;
 
     template_backup = strdup(valid_template);

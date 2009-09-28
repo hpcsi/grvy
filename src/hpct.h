@@ -120,6 +120,7 @@ extern "C" {
 
   extern int    hpct_check_file_path      (const char *pathname);
   extern int    hpct_create_unique_dir    (      char *name_template);
+  extern int    hpct_create_scratch_dir   (      char *name_template);
 
   /* 
    * Doxygen API Definitions 
@@ -167,7 +168,13 @@ extern "C" {
    * int    hpct_check_file_path      (const char *pathname);
    * \endcode
    * <b>hpct_create_unique_dir: Create a new, unique directory with 0700 permissions using the provided template name.  The last six characters of name_template must be XXXXXX, and name_template is modified with the unique name upon return.</b>
+   * \code
    * int    hpct_create_unique_dir      (char *name_template);
+   * \endcode
+   * <b>hpct_create_scratch_dir: Identical to hpct_create_unique_dir, except the new directory and all of its contents are deleted when the process exits.</b>
+   * \code
+   * int    hpct_create_scratch_dir     (char *name_template);
+   * \endcode
    */
 
 

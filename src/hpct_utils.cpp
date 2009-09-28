@@ -33,12 +33,18 @@
 
 
 #include<errno.h>
+#include<ftw.h>
+#include<libgen.h>
 #include<stdio.h>
 #include<string.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+#include<unistd.h>
+
+#include<stack>
+
 #include<hpct_classes.h>
 #include<hpct_int.h>
-#include<libgen.h>
-#include<sys/stat.h>
 
 #include"fortran_string_order.h"
 
@@ -88,7 +94,7 @@ namespace HPCT {
 
 	if(depth >= MAX_DEPTH )
 	  {
-	    _HPCT_message(_HPCT_emask,__func__,"Max directory depth exceeded, limite =",MAX_DEPTH);
+	    _HPCT_message(_HPCT_emask,__func__,"Max directory depth exceeded, limit =",MAX_DEPTH);
 	    return(-1);
 	  }
 
@@ -100,16 +106,6 @@ namespace HPCT {
     free(dirstring);
 
     return(1);
-  }
-
-  extern "C" int hpct_create_unique_dir(char *name_template)
-  {
-    if (name_template == NULL)
-      return EINVAL;
-    else if (mkdtemp(name_template) == NULL)
-      return errno;
-    else
-      return 0;
   }
 
   int _HPCT_CheckDir(const char *dirname)
@@ -128,6 +124,120 @@ namespace HPCT {
 
     return(1);
   }
+
+  extern "C" int hpct_create_unique_dir(char *name_template)
+  {
+    if (name_template == NULL)
+      {
+	errno = EINVAL;
+	return -1;
+      }
+    else if (mkdtemp(name_template) == NULL)  /* mkdtemp sets errno */
+      return -1;
+    else
+      return 0;
+  }
+
+#ifdef TLS /* Use thread local storage for the stack, if possible */
+  static TLS std::stack<char *> _hpct_create_scratch_dir_paths;
+#else
+  static     std::stack<char *> _hpct_create_scratch_dir_paths;
+#endif
+
+  extern "C" int hpct_create_scratch_dir(char *name_template)
+  {
+    int status = hpct_create_unique_dir(name_template);
+    if (status) return status;
+
+    char * name_copy = strdup(name_template);
+    if (name_copy == NULL) {
+      errno = ENOMEM;
+      return -1;
+    }
+
+    if (_hpct_create_scratch_dir_paths.empty())
+      {
+	if (status = atexit(_HPCT_create_scratch_dir_atexit_handler))
+	  {
+	    free(name_copy);
+	    return status;
+	  }
+      }
+
+    _hpct_create_scratch_dir_paths.push(name_copy);
+
+    return status;
+  }
+
+  void _HPCT_create_scratch_dir_atexit_handler()
+  {
+    while(!_hpct_create_scratch_dir_paths.empty())
+    {
+      char * path = _hpct_create_scratch_dir_paths.top();
+      if (_HPCT_RemoveAll(path)) perror(path);
+      free(path);
+      _hpct_create_scratch_dir_paths.pop();
+    }
+  }
+
+  int _HPCT_RemoveAll(const char *path)
+  {
+    struct stat st;
+    int status;
+
+    if (0 != lstat(path,&st) )
+      {
+	/* Succeed silently on "removal" of non-existent path */
+	status = (errno == ENOENT) ? 0 : -1; /* errno set by lstat */
+      }
+    else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode))
+      {
+	status = unlink(path);               /* errno set by unlink */
+      }
+    else if (S_ISDIR(st.st_mode))
+      {
+	status = nftw(path, _HPCT_RemoveAll_nftw_helper, _POSIX_OPEN_MAX,
+	              FTW_DEPTH | FTW_PHYS); /* errno set by nftw */
+      }
+    else
+      {
+	/* unable to handle st.st_mode */
+        status = -1;
+	errno = EINVAL;
+      }
+
+    return status;
+  }
+
+  int _HPCT_RemoveAll_nftw_helper(const char *path,
+                                  const struct stat * st,
+				  int flag,
+				  struct FTW *f)
+  {
+    int status;
+
+    switch (flag) {
+    case FTW_F:   /* File */
+    case FTW_SL:  /* Symlink */
+    case FTW_SLN: /* Symlink (dangling) */
+      status = unlink(path);                 /* errno set by unlink */
+      if (status) perror(path);
+      break;
+    case FTW_D:   /* Directory */
+    case FTW_DP:  /* Directory that used to have subdirectories */
+      status = rmdir(path);                  /* errno set by rmdir */
+      if (status) perror(path);
+      break;
+    case FTW_DNR: /* Unreadable directory */
+    case FTW_NS:  /* Permissions failed */
+    default:      /* Unknown flag from nftw */
+      /* Presumably related errors will arise on later rmdir attempts */
+      status = 0;
+    }
+
+    return status;
+  }
+
 
   //------------------------------------
   // Basic stdout warning/error messages
