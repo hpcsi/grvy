@@ -15,10 +15,10 @@ AM_LDFLAGS    = $(LIBS)
 
 # C Tests
 
-C_input_read_variables_SOURCES                 = C_input.c C_examplefile.c
+C_input_read_variables_SOURCES                 = C_input.c C_examplefile.c examplefile.h
 C_input_nofile_available_SOURCES               = C_input-nofile.c
-C_input_read_missing_variable_SOURCES          = C_input-missing-var.c C_examplefile.c
-C_input_register_variables_SOURCES             = C_input-register.c C_examplefile.c
+C_input_read_missing_variable_SOURCES          = C_input-missing-var.c C_examplefile.c examplefile.h
+C_input_register_variables_SOURCES             = C_input-register.c C_examplefile.c examplefile.h
 C_input_register_read_missing_variable_SOURCES = C_input-reg-missing-var.c
 C_timer_sum_SOURCES                            = C_timer.c
 C_temp_dir_SOURCES                             = C_temp_dir.c
