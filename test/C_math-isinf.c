@@ -6,7 +6,7 @@
 /*----------------------------------------------
  * HPCT Test Suite
  *
- * $Id:  $
+ * $Id:$
  *----------------------------------------------*/
 
 const char *test_name = "C math: test isinf functionality";
