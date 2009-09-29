@@ -226,5 +226,10 @@ module hpct
        integer   :: flag
      end subroutine hpct_create_unique_dir
 
+     subroutine hpct_create_scratch_dir(name_template,flag)
+       character :: name_template
+       integer   :: flag
+     end subroutine hpct_create_scratch_dir
+
   end interface
 end module hpct

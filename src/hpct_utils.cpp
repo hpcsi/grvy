@@ -301,7 +301,21 @@ extern "C" void hpct_create_unique_dir_(char *name_template,int _namelen,int *fl
   {
     char *c_name_template = hpct_f2c_char(name_template,_namelen);
 
-    *flag = hpct_check_file_path(c_name_template);
+    *flag = hpct_create_unique_dir(c_name_template);
+    strncpy(name_template,c_name_template,_namelen);
+
+    delete[] c_name_template;
+  }
+
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
+extern "C" void hpct_create_scratch_dir_(char *name_template,int *flag,int _namelen)
+#else
+extern "C" void hpct_create_scratch_dir_(char *name_template,int _namelen,int *flag)
+#endif
+  {
+    char *c_name_template = hpct_f2c_char(name_template,_namelen);
+
+    *flag = hpct_create_scratch_dir(c_name_template);
     strncpy(name_template,c_name_template,_namelen);
 
     delete[] c_name_template;
