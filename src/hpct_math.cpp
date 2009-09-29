@@ -61,18 +61,12 @@ int hpct_float_isinf(float *val)
 //-----------------------------------------------------------------
 //                     Fortran Interfaces
 //-----------------------------------------------------------------
-extern "C" void hpct_double_isnan_(double *val, int *val_is_nan)
+extern "C" int hpct_double_isnan_( double *val )
 {
-
-  *val_is_nan = _HPCT_Math.isnan<double>( *val );
-
-  return;
+  return( _HPCT_Math.isnan<double>( *val ) );
 }
 
-extern "C" void hpct_double_isinf_(double *val, int *val_is_inf)
+extern "C" int hpct_double_isinf_( double *val )
 {
-
-  *val_is_inf = _HPCT_Math.isinf<double>( *val );
-
-   return;
+  return( _HPCT_Math.isinf<double>( *val ) );
 }

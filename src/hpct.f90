@@ -203,15 +203,13 @@ module hpct
      ! Math
      ! ---------------
 
-     subroutine hpct_double_isnan( value, return_flag )
-       real*8  :: value
-       integer :: return_flag
-     end subroutine hpct_double_isnan
+     integer function hpct_double_isnan( value )
+       real*8 :: value
+     end function hpct_double_isnan
 
-     subroutine hpct_double_isinf( value, return_flag )
-       real*8  :: value
-       integer :: return_flag
-     end subroutine hpct_double_isinf
+     integer function hpct_double_isinf( value )
+       real*8 :: value
+     end function hpct_double_isinf
 
      ! ---------------
      ! Miscellaneous
