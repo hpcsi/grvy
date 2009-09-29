@@ -708,7 +708,7 @@ void HPCT_Timer_Class:: Summarize()
 
   string varstring = timer_name.substr(0,max_timer_name_width-1);
 
-  printf("%s - %-*s ",varstring.c_str(),display_id_width+32-varstring.length(),"Performance Timings:");
+  printf("%s - %-*s ",varstring.c_str(),(int)(display_id_width+32-varstring.length()),"Performance Timings:");
 
   if(show_statistics)
     printf("|      Mean      Variance       Count");
@@ -735,7 +735,7 @@ void HPCT_Timer_Class:: Summarize()
 	  if(indexHL->second !=  _HPCT_gtimer )
 	    {
 	      gindex = TimerMap.find(indexHL->second);
-	      printf(" | [%10.5e  %10.5e  %9i]",
+	      printf(" | [%10.5e  %10.5e  %9zi]",
 		     boost::accumulators::mean    ((gindex->second).stats),
 		     boost::accumulators::variance((gindex->second).stats),
 		     boost::accumulators::count   ((gindex->second).stats));
