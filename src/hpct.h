@@ -39,34 +39,35 @@ extern "C" {
    * files. Several simple examples using these functions are provided
    * in the examples section.  Functions which have an integer return
    * value return "0" upon success. To illustrate the organizatinal
-   * flexibility of the input file parsing, a 
-   * \ref inputFile "sample input file" is also provided.  
+   * flexibility of the input file parsing, a
+   * \ref inputFile "sample input file" is also provided.
    * <hr>
    */
 
   /*
-   * Basic API Definition for ASCII input file parsing 
+   * Basic API Definition for ASCII input file parsing
    */
 
   /* C Interface */
 
   extern int hpct_input_fopen               (const char *filename);
   extern int hpct_input_fclose              ();
-					    
+
   extern int hpct_input_fread_char          (const char* var, char **value);
   extern int hpct_input_fread_char_ivec     (const char* var, char **value,  int elem);
-					    
+
   extern int hpct_input_fread_int           (const char* var, int *value);
   extern int hpct_input_fread_int_vec       (const char* var, int *value,    int nelems);
   extern int hpct_input_fread_int_ivec      (const char* var, int *value,    int elem);
-					    
+
   extern int hpct_input_fread_float         (const char* var, float *value);
   extern int hpct_input_fread_float_vec     (const char* var, float *value,  int nelems);
-					    
+  extern int hpct_input_fread_float_ivec    (const char *var, float *value,  int elem);
+
   extern int hpct_input_fread_double        (const char* var, double *value);
   extern int hpct_input_fread_double_vec    (const char* var, double *value, int nelems);
   extern int hpct_input_fread_double_ivec   (const char* var, double *value, int elem);
-					    
+
   extern int hpct_input_fdump               ();
   extern int hpct_input_fdump_delim         (const char* prefix);
   extern int hpct_input_fdump_file          (const char* prefix, const char *filename);
@@ -122,15 +123,15 @@ extern "C" {
   extern int    hpct_create_unique_dir    (      char *name_template);
   extern int    hpct_create_scratch_dir   (      char *name_template);
 
-  /* 
-   * Doxygen API Definitions 
+  /*
+   * Doxygen API Definitions
    */
 
-  /*! \page apiC 
+  /*! \page apiC
    * \section input Input Parsing Routines
    *
    * <b>Open/close HPCT input file:</b>
-   * \code 
+   * \code
    * int hpct_input_fopen             (const char *filename);
    * int hpct_input_fclose            ();
    * \endcode
