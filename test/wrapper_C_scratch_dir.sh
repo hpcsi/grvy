@@ -14,7 +14,7 @@ do
 done
 
 # Run the binary and make sure it exits with zero status
-C_scratch_dir || exit 1
+./C_scratch_dir || exit 1
 
 # Make sure there are no lingering directories from the test
 status=0

@@ -14,7 +14,7 @@ do
 done
 
 # Run the binary and make sure it exits with zero status
-F_temp_dir || exit 1
+./F_temp_dir || exit 1
 
 # Make sure there is exactly one lingering directory from the test
 status=1
