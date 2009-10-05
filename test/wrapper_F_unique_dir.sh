@@ -1,8 +1,11 @@
 #!/bin/bash
-# Checks for preconditions/postconditions of the F_temp_dir tests
+# Checks for preconditions/postconditions of the F_unique_dir tests
 
 # Compiled binary must exist
-test -x F_temp_dir || exit 1
+if test ! -x F_unique_dir ; then
+    echo "${0}: Expected binary not executable"
+    exit 1
+fi
 
 # Clean up any old test output directories
 for dir in TempDir_*
@@ -14,7 +17,7 @@ do
 done
 
 # Run the binary and make sure it exits with zero status
-./F_temp_dir || exit 1
+./F_unique_dir || exit 1
 
 # Make sure there is exactly one lingering directory from the test
 status=1

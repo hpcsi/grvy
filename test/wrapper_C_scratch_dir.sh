@@ -2,7 +2,10 @@
 # Checks for preconditions/postconditions of the C_scratch_dir tests
 
 # Compiled binary must exist
-test -x C_scratch_dir || exit 1
+if test ! -x C_scratch_dir ; then
+    echo "${0}: Expected binary not executable"
+    exit 1
+fi
 
 # Clean up any old test output directories
 for dir in ScratchDir_*
