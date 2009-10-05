@@ -73,12 +73,20 @@ namespace HPCT {
     parents   = dirname(pathlocal);
 
     if(strcmp(parents,".") == 0)
-      return(1);
+      {
+	free(pathlocal);
+	free(dirstring);
+	return 0;
+      }
 
     if( (token = strtok(parents,"/")) != NULL )
       {
-	if ( !_HPCT_CheckDir(token) )
-	  return(-1);
+	if ( _HPCT_CheckDir(token) )
+	  {
+	    free(pathlocal);
+	    free(dirstring);
+	    return -1;
+	  }
 
 	// Now, search for any remaining parent directories.
 
@@ -87,42 +95,52 @@ namespace HPCT {
 	while ( (token = strtok(0,"/")) && (depth < MAX_DEPTH) )
 	  {
 	    dirstring = strcat(dirstring,"/");
-	    if(!_HPCT_CheckDir(strcat(dirstring,token)))
-	      return(-1);
+	    if(_HPCT_CheckDir(strcat(dirstring,token)))
+	      {
+		free(pathlocal);
+		free(dirstring);
+		return -1;
+	      }
 	    depth++;
 	  };
 
 	if(depth >= MAX_DEPTH )
 	  {
 	    _HPCT_message(_HPCT_emask,__func__,"Max directory depth exceeded, limit =",MAX_DEPTH);
-	    return(-1);
+	    free(pathlocal);
+	    free(dirstring);
+	    return -1;
 	  }
-
       }
 
     // Clean Up
-
     free(pathlocal);
     free(dirstring);
 
-    return(1);
+    return 0;
   }
 
   int _HPCT_CheckDir(const char *dirname)
   {
     struct stat st;
-    int status = 0;
 
     if(stat(dirname,&st) != 0)
       {
 	if( mkdir(dirname,0700) != 0 )
 	  {
-	    printf("** Error: unable to create local directory %s\n",dirname);
-	    return(-1);
+	    _HPCT_message(_HPCT_emask,__func__,
+		"unable to create directory",dirname);
+	    return -1;
 	  }
       }
+    else if (!S_ISDIR(st.st_mode))
+      {
+	_HPCT_message(_HPCT_emask,__func__,
+	    "entry exists but is not a directory",dirname);
+	return -1;
+      }
 
-    return(1);
+    return 0;
   }
 
   extern "C" int hpct_create_unique_dir(char *name_template)
