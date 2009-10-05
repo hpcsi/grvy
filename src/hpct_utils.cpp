@@ -301,11 +301,15 @@ namespace HPCT {
   //                     Fortran Interfaces
   //-----------------------------------------------------------------
 
-  extern "C" void hpct_check_file_path_(char *pathname,int _namelen)
+#ifdef _HPCT_FORTRAN_STRING_ORDER1
+extern "C" void hpct_check_file_path_(char *pathname,int *flag,int _namelen)
+#else
+extern "C" void hpct_check_file_path_(char *pathname,int _namelen,int *flag)
+#endif
   {
     char *name = hpct_f2c_char(pathname,_namelen);
 
-    hpct_check_file_path(name);
+    *flag = hpct_check_file_path(name);
 
     delete[] name;
     return;

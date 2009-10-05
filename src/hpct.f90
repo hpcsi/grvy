@@ -215,8 +215,9 @@ module hpct
      ! Miscellaneous
      ! ---------------
 
-     subroutine hpct_check_file_path(pathname)
+     subroutine hpct_check_file_path(pathname,flag)
        character :: pathname
+       integer   :: flag
      end subroutine hpct_check_file_path
 
      subroutine hpct_create_unique_dir(name_template,flag)

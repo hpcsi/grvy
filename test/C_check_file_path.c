@@ -43,28 +43,28 @@ int main(int argc, char **argv)
   /* Create a single new directory */
   {
     /* Ensure the directory doesn't already exist */
-    DIR *dir_handle = opendir("CheckFilePathDirectory");
+    DIR *dir_handle = opendir("CheckFilePathDir");
     flag *= (dir_handle == NULL && errno == ENOENT);
 
-    flag *= (0 == hpct_check_file_path("CheckFilePathDirectory/foo"));
+    flag *= (0 == hpct_check_file_path("CheckFilePathDir/foo"));
 
     /* Ensure directory exists afterwards and remove it */
-    flag *= (0 == rmdir("CheckFilePathDirectory"));
+    flag *= (0 == rmdir("CheckFilePathDir"));
   }
 
   /* Create a several new directories */
   {
     /* Ensure the directory doesn't already exist */
-    DIR *dir_handle = opendir("CheckFilePathDirectory");
+    DIR *dir_handle = opendir("CheckFilePathDir");
     flag *= (dir_handle == NULL && errno == ENOENT);
 
-    flag *= (0 == hpct_check_file_path("CheckFilePathDirectory/A/B/C/foo"));
+    flag *= (0 == hpct_check_file_path("CheckFilePathDir/A/B/C/foo"));
 
     /* Ensure directory structure exists afterwards and remove it */
-    flag *= (0 == rmdir("CheckFilePathDirectory/A/B/C"));
-    flag *= (0 == rmdir("CheckFilePathDirectory/A/B"));
-    flag *= (0 == rmdir("CheckFilePathDirectory/A"));
-    flag *= (0 == rmdir("CheckFilePathDirectory"));
+    flag *= (0 == rmdir("CheckFilePathDir/A/B/C"));
+    flag *= (0 == rmdir("CheckFilePathDir/A/B"));
+    flag *= (0 == rmdir("CheckFilePathDir/A"));
+    flag *= (0 == rmdir("CheckFilePathDir"));
   }
 
   if(flag == 0)

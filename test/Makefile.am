@@ -1,10 +1,10 @@
 check_PROGRAMS = # Append below
 check_PROGRAMS += C_input_read_variables C_input_nofile_available \
-				C_input_read_missing_variable C_input_register_variables \
-				C_input_register_read_missing_variable C_timer_sum \
-				C_math_isnan C_math_isinf C_unique_dir C_scratch_dir \
-				C_check_file_path
-check_PROGRAMS += F_unique_dir F_scratch_dir F_math
+		  C_input_read_missing_variable C_input_register_variables \
+		  C_input_register_read_missing_variable C_timer_sum \
+		  C_math_isnan C_math_isinf C_unique_dir C_scratch_dir \
+		  C_check_file_path
+check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math
 
 INCLUDES      = -I$(top_srcdir)/src -I$(top_builddir)/src
 LIBS          = -L$(top_builddir)/src -lhpct
@@ -28,15 +28,12 @@ C_math_isnan_SOURCES                           = C_math-isnan.c
 C_math_isinf_SOURCES                           = C_math-isinf.c
 C_check_file_path_SOURCES                      = C_check_file_path.c
 
-#timer_sum_SOURCES = timer_sum.c
-#message_SOURCES   = messages.c
-
-
 # Fortran Tests
 
-F_unique_dir_SOURCES    = F_unique_dir.f90
-F_scratch_dir_SOURCES = F_scratch_dir.f90
-F_math_SOURCES        = F_math.f90
+F_unique_dir_SOURCES      = F_unique_dir.f90
+F_scratch_dir_SOURCES     = F_scratch_dir.f90
+F_math_SOURCES            = F_math.f90
+F_check_file_path_SOURCES = F_check_file_path.f90
 
 TESTS_ENVIRONMENT = HPCT_INPUT_EXAMPLE_DIR=$(srcdir)
 TESTS             = init.sh \
@@ -51,6 +48,7 @@ TESTS             = init.sh \
 		    C_check_file_path \
 		    C_unique_dir \
 		    wrapper_C_scratch_dir.sh \
+		    wrapper_F_check_file_path.sh \
 		    wrapper_F_unique_dir.sh \
 		    wrapper_F_scratch_dir.sh \
 		    F_math \
@@ -58,7 +56,8 @@ TESTS             = init.sh \
 
 
 EXTRA_DIST = init.sh finalize.sh input-example.txt \
-			 wrapper_C_scratch_dir.sh \
-			 wrapper_F_unique_dir.sh \
-			 wrapper_F_scratch_dir.sh
+	     wrapper_C_scratch_dir.sh \
+	     wrapper_F_unique_dir.sh \
+	     wrapper_F_scratch_dir.sh \
+	     wrapper_F_check_file_path.sh
 

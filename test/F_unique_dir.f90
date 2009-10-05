@@ -1,8 +1,8 @@
-program F_temp_dir
+program F_unique_dir
   use hpct;
   implicit none;
 
-  character*10 :: program_name = "F_temp_dir"
+  character*12 :: program_name = "F_unique_dir"
 
   integer :: flag
   integer :: retval = 0
@@ -34,4 +34,4 @@ program F_temp_dir
   end if
 
   call exit(retval)
-end program F_temp_dir
+end program F_unique_dir
