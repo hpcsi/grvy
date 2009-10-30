@@ -42,7 +42,7 @@ using namespace std;
 using namespace HPCT;
 
 
-abcd = 12345asdf;lkj
+//abcd = 12345asdf;lkj
 
 // GetPot constants
 
