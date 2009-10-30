@@ -42,7 +42,6 @@ TESTS             = init.sh \
 		    C_input_read_missing_variable \
 		    C_input_register_variables \
 		    C_input_register_read_missing_variable \
-		    C_timer_sum \
 		    C_math_isnan \
 		    C_math_isinf \
 		    C_check_file_path \
@@ -54,6 +53,7 @@ TESTS             = init.sh \
 		    F_math \
 		    finalize.sh
 
+#		    C_timer_sum 
 
 EXTRA_DIST = init.sh finalize.sh input-example.txt \
 	     wrapper_C_scratch_dir.sh \
