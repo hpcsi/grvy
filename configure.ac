@@ -2,10 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(hpct, 0.25.2, karl@ices.utexas.edu)
+AC_INIT(hpct, 0.26.0, karl@ices.utexas.edu)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE(hpct,0.25.2)
+AM_INIT_AUTOMAKE(hpct,0.26.0)
 
 # Release versioning
 
@@ -55,7 +55,7 @@ AX_TLS
 #----------------
 
 AC_LANG([C++])
-BOOST_REQUIRE([1.35])
+BOOST_REQUIRE([1.36])
 BOOST_MATH
 BOOST_PROGRAM_OPTIONS
 AC_CACHE_SAVE
@@ -82,4 +82,4 @@ DX_PS_FEATURE(OFF)
 #DX_INIT_DOXYGEN(HPCT-$(VERSION), doxygen/hpct.dox, docs)
 DX_INIT_DOXYGEN(HPCT, doxygen/hpct.dox, docs)
 
-AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile hpct.pc hpct.spec )
+AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile hpct.pc hpct.spec doxygen/Makefile)
