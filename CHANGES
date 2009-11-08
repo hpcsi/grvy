@@ -1,5 +1,8 @@
-Version 0.26 (September 2009)
+Version 0.26 (08 November 2009)
+https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.26
+
   * inclusion of doxygen generated documentation
+  * creation of math class using Boost to provide an isnan interface
 
 Version 0.25.2 (11 September 2009)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.25.2
