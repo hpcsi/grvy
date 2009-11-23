@@ -32,9 +32,11 @@ fi
 
 rm -f config.cache acconfig.h
 
-echo "- aclocal."             && \
+echo "- aclocal. (local)"     && \
 aclocal -I m4                 && \
-echo "- autoconf."            && \
+echo "- aclocal. (common)"    && \
+aclocal -I m4/common          && \
+echo "- autoconf"             && \
 autoconf                      && \
 echo "- autoheader."          && \
 autoheader                    && \
