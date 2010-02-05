@@ -56,6 +56,7 @@ namespace HPCT {
   extern int  _HPCT_RemoveAll_nftw_helper(const char *path, const struct stat * st, int flag, struct FTW *f);
 
   extern char *hpct_f2c_char(char*input,int len);
+  extern int  verify_string_ends_with_6_Xs(char *name_template);
 
   // Evil Globals Vars
 

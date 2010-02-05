@@ -26,6 +26,10 @@ int main(int argc, char **argv)
 {
   int flag = 1;
 
+  /* Silence warning/error messages */
+
+  hpct_input_toggle_messages(0);
+  
   /* Unable to create a directory on invalid template */
   {
     char invalid_template[] = "ScratchDir_doesNotHaveSixTrailingExes";
@@ -74,14 +78,17 @@ int main(int argc, char **argv)
     int i, j;
 
     /* Ensure valid_template directory exists afterwards */
+
     flag *= (0 == hpct_create_scratch_dir(valid_template));
     flag *= (0 == lstat(valid_template, &st));
     flag *= S_ISDIR(st.st_mode);
 
     /* Change to the directory and create some entries */
+
     flag *= (0 == chdir(valid_template));
 
-    /* Create some subdirectories and change to them*/
+    /* Create some subdirectories and change to them   */
+
     for (j = 0; j < 3; ++j)
       {
 	dir_template[strlen(dir_template) - 1] = '0' + j;

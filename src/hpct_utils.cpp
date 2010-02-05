@@ -145,16 +145,23 @@ namespace HPCT {
 
   extern "C" int hpct_create_unique_dir(char *name_template)
   {
-    if (name_template == NULL)
-      {
-	errno = EINVAL;
-	return -1;
-      }
-    else if (mkdtemp(name_template) == NULL)  /* mkdtemp sets errno */
+
+    int status = verify_string_ends_with_6_Xs(name_template);
+    if (status) return status;
+
+    if (mkdtemp(name_template) == NULL)  /* mkdtemp sets errno */
       return -1;
     else
       return 0;
   }
+
+  // Utility to provide a unique scratch directory for the user - note
+  // that this utility has a very specific requirement on the input
+  // string char template to include 6 trailing X's. We check to make
+  // sure this is the case as some OS's (eg. OSX) will create the
+  // directory without the trailing X's, but it will not have any
+  // derived "uniqueness" at runtime.  Linux does not do this, so we
+  // check explicitly to hopefully avoid confusion for the user.
 
 #ifdef TLS /* Use thread local storage for the stack, if possible */
   static TLS std::stack<char *> _hpct_create_scratch_dir_paths;
@@ -164,15 +171,19 @@ namespace HPCT {
 
   extern "C" int hpct_create_scratch_dir(char *name_template)
   {
-    int status = hpct_create_unique_dir(name_template);
-    if (status) return status;
 
+    int status = verify_string_ends_with_6_Xs(name_template);
+    if (status) return status;
+    
+    status = hpct_create_unique_dir(name_template);
+    if (status) return status;
+    
     char * name_copy = strdup(name_template);
     if (name_copy == NULL) {
       errno = ENOMEM;
       return -1;
     }
-
+    
     if (_hpct_create_scratch_dir_paths.empty())
       {
 	if (status = atexit(_HPCT_create_scratch_dir_atexit_handler))
@@ -354,8 +365,39 @@ extern "C" void hpct_create_scratch_dir_(char *name_template,int _namelen,int *f
     char* output = new char[len+1];
     strncpy(output,input,len);
     output[len]='\0';
-
+    
     return(output);
+  }
+
+  
+  // verify_string_ends_with_6_Xs(): 
+  //
+  // Verify that the template satisfies the necessary requirements to
+  // end with 6 X's for use with mkdtemp() system function.
+
+  int verify_string_ends_with_6_Xs(char *name_template)
+  {
+    const int NUM_REQUIRED_TRAILING_X = 6;
+    int length_template;
+    
+    if(name_template == NULL)
+      {
+	_HPCT_message(_HPCT_emask,__func__,"Invalid directory template name (null) ");
+	return 1;
+      }
+
+    length_template = strlen(name_template);
+    
+    for(int i=length_template-NUM_REQUIRED_TRAILING_X;i<length_template;i++)
+      {
+	if(name_template[i] != 'X')
+	  {
+	    _HPCT_message(_HPCT_emask,__func__,"Invalid directory template (must end with XXXXXX) -",name_template);
+	    return 1;
+	  }
+      }
+    
+    return 0;
   }
 
 
