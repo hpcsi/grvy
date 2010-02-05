@@ -20,7 +20,7 @@ int main(int argc, char **argv)
   int    iset  = 123;
   float  fset  = 456.7;
   double dset  = 123.e10;
-  char  sset[] = "shoplifters-unit"; 
+  char  sset[] = "shoplifters-unite"; 
   char *input_example_file_path;
 
   int    igot;
