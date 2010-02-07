@@ -32,7 +32,7 @@ fi
 
 rm -f config.cache acconfig.h
 
-OSTYPE=`uname -o`
+OSTYPE=`uname -s`
 
 echo "- aclocal."             && \
 aclocal -I m4 -I m4/common    && \
@@ -41,7 +41,7 @@ autoconf                      && \
 echo "- autoheader."          && \
 autoheader                    && \
 
-if [ "$OSTYPE" == "Darwin" ];then
+if [ "$OSTYPE" = "Darwin" ];then
     echo "- glibtool."            
     glibtoolize --automake        
 else
