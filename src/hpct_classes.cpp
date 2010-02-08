@@ -193,7 +193,9 @@ template <typename T> int HPCT_Input_Class:: Read_Var(const char *var, T *value,
       else
 	{
 	  if(!silent)
-	    _HPCT_message(_HPCT_imask,"fread","Using pre-registered value for variable",var);
+	    {
+	      _HPCT_message(_HPCT_imask,"fread: Using pre-registered value for variable",var,*value);
+	    }
 	}
     }
   
