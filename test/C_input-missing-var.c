@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
   /* Read specific variables and echo locally */
 
-  flag *= hpct_input_fread_float("tommysucks",&reyn);
+  flag *= hpct_input_fread_float("strangeways",&reyn);
 
   /* Close the file */
 
