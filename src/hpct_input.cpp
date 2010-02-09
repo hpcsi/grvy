@@ -34,16 +34,10 @@
 #include<hpct_classes.h>
 #include<hpct_int.h>
 #include<hpct.h>
-//#include<GetPot>
-#include<getpot.h>
-
 #include"fortran_string_order.h"
 
 using namespace std;
 using namespace HPCT;
-
-
-//abcd = 12345asdf;lkj
 
 // GetPot constants
 
@@ -449,23 +443,6 @@ extern "C" void hpct_input_register_char_(char *var,int _namelen,char *value,int
   delete[] string;
   return;
 }
-
-// ----------------------------------------------------------------
-// -------------------- Convenience Functions ---------------------
-// ----------------------------------------------------------------
-
-// hpct_f2c_char(): Convert evil Fortran character strings to C
-
-#if 0
-char *hpct_f2c_char(char*input,int len)
-{
-  char* name = new char[len+1];
-
-  std::strncpy(name,input,len);
-  name[len]='\0';
-  return(name);
-}
-#endif
 
 //--------------------------------
 // Variable Registration Routines

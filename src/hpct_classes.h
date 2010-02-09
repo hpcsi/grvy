@@ -32,8 +32,7 @@
 #include<map>
 #include<vector>
 #include<string>
-//#include<GetPot>
-#include<getpot.h>
+#include<common/getpot/getpot.h>
 #include<boost/accumulators/accumulators.hpp>
 #include<boost/accumulators/statistics/mean.hpp>
 #include<boost/accumulators/statistics/stats.hpp>
