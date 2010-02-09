@@ -34,7 +34,8 @@
 #include<hpct_classes.h>
 #include<hpct_int.h>
 #include<hpct.h>
-#include<GetPot>
+//#include<GetPot>
+#include<getpot.h>
 
 #include"fortran_string_order.h"
 
