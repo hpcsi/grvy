@@ -2,16 +2,16 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(hpct, 0.26.0, karl@ices.utexas.edu)
+AC_INIT(hpct, 0.27.0, karl@ices.utexas.edu)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE(hpct,0.26.0)
+AM_INIT_AUTOMAKE(hpct,0.27.0)
 
 # Release versioning
 
 GENERIC_MAJOR_VERSION=0
-GENERIC_MINOR_VERSION=25
-GENERIC_MICRO_VERSION=2
+GENERIC_MINOR_VERSION=27
+GENERIC_MICRO_VERSION=0
 
 #GENERIC_API_VERSION=1.0
 #AC_SUBST(GENERIC_API_VERSION)
@@ -66,6 +66,10 @@ AC_CACHE_SAVE
 
 AC_FUNC_MALLOC
 
+# Query configuration environment
+
+AX_SUMMARIZE_ENV
+
 #----------------
 # Doxygen support
 #----------------
@@ -79,7 +83,10 @@ DX_XML_FEATURE(OFF)
 DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(OFF)
 
-#DX_INIT_DOXYGEN(HPCT-$(VERSION), doxygen/hpct.dox, docs)
 DX_INIT_DOXYGEN(HPCT, doxygen/hpct.dox, docs)
 
 AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile hpct.pc hpct.spec doxygen/Makefile)
+
+# Final summary
+
+AX_SUMMARIZE_CONFIG

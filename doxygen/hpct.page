@@ -1,6 +1,8 @@
 /*! \mainpage The HPCT Library
 
-<b>Version \version</b>, September 2009
+<b>Version \version</b>, Build Date: \builddate
+
+Built by: \builduser on \buildhost
 <hr>
 
 \section overview Overview

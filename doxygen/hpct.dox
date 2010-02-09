@@ -181,6 +181,9 @@ TAB_SIZE               = 8
 # You can put \n's in the value part of an alias to insert newlines.
 
 ALIASES                = version=$(VERSION)
+ALIASES               += builddate=$(BUILDDATE)
+ALIASES               += buildhost=$(BUILDHOST)
+ALIASES               += builduser=$(BUILDUSER)
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C 
 # sources only. Doxygen will then generate output that is more tailored for C. 
