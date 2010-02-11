@@ -1,0 +1,43 @@
+# reyn=2.5e6
+# mach=7.5
+# iter_max=1000
+# time_max=15.5
+# aoa=20.5
+# gridfile=./grid_plate.nc
+# [solver]
+# solver/turbulence=1
+# solver/viscosity=1
+# solver/radiation=0
+# solver/chemistry=0
+# solver/ablation=0
+# solver/rest_suffix=./sol_foo.nc
+# solver/switches=1 5 6 9
+# solver/keywords=wicked        
+	         fast
+# [turbulence]
+# turbulence/model="SA"
+# turbulence/A=12.5 23.3 -1.25
+# turbulence/c1=12.5
+# turbulence/c2=23.2
+# turbulence/c3=-1.25
+# [chemistry]
+# chemistry/model=9-equation-superfly
+# [user-variables]
+# user-variables/preview-coefficient=12 cm
+# user-variables/lateral-side-distance=2.1 m/s
+# user-variables/control-interval=0.1 s
+# user-variables/compensation-ratio=0.4e34 rad/(m*s)
+# [verify]
+# verify/ivar=10
+# verify/ivec=11 12 13 14
+# verify/fvar=100.
+# verify/fvec=101. 102. 103.
+# verify/dvar=1.e20.
+# verify/dvec=1.1e20 1.2e20 1.3e20
+# verify/cvar="superfly"
+# verify/cvec="tori
+# verify/is
+# verify/cool"
+
+# [HPCT Registered Variable Default Values]
+

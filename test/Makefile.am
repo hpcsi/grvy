@@ -1,18 +1,19 @@
-check_PROGRAMS = # Append below
+check_PROGRAMS  = # Append below
 check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 		  C_input_read_missing_variable C_input_register_variables \
 		  C_input_register_read_missing_variable C_timer_sum \
 		  C_math_isnan C_math_isinf C_unique_dir C_scratch_dir \
-		  C_check_file_path
+		  C_check_file_path C_input_fdump
+
 check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math
 
-INCLUDES      = -I$(top_srcdir)/src -I$(top_builddir)/src
-LIBS          = -L$(top_builddir)/src -lhpct
-AM_CFLAGS     = $(INCLUDES)
-AM_CPPFLAGS   = $(INCLUDES)
-AM_F77FLAGS   = $(INCLUDES)
-AM_FCFLAGS    = $(INCLUDES)
-AM_LDFLAGS    = $(LIBS)
+INCLUDES        = -I$(top_srcdir)/src -I$(top_builddir)/src
+LIBS            = -L$(top_builddir)/src -lhpct
+AM_CFLAGS       = $(INCLUDES)
+AM_CPPFLAGS     = $(INCLUDES)
+AM_F77FLAGS     = $(INCLUDES)
+AM_FCFLAGS      = $(INCLUDES)
+AM_LDFLAGS      = $(LIBS)
 
 # C Tests
 
@@ -27,6 +28,7 @@ C_scratch_dir_SOURCES                          = C_scratch_dir.c
 C_math_isnan_SOURCES                           = C_math-isnan.c
 C_math_isinf_SOURCES                           = C_math-isinf.c
 C_check_file_path_SOURCES                      = C_check_file_path.c
+C_input_fdump_SOURCES                          = C_input_dump.c C_examplefile.c examplefile.h
 
 # Fortran Tests
 
@@ -47,6 +49,7 @@ TESTS             = init.sh \
 		    C_check_file_path \
 		    C_unique_dir \
 		    wrapper_C_scratch_dir.sh \
+		    C_input_fdump \
 		    wrapper_F_check_file_path.sh \
 		    wrapper_F_unique_dir.sh \
 		    wrapper_F_scratch_dir.sh \
