@@ -50,13 +50,13 @@ TESTS             = init.sh \
 		    C_math_isinf \
 		    C_check_file_path \
 		    C_unique_dir \
-		    wrapper_C_scratch_dir.sh \
+		    C_wrapper_scratch_dir.sh \
 		    C_input_fdump \
-		    wrapper_C_log.sh \
-		    wrapper_F_check_file_path.sh \
-		    wrapper_F_unique_dir.sh \
-		    wrapper_F_scratch_dir.sh \
-		    wrapper_F_log.sh \
+		    C_wrapper_log.sh \
+		    F_wrapper_check_file_path.sh \
+		    F_wrapper_unique_dir.sh \
+		    F_wrapper_scratch_dir.sh \
+		    F_wrapper_log.sh \
 		    F_math \
 		    finalize.sh
 
