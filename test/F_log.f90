@@ -32,46 +32,46 @@ program F_log
   use hpct
   implicit none
 
-  write(*,*)
+  write(*,'(a)')''
   write(*,'(a)')'Priority = ALL'
 !  call flush(6)
   call hpct_log_setlevel(HPCT_ALL);
   call post_log_messages();
 
-  write(*,*)
+  write(*,'(a)')''
   write(*,'(a)')'Priority = DEBUG'
   call hpct_log_setlevel(HPCT_DEBUG);
   call post_log_messages();
 
-  write(*,*)
+  write(*,'(a)')''
   write(*,'(a)')'Priority = INFO'
   call hpct_log_setlevel(HPCT_INFO);
   call post_log_messages();
 
-  write(*,*)
+  write(*,'(a)')''
   write(*,'(a)')'Priority = WARN'
   call hpct_log_setlevel(HPCT_WARN);
   call post_log_messages();
 
-  write(*,*)
+  write(*,'(a)')''
   write(*,'(a)')'Priority = ERROR'
   call hpct_log_setlevel(HPCT_ERROR);
   call post_log_messages();
 
-  write(*,*)
+  write(*,'(a)')''
   write(*,'(a)')'Priority = FATAL'
   call hpct_log_setlevel(HPCT_FATAL);
   call post_log_messages();
 
-  write(*,*)
+  write(*,'(a)')''
   write(*,'(a)')'Priority = NOLOG'
   call hpct_log_setlevel(HPCT_NOLOG);
   call post_log_messages();
 
-  write(*,*)
+  write(*,'(a)')''
   write(*,'(a)')'[End of Test]'
 
-  return
+  stop
 end program F_log
 
 subroutine post_log_messages()
