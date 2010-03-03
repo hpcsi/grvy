@@ -5,7 +5,7 @@ check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 		  C_math_isnan C_math_isinf C_unique_dir C_scratch_dir \
 		  C_check_file_path C_input_fdump C_log
 
-check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math
+check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math F_log
 
 INCLUDES        = -I$(top_srcdir)/src -I$(top_builddir)/src
 LIBS            = -L$(top_builddir)/src -lhpct
@@ -37,6 +37,7 @@ F_unique_dir_SOURCES      = F_unique_dir.f90
 F_scratch_dir_SOURCES     = F_scratch_dir.f90
 F_math_SOURCES            = F_math.f90
 F_check_file_path_SOURCES = F_check_file_path.f90
+F_log_SOURCES             = F_log.f90
 
 TESTS_ENVIRONMENT = HPCT_INPUT_EXAMPLE_DIR=$(srcdir)
 TESTS             = init.sh \
@@ -55,6 +56,7 @@ TESTS             = init.sh \
 		    wrapper_F_check_file_path.sh \
 		    wrapper_F_unique_dir.sh \
 		    wrapper_F_scratch_dir.sh \
+		    wrapper_F_log.sh \
 		    F_math \
 		    finalize.sh
 
