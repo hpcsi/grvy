@@ -56,10 +56,10 @@ extern "C" void hpct_log_setlevel_(int *priority) {
   hpct_log_setlevel(*priority);
 }
 
-extern "C" void hpct_log_(int loglevel, char *mesg, int _namelen)
+extern "C" void hpct_log_(int *loglevel, char *mesg, int _namelen)
 {
   char *message = hpct_f2c_char(mesg,_namelen);
-  _HPCT_Log.msg(loglevel,message);
+  _HPCT_Log.msg(*loglevel,message);
   delete[] message;
 }
 

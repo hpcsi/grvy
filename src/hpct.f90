@@ -219,6 +219,11 @@ module hpct
        integer :: priority
      end subroutine hpct_log_setlevel
 
+     subroutine hpct_log(loglevel,mesg)
+       integer   :: loglevel
+       character :: mesg
+     end subroutine hpct_log
+
      ! ---------------
      ! Miscellaneous
      ! ---------------

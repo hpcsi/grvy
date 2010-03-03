@@ -803,8 +803,8 @@ namespace HPCT {
 
     LogMask[HPCT_FATAL] = "[*] Fatal: ";
     LogMask[HPCT_ERROR] = "[*] Error: ";
-    LogMask[HPCT_WARN ] = "[*] Warn:  ";
-    LogMask[HPCT_INFO ] = "[*] Info:  ";
+    LogMask[HPCT_WARN ] = "[*]  Warn: ";
+    LogMask[HPCT_INFO ] = "[*]  Info: ";
     LogMask[HPCT_DEBUG] = "[*] Debug: ";
 
     return;
