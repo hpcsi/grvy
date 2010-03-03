@@ -21,11 +21,10 @@ echo '----------------------------------- SUMMARY ------------------------------
 echo
 echo Package version............... : $PACKAGE-$VERSION
 echo
-echo Fortran compiler.............. : $FC
-echo Debug mode.................... : $enable_debug
-echo Fortran compiler flags........ : $FCFLAGS
-echo HPCT DIR...................... : $HPCT_PREFIX
+echo C++ compiler.................. : $CXX
+echo Fortran compiler support...... : $FC
 echo Install dir................... : $prefix 
+echo Boost dir..................... : $BOOST_ROOT
 echo Build user.................... : $USER
 echo Build host.................... : $BUILD_HOST
 echo Configure date................ : $BUILD_DATE
@@ -33,7 +32,7 @@ echo Build architecture............ : $BUILD_ARCH
 echo SVN revision number........... : $BUILD_REV
 echo SVN status.................... : $BUILD_STATUS
 echo
-echo Optional Features:
+#echo Optional Features:
 # if test $LINK_PETSC -eq 0; then
 #   echo '   'Link with PETSc............ : no
 # else
