@@ -1,0 +1,35 @@
+Priority = ALL
+[*] Fatal: a fine fatal message
+[*] Error: an astute error message
+[*]  Warn: a fabulous warn message
+[*]  Info: a useful info message
+[*] Debug: a clever debug message
+
+Priority = DEBUG
+[*] Fatal: a fine fatal message
+[*] Error: an astute error message
+[*]  Warn: a fabulous warn message
+[*]  Info: a useful info message
+[*] Debug: a clever debug message
+
+Priority = INFO
+[*] Fatal: a fine fatal message
+[*] Error: an astute error message
+[*]  Warn: a fabulous warn message
+[*]  Info: a useful info message
+
+Priority = WARN
+[*] Fatal: a fine fatal message
+[*] Error: an astute error message
+[*]  Warn: a fabulous warn message
+
+Priority = ERROR
+[*] Fatal: a fine fatal message
+[*] Error: an astute error message
+
+Priority = FATAL
+[*] Fatal: a fine fatal message
+
+Priority = NOLOG
+
+[End of Test]

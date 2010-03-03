@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
   int flag = 1;
 
-  hpct_input_toggle_messages(1);
+  hpct_log_setlevel(HPCT_NOLOG);
 
   //  printf("--> %s\n",test_name);
 

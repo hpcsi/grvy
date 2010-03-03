@@ -3,7 +3,7 @@ check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 		  C_input_read_missing_variable C_input_register_variables \
 		  C_input_register_read_missing_variable C_timer_sum \
 		  C_math_isnan C_math_isinf C_unique_dir C_scratch_dir \
-		  C_check_file_path C_input_fdump
+		  C_check_file_path C_input_fdump C_log
 
 check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math
 
@@ -29,6 +29,7 @@ C_math_isnan_SOURCES                           = C_math-isnan.c
 C_math_isinf_SOURCES                           = C_math-isinf.c
 C_check_file_path_SOURCES                      = C_check_file_path.c
 C_input_fdump_SOURCES                          = C_input_dump.c C_examplefile.c examplefile.h
+C_log					       = C_log.c
 
 # Fortran Tests
 
@@ -50,6 +51,7 @@ TESTS             = init.sh \
 		    C_unique_dir \
 		    wrapper_C_scratch_dir.sh \
 		    C_input_fdump \
+		    wrapper_C_log.sh \
 		    wrapper_F_check_file_path.sh \
 		    wrapper_F_unique_dir.sh \
 		    wrapper_F_scratch_dir.sh \
