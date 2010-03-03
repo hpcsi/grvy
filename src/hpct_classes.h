@@ -57,7 +57,7 @@ class HPCT_Input_Class {
  private:
   GetPot    ifile;                   // input file
   short int initialized;             // input file initialized?
-  short int silent;                  // Silence error messages?
+  //  short int silent;                  // Silence error messages?
 
   // Registry Maps
 
