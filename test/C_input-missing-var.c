@@ -17,9 +17,9 @@ int main(int argc, char **argv)
   int flag = 1;
   char *input_example_file_path;
 
-  /* Silence warning/error messages */
+  /* Silence warning/error/info messages */
 
-  hpct_input_toggle_messages(0);
+  hpct_log_setlevel(HPCT_NOLOG);
 
   /* Initialize/read the file */
 

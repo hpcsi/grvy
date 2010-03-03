@@ -18,7 +18,8 @@ int main(int argc, char **argv)
   char *key1, *key2;
   int flag = 1;
 
-  hpct_input_toggle_messages(0);
+  //  hpct_input_toggle_messages(0);
+  hpct_log_setlevel(HPCT_NOLOG);
 
   /* Initialize/read the file */
 

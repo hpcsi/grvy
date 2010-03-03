@@ -59,7 +59,7 @@ program main
   ! Disable error messages if you want to control them yourself
   ! If you query the unknown variable again it should be quiet
 
-  call hpct_input_toggle_messages(0)
+  call hpct_log_setlevel(HPCT_NOLOG)
   call hpct_input_fread_int("koomie",iter_max,flag)
 
 

@@ -2,7 +2,7 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 //
-// Copyright (C) 2008,2009 The PECOS Development Team
+// Copyright (C) 2008,2009,2010 The PECOS Development Team
 //
 // Please see http://pecos.ices.utexas.edu for more information.
 //
@@ -22,52 +22,46 @@
 // along with HPCT.  If not, see <http://www.gnu.org/licenses/>.
 //
 //--------------------------------------------------------------------------
-// hpct_math: Convenience math utility functions.
+// hpct_log: Application logging related routines.
 //
 // $Id: hpct_input.cpp 9 2008-12-14 02:10:50Z karl $
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
+#include<stdio.h>
 #include<hpct_classes.h>
+#include<hpct_int.h>
 #include<hpct.h>
+#include<string>
 
+using namespace std;
 using namespace HPCT;
 
-HPCT_Math_Class _HPCT_Math; //math class
-
-//-----------------------------------------------------------------
-//                       ye ol' C Interfaces
-//-----------------------------------------------------------------
-
-int hpct_double_isnan(double *val)
+void hpct_log_setlevel(int priority)
 {
-  return( _HPCT_Math.isnan<double>( *val ) );
+  _HPCT_Log.change_priority(priority);
+  return;
 }
 
-int hpct_double_isinf(double *val)
+void hpct_log(int loglevel, const char *mesg)
 {
-  return( _HPCT_Math.isinf<double>( *val ) );
-}
-
-int hpct_float_isnan(float *val)
-{
-  return( _HPCT_Math.isnan<float>( *val ) );
-}
-
-int hpct_float_isinf(float *val)
-{
-  return( _HPCT_Math.isinf<float>( *val ) );
+  _HPCT_Log.msg(loglevel,mesg);
 }
 
 //-----------------------------------------------------------------
 //                     Fortran Interfaces
 //-----------------------------------------------------------------
-extern "C" int hpct_double_isnan_( double *val )
-{
-  return( _HPCT_Math.isnan<double>( *val ) );
+
+extern "C" void hpct_log_setlevel_(int *priority) {
+  hpct_log_setlevel(*priority);
 }
 
-extern "C" int hpct_double_isinf_( double *val )
+extern "C" void hpct_log_(int loglevel, char *mesg, int _namelen)
 {
-  return( _HPCT_Math.isinf<double>( *val ) );
+  char *message = hpct_f2c_char(mesg,_namelen);
+  _HPCT_Log.msg(loglevel,message);
+  delete[] message;
 }
+
+
+

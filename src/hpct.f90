@@ -203,13 +203,21 @@ module hpct
      ! Math
      ! ---------------
 
-     integer function hpct_double_isnan( value )
+     integer function hpct_double_isnan(value)
        real*8 :: value
      end function hpct_double_isnan
 
-     integer function hpct_double_isinf( value )
+     integer function hpct_double_isinf(value)
        real*8 :: value
      end function hpct_double_isinf
+
+     ! ---------------
+     ! Logging
+     ! ---------------
+
+     subroutine hpct_log_setlevel(priority)
+       integer :: priority
+     end subroutine hpct_log_setlevel
 
      ! ---------------
      ! Miscellaneous
@@ -231,4 +239,17 @@ module hpct
      end subroutine hpct_create_scratch_dir
 
   end interface
+
+  ! ---------------------------
+  ! Logging Priority Constants
+  ! ---------------------------
+
+  integer, parameter :: HPCT_NOLOG =  -1
+  integer, parameter :: HPCT_FATAL =   0
+  integer, parameter :: HPCT_ERROR = 100
+  integer, parameter :: HPCT_WARN  = 200
+  integer, parameter :: HPCT_INFO  = 300
+  integer, parameter :: HPCT_DEBUG = 400
+  integer, parameter :: HPCT_all   = 500
+
 end module hpct

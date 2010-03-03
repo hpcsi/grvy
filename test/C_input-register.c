@@ -56,7 +56,7 @@ int main(int argc, char **argv)
   /* Verify that we can recover registered default variables when they
      are not present in the input file */
 
-  hpct_input_toggle_messages(1);
+  hpct_log_setlevel(HPCT_NOLOG);
 
   igot=-1;
   fgot=-1.;

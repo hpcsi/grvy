@@ -1,5 +1,5 @@
 program F_check_file_path
-  use hpct;
+  use hpct
   implicit none;
 
   character*17 :: program_name = "F_check_file_path"
@@ -7,7 +7,9 @@ program F_check_file_path
   integer :: flag
   integer :: retval = 0
 
-  call hpct_check_file_path("F_check_file_path/foo", flag);
+  call hpct_log_setlevel(HPCT_NOLOG)
+
+  call hpct_check_file_path("F_check_file_path/foo", flag)
   if (flag.ne.(-1)) then
     write (*,*) "Expected nonzero return on attempt to clobber this binary"
     retval = 1

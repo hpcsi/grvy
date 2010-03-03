@@ -1,7 +1,8 @@
+// -*-c++-*-
 //--------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 //
-// Copyright (C) 2008,2009 The PECOS Development Team
+// Copyright (C) 2008,2009,2010 The PECOS Development Team
 //
 // Please see http://pecos.ices.utexas.edu for more information.
 //
@@ -40,15 +41,17 @@
 #include<sys/stat.h>
 #include<sys/types.h>
 #include<unistd.h>
-
 #include<stack>
 
 #include<hpct_classes.h>
 #include<hpct_int.h>
+#include<hpct.h>
 
+#include"boost/format.hpp"
 #include"fortran_string_order.h"
 
 using namespace std;
+using boost::format;
 
 namespace HPCT {
 
@@ -106,7 +109,7 @@ namespace HPCT {
 
 	if(depth >= MAX_DEPTH )
 	  {
-	    _HPCT_message(_HPCT_emask,__func__,"Max directory depth exceeded, limit =",MAX_DEPTH);
+	    _HPCT_message(HPCT_ERROR,__func__,"Max directory depth exceeded, limit =",MAX_DEPTH);
 	    free(pathlocal);
 	    free(dirstring);
 	    return -1;
@@ -128,14 +131,16 @@ namespace HPCT {
       {
 	if( mkdir(dirname,0700) != 0 )
 	  {
-	    _HPCT_message(_HPCT_emask,__func__,
+	    //	    _HPCT_message(_HPCT_emask,__func__,
+	    _HPCT_message(HPCT_ERROR,__func__,
 		"unable to create directory",dirname);
 	    return -1;
 	  }
       }
     else if (!S_ISDIR(st.st_mode))
       {
-	_HPCT_message(_HPCT_emask,__func__,
+	//	_HPCT_message(_HPCT_emask,__func__,
+	_HPCT_message(HPCT_ERROR,__func__,
 	    "entry exists but is not a directory",dirname);
 	return -1;
       }
@@ -267,46 +272,49 @@ namespace HPCT {
     return status;
   }
 
-
   //------------------------------------
   // Basic stdout warning/error messages
   //------------------------------------
 
   void _HPCT_message(char *message)
   {
-    printf("\n%s\n",message);
+    _HPCT_Log.msg(HPCT_INFO,message);
     return;
   }
 
-  void _HPCT_message(const char *mask, const char *func, const char *message)
+  void _HPCT_message(int LogLevel, const char *func, const char *message)
   {
-    printf("\n%s (%s): %s\n",mask,func,message);
+    static string log_message;
+
+    log_message  = str(format("(%1%): %2% ") % func % message);
+    _HPCT_Log.msg(LogLevel,log_message);
     return;
   }
 
-  void _HPCT_message(const char *mask, const char *func, const char *message, const char *char_item)
+  template <typename T> void _HPCT_message (int LogLevel, const char *func, const char *message, T var)
   {
-    printf("\n%s (%s): %s -> %s \n",mask,func,message,char_item);
+    static string log_message;
+
+    log_message  = str(format("(%1%): %2% -> %3% ") % func % message % var);
+    _HPCT_Log.msg(LogLevel,log_message);
+  }
+
+  void _HPCT_message(int LogLevel, const char *func, const char *message, const char *char_item)
+  {
+    static string log_message;
+    
+    log_message = str(format("(%1%): %2% -> %3%") % func % message % char_item);
+    _HPCT_Log.msg(LogLevel,log_message);
     return;
   }
 
-  void _HPCT_message(const char *mask, const char *func, const char *message, int int_item)
-  {
-    printf("\n%s (%s): %s -> %i \n",mask,func,message,int_item);
-    return;
-  }
+  //------------------------------
+  // Message Templates
+  //------------------------------
 
-  void _HPCT_message(const char *mask, const char *func, const char *message, float float_item)
-  {
-    printf("\n%s (%s): %s -> %f \n",mask,func,message,float_item);
-    return;
-  }
-
-  void _HPCT_message(const char *mask, const char *func, const char *message, double double_item)
-  {
-    printf("\n%s (%s): %s -> %e \n\n",mask,func,message,double_item);
-    return;
-  }
+  template void _HPCT_message (int LogLevel, const char *func, const char *message, int    var);
+  template void _HPCT_message (int LogLevel, const char *func, const char *message, float  var);
+  template void _HPCT_message (int LogLevel, const char *func, const char *message, double var);
 
   //-----------------------------------------------------------------
   //                     Fortran Interfaces
@@ -382,7 +390,7 @@ extern "C" void hpct_create_scratch_dir_(char *name_template,int _namelen,int *f
     
     if(name_template == NULL)
       {
-	_HPCT_message(_HPCT_emask,__func__,"Invalid directory template name (null) ");
+	_HPCT_message(HPCT_ERROR,__func__,"Invalid directory template name (null) ");
 	return 1;
       }
 
@@ -392,7 +400,8 @@ extern "C" void hpct_create_scratch_dir_(char *name_template,int _namelen,int *f
       {
 	if(name_template[i] != 'X')
 	  {
-	    _HPCT_message(_HPCT_emask,__func__,"Invalid directory template (must end with XXXXXX) -",name_template);
+	    _HPCT_message(HPCT_ERROR,__func__,
+			  "Invalid directory template (must end with XXXXXX) -",name_template);
 	    return 1;
 	  }
       }

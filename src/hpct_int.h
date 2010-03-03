@@ -2,7 +2,7 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 //
-// Copyright (C) 2008,2009 The PECOS Development Team
+// Copyright (C) 2008,2009,2010 The PECOS Development Team
 //
 // Please see http://pecos.ices.utexas.edu for more information.
 //
@@ -43,11 +43,13 @@ namespace HPCT {
 
   // Internal Routines
 
-  extern void _HPCT_message (const char *mask, const char *func, const char *message);
-  extern void _HPCT_message (const char *mask, const char *func, const char *message, const char *char_item);
-  extern void _HPCT_message (const char *mask, const char *func, const char *message, int int_item);
-  extern void _HPCT_message (const char *mask, const char *func, const char *message, float float_item);
-  extern void _HPCT_message (const char *mask, const char *func, const char *message, double double_item);
+  //  extern void _HPCT_message (const char *mask, const char *func, const char *message);
+
+  extern void _HPCT_message (char *message);
+  extern void _HPCT_message (int LogLevel, const char *func, const char *message);
+  extern void _HPCT_message (int LogLevel, const char *func, const char *message, const char *char_item);
+
+  template <typename T> void _HPCT_message (int LogLevel, const char *func, const char *message, T item);
 
   extern int  _HPCT_CheckDir      (const char *dirname);
 
@@ -62,17 +64,20 @@ namespace HPCT {
 
 #ifdef _HPCT_GLOBAL_DEF
 
+  HPCT_Log_Class    _HPCT_Log;                           // Log mechanism
   GLOBAL const char *_HPCT_emask   = "[*] Error";        // default error mask
   GLOBAL const char *_HPCT_wmask   = "[*] Warning";      // default warning mask
   GLOBAL const char *_HPCT_imask   = "[*] Info";         // default info mask
   GLOBAL const char *_HPCT_gtimer  = "HPCT_Unassigned";  // default global timer key
 
   HPCT_Timer_Class *_HPCT_Timers               =  NULL;   // performance timer 
+
   GLOBAL double _HPCT_TIMER_THRESH       = 9.0e-8;  // low water mark for expected timer usage deltas        
   GLOBAL double _HPCT_PERC_TOL           = 1e-3;    // tolerance for defining acceptable global percentages
 
 #else
 
+  GLOBAL HPCT_Log_Class _HPCT_Log;
   GLOBAL const char *_HPCT_emask;
   GLOBAL const char *_HPCT_wmask;
   GLOBAL const char *_HPCT_imask;

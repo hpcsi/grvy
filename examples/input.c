@@ -22,8 +22,6 @@ int main(int argc, char **argv)
 
   igot = hpct_input_fopen("./pecos-input.txt");
 
-
-
   /* Read specific variables and echo locally */
 
   if(hpct_input_fread_float("reyn",&reyn))
@@ -69,23 +67,22 @@ int main(int argc, char **argv)
   free(koomie);
 
   /* Disable error messages if you want to control them yourself
-   * If you query the unknown variable again stdout should be quiet */
+   * If you query the unknown variable again, stdout should be quiet */
 
-  hpct_input_toggle_messages(0);
+  hpct_log_setlevel(HPCT_NOLOG);
 
   if(hpct_input_fread_char("koomie",&koomie))
     printf("--> %-10s = %s\n","koomie",koomie);
 
   free(koomie);
-  hpct_input_toggle_messages(1);
+
+  hpct_log_setlevel(HPCT_INFO);
 
   /* Register variable default values (can be used for
    * backwards-compatible input file support) */
 
-  float poo=456.789;
-
   hpct_input_register_int   ("solver/fast_button",1);
-  hpct_input_register_float ("solver/afloat",poo);
+  hpct_input_register_float ("solver/afloat",456.789);
   hpct_input_register_double("solver/adouble",1.23e10);
   hpct_input_register_char  ("solver/astring","shoplifters-unite");
 

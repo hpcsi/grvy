@@ -1,7 +1,8 @@
+// -*-c++-*-
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 //
-// Copyright (C) 2008,2009 The PECOS Development Team
+// Copyright (C) 2008,2009,2010 The PECOS Development Team
 //
 // Please see http://pecos.ices.utexas.edu for more information.
 //
@@ -36,772 +37,799 @@
 
 namespace HPCT {
 
-int show_statistics = 1;
-
-//-------------------------------------
-// HPCT_Input_Class:: Member Functions
-//-------------------------------------
-
-HPCT_Input_Class::HPCT_Input_Class()   // default constructor
-{
-  Float_Def     = -9999999.0f;
-  Double_Def    = -9999999.0e1;
-  Int_Def       = -9999999;
-  Long_Def      = -9999999;
-  Char_Def      = "unknown";
-  comment_start = "#";
-  comment_end   = "\n";
-
-  initialized   = 0;
-
-  // Convention is to assume that user wants error messages.
-  // Thou shalt turn them off otherwise.
-
-  silent        = 0; 
-
-}
-
-int HPCT_Input_Class:: VerifyInit()
-{
-  if(!initialized)
-    {
-      printf("\n%s (%s): uninitialized input file - verify file has been opened\n",
-             _HPCT_emask,__func__);
-      return 0;
-    }
-  else
-    return 1;
-
-}
-
-int HPCT_Input_Class:: Open(const char *filename)
-{
-  ifile = GetPot(filename,comment_start,comment_end);
-
-  if(ifile.size() <= 1)
-    {
-      if(!silent)
-	printf("\n%s (%s): non-existent or empty file -> %s\n",_HPCT_emask,__func__,filename);
-      return 0;
-    }
-  else
-    {
-      initialized=1;
-      return 1;
-    }
-}
-
-int HPCT_Input_Class:: Close()
-{
-  initialized=0;
-  return 1;
-}
-
-int HPCT_Input_Class:: Fdump()
-{
-  if(! VerifyInit()) return 0;
-
-  ifile.print();		// dump the raw file contents
-  PrintRegVars("");		// include any registered defaults
-
-  return 1;
-}
-
-int HPCT_Input_Class:: Fdump(const char *prefix)
-{
-
-  if(! VerifyInit()) return 0;
-
-  ifile.print(prefix);		// dump the raw file contents
-  PrintRegVars(prefix);		// include any registered defaults
-
-  return 1;
-}
-
-int HPCT_Input_Class:: Fdump(const char *prefix, const char *filename)
-{
-
-  if(! VerifyInit()) return 0;
-
-  std::streambuf *cout_sbuf = std::cout.rdbuf();   // save original stdout buff
-  std::ofstream fout(filename,ios::app|ios::out);  // file for append
-  std::cout.rdbuf(fout.rdbuf());                   // redirect cout to file        
-
-  ifile.print(prefix);				   // dumpe the raw file contents
-  PrintRegVars(prefix);		                   // include any registered defaults
-  std::cout.rdbuf(cout_sbuf);                      // restore cout stream
-
-  return 1;
-}
-
-void HPCT_Input_Class::PrintRegVars(const char *prefix)
-{
-
-  map<std::string, int    > :: const_iterator int_index;
-  map<std::string, float  > :: const_iterator flt_index;
-  map<std::string, double > :: const_iterator dbl_index;
-  map<std::string, string > :: const_iterator str_index;
-
-  cout << prefix << "[HPCT Registered Variable Default Values]" << endl;
-
-  for(int_index=default_ints.begin(); int_index != default_ints.end(); ++int_index)
-    cout << prefix << (int_index->first).c_str() << "=" << int_index->second << endl;
-
-  for(flt_index=default_floats.begin(); flt_index != default_floats.end(); ++flt_index)
-    cout << prefix << (flt_index->first).c_str() << "=" << flt_index->second << endl;
-
-  for(dbl_index=default_doubles.begin(); dbl_index != default_doubles.end(); ++dbl_index)
-    cout << prefix << (dbl_index->first).c_str() << "=" << dbl_index->second << endl;
-
-  for(str_index=default_strings.begin(); str_index != default_strings.end(); ++str_index)
-    cout << prefix << (str_index->first).c_str() << "=" << str_index->second << endl;
-
-  cout << endl;
-}
-
-void HPCT_Input_Class:: ErrorMsg(const char *func_name,const char *var_name)
-{
-  if(!silent)
-    printf("\n%s (%s): unable to query variable -> %s\n",_HPCT_emask,func_name,var_name);
-}
-
-void HPCT_Input_Class:: MsgToggle(int flag)
-{
-  if(flag == 0)
-    silent = 1;
-  else
-    silent = 0;
-}
-
-//--------------
-// Scalar Reads
-//--------------
-
-template <typename T> int HPCT_Input_Class:: Read_Var(const char *var, T *value, T Var_Def)
-{
-  if(! VerifyInit()) return 0;
-
-  *value = ifile(var,Var_Def);
-
-  if(*value == Var_Def)
-    {
-      if( !Get_Var(var,value) )
-	{
-	  ErrorMsg("fread",var);
-	  return 0;
-	}
-      else
-	{
-	  if(!silent)
-	    {
-	      _HPCT_message(_HPCT_imask,"fread: Using pre-registered value for variable",var,*value);
-	    }
-	}
-    }
-  
-  return 1;
-}
-
-//--------------
-// Vector Reads
-//--------------
-
-template <typename T> int HPCT_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelems,T Var_Def)
-{
-  int i;
-
-  if(! VerifyInit()) return 0;
-
-  for(i=0;i<nelems;i++)
-    {
-      value[i] = ifile(var,Var_Def,i);
-
-      if(value[i] == Var_Def)
-        {
-	  ErrorMsg("fread_ivec",var);
-          return 0;
-        }
-    }
- 
- return 1;
-}
-
-//------------------
-// ith Vector Reads
-//------------------
-
-template <typename T> int HPCT_Input_Class:: Read_Var_iVec(const char *var, T *value, int elem,T Var_Def)
-{
-  int i;
-
-  if(! VerifyInit()) return 0;
-
-  *value = ifile(var,Var_Def,elem);
-
-  if(*value == Var_Def)
-    {
-      ErrorMsg("fread_ivec",var);
-      return 0;
-    }
- 
- return 1;
-} 
-
-//------------------------
-// Character String Reads
-//------------------------
-
-int HPCT_Input_Class:: Read_Var(const char *var, char **value)
-{
-  string tstring;
-
-  if(! VerifyInit()) return 0;
-  
-  tstring = ifile(var,Char_Def);
-  *value = (char *) malloc(tstring.length()*sizeof(char)+1);
-  strcpy(value[0],tstring.c_str());
-
-  if(strcmp(*value,Char_Def) == 0)
-    {
-
-      if( !Get_Var(var,value) )
-	{
-	  ErrorMsg("fread_char",var);
-	  return 0;
-	}
-      else 
-	{
-	  if(!silent)
-	    _HPCT_message(_HPCT_imask,"fread_char","Using pre-registered value for variable",var);
-	}
-    }
-  //  else
-  return 1;
-}
-
-int HPCT_Input_Class:: Read_Var_iVec(const char *var, char **value, int elem)
-{
-  string tstring;
-
-  if(! VerifyInit()) return 0;
-  
-  tstring = ifile(var,Char_Def,elem);
-  *value = (char *) malloc(tstring.length()*sizeof(char)+1);
-  strcpy(value[0],tstring.c_str());
-
-  if(strcmp(*value,Char_Def) == 0)
-    {
-      ErrorMsg("fread_char_ivec",var);
-      return 0;
-    }
-  else
-    return 1;
-}
-
-//---------------------------------------
-// Default Variable Value Registrations
-//---------------------------------------
-
-void HPCT_Input_Class:: Register_Var (const char *varname, int var)
-{
-  default_ints[varname] = var;
-  return;
-}
-
-void HPCT_Input_Class:: Register_Var (const char *varname, float var)
-{
-  default_floats[varname] = var;
-  return;
-}
-
-void HPCT_Input_Class:: Register_Var (const char *varname, double var)
-{
-  default_doubles[varname] = var;
-  return;
-}
-
-void HPCT_Input_Class:: Register_Var (const char *varname, char *var)
-{
-  default_strings[varname] = var;
-  return;
-}
-
-int HPCT_Input_Class:: Get_Var (const char *varname, int *var)
-{
-  map<std::string, int > :: const_iterator index;
-  
-  index = default_ints.find(varname);
-
-  if( index == default_ints.end() )
-    {
-      if(!silent)
-	_HPCT_message(_HPCT_imask,"register_get","No registered variable named",varname);
-      return(0);
-    }
-  else
-    {
-      *var = index->second;
-      return(1);
-    }
-
-}
-
-int HPCT_Input_Class:: Get_Var (const char *varname, float *var)
-{
-  map<std::string, float > :: const_iterator index;
-  
-  index = default_floats.find(varname);
-
-  if( index == default_floats.end() )
-    {
-      if(!silent)
-	_HPCT_message(_HPCT_imask,"register_get","No registered variable named",varname);
-      return(0);
-    }
-  else
-    {
-      *var = index->second;
-      return(1);
-    }
-
-}
-
-int HPCT_Input_Class:: Get_Var (const char *varname, double *var)
-{
-  map<std::string, double > :: const_iterator index;
-  
-  index = default_doubles.find(varname);
-
-  if( index == default_doubles.end() )
-    {
-      if(!silent)
-	_HPCT_message(_HPCT_imask,"register_get","No registered variable named",varname);
-      return(0);
-    }
-  else
-    {
-      *var = index->second;
-      return(1);
-    }
-
-}
-
-int HPCT_Input_Class:: Get_Var (const char *varname, char **var)
-{
-  map<std::string, string > :: const_iterator index;
-  string tstring;
-  
-  index = default_strings.find(varname);
-
-  if( index == default_strings.end() )
-    {
-      if(!silent)
-	_HPCT_message(_HPCT_imask,"register_get","No registered variable named",varname);
-      return(0);
-    }
-  else
-    {
-      tstring = index->second;
-      *var = (char *) malloc(tstring.length()*sizeof(char)+1);
-      strcpy(var[0],tstring.c_str());
-      return(1);
-    }
-
-}
-
-//------------------------------
-// Supported Function Templates
-//------------------------------
-
-template int HPCT_Input_Class::Read_Var <int>          (const char *var, int    *value, int    vardef);
-template int HPCT_Input_Class::Read_Var <float>        (const char *var, float  *value, float  vardef);
-template int HPCT_Input_Class::Read_Var <double>       (const char *var, double *value, double vardef);
-
-template int HPCT_Input_Class:: Read_Var_Vec <int>     (const char *var, int    *value, int nelem, int    Var_Def);
-template int HPCT_Input_Class:: Read_Var_Vec <float>   (const char *var, float  *value, int nelem, float  Var_Def);
-template int HPCT_Input_Class:: Read_Var_Vec <double>  (const char *var, double *value, int nelem, double Var_Def);
-
-template int HPCT_Input_Class:: Read_Var_iVec <int>    (const char *var, int    *value, int elem,  int    Var_Def);
-template int HPCT_Input_Class:: Read_Var_iVec <float>  (const char *var, float  *value, int elem,  float  Var_Def);
-template int HPCT_Input_Class:: Read_Var_iVec <double> (const char *var, double *value, int elem,  double Var_Def);
-
-
-//-------------------------------------
-// HPCT_Timer_Class:: Member Functions
-//-------------------------------------
-
-// Notes: for portability concerns, we will go with a simple timeofday
-// based timer.  This should give resolution that is order
-// micro-seconds on desired systems.  Note that this also avoids any
-// issues that cycle-based counters face due to cpu freqeuncy
-// throttling or SMP issues due to potential thread migration.
-//
-// A check is included to potentially warn against accuracy problems
-// when the timer is used at a level below anticipated threshold
-// accuracy.
-
-HPCT_Timer_Class::HPCT_Timer_Class()   // default constructor
-{
-  initialized    = 1;
-  timer_last     = 0.0;
-  timer_finalize = -1;
-}
-
-void HPCT_Timer_Class:: VerifyInit ()
-{
-
-  if(_HPCT_Timers == NULL)
-    {
-      printf("\n%s (%s): timer uninitialized\n",_HPCT_emask,__func__);
-      exit(1);
-    }
-
-  if(!initialized)
-    {
-      printf("\n%s (%s): timer uninitialized\n",_HPCT_emask,__func__);
-      exit(1);
-    }
-
-}
-
-void HPCT_Timer_Class:: SaveTimerName (const char *id)
-{
-  timer_name = id;
-  return;
-}
-
-void HPCT_Timer_Class:: BeginTimer (const char *id)
-{
-  double mytime;
-  _HPCT_Type_TimerMap2 :: iterator index;
-
-  tTimer_Data Data;
-
-  //  VerifyInit();
-
-  mytime = RawTimer();
-
-  // Is this the first call for this id?
-
-  index = TimerMap.find(id);
-
-  if ( index == TimerMap.end() )
-    {
-      Data.timings[0] = 0.0;	                        // stores accumulated time
-      Data.timings[1] = mytime;                         // stores latest timestamp
-
-      TimerMap[id] = Data;
-    }
-  else
-    {
-      (index->second).timings[1] = mytime;             // stores latest timestamp
-   }
-
-  
-}
-
-void HPCT_Timer_Class:: EndTimer (const char *id)
-{
-  double      mytime, increment;
-  tTimer_Data Data;
-  char temp_string[120];
-
-  _HPCT_Type_TimerMap2 :: iterator index;
-
-  mytime = RawTimer();
-  index  = TimerMap.find(id);
-
-  if ( index == TimerMap.end() )
-    _HPCT_message(_HPCT_emask,__func__,"No timer data available for",id);
-  else if(index->first[1] < 0)
-    _HPCT_message(_HPCT_emask,__func__,"No matching begin timer call for",id);
-  else
-    {
-      // update map with latest increment info
-
-      increment = mytime - (index->second).timings[1];
-
-      // warn against potential measurements that are too small
-
-      if( increment <= _HPCT_TIMER_THRESH )
-	{
-	  sprintf(temp_string,"Timer accuracy may be insufficient (%.30s) - just measured",id);
-	  _HPCT_message(_HPCT_wmask,__func__,temp_string,increment);
-	}
-
-      (index->second).timings[0] += increment;
-      (index->second).timings[1]  = -1.;
-
-      (index->second).stats(increment);
-    }
-
-  // Store the latest raw timer snapshot for the global timer region
-  // to allow users to query the global elapsed time after an
-  // hpct_timer_finalize()
-
-  if ( strcmp(id,_HPCT_gtimer) == 0 )
-    timer_finalize = RawTimer();
-
-  return;
-}
-
-void HPCT_Timer_Class:: Reset()
-{
-  _HPCT_Type_TimerMap2 :: iterator index;
-
-  if(_HPCT_Timers == NULL)
-    return;
-
-  if(!initialized)
-    return;
-
-  // Reset All timers
-
-  for(index=TimerMap.begin(); index != TimerMap.end(); ++index)
-    {
-      (index->second).timings[0] = 0.0;             // reset raw timing info
-      (index->second).stats      = stats_empty;     // reset accumulator (no reset in Boost currently)
-    }
-
-  return;
-}
-
-double HPCT_Timer_Class:: RawTimer()
-{
-  int rc;
-  struct timeval tv;
-
-  rc = gettimeofday (&tv, NULL);
-  if (rc == -1) {
-    printf("tmrc: gettimeofday\n");
-    return -1.;
+  int show_statistics = 1;
+
+  //-------------------------------------
+  // HPCT_Input_Class:: Member Functions
+  //-------------------------------------
+
+  HPCT_Input_Class::HPCT_Input_Class()   // default constructor
+  {
+    Float_Def     = -9999999.0f;
+    Double_Def    = -9999999.0e1;
+    Int_Def       = -9999999;
+    Long_Def      = -9999999;
+    Char_Def      = "unknown";
+    comment_start = "#";
+    comment_end   = "\n";
+
+    initialized   = 0;
   }
 
-  double t1 =  ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec);
+  int HPCT_Input_Class:: VerifyInit()
+  {
+    if(!initialized)
+      {
+	_HPCT_message(HPCT_ERROR,__func__,"uninitialized input file - verify file has been opened");
+	return 0;
+      }
+    else
+      return 1;
 
-  // moved warning check to EndTimer
+  }
+
+  int HPCT_Input_Class:: Open(const char *filename)
+  {
+    ifile = GetPot(filename,comment_start,comment_end);
+
+    if(ifile.size() <= 1)
+      {
+	_HPCT_message(HPCT_ERROR,__func__,"non-existent or empty file -> ",filename);
+	return 0;
+      }
+    else
+      {
+	initialized=1;
+	return 1;
+      }
+  }
+
+  int HPCT_Input_Class:: Close()
+  {
+    initialized=0;
+    return 1;
+  }
+
+  int HPCT_Input_Class:: Fdump()
+  {
+    if(! VerifyInit()) return 0;
+
+    ifile.print();		// dump the raw file contents
+    PrintRegVars("");		// include any registered defaults
+
+    return 1;
+  }
+
+  int HPCT_Input_Class:: Fdump(const char *prefix)
+  {
+
+    if(! VerifyInit()) return 0;
+
+    ifile.print(prefix);		// dump the raw file contents
+    PrintRegVars(prefix);		// include any registered defaults
+
+    return 1;
+  }
+
+  int HPCT_Input_Class:: Fdump(const char *prefix, const char *filename)
+  {
+
+    if(! VerifyInit()) return 0;
+
+    std::streambuf *cout_sbuf = std::cout.rdbuf();   // save original stdout buff
+    std::ofstream fout(filename,ios::app|ios::out);  // file for append
+    std::cout.rdbuf(fout.rdbuf());                   // redirect cout to file        
+
+    ifile.print(prefix);				   // dumpe the raw file contents
+    PrintRegVars(prefix);		                   // include any registered defaults
+    std::cout.rdbuf(cout_sbuf);                      // restore cout stream
+
+    return 1;
+  }
+
+  void HPCT_Input_Class::PrintRegVars(const char *prefix)
+  {
+
+    map<std::string, int    > :: const_iterator int_index;
+    map<std::string, float  > :: const_iterator flt_index;
+    map<std::string, double > :: const_iterator dbl_index;
+    map<std::string, string > :: const_iterator str_index;
+
+    cout << prefix << "[HPCT Registered Variable Default Values]" << endl;
+
+    for(int_index=default_ints.begin(); int_index != default_ints.end(); ++int_index)
+      cout << prefix << (int_index->first).c_str() << "=" << int_index->second << endl;
+
+    for(flt_index=default_floats.begin(); flt_index != default_floats.end(); ++flt_index)
+      cout << prefix << (flt_index->first).c_str() << "=" << flt_index->second << endl;
+
+    for(dbl_index=default_doubles.begin(); dbl_index != default_doubles.end(); ++dbl_index)
+      cout << prefix << (dbl_index->first).c_str() << "=" << dbl_index->second << endl;
+
+    for(str_index=default_strings.begin(); str_index != default_strings.end(); ++str_index)
+      cout << prefix << (str_index->first).c_str() << "=" << str_index->second << endl;
+
+    cout << endl;
+  }
+
+  void HPCT_Input_Class:: MsgToggle(int flag)
+  {
+    if(flag == 0)
+      {
+	_HPCT_Log.change_priority(HPCT_NOLOG);
+      }
+    else
+      {
+	_HPCT_Log.change_priority(HPCT_INFO);
+      }
+
+    return;
+  }
+
+  //--------------
+  // Scalar Reads
+  //--------------
+
+  template <typename T> int HPCT_Input_Class:: Read_Var(const char *var, T *value, T Var_Def)
+  {
+    if(! VerifyInit()) return 0;
+
+    *value = ifile(var,Var_Def);
+
+    if(*value == Var_Def)
+      {
+	if( !Get_Var(var,value) )
+	  {
+	    _HPCT_message(HPCT_ERROR,"fread","Unable to query variable -> ",var);
+	    return 0;
+	  }
+	else
+	  {
+	    _HPCT_message(HPCT_INFO,"fread: Using pre-registered value for variable",var,*value);
+	  }
+      }
+  
+    return 1;
+  }
+
+  //--------------
+  // Vector Reads
+  //--------------
+
+  template <typename T> int HPCT_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelems,T Var_Def)
+  {
+    int i;
+
+    if(! VerifyInit()) return 0;
+
+    for(i=0;i<nelems;i++)
+      {
+	value[i] = ifile(var,Var_Def,i);
+
+	if(value[i] == Var_Def)
+	  {
+	    _HPCT_message(HPCT_ERROR,"fread_ivec","Unable to query variable -> ",var);
+	    return 0;
+	  }
+      }
+ 
+    return 1;
+  }
+
+  //------------------
+  // ith Vector Reads
+  //------------------
+
+  template <typename T> int HPCT_Input_Class:: Read_Var_iVec(const char *var, T *value, int elem,T Var_Def)
+  {
+    int i;
+
+    if(! VerifyInit()) return 0;
+
+    *value = ifile(var,Var_Def,elem);
+
+    if(*value == Var_Def)
+      {
+	_HPCT_message(HPCT_ERROR,"fread_ivec","Unable to query variable -> ",var);
+	return 0;
+      }
+ 
+    return 1;
+  } 
+
+  //------------------------
+  // Character String Reads
+  //------------------------
+
+  int HPCT_Input_Class:: Read_Var(const char *var, char **value)
+  {
+    string tstring;
+
+    if(! VerifyInit()) return 0;
+  
+    tstring = ifile(var,Char_Def);
+    *value = (char *) malloc(tstring.length()*sizeof(char)+1);
+    strcpy(value[0],tstring.c_str());
+
+    if(strcmp(*value,Char_Def) == 0)
+      {
+
+	if( !Get_Var(var,value) )
+	  {
+	    _HPCT_message(HPCT_ERROR,"fread_char","Unable to query variable -> ",var);
+	    return 0;
+	  }
+	else 
+	  {
+	    _HPCT_message(HPCT_INFO,"fread_char","Using pre-registered value for variable",var);
+	  }
+      }
+    return 1;
+  }
+
+  int HPCT_Input_Class:: Read_Var_iVec(const char *var, char **value, int elem)
+  {
+    string tstring;
+
+    if(! VerifyInit()) return 0;
+  
+    tstring = ifile(var,Char_Def,elem);
+    *value = (char *) malloc(tstring.length()*sizeof(char)+1);
+    strcpy(value[0],tstring.c_str());
+
+    if(strcmp(*value,Char_Def) == 0)
+      {
+	_HPCT_message(HPCT_ERROR,"fread_char_ivec","Unable to query variable -> ",var);
+	return 0;
+      }
+    else
+      return 1;
+  }
+
+  //---------------------------------------
+  // Default Variable Value Registrations
+  //---------------------------------------
+
+  void HPCT_Input_Class:: Register_Var (const char *varname, int var)
+  {
+    default_ints[varname] = var;
+    return;
+  }
+
+  void HPCT_Input_Class:: Register_Var (const char *varname, float var)
+  {
+    default_floats[varname] = var;
+    return;
+  }
+
+  void HPCT_Input_Class:: Register_Var (const char *varname, double var)
+  {
+    default_doubles[varname] = var;
+    return;
+  }
+
+  void HPCT_Input_Class:: Register_Var (const char *varname, char *var)
+  {
+    default_strings[varname] = var;
+    return;
+  }
+
+  int HPCT_Input_Class:: Get_Var (const char *varname, int *var)
+  {
+    map<std::string, int > :: const_iterator index;
+  
+    index = default_ints.find(varname);
+
+    if( index == default_ints.end() )
+      {
+	_HPCT_message(HPCT_INFO,"register_get","No registered variable named",varname);
+	return(0);
+      }
+    else
+      {
+	*var = index->second;
+	return(1);
+      }
+
+  }
+
+  int HPCT_Input_Class:: Get_Var (const char *varname, float *var)
+  {
+    map<std::string, float > :: const_iterator index;
+  
+    index = default_floats.find(varname);
+
+    if( index == default_floats.end() )
+      {
+	_HPCT_message(HPCT_INFO,"register_get","No registered variable named",varname);
+	return(0);
+      }
+    else
+      {
+	*var = index->second;
+	return(1);
+      }
+
+  }
+
+  int HPCT_Input_Class:: Get_Var (const char *varname, double *var)
+  {
+    map<std::string, double > :: const_iterator index;
+  
+    index = default_doubles.find(varname);
+
+    if( index == default_doubles.end() )
+      {
+	_HPCT_message(HPCT_INFO,"register_get","No registered variable named",varname);
+	return(0);
+      }
+    else
+      {
+	*var = index->second;
+	return(1);
+      }
+
+  }
+
+  int HPCT_Input_Class:: Get_Var (const char *varname, char **var)
+  {
+    map<std::string, string > :: const_iterator index;
+    string tstring;
+  
+    index = default_strings.find(varname);
+
+    if( index == default_strings.end() )
+      {
+	_HPCT_message(HPCT_INFO,"register_get","No registered variable named",varname);
+	return(0);
+      }
+    else
+      {
+	tstring = index->second;
+	*var = (char *) malloc(tstring.length()*sizeof(char)+1);
+	strcpy(var[0],tstring.c_str());
+	return(1);
+      }
+
+  }
+
+  //------------------------------
+  // Supported Function Templates
+  //------------------------------
+
+  template int HPCT_Input_Class::Read_Var <int>          (const char *var, int    *value, int    vardef);
+  template int HPCT_Input_Class::Read_Var <float>        (const char *var, float  *value, float  vardef);
+  template int HPCT_Input_Class::Read_Var <double>       (const char *var, double *value, double vardef);
+
+  template int HPCT_Input_Class:: Read_Var_Vec <int>     (const char *var, int    *value, int nelem, int    Var_Def);
+  template int HPCT_Input_Class:: Read_Var_Vec <float>   (const char *var, float  *value, int nelem, float  Var_Def);
+  template int HPCT_Input_Class:: Read_Var_Vec <double>  (const char *var, double *value, int nelem, double Var_Def);
+
+  template int HPCT_Input_Class:: Read_Var_iVec <int>    (const char *var, int    *value, int elem,  int    Var_Def);
+  template int HPCT_Input_Class:: Read_Var_iVec <float>  (const char *var, float  *value, int elem,  float  Var_Def);
+  template int HPCT_Input_Class:: Read_Var_iVec <double> (const char *var, double *value, int elem,  double Var_Def);
+
+
+  //-------------------------------------
+  // HPCT_Timer_Class:: Member Functions
+  //-------------------------------------
+
+  // Notes: for portability concerns, we will go with a simple timeofday
+  // based timer.  This should give resolution that is order
+  // micro-seconds on desired systems.  Note that this also avoids any
+  // issues that cycle-based counters face due to cpu freqeuncy
+  // throttling or SMP issues due to potential thread migration.
   //
-  //  if( (t1 - timer_last) <= _HPCT_TIMER_THRESH )
-  //    _HPCT_message(_HPCT_wmask,__func__,"Timer accuracy may be insufficient - just measured:",
-  //		  t1-timer_last);
+  // A check is included to potentially warn against accuracy problems
+  // when the timer is used at a level below anticipated threshold
+  // accuracy.
+
+  HPCT_Timer_Class::HPCT_Timer_Class()   // default constructor
+  {
+    initialized    = 1;
+    timer_last     = 0.0;
+    timer_finalize = -1;
+  }
+
+  void HPCT_Timer_Class:: VerifyInit ()
+  {
+
+    if(_HPCT_Timers == NULL)
+      {
+	_HPCT_message(HPCT_ERROR,__func__,"timer uninitialized");
+	exit(1);
+      }
+
+    if(!initialized)
+      {
+	_HPCT_message(HPCT_ERROR,__func__,"timer uninitialized");
+	exit(1);
+      }
+
+  }
+
+  void HPCT_Timer_Class:: SaveTimerName (const char *id)
+  {
+    timer_name = id;
+    return;
+  }
+
+  void HPCT_Timer_Class:: BeginTimer (const char *id)
+  {
+    double mytime;
+    _HPCT_Type_TimerMap2 :: iterator index;
+
+    tTimer_Data Data;
+
+    //  VerifyInit();
+
+    mytime = RawTimer();
+
+    // Is this the first call for this id?
+
+    index = TimerMap.find(id);
+
+    if ( index == TimerMap.end() )
+      {
+	Data.timings[0] = 0.0;	                        // stores accumulated time
+	Data.timings[1] = mytime;                         // stores latest timestamp
+
+	TimerMap[id] = Data;
+      }
+    else
+      {
+	(index->second).timings[1] = mytime;             // stores latest timestamp
+      }
+
   
-  timer_last = t1;
-  return(t1);
+  }
 
-}
+  void HPCT_Timer_Class:: EndTimer (const char *id)
+  {
+    double      mytime, increment;
+    tTimer_Data Data;
+    char temp_string[120];
 
-double HPCT_Timer_Class:: ElapsedSeconds(const char *id)
-{
-  double elapsedseconds = 0.0;
+    _HPCT_Type_TimerMap2 :: iterator index;
 
-  _HPCT_Type_TimerMap2 :: const_iterator index = TimerMap.find(id);
+    mytime = RawTimer();
+    index  = TimerMap.find(id);
 
-  if ( index == TimerMap.end() )
-    _HPCT_message(_HPCT_emask,__func__,"No timer data available for",id);
-  else if( (index->second).timings[1] != -1)
-    _HPCT_message(_HPCT_emask,__func__,"Timer still active for",id);
-  else
-    elapsedseconds = (index->second).timings[0];
+    if ( index == TimerMap.end() )
+      _HPCT_message(HPCT_ERROR,__func__,"No timer data available for",id);
+    else if(index->first[1] < 0)
+      _HPCT_message(HPCT_ERROR,__func__,"No matching begin timer call for",id);
+    else
+      {
+	// update map with latest increment info
 
-  return elapsedseconds;
-}
+	increment = mytime - (index->second).timings[1];
 
-double HPCT_Timer_Class:: ElapsedGlobal()
-{
-  double elapsedseconds = 0.0;
-  double mytime;
+	// warn against potential measurements that are too small
 
-  mytime = RawTimer();
+	if( increment <= _HPCT_TIMER_THRESH )
+	  {
+	    sprintf(temp_string,"Timer accuracy may be insufficient (%.30s) - just measured",id);
+	    _HPCT_message(HPCT_WARN,__func__,temp_string,increment);
+	  }
 
-  _HPCT_Type_TimerMap2 :: const_iterator index = TimerMap.find(_HPCT_gtimer);
+	(index->second).timings[0] += increment;
+	(index->second).timings[1]  = -1.;
 
-  if ( index == TimerMap.end() )
-    _HPCT_message(_HPCT_emask,__func__,"No timer data available for",_HPCT_gtimer);
-  else if( (index->second).timings[1] != -1)     // inside active timer
-    elapsedseconds = mytime - (index->second).timings[1];
-  else if( (index->second).timings[1] == -1)     // outside active timer
-    elapsedseconds = (index->second).timings[0];
+	(index->second).stats(increment);
+      }
 
-  // if we are being called after a finalize(), include the elapsed
-  // time since the last global timer was updated
+    // Store the latest raw timer snapshot for the global timer region
+    // to allow users to query the global elapsed time after an
+    // hpct_timer_finalize()
 
-  if (timer_finalize > 0)
-    elapsedseconds += mytime - timer_finalize;
+    if ( strcmp(id,_HPCT_gtimer) == 0 )
+      timer_finalize = RawTimer();
 
-  return elapsedseconds;
-}
+    return;
+  }
 
-void HPCT_Timer_Class:: Summarize()
-{
-  vector <double> timings(2);
-  double totaltime,subtime;
-  double local_percentage, total_percentage;
-  int    global_time_defined = 0;
-  int    max_timer_name_width;
-  size_t display_id_width = 20;
-  size_t timer_name_width;
-  const size_t max_stdout_width = 120;
+  void HPCT_Timer_Class:: Reset()
+  {
+    _HPCT_Type_TimerMap2 :: iterator index;
 
-  _HPCT_Type_TimerMapSortLH _HPCT_TimerMapSortLH;
-  _HPCT_Type_TimerMapSortHL _HPCT_TimerMapSortHL;
+    if(_HPCT_Timers == NULL)
+      return;
 
-  _HPCT_Type_TimerMapSortLH :: iterator indexLH;
-  _HPCT_Type_TimerMapSortHL :: iterator indexHL;
+    if(!initialized)
+      return;
 
-  _HPCT_Type_TimerMap2 :: iterator index,gindex;
+    // Reset All timers
 
-  // Was a global timing region defined via HPCT_timer_init() and
-  // HPCT_timer_end()?  If so, use the total time to define runtime
-  // percentages.
+    for(index=TimerMap.begin(); index != TimerMap.end(); ++index)
+      {
+	(index->second).timings[0] = 0.0;             // reset raw timing info
+	(index->second).stats      = stats_empty;     // reset accumulator (no reset in Boost currently)
+      }
 
-  gindex = TimerMap.find(_HPCT_gtimer);
+    return;
+  }
 
-  if ( gindex != TimerMap.end() )
-    {
-      totaltime = (gindex->second).timings[0];
-      global_time_defined = 1;
+  double HPCT_Timer_Class:: RawTimer()
+  {
+    int rc;
+    struct timeval tv;
 
-      // Sum the timings from all subordinate keys
+    rc = gettimeofday (&tv, NULL);
+    if (rc == -1) {
+      printf("tmrc: gettimeofday\n");
+      return -1.;
+    }
 
-      subtime = 0.0;
+    double t1 =  ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec);
 
-      for(index=TimerMap.begin(); index != TimerMap.end(); ++index)
-	if(index != gindex)
-	  subtime += (index->second).timings[0];
+    // moved warning check to EndTimer
+    //
+    //  if( (t1 - timer_last) <= _HPCT_TIMER_THRESH )
+    //    _HPCT_message(HPCT_WARN,__func__,"Timer accuracy may be insufficient - just measured:",
+    //		  t1-timer_last);
+  
+    timer_last = t1;
+    return(t1);
 
-      // Temporarily reset the global key to store the exclusive cumulative time only.
+  }
 
-      (gindex->second).timings[0] = totaltime - subtime;
+  double HPCT_Timer_Class:: ElapsedSeconds(const char *id)
+  {
+    double elapsedseconds = 0.0;
+
+    _HPCT_Type_TimerMap2 :: const_iterator index = TimerMap.find(id);
+
+    if ( index == TimerMap.end() )
+      _HPCT_message(HPCT_ERROR,__func__,"No timer data available for",id);
+    else if( (index->second).timings[1] != -1)
+      _HPCT_message(HPCT_ERROR,__func__,"Timer still active for",id);
+    else
+      elapsedseconds = (index->second).timings[0];
+
+    return elapsedseconds;
+  }
+
+  double HPCT_Timer_Class:: ElapsedGlobal()
+  {
+    double elapsedseconds = 0.0;
+    double mytime;
+
+    mytime = RawTimer();
+
+    _HPCT_Type_TimerMap2 :: const_iterator index = TimerMap.find(_HPCT_gtimer);
+
+    if ( index == TimerMap.end() )
+      _HPCT_message(HPCT_ERROR,__func__,"No timer data available for",_HPCT_gtimer);
+    else if( (index->second).timings[1] != -1)     // inside active timer
+      elapsedseconds = mytime - (index->second).timings[1];
+    else if( (index->second).timings[1] == -1)     // outside active timer
+      elapsedseconds = (index->second).timings[0];
+
+    // if we are being called after a finalize(), include the elapsed
+    // time since the last global timer was updated
+
+    if (timer_finalize > 0)
+      elapsedseconds += mytime - timer_finalize;
+
+    return elapsedseconds;
+  }
+
+  void HPCT_Timer_Class:: Summarize()
+  {
+    vector <double> timings(2);
+    double totaltime,subtime;
+    double local_percentage, total_percentage;
+    int    global_time_defined = 0;
+    int    max_timer_name_width;
+    size_t display_id_width = 20;
+    size_t timer_name_width;
+    const size_t max_stdout_width = 120;
+
+    _HPCT_Type_TimerMapSortLH _HPCT_TimerMapSortLH;
+    _HPCT_Type_TimerMapSortHL _HPCT_TimerMapSortHL;
+
+    _HPCT_Type_TimerMapSortLH :: iterator indexLH;
+    _HPCT_Type_TimerMapSortHL :: iterator indexHL;
+
+    _HPCT_Type_TimerMap2 :: iterator index,gindex;
+
+    // Was a global timing region defined via HPCT_timer_init() and
+    // HPCT_timer_end()?  If so, use the total time to define runtime
+    // percentages.
+
+    gindex = TimerMap.find(_HPCT_gtimer);
+
+    if ( gindex != TimerMap.end() )
+      {
+	totaltime = (gindex->second).timings[0];
+	global_time_defined = 1;
+
+	// Sum the timings from all subordinate keys
+
+	subtime = 0.0;
+
+	for(index=TimerMap.begin(); index != TimerMap.end(); ++index)
+	  if(index != gindex)
+	    subtime += (index->second).timings[0];
+
+	// Temporarily reset the global key to store the exclusive cumulative time only.
+
+	(gindex->second).timings[0] = totaltime - subtime;
       
-    }
+      }
   
-  // sort the list via timings for output to the masses
+    // sort the list via timings for output to the masses
 
-  for(index=TimerMap.begin(); index != TimerMap.end(); ++index)
-    {
+    for(index=TimerMap.begin(); index != TimerMap.end(); ++index)
+      {
 
-      if( index->first != gindex->first)
-	{
-	  timings[0] = (index->second).timings[0];
-	  timings[1] = (index->second).timings[1];
+	if( index->first != gindex->first)
+	  {
+	    timings[0] = (index->second).timings[0];
+	    timings[1] = (index->second).timings[1];
 
-	  _HPCT_TimerMapSortHL[timings] = index->first;
+	    _HPCT_TimerMapSortHL[timings] = index->first;
 
-	  // Update display width if this identifier is longer than default
+	    // Update display width if this identifier is longer than default
 
-	  display_id_width = max(display_id_width, index->first.length()+1);
-	  display_id_width = min(display_id_width, max_stdout_width - 35);
-	}
-    }
+	    display_id_width = max(display_id_width, index->first.length()+1);
+	    display_id_width = min(display_id_width, max_stdout_width - 35);
+	  }
+      }
 
-  total_percentage = 0.0;
+    total_percentage = 0.0;
 
-  printf("\n");
-  for(int i=0;i<display_id_width+35;i++)
-    printf("-");
-
-  if(show_statistics)
-    for(int i=0;i<40;i++)
+    printf("\n");
+    for(int i=0;i<display_id_width+35;i++)
       printf("-");
 
-  printf("\n");
+    if(show_statistics)
+      for(int i=0;i<40;i++)
+	printf("-");
 
-  max_timer_name_width = display_id_width + 13;
+    printf("\n");
 
-  string varstring = timer_name.substr(0,max_timer_name_width-1);
+    max_timer_name_width = display_id_width + 13;
 
-  printf("%s - %-*s ",varstring.c_str(),(int)(display_id_width+32-varstring.length()),"Performance Timings:");
+    string varstring = timer_name.substr(0,max_timer_name_width-1);
 
-  if(show_statistics)
-    printf("|      Mean      Variance       Count");
+    printf("%s - %-*s ",varstring.c_str(),(int)(display_id_width+32-varstring.length()),"Performance Timings:");
 
-  printf("\n");
+    if(show_statistics)
+      printf("|      Mean      Variance       Count");
 
-  // Print results for all user-defined timer keys
+    printf("\n");
 
-  for(indexHL=_HPCT_TimerMapSortHL.begin(); indexHL != _HPCT_TimerMapSortHL.end(); ++indexHL)
-    {
+    // Print results for all user-defined timer keys
 
-      string varstring = indexHL->second.substr(0,display_id_width-1);
-      printf("--> %-*s: %10.5e secs",(int)display_id_width,varstring.c_str(),indexHL->first[0]);
+    for(indexHL=_HPCT_TimerMapSortHL.begin(); indexHL != _HPCT_TimerMapSortHL.end(); ++indexHL)
+      {
 
-      if(global_time_defined)
-	{
-	  local_percentage  = 100.*indexHL->first[0]/(totaltime);
-	  total_percentage += local_percentage;
-	  printf(" (%8.4f %%)",local_percentage);
-	}
+	string varstring = indexHL->second.substr(0,display_id_width-1);
+	printf("--> %-*s: %10.5e secs",(int)display_id_width,varstring.c_str(),indexHL->first[0]);
+
+	if(global_time_defined)
+	  {
+	    local_percentage  = 100.*indexHL->first[0]/(totaltime);
+	    total_percentage += local_percentage;
+	    printf(" (%8.4f %%)",local_percentage);
+	  }
       
-      if(show_statistics)
-	{
-	  if(indexHL->second !=  _HPCT_gtimer )
-	    {
-	      gindex = TimerMap.find(indexHL->second);
-	      printf(" | [%10.5e  %10.5e  %9zi]",
-		     boost::accumulators::mean    ((gindex->second).stats),
-		     boost::accumulators::variance((gindex->second).stats),
-		     boost::accumulators::count   ((gindex->second).stats));
-	    }
-	}
+	if(show_statistics)
+	  {
+	    if(indexHL->second !=  _HPCT_gtimer )
+	      {
+		gindex = TimerMap.find(indexHL->second);
+		printf(" | [%10.5e  %10.5e  %9zi]",
+		       boost::accumulators::mean    ((gindex->second).stats),
+		       boost::accumulators::variance((gindex->second).stats),
+		       boost::accumulators::count   ((gindex->second).stats));
+	      }
+	  }
       
-      printf("\n");
+	printf("\n");
       
-    }
+      }
 
-  // Print results for left-over contribution in main timer
+    // Print results for left-over contribution in main timer
 
-  gindex = TimerMap.find(_HPCT_gtimer);
+    gindex = TimerMap.find(_HPCT_gtimer);
 
-  printf("--> %-*s: %10.5e secs",(int)display_id_width,_HPCT_gtimer,
-	 (gindex->second).timings[0]);
+    printf("--> %-*s: %10.5e secs",(int)display_id_width,_HPCT_gtimer,
+	   (gindex->second).timings[0]);
 
-  if(global_time_defined)
-    {
-      local_percentage  = 100.*(gindex->second).timings[0]/(totaltime);
-      total_percentage += local_percentage;
-      printf(" (%8.4f %%)",local_percentage);
-    }
+    if(global_time_defined)
+      {
+	local_percentage  = 100.*(gindex->second).timings[0]/(totaltime);
+	total_percentage += local_percentage;
+	printf(" (%8.4f %%)",local_percentage);
+      }
 
-  printf("\n");
+    printf("\n");
 
-  // A little sanity checking on the results
+    // A little sanity checking on the results
       
-  if(global_time_defined)
-    {
-      printf("\n %*s = %10.5e secs (%8.4f %%)\n",(int)display_id_width+2,"Total Measured Time",
-	     totaltime,total_percentage);
+    if(global_time_defined)
+      {
+	printf("\n %*s = %10.5e secs (%8.4f %%)\n",(int)display_id_width+2,"Total Measured Time",
+	       totaltime,total_percentage);
 
-      if( fabs(total_percentage - 100.0) > _HPCT_PERC_TOL )
-	{
-	  printf("\n%s: Profile percentages do not sum to 100 %%.\n",_HPCT_wmask);
-	  printf("This likely means that you defined timer keys which are\n");
-	  printf("not mutually exclusive.\n");
-	}
+	if( fabs(total_percentage - 100.0) > _HPCT_PERC_TOL )
+	  {
+	    printf("\n%s: Profile percentages do not sum to 100 %%.\n",_HPCT_wmask);
+	    printf("This likely means that you defined timer keys which are\n");
+	    printf("not mutually exclusive.\n");
+	  }
       
-      // Restore the global key timing to store inclusive cumulative time 
+	// Restore the global key timing to store inclusive cumulative time 
 
-      (gindex->second).timings[0] += subtime;
+	(gindex->second).timings[0] += subtime;
 
-    }
+      }
 
-  for(int i=0;i<display_id_width+35;i++)
-    printf("-");
-
-  if(show_statistics)
-
-    for(int i=0;i<40;i++)
+    for(int i=0;i<display_id_width+35;i++)
       printf("-");
 
-  printf("\n\n");
-}
+    if(show_statistics)
 
-//-------------------------------------
-// HPCT_Math_Class:: Member Functions
-//-------------------------------------
+      for(int i=0;i<40;i++)
+	printf("-");
+
+    printf("\n\n");
+  }
+
+  //-------------------------------------
+  // HPCT_Math_Class:: Member Functions
+  //-------------------------------------
 
   HPCT_Math_Class::HPCT_Math_Class( ) // default constructor
   {
     return;
+  }
+
+  //-------------------------------------
+  // HPCT_Log_Class:: Member Functions
+  //-------------------------------------
+
+  HPCT_Log_Class::HPCT_Log_Class()
+  {
+
+    // set default log level
+    
+    log_level = HPCT_INFO;
+
+    // set default log masks for each priority level
+
+    LogMask[HPCT_FATAL] = "[*] Fatal: ";
+    LogMask[HPCT_ERROR] = "[*] Error: ";
+    LogMask[HPCT_WARN ] = "[*] Warn:  ";
+    LogMask[HPCT_INFO ] = "[*] Info:  ";
+    LogMask[HPCT_DEBUG] = "[*] Debug: ";
+
+    return;
+  }
+
+  void HPCT_Log_Class::change_priority(int priority)
+  {
+    log_level = priority;
+    return;
+  }
+
+  void HPCT_Log_Class::msg(int priority, const string msg)
+  {
+    if(isLog(priority))
+      {
+	cout << LogMask[priority];
+	cout << msg << endl;
+      }
+
+    return;
+  }
+
+  inline bool HPCT_Log_Class::isLog( int priority)
+  {
+    return(priority <= log_level);
   }
 
 }

@@ -22,6 +22,10 @@ int main(int argc, char **argv)
 {
   int flag = 1;
 
+  /* Silence info/warn/error messages */
+
+  hpct_log_setlevel(HPCT_NOLOG);
+
   /* Failure should occur if we attempt to clobber this binary */
   {
     flag *= (-1 == hpct_check_file_path("C_check_file_path/foo"));

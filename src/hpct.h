@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 //
-// Copyright (C) 2008,2009 The PECOS Development Team
+// Copyright (C) 2008,2009,2010 The PECOS Development Team
 //
 // Please see http://pecos.ices.utexas.edu for more information.
 //
@@ -27,6 +27,9 @@
 // $Id$
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
+
+#ifndef HPCT_H_
+#define HPCT_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -116,12 +119,34 @@ extern "C" {
   extern int hpct_float_isinf             (float  *val);
 
   /*
+   * Logging Utilities
+   */
+
+  /* Available logging priorities; roughly mimics syslog priority levels but with
+   * fewer options. Also provides a NOLOG option to disable all log messages. 
+   */
+  
+  typedef enum {HPCT_NOLOG  =  -1,
+		HPCT_FATAL  =   0,
+		HPCT_ERROR  = 100,
+		HPCT_WARN   = 200,
+		HPCT_INFO   = 300,
+		HPCT_DEBUG  = 400,
+		HPCT_ALL    = 500
+  } PriorityLevel;
+
+  extern void hpct_log_setlevel           (int priority);
+  extern void hpct_log                    (int loglevel, const char *mesg);
+
+  /*
    * Miscellaneous Utilities
    */
 
   extern int    hpct_check_file_path      (const char *pathname);
   extern int    hpct_create_unique_dir    (      char *name_template);
   extern int    hpct_create_scratch_dir   (      char *name_template);
+
+
 
   /*
    * Doxygen API Definitions
@@ -181,4 +206,6 @@ extern "C" {
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

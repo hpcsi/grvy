@@ -1,7 +1,8 @@
+// -*-c++-*-
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 //
-// Copyright (C) 2008,2009 The PECOS Development Team
+// Copyright (C) 2008,2009,2010 The PECOS Development Team
 //
 // Please see http://pecos.ices.utexas.edu for more information.
 //
@@ -28,6 +29,9 @@
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 
+#ifndef HPCT_CLASSES_H_
+#define HPCT_CLASSES_H_
+
 #include<limits>
 #include<map>
 #include<vector>
@@ -51,8 +55,8 @@ namespace HPCT {
 
 class HPCT_Input_Class {
  private:
-  GetPot    ifile;                           // input file
-  short int initialized;                         // input file initialized?
+  GetPot    ifile;                   // input file
+  short int initialized;             // input file initialized?
   short int silent;                  // Silence error messages?
 
   // Registry Maps
@@ -79,7 +83,6 @@ class HPCT_Input_Class {
   int  Open         (const char *filename);
   int  Close        ();
   void MsgToggle    (int flag);
-  void ErrorMsg     (const char *func_name, const char *var);
 
   int  Fdump        ();
   int  Fdump        (const char *prefix);
@@ -209,5 +212,36 @@ class HPCT_Math_Class {
 
 };
 
+  //--------------------------
+  // Logging Class
+  //--------------------------
+
+#if 0  
+  // Logging priorities; roughly mimics syslog priority levels but with
+  // fewer options.
+  
+  typedef enum {HPCT_NOLOG  =  -1,
+		HPCT_FATAL  =   0,
+		HPCT_ERROR  = 100,
+		HPCT_WARN   = 200,
+		HPCT_INFO   = 300,
+		HPCT_DEBUG  = 400,
+		HPCT_NOTSET = 500
+  } PriorityLevel;
+#endif
+
+  class HPCT_Log_Class {
+  private:
+    int log_level;			     // Current log level priority
+    map<int,std::string> LogMask;            // String masks for log messages
+  public:
+    HPCT_Log_Class();		
+
+    bool isLog (int priority);	             // log priority sufficient to generate message?
+    void msg   (int priority, string msg);   // post new log message with a priority
+    void change_priority(int priority);      // change current log level priority
+  };
 
 }
+
+#endif
