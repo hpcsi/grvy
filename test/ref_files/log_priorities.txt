@@ -1,3 +1,4 @@
+
 Priority = ALL
 [*] Fatal: a fine fatal message
 [*] Error: an astute error message
