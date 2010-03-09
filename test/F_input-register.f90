@@ -12,10 +12,18 @@ program main
   implicit none
 
   integer(4)        :: flag
+
+  ! to be written
   integer(4)        :: iset = 123
   real(4)           :: fset = 456.7
   real(8)           :: dset = 123.e10
   character(len=60) :: sset = "I am the very model of a modern Major-General"
+
+  ! to be read
+  integer(4)        :: igot
+  real(4)           :: fgot 
+  real(8)           :: dgot 
+  character(len=60) :: sgot
 
   ! Register variable (used for backwards-compatible input file support)
 
@@ -43,25 +51,25 @@ program main
   ! even if they are not present in the input file
   call hpct_log_setlevel(HPCT_NOLOG)
 
-  igot=-1;
-  fgot=-1.;
-  dgot=-1.;
-  sgot=NULL;
+  igot=-1
+  fgot=-1.
+  dgot=-1.
+  sgot= ""
 
-  call hpct_input_fread_int   ("sec1/aint",igot,flag);
-  call hpct_input_fread_float ("sec1/afloat",fgot,flag);
-  call hpct_input_fread_double("sec1/adouble",dgot,flag);
-  call hpct_input_fread_char  ("sec1/astring",sgot,flag);
-  call hpct_input_fclose      ();
+  call hpct_input_fread_int   ("sec1/aint",igot,flag)
+  call hpct_input_fread_float ("sec1/afloat",fgot,flag)
+  call hpct_input_fread_double("sec1/adouble",dgot,flag)
+  call hpct_input_fread_char  ("sec1/astring",sgot,flag)
+  call hpct_input_fclose      ()
 
   if(flag .eq. 0) then
-     exit(1);
+     call exit(1);
   endif
 
   if(igot .ne. iset .or. fgot .ne. fset .or. dgot .ne. dset) then  
-     exit(1);
+     call exit(1);
   endif
 
-  return 0;
+  call exit(0)
   
 end program main
