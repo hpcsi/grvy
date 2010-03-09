@@ -1,4 +1,4 @@
-#                                               -*- Autoconf -*-
+# -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
@@ -27,11 +27,13 @@ GENERIC_RELEASE=$GENERIC_MAJOR_VERSION.$GENERIC_MINOR_VERSION
 AC_SUBST(GENERIC_RELEASE)
 
 # Required for some macros
+
 #AX_AM_MACROS
 
 #------------------------------
 # Checks for required programs
 #------------------------------
+
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_FC
@@ -46,6 +48,7 @@ AM_SANITY_CHECK
 #---------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
 #---------------------------------------------------------------
+
 AC_C_CONST
 AC_HEADER_STDBOOL
 AX_TLS
@@ -57,7 +60,7 @@ AX_TLS
 AC_LANG([C++])
 BOOST_REQUIRE([1.36])
 BOOST_MATH
-BOOST_PROGRAM_OPTIONS
+#BOOST_PROGRAM_OPTIONS
 AC_CACHE_SAVE
 
 #------------------------------
