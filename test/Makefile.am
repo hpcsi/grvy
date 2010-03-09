@@ -6,7 +6,7 @@ check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 		  C_check_file_path C_input_fdump C_log
 
 check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math F_log \
-		  F_input_read_variables
+		  F_input_read_variables F_input-nofile
 
 INCLUDES        = -I$(top_srcdir)/src -I$(top_builddir)/src
 LIBS            = -L$(top_builddir)/src -lhpct
@@ -39,7 +39,9 @@ F_scratch_dir_SOURCES     = F_scratch_dir.f90
 F_math_SOURCES            = F_math.f90
 F_check_file_path_SOURCES = F_check_file_path.f90
 F_log_SOURCES             = F_log.f90
+# nick new tests
 F_input_read_variables_SOURCES = F_input_read_variables.f90
+F_input_nofile_SOURCES = F_input-nofile.f90
 
 TESTS_ENVIRONMENT = HPCT_INPUT_EXAMPLE_DIR=$(srcdir)
 TESTS             = init.sh \
@@ -61,6 +63,7 @@ TESTS             = init.sh \
 		    F_wrapper_log.sh \
 		    F_math \
 		    F_input_read_variables \
+		    F_input-nofile \
 		    finalize.sh
 
 EXTRA_DIST = init.sh finalize.sh input-example.txt \
