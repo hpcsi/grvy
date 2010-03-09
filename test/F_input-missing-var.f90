@@ -8,7 +8,7 @@ program main
   use hpct
   implicit none
 
-  integer           :: ret_value = 1
+  integer           :: ret_value = 0 ! 0 for success, 1 for failure
   real              :: reyn
   character(len=60) :: filename
 

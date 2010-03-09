@@ -9,7 +9,7 @@ program main
   implicit none
   
   real           :: reyn,mach,aoa, A(3)
-  integer        :: iter_max,turbulent, ivar1,ivec(4)
+  integer        :: iter_max,turbulent, ivar1,ivec(4),ivar2(2)
   integer(4)     :: ret_value, flag ! 0 for success, 1 for failure
   character      :: key1*100 = ''
   character      :: key2*100 = ''
@@ -32,7 +32,7 @@ program main
   call hpct_input_fread_int  ("solver/turbulence",turbulent,flag)
   call hpct_input_fread_char_ivec("solver/keywords",key1,1,flag)
   call hpct_input_fread_char_ivec("solver/keywords",key2,2,flag)
-  !call hpct_input_fread_float_vec("turbulence/A",A,3,flag)
+  call hpct_input_fread_real_vec("turbulence/A",A,3,flag)
 
   ! ----- read from VERIFY section -----
 
@@ -44,7 +44,6 @@ program main
   
 
   call hpct_input_fclose()
-  
   
   call exit(ret_value)
 
