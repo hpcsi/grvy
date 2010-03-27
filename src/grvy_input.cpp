@@ -49,7 +49,6 @@ const long       Long_Def = -9999999;
 const char*      Char_Def = "unknown";
 
 static GRVY_Input_Class _GRVY_Input;     // input class
-const char *_Error_Mask   = "[*] Error"; // default error notification
 
 //-----------------------------------------------------------------
 //                       ye ol' C Interfaces

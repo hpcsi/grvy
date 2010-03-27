@@ -1,6 +1,6 @@
-h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h
+h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h hpct.h
 cc_sources              = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp \
-		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp
+		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_hpct_compat.cpp
 
 getpot_sources          = common/getpot/getpot.h
 
