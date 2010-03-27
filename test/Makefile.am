@@ -17,7 +17,9 @@ AM_F77FLAGS     = $(INCLUDES)
 AM_FCFLAGS      = $(INCLUDES)
 AM_LDFLAGS      = $(LIBS)
 
-# C Tests
+#---------------
+# C Test Sources
+#---------------
 
 C_input_read_variables_SOURCES                 = C_input.c C_examplefile.c examplefile.h
 C_input_nofile_available_SOURCES               = C_input-nofile.c
@@ -33,7 +35,9 @@ C_check_file_path_SOURCES                      = C_check_file_path.c
 C_input_fdump_SOURCES                          = C_input_dump.c C_examplefile.c examplefile.h
 C_log					       = C_log.c
 
-# Fortran Tests
+#-----------------
+# F90 Test Sources
+#-----------------
 
 F_unique_dir_SOURCES                           = F_unique_dir.f90
 F_scratch_dir_SOURCES                          = F_scratch_dir.f90
@@ -77,4 +81,5 @@ EXTRA_DIST        = init.sh finalize.sh input-example.txt \
 	            F_wrapper_scratch_dir.sh \
 	            F_wrapper_check_file_path.sh \
                     C_wrapper_log.sh \
-                    F_wrapper_log.sh
+                    F_wrapper_log.sh \
+                    ref_files
