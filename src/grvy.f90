@@ -144,11 +144,23 @@ module grvy
        integer   :: flag
      end subroutine grvy_input_register_int
 
+     subroutine grvy_input_register_get_int(var,value,flag)
+       character :: var
+       integer   :: value
+       integer   :: flag
+     end subroutine grvy_input_register_get_int
+
      subroutine grvy_input_register_float(var,value,flag)
        character :: var
        real      :: value
        integer   :: flag
      end subroutine grvy_input_register_float
+
+     subroutine grvy_input_register_get_float(var,value,flag)
+       character :: var
+       real      :: value
+       integer   :: flag
+     end subroutine grvy_input_register_get_float
 
      subroutine grvy_input_register_double(var,value,flag)
        character :: var
@@ -156,11 +168,23 @@ module grvy
        integer   :: flag
      end subroutine grvy_input_register_double
 
+     subroutine grvy_input_register_get_double(var,value,flag)
+       character :: var
+       real*8    :: value
+       integer   :: flag
+     end subroutine grvy_input_register_get_double
+
      subroutine grvy_input_register_char(var,value,flag)
        character :: var
        character :: value
        integer   :: flag
      end subroutine grvy_input_register_char
+
+     subroutine grvy_input_register_get_char(var,value,flag)
+       character :: var
+       character :: value
+       integer   :: flag
+     end subroutine grvy_input_register_get_char
 
      ! ---------------
      ! Timing Routines

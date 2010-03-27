@@ -141,6 +141,52 @@ extern "C" void grvy_input_toggle_messages(int flag)
   _GRVY_Input.MsgToggle(flag);
 }
 
+// Variable Registration Routines
+
+extern "C" int grvy_input_register_int(const char *var,int value)
+{
+  _GRVY_Input.Register_Var(var,value);
+  return 1;
+}
+
+extern "C" int grvy_input_register_float(const char *var,float value)
+{
+  _GRVY_Input.Register_Var(var,value);
+  return 1;
+}
+
+extern "C" int grvy_input_register_double(const char *var,double value)
+{
+  _GRVY_Input.Register_Var(var,value);
+  return 1;
+}
+
+extern "C" int grvy_input_register_char       (const char *var,char *value)
+{
+  _GRVY_Input.Register_Var(var,value);
+  return 1;
+}
+
+extern "C" int grvy_input_register_get_int    (const char *var,int *value)
+{
+  return( _GRVY_Input.Get_Var(var,value) );
+}
+
+extern "C" int grvy_input_register_get_float  (const char *var,float *value)
+{
+  return( _GRVY_Input.Get_Var(var,value) );
+}
+
+extern "C" int grvy_input_register_get_double (const char *var,double *value)
+{
+  return( _GRVY_Input.Get_Var(var,value) );
+}
+
+extern "C" int grvy_input_register_get_char   (const char *var,char **value)
+{
+  return( _GRVY_Input.Get_Var(var,value) );
+}
+
 //-----------------------------------------------------------------
 //                     Fortran Interfaces
 //-----------------------------------------------------------------
@@ -385,6 +431,8 @@ extern "C" void grvy_input_toggle_messages_(int *flag)
   return;
 }
 
+// Variable Registration Routines
+
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void grvy_input_register_int_(char *var,int *value,int *flag,int _namelen)
 #else
@@ -444,50 +492,65 @@ extern "C" void grvy_input_register_char_(char *var,int _namelen,char *value,int
   return;
 }
 
-//--------------------------------
-// Variable Registration Routines
-//--------------------------------
-
-extern "C" int grvy_input_register_int(const char *var,int value)
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void grvy_input_register_get_int_    (char *var,int *value,int *flag,int _namelen)
+#else
+extern "C" void grvy_input_register_get_int_    (char *var,int _namelen,int *value,int *flag)
+#endif
 {
-  _GRVY_Input.Register_Var(var,value);
-  return 1;
+  char *name = grvy_f2c_char(var,_namelen);
+  *flag = _GRVY_Input.Get_Var(name,value);
+
+  delete[] name;
+  return;
 }
 
-extern "C" int grvy_input_register_float(const char *var,float value)
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void grvy_input_register_get_float_  (char *var,float *value,int *flag,int _namelen)
+#else
+extern "C" void grvy_input_register_get_float_  (char *var,int _namelen,float *value,int *flag)
+#endif
 {
-  _GRVY_Input.Register_Var(var,value);
-  return 1;
+  char *name = grvy_f2c_char(var,_namelen);
+  *flag =  _GRVY_Input.Get_Var(name,value);
+
+  delete[] name;
+  return;
 }
 
-extern "C" int grvy_input_register_double(const char *var,double value)
+
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void grvy_input_register_get_double_ (char *var,double *value,int *flag,int _namelen)
+#else
+extern "C" void grvy_input_register_get_double_ (char *var,int _namelen,double *value,int *flag)
+#endif
 {
-  _GRVY_Input.Register_Var(var,value);
-  return 1;
+  char *name = grvy_f2c_char(var,_namelen);
+  *flag = _GRVY_Input.Get_Var(name,value);
+
+  delete[] name;
+  return;
 }
 
-extern "C" int grvy_input_register_char       (const char *var,char *value)
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void grvy_input_register_get_char_   (char *var,char *value,int *flag,int _namelen,int _storage)
+#else
+extern "C" void grvy_input_register_get_char_   (char *var,int _namelen,char *value,int _storage,int *flag)
+#endif
 {
-  _GRVY_Input.Register_Var(var,value);
-  return 1;
+  char *tmpvar;
+
+  // Note: tiny bit sneaky; for C/C++ we will receive a char * back
+  // with the correct amount of storage space for the desired input string.
+  // For Fortran, we will require that the space be allocated in advance and
+  // hence, we need an extra copy here after completing the call.
+
+  char *name = grvy_f2c_char(var,_namelen);
+  *flag = _GRVY_Input.Get_Var(name,&tmpvar);
+
+  strncpy(value,tmpvar,strlen(tmpvar));
+
+  delete[] name;
+  return;
 }
 
-extern "C" int grvy_input_register_get_int    (const char *var,int *value)
-{
-  return( _GRVY_Input.Get_Var(var,value) );
-}
-
-extern "C" int grvy_input_register_get_float  (const char *var,float *value)
-{
-  return( _GRVY_Input.Get_Var(var,value) );
-}
-
-extern "C" int grvy_input_register_get_double (const char *var,double *value)
-{
-  return( _GRVY_Input.Get_Var(var,value) );
-}
-
-extern "C" int grvy_input_register_get_char   (const char *var,char **value)
-{
-  return( _GRVY_Input.Get_Var(var,value) );
-}
