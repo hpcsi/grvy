@@ -1,5 +1,5 @@
 !*----------------------------------------------
-! * HPCT Test Suite
+! * GRVY Test Suite
 ! *
 ! * Input variable registration
 ! *
@@ -7,7 +7,7 @@
 ! *----------------------------------------------
 
 program main
-  use hpct
+  use grvy
   implicit none
 
   integer(4)        :: flag       ! 
@@ -27,17 +27,17 @@ program main
 
   ! Register variable (used for backwards-compatible input file support)
 
-  call hpct_input_register_int   ("sec1/aint",iset,flag)
-  call hpct_input_register_float ("sec1/afloat", fset,flag)
-  call hpct_input_register_double("sec1/adouble",dset,flag)
-  call hpct_input_register_char  ("sec1/astring",sset,flag)
+  call grvy_input_register_int   ("sec1/aint",iset,flag)
+  call grvy_input_register_float ("sec1/afloat", fset,flag)
+  call grvy_input_register_double("sec1/adouble",dset,flag)
+  call grvy_input_register_char  ("sec1/astring",sset,flag)
 
   ! Verify that we can recover what we registered as default
 
-!  call hpct_input_register_get_int   ("sec1/aint",igot,flag)
-!  call hpct_input_register_get_float ("sec1/afloat",fgot,flag)
-!  call hpct_input_register_get_double("sec1/adouble",dgot,flag)
-!  call hpct_input_register_get_char  ("sec1/astring",sgot,flag)
+!  call grvy_input_register_get_int   ("sec1/aint",igot,flag)
+!  call grvy_input_register_get_float ("sec1/afloat",fgot,flag)
+!  call grvy_input_register_get_double("sec1/adouble",dgot,flag)
+!  call grvy_input_register_get_char  ("sec1/astring",sgot,flag)
 
   if(flag.eq.0) then
      call exit(1)
@@ -49,7 +49,7 @@ program main
 
   ! Verify that we can recover registered default variables
   ! even if they are not present in the input file
-  call hpct_log_setlevel(HPCT_NOLOG)
+  call grvy_log_setlevel(GRVY_NOLOG)
 
   igot=-1
   fgot=-1.
@@ -57,12 +57,12 @@ program main
   sgot= ""
 
   !call build_example_file_path    (filepath,flag)
-  !call hpct_input_fopen           (filepath,flag)
-  !call hpct_input_fread_int   ("sec1/aint",igot,flag)
-  !call hpct_input_fread_real  ("sec1/afloat",fgot,flag)
-  !call hpct_input_fread_double("sec1/adouble",dgot,flag)
-  !call hpct_input_fread_char  ("sec1/astring",sgot,flag)
-  !call hpct_input_fclose          ()
+  !call grvy_input_fopen           (filepath,flag)
+  !call grvy_input_fread_int   ("sec1/aint",igot,flag)
+  !call grvy_input_fread_real  ("sec1/afloat",fgot,flag)
+  !call grvy_input_fread_double("sec1/adouble",dgot,flag)
+  !call grvy_input_fread_char  ("sec1/astring",sgot,flag)
+  !call grvy_input_fclose          ()
 
   if(flag .eq. 0) then
      call exit(1);

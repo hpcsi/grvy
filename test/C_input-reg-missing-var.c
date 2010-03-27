@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hpct.h"
+#include <grvy.h>
 
 /*----------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  *
  * Variable registration - missing var check
  *
@@ -17,11 +17,11 @@ int main(int argc, char **argv)
   int flag = 0;
   int igot;
 
-  hpct_input_toggle_messages(0);
+  grvy_input_toggle_messages(0);
 
   /* Verify error on unknown variable query */
 
-  flag *= hpct_input_register_get_int   ("solver/aint",&igot);
+  flag *= grvy_input_register_get_int   ("solver/aint",&igot);
 
   if(flag == 1)
       exit(1);

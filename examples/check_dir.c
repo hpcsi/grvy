@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "hpct.h"
+#include <grvy.h>
 
 /*----------------------------------------------
 /* Simple C example illustrating creation of 
- * parent directories for output files via HPCT.
+ * parent directories for output files via GRVY.
  *
  * $Id$
  *----------------------------------------------*/
@@ -29,11 +29,11 @@ int main(int argc, char **argv)
 
   /* Create parent directories if necessary */
 
-  hpct_check_file_path(filepath1);
-  hpct_check_file_path(filepath2);
-  hpct_check_file_path(filepath3);
-  hpct_check_file_path(filepath4);
-  hpct_check_file_path(filepath5);
+  grvy_check_file_path(filepath1);
+  grvy_check_file_path(filepath2);
+  grvy_check_file_path(filepath3);
+  grvy_check_file_path(filepath4);
+  grvy_check_file_path(filepath5);
 
   /* Write to the files */
 

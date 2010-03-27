@@ -1,6 +1,6 @@
 program F_unique_dir
-  use hpct;
-  implicit none;
+  use grvy
+  implicit none
 
   character*12 :: program_name = "F_unique_dir"
 
@@ -11,10 +11,10 @@ program F_unique_dir
   character*34 :: valid_template   = "TempDir_itHasSixTrailingExesXXXXXX"
   character*34 :: backup_template
 
-  call hpct_log_setlevel(HPCT_NOLOG)
+  call grvy_log_setlevel(GRVY_NOLOG)
 
   backup_template = invalid_template
-  call hpct_create_unique_dir(invalid_template, flag);
+  call grvy_create_unique_dir(invalid_template, flag);
   if (flag.eq.0) then
     write (*,*) "Expected nonzero return for invalid template"
     retval = 1
@@ -25,7 +25,7 @@ program F_unique_dir
   end if
 
   backup_template = valid_template
-  call hpct_create_unique_dir(valid_template, flag);
+  call grvy_create_unique_dir(valid_template, flag);
   if (flag.ne.0) then
     write (*,*) "Expected zero return for valid template"
     retval = 1

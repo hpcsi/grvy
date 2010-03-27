@@ -1,6 +1,6 @@
 #!/bin/bash
 #--------------------------------------------------------------------------
-# HPCT Test Suite
+# GRVY Test Suite
 #
 # Wrapper for C_log which creates log messages with a variety of priority
 # settings.
@@ -19,7 +19,7 @@ fi
 
 # Create housing spot for test results
 
-TESTDIR=.hpct.testing.$RANDOM
+TESTDIR=.grvy.testing.$RANDOM
 
 mkdir $TESTDIR
 if test ! -d $TESTDIR ; then

@@ -3,5 +3,5 @@
 echo " "
 echo " "
 echo "-------------------------------------------------------"
-echo " Initializing HPCT Tests"
+echo "Initializing GRVY Tests"
 echo "-------------------------------------------------------"

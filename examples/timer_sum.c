@@ -1,4 +1,4 @@
-#include<hpct.h>
+#include<grvy.h>
 #include<stdio.h>
 #include<unistd.h>
 
@@ -25,12 +25,12 @@ int main()
   for(itest=0;itest<num_repeat;itest++)
     {
 
-      hpct_timer_reset();
+      grvy_timer_reset();
 
       for(i=0;i<Max_Iters;i++)
 	{
 
-	  hpct_timer_init("HPCT");
+	  grvy_timer_init("GRVY");
 
 	  /* Define the beginning of the overall portion to be monitored */
 	  
@@ -40,20 +40,20 @@ int main()
 	  bar();
 	  poo();
 
-	  hpct_timer_finalize();
-	  hpct_timer_summarize();
+	  grvy_timer_finalize();
+	  grvy_timer_summarize();
 
 	}
 
       printf("\nExpecting %10.5e secs\n",Max_Iters*(Foo_Sleep+Poo_Sleep+Bar_Sleep)/1.e6);
 
       printf("\n");
-      printf("Summary data should match hpct_timer_elapsedseconds data points:\n");
-      printf("\tbar: %10.5e secs\n",hpct_timer_elapsedseconds("bar"));
-      printf("\tfoo: %10.5e secs\n",hpct_timer_elapsedseconds("foo"));
-      printf("\tpoo: %10.5e secs\n",hpct_timer_elapsedseconds("poo"));
+      printf("Summary data should match grvy_timer_elapsedseconds data points:\n");
+      printf("\tbar: %10.5e secs\n",grvy_timer_elapsedseconds("bar"));
+      printf("\tfoo: %10.5e secs\n",grvy_timer_elapsedseconds("foo"));
+      printf("\tpoo: %10.5e secs\n",grvy_timer_elapsedseconds("poo"));
 
-      printf("\nElapsed global time = %10.5e\n",hpct_timer_elapsed_global());
+      printf("\nElapsed global time = %10.5e\n",grvy_timer_elapsed_global());
       printf("\n");
     }
 
@@ -66,13 +66,13 @@ void foo()
 
   char *id = "koomie is the coolest cranes are better";
 
-  hpct_timer_begin(__func__);
-  //hpct_timer_begin(id);
+  grvy_timer_begin(__func__);
+  //grvy_timer_begin(id);
 
   usleep(Foo_Sleep);
 
-  hpct_timer_end(__func__);
-  //hpct_timer_end(id);
+  grvy_timer_end(__func__);
+  //grvy_timer_end(id);
 
   return;
     
@@ -80,9 +80,9 @@ void foo()
 
 void bar()
 {
-  hpct_timer_begin(__func__);
+  grvy_timer_begin(__func__);
   usleep(Bar_Sleep);
-  hpct_timer_end(__func__);
+  grvy_timer_end(__func__);
 
   return;
     
@@ -91,9 +91,9 @@ void bar()
 
 void poo()
 {
-  hpct_timer_begin(__func__);
+  grvy_timer_begin(__func__);
   usleep(Poo_Sleep);
-  hpct_timer_end(__func__);
+  grvy_timer_end(__func__);
 
   return;
     

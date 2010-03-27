@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "hpct.h"
+#include <grvy.h>
 #include "examplefile.h"
 
 /*----------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  *
  * $Id$
  *----------------------------------------------*/
@@ -29,26 +29,26 @@ int main(int argc, char **argv)
 
   int flag = 1;
 
-  hpct_log_setlevel(HPCT_NOLOG);
+  grvy_log_setlevel(GRVY_NOLOG);
 
   //  printf("--> %s\n",test_name);
 
   /* Initialize/read the file */
 
   input_example_file_path = build_example_file_path();
-  flag *= hpct_input_fopen(input_example_file_path);
+  flag *= grvy_input_fopen(input_example_file_path);
   free(input_example_file_path);
 
   /* Read specific variables and echo locally */
 
-  flag *= hpct_input_fread_float("reyn",&reyn);
-  flag *= flag*hpct_input_fread_float("mach",&mach);
+  flag *= grvy_input_fread_float("reyn",&reyn);
+  flag *= flag*grvy_input_fread_float("mach",&mach);
 
-  flag *= hpct_input_fread_float("aoa",&aoa);
-  flag *= hpct_input_fread_int("iter_max",&iter_max);
-  flag *= hpct_input_fread_char("gridfile",&gridfile);
+  flag *= grvy_input_fread_float("aoa",&aoa);
+  flag *= grvy_input_fread_int("iter_max",&iter_max);
+  flag *= grvy_input_fread_char("gridfile",&gridfile);
 
-  /* Note that HPCT will allocate memory for the
+  /* Note that GRVY will allocate memory for the
    * string; if you are a purist and want to cleanup, you should
    * call free() when done with the variable */
 
@@ -56,16 +56,16 @@ int main(int argc, char **argv)
 
   /* Read from the solver section */
 
-  flag *= hpct_input_fread_int("solver/turbulence",&turbulent);
-  flag *= hpct_input_fread_char_ivec("solver/keywords",&key1,0);
-  flag *= hpct_input_fread_char_ivec("solver/keywords",&key2,1);
-  flag *= hpct_input_fread_float_vec("turbulence/A",A,3);
+  flag *= grvy_input_fread_int("solver/turbulence",&turbulent);
+  flag *= grvy_input_fread_char_ivec("solver/keywords",&key1,0);
+  flag *= grvy_input_fread_char_ivec("solver/keywords",&key2,1);
+  flag *= grvy_input_fread_float_vec("turbulence/A",A,3);
 
   /* Read from the verify section and verify the results */
 
-  flag *= hpct_input_fread_int      ("verify/ivar",&ivar1);
-  flag *= hpct_input_fread_int_ivec ("verify/ivec",&ivar2,2);
-  flag *= hpct_input_fread_int_vec  ("verify/ivec",ivec,4);
+  flag *= grvy_input_fread_int      ("verify/ivar",&ivar1);
+  flag *= grvy_input_fread_int_ivec ("verify/ivec",&ivar2,2);
+  flag *= grvy_input_fread_int_vec  ("verify/ivec",ivec,4);
 
   if( ivec[0] != 11 || ivec[1] != 12 || ivec[2] != 13 || ivec[3] != 14)
     {
@@ -76,9 +76,9 @@ int main(int argc, char **argv)
   flag *= compare_int(ivar1,10);
   flag *= compare_int(ivar2,13);
 
-  flag *= hpct_input_fread_float      ("verify/fvar",&fvar1);
-  flag *= hpct_input_fread_float_ivec ("verify/fvec",&fvar2,1);
-  flag *= hpct_input_fread_float_vec  ("verify/fvec",fvec,3);
+  flag *= grvy_input_fread_float      ("verify/fvar",&fvar1);
+  flag *= grvy_input_fread_float_ivec ("verify/fvec",&fvar2,1);
+  flag *= grvy_input_fread_float_vec  ("verify/fvec",fvec,3);
 
   if( fvec[0] != 101. || fvec[1] != 102. || fvec[2] != 103.)
     {
@@ -89,9 +89,9 @@ int main(int argc, char **argv)
   flag *= compare_float(fvar1,100.);
   flag *= compare_float(fvar2,102.);
 
-  flag *= hpct_input_fread_double      ("verify/dvar",&dvar1);
-  flag *= hpct_input_fread_double_ivec ("verify/dvec",&dvar2,1);
-  flag *= hpct_input_fread_double_vec  ("verify/dvec",dvec,3);
+  flag *= grvy_input_fread_double      ("verify/dvar",&dvar1);
+  flag *= grvy_input_fread_double_ivec ("verify/dvec",&dvar2,1);
+  flag *= grvy_input_fread_double_vec  ("verify/dvec",dvec,3);
 
   if( dvec[0] != 1.1e20 || dvec[1] != 1.2e20 || dvec[2] != 1.3e20 )
     {
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 
   /* Close the file */
 
-  flag *= hpct_input_fclose();
+  flag *= grvy_input_fclose();
 
   if(flag == 0)
       exit (1);

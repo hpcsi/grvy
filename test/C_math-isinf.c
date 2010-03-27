@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "hpct.h"
+#include <grvy.h>
 
 /*----------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  *
- * $Id:$
+ * $Id$
  *----------------------------------------------*/
 
 const char *test_name = "C math: test isinf functionality";
@@ -44,25 +44,25 @@ int main(int argc, char **argv)
 
   /* Make sure we get float positive inf */
   fval = &should_be_f_pos_inf;
-  is_my_val_inf = hpct_float_isinf( fval );
+  is_my_val_inf = grvy_float_isinf( fval );
   if( is_my_val_inf == 0 )
     flag = 1;
 
   /* Make sure we get float negative inf */
   fval = &should_be_f_neg_inf;
-  is_my_val_inf = hpct_float_isinf( fval );
+  is_my_val_inf = grvy_float_isinf( fval );
   if( is_my_val_inf == 0 )
     flag = 1;
 
   /* Make sure we don't get a false positive for finite values */
   fval = &should_not_be_f_inf;
-  is_my_val_inf = hpct_float_isinf( fval );
+  is_my_val_inf = grvy_float_isinf( fval );
   if( is_my_val_inf == 1 )
     flag = 1;
 
   /* Make sure we don't get a false positive for NaN */
   fval = &should_be_f_nan;
-  is_my_val_inf = hpct_float_isinf( fval );
+  is_my_val_inf = grvy_float_isinf( fval );
   if( is_my_val_inf == 1 )
     flag = 1;
 
@@ -72,25 +72,25 @@ int main(int argc, char **argv)
 
   /* Make sure we get double positive inf */
   dval = &should_be_d_pos_inf;
-  is_my_val_inf = hpct_double_isinf( dval );
+  is_my_val_inf = grvy_double_isinf( dval );
   if( is_my_val_inf == 0 )
     flag = 1;
 
   /* Make sure we get double negative inf */
   dval = &should_be_d_neg_inf;
-  is_my_val_inf = hpct_double_isinf( dval );
+  is_my_val_inf = grvy_double_isinf( dval );
   if( is_my_val_inf == 0 )
     flag = 1;
 
   /* Make sure we don't get a false positive for finite values */
   dval = &should_not_be_d_inf;
-  is_my_val_inf = hpct_double_isinf( dval );
+  is_my_val_inf = grvy_double_isinf( dval );
   if( is_my_val_inf == 1 )
     flag = 1;
 
   /* Make sure we don't get a false positive for NaN */
   dval = &should_be_d_nan;
-  is_my_val_inf = hpct_double_isinf( dval );
+  is_my_val_inf = grvy_double_isinf( dval );
   if( is_my_val_inf == 1 )
     flag = 1;
 

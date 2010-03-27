@@ -1,6 +1,6 @@
 program test_isnan_isinf
 
-  use hpct
+  use grvy
 
   implicit none
 
@@ -13,7 +13,7 @@ program test_isnan_isinf
 
   !------------------------------------------------
   ! Simple C example to illustre basic input 
-  ! file parsing via HPCT.
+  ! file parsing via GRVY.
   !
   ! $Id:  $
   !------------------------------------------------
@@ -25,22 +25,22 @@ program test_isnan_isinf
   should_be_nan = sqrt(m_one)
   should_be_inf = one/zero
 
-  call hpct_double_isnan( should_be_nan, is_nan )
+  call grvy_double_isnan( should_be_nan, is_nan )
   if( is_nan .eq. 1 )then
      write(*,*) "NaN detected"
   endif
 
-  call hpct_double_isinf( should_be_inf, is_inf )
+  call grvy_double_isinf( should_be_inf, is_inf )
   if( is_inf .eq. 1 )then
      write(*,*) "Inf detected"
   endif
 
-  call hpct_double_isnan( 5.d0, is_nan )
+  call grvy_double_isnan( 5.d0, is_nan )
   if( is_nan .eq. 1 )then
      write(*,*) "NaN detected"
   endif
 
-  call hpct_double_isinf( 1.d0, is_inf )
+  call grvy_double_isinf( 1.d0, is_inf )
   if( is_inf .eq. 1 )then
      write(*,*) "Inf detected"
   endif

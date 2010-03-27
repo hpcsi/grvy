@@ -5,67 +5,67 @@
 !
 ! Please see http://pecos.ices.utexas.edu for more information.
 !
-! This file is part of the PECOS HPC Toolkit (HPCT)
+! This file is part of the PECOS HPC Toolkit (GRVY)
 !
-! HPCT is free software: you can redistribute it and/or modify
+! GRVY is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
 !
-! HPCT is distributed in the hope that it will be useful,
+! GRVY is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
 !
 ! You should have received a copy of the GNU General Public License
-! along with HPCT.  If not, see <http:!www.gnu.org/licenses/>.
+! along with GRVY.  If not, see <http:!www.gnu.org/licenses/>.
 !
 ! -------------------------------------------------------------------------
 !
-! HPCT Test Suite
+! GRVY Test Suite
 !
 ! $Id$
 ! -------------------------------------------------------------------------
 ! -------------------------------------------------------------------------
 
 program F_log
-  use hpct
+  use grvy
   implicit none
 
   write(*,'(a)')''
   write(*,'(a)')'Priority = ALL'
 !  call flush(6)
-  call hpct_log_setlevel(HPCT_ALL);
+  call grvy_log_setlevel(GRVY_ALL);
   call post_log_messages();
 
   write(*,'(a)')''
   write(*,'(a)')'Priority = DEBUG'
-  call hpct_log_setlevel(HPCT_DEBUG);
+  call grvy_log_setlevel(GRVY_DEBUG);
   call post_log_messages();
 
   write(*,'(a)')''
   write(*,'(a)')'Priority = INFO'
-  call hpct_log_setlevel(HPCT_INFO);
+  call grvy_log_setlevel(GRVY_INFO);
   call post_log_messages();
 
   write(*,'(a)')''
   write(*,'(a)')'Priority = WARN'
-  call hpct_log_setlevel(HPCT_WARN);
+  call grvy_log_setlevel(GRVY_WARN);
   call post_log_messages();
 
   write(*,'(a)')''
   write(*,'(a)')'Priority = ERROR'
-  call hpct_log_setlevel(HPCT_ERROR);
+  call grvy_log_setlevel(GRVY_ERROR);
   call post_log_messages();
 
   write(*,'(a)')''
   write(*,'(a)')'Priority = FATAL'
-  call hpct_log_setlevel(HPCT_FATAL);
+  call grvy_log_setlevel(GRVY_FATAL);
   call post_log_messages();
 
   write(*,'(a)')''
   write(*,'(a)')'Priority = NOLOG'
-  call hpct_log_setlevel(HPCT_NOLOG);
+  call grvy_log_setlevel(GRVY_NOLOG);
   call post_log_messages();
 
   write(*,'(a)')''
@@ -75,14 +75,14 @@ program F_log
 end program F_log
 
 subroutine post_log_messages()
-  use hpct
+  use grvy
   implicit none
 
-  call hpct_log(HPCT_FATAL,"a fine fatal message"    )
-  call hpct_log(HPCT_ERROR,"an astute error message" )
-  call hpct_log(HPCT_WARN, "a fabulous warn message")
-  call hpct_log(HPCT_INFO, "a useful info message"  )
-  call hpct_log(HPCT_DEBUG,"a clever debug message"  )
+  call grvy_log(GRVY_FATAL,"a fine fatal message"    )
+  call grvy_log(GRVY_ERROR,"an astute error message" )
+  call grvy_log(GRVY_WARN, "a fabulous warn message")
+  call grvy_log(GRVY_INFO, "a useful info message"  )
+  call grvy_log(GRVY_DEBUG,"a clever debug message"  )
 
   return
 end subroutine post_log_messages

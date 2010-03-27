@@ -1,5 +1,5 @@
 program main
-  use hpct
+  use grvy
 
   print*,'Inside Fortran main'
 

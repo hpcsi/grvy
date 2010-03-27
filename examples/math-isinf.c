@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "hpct.h"
+#include <grvy.h>
 
 /*----------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  *
  * $Id:  $
  *----------------------------------------------*/
@@ -34,28 +34,28 @@ int main(int argc, char **argv)
 
   /* Make sure we get float inf */
   fval = &should_be_f_inf;
-  is_my_val_inf = hpct_float_isinf( fval );
+  is_my_val_inf = grvy_float_isinf( fval );
   if( is_my_val_inf == 1) printf("Infinity detected. \n");
   if( is_my_val_inf == 0 )
     flag = 1;
 
   /* Make sure we don't get a false positive */
   fval = &should_not_be_f_inf;
-  is_my_val_inf = hpct_float_isinf( fval );
+  is_my_val_inf = grvy_float_isinf( fval );
   if( is_my_val_inf == 1) printf("Infinity detected. \n");
   if( is_my_val_inf == 1 )
     flag = 1;
 
   /* Make sure we get double isnan */
   dval = &should_be_d_inf;
-  is_my_val_inf = hpct_double_isinf( dval );
+  is_my_val_inf = grvy_double_isinf( dval );
   if( is_my_val_inf == 1) printf("Infinity detected. \n");
   if( is_my_val_inf == 0 )
     flag = 1;
 
   /* Make sure we don't get a false positive */
   dval = &should_not_be_d_inf;
-  is_my_val_inf = hpct_double_isinf( dval );
+  is_my_val_inf = grvy_double_isinf( dval );
   if( is_my_val_inf == 1) printf("Infinity detected. \n");
   if( is_my_val_inf == 1 )
     flag = 1;

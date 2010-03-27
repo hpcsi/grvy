@@ -1,6 +1,7 @@
 Version 0.27 (March 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.27
 
+  * name/API change -> HPCT is now GRVY (affects all routines)
   * addition of simple logging facility
   * minor updates for informational parsing messages
   * switch to using a common version of GetPot (shared with libMesh)

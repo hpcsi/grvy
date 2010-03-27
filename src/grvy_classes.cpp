@@ -6,24 +6,24 @@
 //
 // Please see http://pecos.ices.utexas.edu for more information.
 //
-// This file is part of the PECOS HPC Toolkit (HPCT)
+// This file is part of the PECOS GRVY Toolkit
 //
-// HPCT is free software: you can redistribute it and/or modify
+// GRVY is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// HPCT is distributed in the hope that it will be useful,
+// GRVY is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with HPCT.  If not, see <http://www.gnu.org/licenses/>.
+// along with GRVY.  If not, see <http://www.gnu.org/licenses/>.
 //
 // -------------------------------------------------------------------------
 //
-// hpct.h: Basic class member functions.
+// grvy_classes.cpp: Basic class member functions.
 //
 // $Id$
 // -------------------------------------------------------------------------
@@ -31,19 +31,19 @@
 
 #include<sys/time.h>
 #include<time.h>
-#include<hpct_classes.h>
-#include<hpct.h>
-#include<hpct_int.h>
+#include<grvy_classes.h>
+#include<grvy.h>
+#include<grvy_int.h>
 
-namespace HPCT {
+namespace GRVY {
 
   int show_statistics = 1;
 
   //-------------------------------------
-  // HPCT_Input_Class:: Member Functions
+  // GRVY_Input_Class:: Member Functions
   //-------------------------------------
 
-  HPCT_Input_Class::HPCT_Input_Class()   // default constructor
+  GRVY_Input_Class::GRVY_Input_Class()   // default constructor
   {
     Float_Def     = -9999999.0f;
     Double_Def    = -9999999.0e1;
@@ -56,11 +56,11 @@ namespace HPCT {
     initialized   = 0;
   }
 
-  int HPCT_Input_Class:: VerifyInit()
+  int GRVY_Input_Class:: VerifyInit()
   {
     if(!initialized)
       {
-	_HPCT_message(HPCT_ERROR,__func__,"uninitialized input file - verify file has been opened");
+	_GRVY_message(GRVY_ERROR,__func__,"uninitialized input file - verify file has been opened");
 	return 0;
       }
     else
@@ -68,13 +68,13 @@ namespace HPCT {
 
   }
 
-  int HPCT_Input_Class:: Open(const char *filename)
+  int GRVY_Input_Class:: Open(const char *filename)
   {
     ifile = GetPot(filename,comment_start,comment_end);
 
     if(ifile.size() <= 1)
       {
-	_HPCT_message(HPCT_ERROR,__func__,"non-existent or empty file -> ",filename);
+	_GRVY_message(GRVY_ERROR,__func__,"non-existent or empty file -> ",filename);
 	return 0;
       }
     else
@@ -84,13 +84,13 @@ namespace HPCT {
       }
   }
 
-  int HPCT_Input_Class:: Close()
+  int GRVY_Input_Class:: Close()
   {
     initialized=0;
     return 1;
   }
 
-  int HPCT_Input_Class:: Fdump()
+  int GRVY_Input_Class:: Fdump()
   {
     if(! VerifyInit()) return 0;
 
@@ -100,7 +100,7 @@ namespace HPCT {
     return 1;
   }
 
-  int HPCT_Input_Class:: Fdump(const char *prefix)
+  int GRVY_Input_Class:: Fdump(const char *prefix)
   {
 
     if(! VerifyInit()) return 0;
@@ -111,7 +111,7 @@ namespace HPCT {
     return 1;
   }
 
-  int HPCT_Input_Class:: Fdump(const char *prefix, const char *filename)
+  int GRVY_Input_Class:: Fdump(const char *prefix, const char *filename)
   {
 
     if(! VerifyInit()) return 0;
@@ -127,7 +127,7 @@ namespace HPCT {
     return 1;
   }
 
-  void HPCT_Input_Class::PrintRegVars(const char *prefix)
+  void GRVY_Input_Class::PrintRegVars(const char *prefix)
   {
 
     map<std::string, int    > :: const_iterator int_index;
@@ -135,7 +135,7 @@ namespace HPCT {
     map<std::string, double > :: const_iterator dbl_index;
     map<std::string, string > :: const_iterator str_index;
 
-    cout << prefix << "[HPCT Registered Variable Default Values]" << endl;
+    cout << prefix << "[GRVY Registered Variable Default Values]" << endl;
 
     for(int_index=default_ints.begin(); int_index != default_ints.end(); ++int_index)
       cout << prefix << (int_index->first).c_str() << "=" << int_index->second << endl;
@@ -152,15 +152,15 @@ namespace HPCT {
     cout << endl;
   }
 
-  void HPCT_Input_Class:: MsgToggle(int flag)
+  void GRVY_Input_Class:: MsgToggle(int flag)
   {
     if(flag == 0)
       {
-	_HPCT_Log.change_priority(HPCT_NOLOG);
+	_GRVY_Log.change_priority(GRVY_NOLOG);
       }
     else
       {
-	_HPCT_Log.change_priority(HPCT_INFO);
+	_GRVY_Log.change_priority(GRVY_INFO);
       }
 
     return;
@@ -170,7 +170,7 @@ namespace HPCT {
   // Scalar Reads
   //--------------
 
-  template <typename T> int HPCT_Input_Class:: Read_Var(const char *var, T *value, T Var_Def)
+  template <typename T> int GRVY_Input_Class:: Read_Var(const char *var, T *value, T Var_Def)
   {
     if(! VerifyInit()) return 0;
 
@@ -180,12 +180,12 @@ namespace HPCT {
       {
 	if( !Get_Var(var,value) )
 	  {
-	    _HPCT_message(HPCT_ERROR,"fread","Unable to query variable -> ",var);
+	    _GRVY_message(GRVY_ERROR,"fread","Unable to query variable -> ",var);
 	    return 0;
 	  }
 	else
 	  {
-	    _HPCT_message(HPCT_INFO,"fread: Using pre-registered value for variable",var,*value);
+	    _GRVY_message(GRVY_INFO,"fread: Using pre-registered value for variable",var,*value);
 	  }
       }
   
@@ -196,7 +196,7 @@ namespace HPCT {
   // Vector Reads
   //--------------
 
-  template <typename T> int HPCT_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelems,T Var_Def)
+  template <typename T> int GRVY_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelems,T Var_Def)
   {
     int i;
 
@@ -208,7 +208,7 @@ namespace HPCT {
 
 	if(value[i] == Var_Def)
 	  {
-	    _HPCT_message(HPCT_ERROR,"fread_ivec","Unable to query variable -> ",var);
+	    _GRVY_message(GRVY_ERROR,"fread_ivec","Unable to query variable -> ",var);
 	    return 0;
 	  }
       }
@@ -220,7 +220,7 @@ namespace HPCT {
   // ith Vector Reads
   //------------------
 
-  template <typename T> int HPCT_Input_Class:: Read_Var_iVec(const char *var, T *value, int elem,T Var_Def)
+  template <typename T> int GRVY_Input_Class:: Read_Var_iVec(const char *var, T *value, int elem,T Var_Def)
   {
     int i;
 
@@ -230,7 +230,7 @@ namespace HPCT {
 
     if(*value == Var_Def)
       {
-	_HPCT_message(HPCT_ERROR,"fread_ivec","Unable to query variable -> ",var);
+	_GRVY_message(GRVY_ERROR,"fread_ivec","Unable to query variable -> ",var);
 	return 0;
       }
  
@@ -241,7 +241,7 @@ namespace HPCT {
   // Character String Reads
   //------------------------
 
-  int HPCT_Input_Class:: Read_Var(const char *var, char **value)
+  int GRVY_Input_Class:: Read_Var(const char *var, char **value)
   {
     string tstring;
 
@@ -256,18 +256,18 @@ namespace HPCT {
 
 	if( !Get_Var(var,value) )
 	  {
-	    _HPCT_message(HPCT_ERROR,"fread_char","Unable to query variable -> ",var);
+	    _GRVY_message(GRVY_ERROR,"fread_char","Unable to query variable -> ",var);
 	    return 0;
 	  }
 	else 
 	  {
-	    _HPCT_message(HPCT_INFO,"fread_char","Using pre-registered value for variable",var);
+	    _GRVY_message(GRVY_INFO,"fread_char","Using pre-registered value for variable",var);
 	  }
       }
     return 1;
   }
 
-  int HPCT_Input_Class:: Read_Var_iVec(const char *var, char **value, int elem)
+  int GRVY_Input_Class:: Read_Var_iVec(const char *var, char **value, int elem)
   {
     string tstring;
 
@@ -279,7 +279,7 @@ namespace HPCT {
 
     if(strcmp(*value,Char_Def) == 0)
       {
-	_HPCT_message(HPCT_ERROR,"fread_char_ivec","Unable to query variable -> ",var);
+	_GRVY_message(GRVY_ERROR,"fread_char_ivec","Unable to query variable -> ",var);
 	return 0;
       }
     else
@@ -290,31 +290,31 @@ namespace HPCT {
   // Default Variable Value Registrations
   //---------------------------------------
 
-  void HPCT_Input_Class:: Register_Var (const char *varname, int var)
+  void GRVY_Input_Class:: Register_Var (const char *varname, int var)
   {
     default_ints[varname] = var;
     return;
   }
 
-  void HPCT_Input_Class:: Register_Var (const char *varname, float var)
+  void GRVY_Input_Class:: Register_Var (const char *varname, float var)
   {
     default_floats[varname] = var;
     return;
   }
 
-  void HPCT_Input_Class:: Register_Var (const char *varname, double var)
+  void GRVY_Input_Class:: Register_Var (const char *varname, double var)
   {
     default_doubles[varname] = var;
     return;
   }
 
-  void HPCT_Input_Class:: Register_Var (const char *varname, char *var)
+  void GRVY_Input_Class:: Register_Var (const char *varname, char *var)
   {
     default_strings[varname] = var;
     return;
   }
 
-  int HPCT_Input_Class:: Get_Var (const char *varname, int *var)
+  int GRVY_Input_Class:: Get_Var (const char *varname, int *var)
   {
     map<std::string, int > :: const_iterator index;
   
@@ -322,7 +322,7 @@ namespace HPCT {
 
     if( index == default_ints.end() )
       {
-	_HPCT_message(HPCT_INFO,"register_get","No registered variable named",varname);
+	_GRVY_message(GRVY_INFO,"register_get","No registered variable named",varname);
 	return(0);
       }
     else
@@ -333,7 +333,7 @@ namespace HPCT {
 
   }
 
-  int HPCT_Input_Class:: Get_Var (const char *varname, float *var)
+  int GRVY_Input_Class:: Get_Var (const char *varname, float *var)
   {
     map<std::string, float > :: const_iterator index;
   
@@ -341,7 +341,7 @@ namespace HPCT {
 
     if( index == default_floats.end() )
       {
-	_HPCT_message(HPCT_INFO,"register_get","No registered variable named",varname);
+	_GRVY_message(GRVY_INFO,"register_get","No registered variable named",varname);
 	return(0);
       }
     else
@@ -352,7 +352,7 @@ namespace HPCT {
 
   }
 
-  int HPCT_Input_Class:: Get_Var (const char *varname, double *var)
+  int GRVY_Input_Class:: Get_Var (const char *varname, double *var)
   {
     map<std::string, double > :: const_iterator index;
   
@@ -360,7 +360,7 @@ namespace HPCT {
 
     if( index == default_doubles.end() )
       {
-	_HPCT_message(HPCT_INFO,"register_get","No registered variable named",varname);
+	_GRVY_message(GRVY_INFO,"register_get","No registered variable named",varname);
 	return(0);
       }
     else
@@ -371,7 +371,7 @@ namespace HPCT {
 
   }
 
-  int HPCT_Input_Class:: Get_Var (const char *varname, char **var)
+  int GRVY_Input_Class:: Get_Var (const char *varname, char **var)
   {
     map<std::string, string > :: const_iterator index;
     string tstring;
@@ -380,7 +380,7 @@ namespace HPCT {
 
     if( index == default_strings.end() )
       {
-	_HPCT_message(HPCT_INFO,"register_get","No registered variable named",varname);
+	_GRVY_message(GRVY_INFO,"register_get","No registered variable named",varname);
 	return(0);
       }
     else
@@ -397,21 +397,21 @@ namespace HPCT {
   // Supported Function Templates
   //------------------------------
 
-  template int HPCT_Input_Class::Read_Var <int>          (const char *var, int    *value, int    vardef);
-  template int HPCT_Input_Class::Read_Var <float>        (const char *var, float  *value, float  vardef);
-  template int HPCT_Input_Class::Read_Var <double>       (const char *var, double *value, double vardef);
+  template int GRVY_Input_Class::Read_Var <int>          (const char *var, int    *value, int    vardef);
+  template int GRVY_Input_Class::Read_Var <float>        (const char *var, float  *value, float  vardef);
+  template int GRVY_Input_Class::Read_Var <double>       (const char *var, double *value, double vardef);
 
-  template int HPCT_Input_Class:: Read_Var_Vec <int>     (const char *var, int    *value, int nelem, int    Var_Def);
-  template int HPCT_Input_Class:: Read_Var_Vec <float>   (const char *var, float  *value, int nelem, float  Var_Def);
-  template int HPCT_Input_Class:: Read_Var_Vec <double>  (const char *var, double *value, int nelem, double Var_Def);
+  template int GRVY_Input_Class:: Read_Var_Vec <int>     (const char *var, int    *value, int nelem, int    Var_Def);
+  template int GRVY_Input_Class:: Read_Var_Vec <float>   (const char *var, float  *value, int nelem, float  Var_Def);
+  template int GRVY_Input_Class:: Read_Var_Vec <double>  (const char *var, double *value, int nelem, double Var_Def);
 
-  template int HPCT_Input_Class:: Read_Var_iVec <int>    (const char *var, int    *value, int elem,  int    Var_Def);
-  template int HPCT_Input_Class:: Read_Var_iVec <float>  (const char *var, float  *value, int elem,  float  Var_Def);
-  template int HPCT_Input_Class:: Read_Var_iVec <double> (const char *var, double *value, int elem,  double Var_Def);
+  template int GRVY_Input_Class:: Read_Var_iVec <int>    (const char *var, int    *value, int elem,  int    Var_Def);
+  template int GRVY_Input_Class:: Read_Var_iVec <float>  (const char *var, float  *value, int elem,  float  Var_Def);
+  template int GRVY_Input_Class:: Read_Var_iVec <double> (const char *var, double *value, int elem,  double Var_Def);
 
 
   //-------------------------------------
-  // HPCT_Timer_Class:: Member Functions
+  // GRVY_Timer_Class:: Member Functions
   //-------------------------------------
 
   // Notes: for portability concerns, we will go with a simple timeofday
@@ -424,40 +424,40 @@ namespace HPCT {
   // when the timer is used at a level below anticipated threshold
   // accuracy.
 
-  HPCT_Timer_Class::HPCT_Timer_Class()   // default constructor
+  GRVY_Timer_Class::GRVY_Timer_Class()   // default constructor
   {
     initialized    = 1;
     timer_last     = 0.0;
     timer_finalize = -1;
   }
 
-  void HPCT_Timer_Class:: VerifyInit ()
+  void GRVY_Timer_Class:: VerifyInit ()
   {
 
-    if(_HPCT_Timers == NULL)
+    if(_GRVY_Timers == NULL)
       {
-	_HPCT_message(HPCT_ERROR,__func__,"timer uninitialized");
+	_GRVY_message(GRVY_ERROR,__func__,"timer uninitialized");
 	exit(1);
       }
 
     if(!initialized)
       {
-	_HPCT_message(HPCT_ERROR,__func__,"timer uninitialized");
+	_GRVY_message(GRVY_ERROR,__func__,"timer uninitialized");
 	exit(1);
       }
 
   }
 
-  void HPCT_Timer_Class:: SaveTimerName (const char *id)
+  void GRVY_Timer_Class:: SaveTimerName (const char *id)
   {
     timer_name = id;
     return;
   }
 
-  void HPCT_Timer_Class:: BeginTimer (const char *id)
+  void GRVY_Timer_Class:: BeginTimer (const char *id)
   {
     double mytime;
-    _HPCT_Type_TimerMap2 :: iterator index;
+    _GRVY_Type_TimerMap2 :: iterator index;
 
     tTimer_Data Data;
 
@@ -484,21 +484,21 @@ namespace HPCT {
   
   }
 
-  void HPCT_Timer_Class:: EndTimer (const char *id)
+  void GRVY_Timer_Class:: EndTimer (const char *id)
   {
     double      mytime, increment;
     tTimer_Data Data;
     char temp_string[120];
 
-    _HPCT_Type_TimerMap2 :: iterator index;
+    _GRVY_Type_TimerMap2 :: iterator index;
 
     mytime = RawTimer();
     index  = TimerMap.find(id);
 
     if ( index == TimerMap.end() )
-      _HPCT_message(HPCT_ERROR,__func__,"No timer data available for",id);
+      _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",id);
     else if(index->first[1] < 0)
-      _HPCT_message(HPCT_ERROR,__func__,"No matching begin timer call for",id);
+      _GRVY_message(GRVY_ERROR,__func__,"No matching begin timer call for",id);
     else
       {
 	// update map with latest increment info
@@ -507,10 +507,10 @@ namespace HPCT {
 
 	// warn against potential measurements that are too small
 
-	if( increment <= _HPCT_TIMER_THRESH )
+	if( increment <= _GRVY_TIMER_THRESH )
 	  {
 	    sprintf(temp_string,"Timer accuracy may be insufficient (%.30s) - just measured",id);
-	    _HPCT_message(HPCT_WARN,__func__,temp_string,increment);
+	    _GRVY_message(GRVY_WARN,__func__,temp_string,increment);
 	  }
 
 	(index->second).timings[0] += increment;
@@ -521,19 +521,19 @@ namespace HPCT {
 
     // Store the latest raw timer snapshot for the global timer region
     // to allow users to query the global elapsed time after an
-    // hpct_timer_finalize()
+    // grvy_timer_finalize()
 
-    if ( strcmp(id,_HPCT_gtimer) == 0 )
+    if ( strcmp(id,_GRVY_gtimer) == 0 )
       timer_finalize = RawTimer();
 
     return;
   }
 
-  void HPCT_Timer_Class:: Reset()
+  void GRVY_Timer_Class:: Reset()
   {
-    _HPCT_Type_TimerMap2 :: iterator index;
+    _GRVY_Type_TimerMap2 :: iterator index;
 
-    if(_HPCT_Timers == NULL)
+    if(_GRVY_Timers == NULL)
       return;
 
     if(!initialized)
@@ -550,7 +550,7 @@ namespace HPCT {
     return;
   }
 
-  double HPCT_Timer_Class:: RawTimer()
+  double GRVY_Timer_Class:: RawTimer()
   {
     int rc;
     struct timeval tv;
@@ -565,8 +565,8 @@ namespace HPCT {
 
     // moved warning check to EndTimer
     //
-    //  if( (t1 - timer_last) <= _HPCT_TIMER_THRESH )
-    //    _HPCT_message(HPCT_WARN,__func__,"Timer accuracy may be insufficient - just measured:",
+    //  if( (t1 - timer_last) <= _GRVY_TIMER_THRESH )
+    //    _GRVY_message(GRVY_WARN,__func__,"Timer accuracy may be insufficient - just measured:",
     //		  t1-timer_last);
   
     timer_last = t1;
@@ -574,33 +574,33 @@ namespace HPCT {
 
   }
 
-  double HPCT_Timer_Class:: ElapsedSeconds(const char *id)
+  double GRVY_Timer_Class:: ElapsedSeconds(const char *id)
   {
     double elapsedseconds = 0.0;
 
-    _HPCT_Type_TimerMap2 :: const_iterator index = TimerMap.find(id);
+    _GRVY_Type_TimerMap2 :: const_iterator index = TimerMap.find(id);
 
     if ( index == TimerMap.end() )
-      _HPCT_message(HPCT_ERROR,__func__,"No timer data available for",id);
+      _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",id);
     else if( (index->second).timings[1] != -1)
-      _HPCT_message(HPCT_ERROR,__func__,"Timer still active for",id);
+      _GRVY_message(GRVY_ERROR,__func__,"Timer still active for",id);
     else
       elapsedseconds = (index->second).timings[0];
 
     return elapsedseconds;
   }
 
-  double HPCT_Timer_Class:: ElapsedGlobal()
+  double GRVY_Timer_Class:: ElapsedGlobal()
   {
     double elapsedseconds = 0.0;
     double mytime;
 
     mytime = RawTimer();
 
-    _HPCT_Type_TimerMap2 :: const_iterator index = TimerMap.find(_HPCT_gtimer);
+    _GRVY_Type_TimerMap2 :: const_iterator index = TimerMap.find(_GRVY_gtimer);
 
     if ( index == TimerMap.end() )
-      _HPCT_message(HPCT_ERROR,__func__,"No timer data available for",_HPCT_gtimer);
+      _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",_GRVY_gtimer);
     else if( (index->second).timings[1] != -1)     // inside active timer
       elapsedseconds = mytime - (index->second).timings[1];
     else if( (index->second).timings[1] == -1)     // outside active timer
@@ -615,7 +615,7 @@ namespace HPCT {
     return elapsedseconds;
   }
 
-  void HPCT_Timer_Class:: Summarize()
+  void GRVY_Timer_Class:: Summarize()
   {
     vector <double> timings(2);
     double totaltime,subtime;
@@ -626,19 +626,19 @@ namespace HPCT {
     size_t timer_name_width;
     const size_t max_stdout_width = 120;
 
-    _HPCT_Type_TimerMapSortLH _HPCT_TimerMapSortLH;
-    _HPCT_Type_TimerMapSortHL _HPCT_TimerMapSortHL;
+    _GRVY_Type_TimerMapSortLH _GRVY_TimerMapSortLH;
+    _GRVY_Type_TimerMapSortHL _GRVY_TimerMapSortHL;
 
-    _HPCT_Type_TimerMapSortLH :: iterator indexLH;
-    _HPCT_Type_TimerMapSortHL :: iterator indexHL;
+    _GRVY_Type_TimerMapSortLH :: iterator indexLH;
+    _GRVY_Type_TimerMapSortHL :: iterator indexHL;
 
-    _HPCT_Type_TimerMap2 :: iterator index,gindex;
+    _GRVY_Type_TimerMap2 :: iterator index,gindex;
 
-    // Was a global timing region defined via HPCT_timer_init() and
-    // HPCT_timer_end()?  If so, use the total time to define runtime
+    // Was a global timing region defined via GRVY_timer_init() and
+    // GRVY_timer_end()?  If so, use the total time to define runtime
     // percentages.
 
-    gindex = TimerMap.find(_HPCT_gtimer);
+    gindex = TimerMap.find(_GRVY_gtimer);
 
     if ( gindex != TimerMap.end() )
       {
@@ -669,7 +669,7 @@ namespace HPCT {
 	    timings[0] = (index->second).timings[0];
 	    timings[1] = (index->second).timings[1];
 
-	    _HPCT_TimerMapSortHL[timings] = index->first;
+	    _GRVY_TimerMapSortHL[timings] = index->first;
 
 	    // Update display width if this identifier is longer than default
 
@@ -703,7 +703,7 @@ namespace HPCT {
 
     // Print results for all user-defined timer keys
 
-    for(indexHL=_HPCT_TimerMapSortHL.begin(); indexHL != _HPCT_TimerMapSortHL.end(); ++indexHL)
+    for(indexHL=_GRVY_TimerMapSortHL.begin(); indexHL != _GRVY_TimerMapSortHL.end(); ++indexHL)
       {
 
 	string varstring = indexHL->second.substr(0,display_id_width-1);
@@ -718,7 +718,7 @@ namespace HPCT {
       
 	if(show_statistics)
 	  {
-	    if(indexHL->second !=  _HPCT_gtimer )
+	    if(indexHL->second !=  _GRVY_gtimer )
 	      {
 		gindex = TimerMap.find(indexHL->second);
 		printf(" | [%10.5e  %10.5e  %9zi]",
@@ -734,9 +734,9 @@ namespace HPCT {
 
     // Print results for left-over contribution in main timer
 
-    gindex = TimerMap.find(_HPCT_gtimer);
+    gindex = TimerMap.find(_GRVY_gtimer);
 
-    printf("--> %-*s: %10.5e secs",(int)display_id_width,_HPCT_gtimer,
+    printf("--> %-*s: %10.5e secs",(int)display_id_width,_GRVY_gtimer,
 	   (gindex->second).timings[0]);
 
     if(global_time_defined)
@@ -755,9 +755,9 @@ namespace HPCT {
 	printf("\n %*s = %10.5e secs (%8.4f %%)\n",(int)display_id_width+2,"Total Measured Time",
 	       totaltime,total_percentage);
 
-	if( fabs(total_percentage - 100.0) > _HPCT_PERC_TOL )
+	if( fabs(total_percentage - 100.0) > _GRVY_PERC_TOL )
 	  {
-	    printf("\n%s: Profile percentages do not sum to 100 %%.\n",_HPCT_wmask);
+	    printf("\n%s: Profile percentages do not sum to 100 %%.\n",_GRVY_wmask);
 	    printf("This likely means that you defined timer keys which are\n");
 	    printf("not mutually exclusive.\n");
 	  }
@@ -780,43 +780,43 @@ namespace HPCT {
   }
 
   //-------------------------------------
-  // HPCT_Math_Class:: Member Functions
+  // GRVY_Math_Class:: Member Functions
   //-------------------------------------
 
-  HPCT_Math_Class::HPCT_Math_Class( ) // default constructor
+  GRVY_Math_Class::GRVY_Math_Class( ) // default constructor
   {
     return;
   }
 
   //-------------------------------------
-  // HPCT_Log_Class:: Member Functions
+  // GRVY_Log_Class:: Member Functions
   //-------------------------------------
 
-  HPCT_Log_Class::HPCT_Log_Class()
+  GRVY_Log_Class::GRVY_Log_Class()
   {
 
     // set default log level
     
-    log_level = HPCT_INFO;
+    log_level = GRVY_INFO;
 
     // set default log masks for each priority level
 
-    LogMask[HPCT_FATAL] = "[*] Fatal: ";
-    LogMask[HPCT_ERROR] = "[*] Error: ";
-    LogMask[HPCT_WARN ] = "[*]  Warn: ";
-    LogMask[HPCT_INFO ] = "[*]  Info: ";
-    LogMask[HPCT_DEBUG] = "[*] Debug: ";
+    LogMask[GRVY_FATAL] = "[*] Fatal: ";
+    LogMask[GRVY_ERROR] = "[*] Error: ";
+    LogMask[GRVY_WARN ] = "[*]  Warn: ";
+    LogMask[GRVY_INFO ] = "[*]  Info: ";
+    LogMask[GRVY_DEBUG] = "[*] Debug: ";
 
     return;
   }
 
-  void HPCT_Log_Class::change_priority(int priority)
+  void GRVY_Log_Class::change_priority(int priority)
   {
     log_level = priority;
     return;
   }
 
-  void HPCT_Log_Class::msg(int priority, const string msg)
+  void GRVY_Log_Class::msg(int priority, const string msg)
   {
     if(isLog(priority))
       {
@@ -827,7 +827,7 @@ namespace HPCT {
     return;
   }
 
-  inline bool HPCT_Log_Class::isLog( int priority)
+  inline bool GRVY_Log_Class::isLog( int priority)
   {
     return(priority <= log_level);
   }

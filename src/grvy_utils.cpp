@@ -6,30 +6,30 @@
 //
 // Please see http://pecos.ices.utexas.edu for more information.
 //
-// This file is part of the PECOS HPC Toolkit (HPCT)
+// This file is part of the PECOS GRVY Toolkit
 //
-// HPCT is free software: you can redistribute it and/or modify
+// GRVY is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// HPCT is distributed in the hope that it will be useful,
+// GRVY is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with HPCT.  If not, see <http://www.gnu.org/licenses/>.
+// along with GRVY.  If not, see <http://www.gnu.org/licenses/>.
 //
 // -------------------------------------------------------------------------
-// hpct_utils: Internal Utility Functions
+// grvy_utils: Internal Utility Functions
 //
 // $Id$
 //
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 
-// Notes: these are primarily for internal use by HPCT functions.  Hint: these
+// Notes: these are primarily for internal use by GRVY functions.  Hint: these
 // may not be the external droids you are looking for.
 
 
@@ -43,9 +43,9 @@
 #include<unistd.h>
 #include<stack>
 
-#include<hpct_classes.h>
-#include<hpct_int.h>
-#include<hpct.h>
+#include<grvy_classes.h>
+#include<grvy_int.h>
+#include<grvy.h>
 
 #include"boost/format.hpp"
 #include"fortran_string_order.h"
@@ -53,13 +53,13 @@
 using namespace std;
 using boost::format;
 
-namespace HPCT {
+namespace GRVY {
 
   //-------------------------
   // Miscellaneous utilities
   //-------------------------
 
-  extern "C" int hpct_check_file_path(const char *pathname)
+  extern "C" int grvy_check_file_path(const char *pathname)
   {
     const int MAX_DEPTH = 50;
 
@@ -84,7 +84,7 @@ namespace HPCT {
 
     if( (token = strtok(parents,"/")) != NULL )
       {
-	if ( _HPCT_CheckDir(token) )
+	if ( _GRVY_CheckDir(token) )
 	  {
 	    free(pathlocal);
 	    free(dirstring);
@@ -98,7 +98,7 @@ namespace HPCT {
 	while ( (token = strtok(0,"/")) && (depth < MAX_DEPTH) )
 	  {
 	    dirstring = strcat(dirstring,"/");
-	    if(_HPCT_CheckDir(strcat(dirstring,token)))
+	    if(_GRVY_CheckDir(strcat(dirstring,token)))
 	      {
 		free(pathlocal);
 		free(dirstring);
@@ -109,7 +109,7 @@ namespace HPCT {
 
 	if(depth >= MAX_DEPTH )
 	  {
-	    _HPCT_message(HPCT_ERROR,__func__,"Max directory depth exceeded, limit =",MAX_DEPTH);
+	    _GRVY_message(GRVY_ERROR,__func__,"Max directory depth exceeded, limit =",MAX_DEPTH);
 	    free(pathlocal);
 	    free(dirstring);
 	    return -1;
@@ -123,7 +123,7 @@ namespace HPCT {
     return 0;
   }
 
-  int _HPCT_CheckDir(const char *dirname)
+  int _GRVY_CheckDir(const char *dirname)
   {
     struct stat st;
 
@@ -131,16 +131,16 @@ namespace HPCT {
       {
 	if( mkdir(dirname,0700) != 0 )
 	  {
-	    //	    _HPCT_message(_HPCT_emask,__func__,
-	    _HPCT_message(HPCT_ERROR,__func__,
+	    //	    _GRVY_message(_GRVY_emask,__func__,
+	    _GRVY_message(GRVY_ERROR,__func__,
 		"unable to create directory",dirname);
 	    return -1;
 	  }
       }
     else if (!S_ISDIR(st.st_mode))
       {
-	//	_HPCT_message(_HPCT_emask,__func__,
-	_HPCT_message(HPCT_ERROR,__func__,
+	//	_GRVY_message(_GRVY_emask,__func__,
+	_GRVY_message(GRVY_ERROR,__func__,
 	    "entry exists but is not a directory",dirname);
 	return -1;
       }
@@ -148,7 +148,7 @@ namespace HPCT {
     return 0;
   }
 
-  extern "C" int hpct_create_unique_dir(char *name_template)
+  extern "C" int grvy_create_unique_dir(char *name_template)
   {
 
     int status = verify_string_ends_with_6_Xs(name_template);
@@ -169,18 +169,18 @@ namespace HPCT {
   // check explicitly to hopefully avoid confusion for the user.
 
 #ifdef TLS /* Use thread local storage for the stack, if possible */
-  static TLS std::stack<char *> _hpct_create_scratch_dir_paths;
+  static TLS std::stack<char *> _grvy_create_scratch_dir_paths;
 #else
-  static     std::stack<char *> _hpct_create_scratch_dir_paths;
+  static     std::stack<char *> _grvy_create_scratch_dir_paths;
 #endif
 
-  extern "C" int hpct_create_scratch_dir(char *name_template)
+  extern "C" int grvy_create_scratch_dir(char *name_template)
   {
 
     int status = verify_string_ends_with_6_Xs(name_template);
     if (status) return status;
     
-    status = hpct_create_unique_dir(name_template);
+    status = grvy_create_unique_dir(name_template);
     if (status) return status;
     
     char * name_copy = strdup(name_template);
@@ -189,32 +189,32 @@ namespace HPCT {
       return -1;
     }
     
-    if (_hpct_create_scratch_dir_paths.empty())
+    if (_grvy_create_scratch_dir_paths.empty())
       {
-	if (status = atexit(_HPCT_create_scratch_dir_atexit_handler))
+	if (status = atexit(_GRVY_create_scratch_dir_atexit_handler))
 	  {
 	    free(name_copy);
 	    return status;
 	  }
       }
 
-    _hpct_create_scratch_dir_paths.push(name_copy);
+    _grvy_create_scratch_dir_paths.push(name_copy);
 
     return status;
   }
 
-  void _HPCT_create_scratch_dir_atexit_handler()
+  void _GRVY_create_scratch_dir_atexit_handler()
   {
-    while(!_hpct_create_scratch_dir_paths.empty())
+    while(!_grvy_create_scratch_dir_paths.empty())
     {
-      char * path = _hpct_create_scratch_dir_paths.top();
-      if (_HPCT_RemoveAll(path)) perror(path);
+      char * path = _grvy_create_scratch_dir_paths.top();
+      if (_GRVY_RemoveAll(path)) perror(path);
       free(path);
-      _hpct_create_scratch_dir_paths.pop();
+      _grvy_create_scratch_dir_paths.pop();
     }
   }
 
-  int _HPCT_RemoveAll(const char *path)
+  int _GRVY_RemoveAll(const char *path)
   {
     struct stat st;
     int status;
@@ -230,7 +230,7 @@ namespace HPCT {
       }
     else if (S_ISDIR(st.st_mode))
       {
-	status = nftw(path, _HPCT_RemoveAll_nftw_helper, _POSIX_OPEN_MAX,
+	status = nftw(path, _GRVY_RemoveAll_nftw_helper, _POSIX_OPEN_MAX,
 	              FTW_DEPTH | FTW_PHYS); /* errno set by nftw */
       }
     else
@@ -243,7 +243,7 @@ namespace HPCT {
     return status;
   }
 
-  int _HPCT_RemoveAll_nftw_helper(const char *path,
+  int _GRVY_RemoveAll_nftw_helper(const char *path,
                                   const struct stat * st,
 				  int flag,
 				  struct FTW *f)
@@ -276,35 +276,35 @@ namespace HPCT {
   // Basic stdout warning/error messages
   //------------------------------------
 
-  void _HPCT_message(char *message)
+  void _GRVY_message(char *message)
   {
-    _HPCT_Log.msg(HPCT_INFO,message);
+    _GRVY_Log.msg(GRVY_INFO,message);
     return;
   }
 
-  void _HPCT_message(int LogLevel, const char *func, const char *message)
+  void _GRVY_message(int LogLevel, const char *func, const char *message)
   {
     static string log_message;
 
     log_message  = str(format("(%1%): %2% ") % func % message);
-    _HPCT_Log.msg(LogLevel,log_message);
+    _GRVY_Log.msg(LogLevel,log_message);
     return;
   }
 
-  template <typename T> void _HPCT_message (int LogLevel, const char *func, const char *message, T var)
+  template <typename T> void _GRVY_message (int LogLevel, const char *func, const char *message, T var)
   {
     static string log_message;
 
     log_message  = str(format("(%1%): %2% -> %3% ") % func % message % var);
-    _HPCT_Log.msg(LogLevel,log_message);
+    _GRVY_Log.msg(LogLevel,log_message);
   }
 
-  void _HPCT_message(int LogLevel, const char *func, const char *message, const char *char_item)
+  void _GRVY_message(int LogLevel, const char *func, const char *message, const char *char_item)
   {
     static string log_message;
     
     log_message = str(format("(%1%): %2% -> %3%") % func % message % char_item);
-    _HPCT_Log.msg(LogLevel,log_message);
+    _GRVY_Log.msg(LogLevel,log_message);
     return;
   }
 
@@ -312,51 +312,51 @@ namespace HPCT {
   // Message Templates
   //------------------------------
 
-  template void _HPCT_message (int LogLevel, const char *func, const char *message, int    var);
-  template void _HPCT_message (int LogLevel, const char *func, const char *message, float  var);
-  template void _HPCT_message (int LogLevel, const char *func, const char *message, double var);
+  template void _GRVY_message (int LogLevel, const char *func, const char *message, int    var);
+  template void _GRVY_message (int LogLevel, const char *func, const char *message, float  var);
+  template void _GRVY_message (int LogLevel, const char *func, const char *message, double var);
 
   //-----------------------------------------------------------------
   //                     Fortran Interfaces
   //-----------------------------------------------------------------
 
-#ifdef _HPCT_FORTRAN_STRING_ORDER1
-extern "C" void hpct_check_file_path_(char *pathname,int *flag,int _namelen)
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void grvy_check_file_path_(char *pathname,int *flag,int _namelen)
 #else
-extern "C" void hpct_check_file_path_(char *pathname,int _namelen,int *flag)
+extern "C" void grvy_check_file_path_(char *pathname,int _namelen,int *flag)
 #endif
   {
-    char *name = hpct_f2c_char(pathname,_namelen);
+    char *name = grvy_f2c_char(pathname,_namelen);
 
-    *flag = hpct_check_file_path(name);
+    *flag = grvy_check_file_path(name);
 
     delete[] name;
     return;
   }
 
-#ifdef _HPCT_FORTRAN_STRING_ORDER1
-extern "C" void hpct_create_unique_dir_(char *name_template,int *flag,int _namelen)
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void grvy_create_unique_dir_(char *name_template,int *flag,int _namelen)
 #else
-extern "C" void hpct_create_unique_dir_(char *name_template,int _namelen,int *flag)
+extern "C" void grvy_create_unique_dir_(char *name_template,int _namelen,int *flag)
 #endif
   {
-    char *c_name_template = hpct_f2c_char(name_template,_namelen);
+    char *c_name_template = grvy_f2c_char(name_template,_namelen);
 
-    *flag = hpct_create_unique_dir(c_name_template);
+    *flag = grvy_create_unique_dir(c_name_template);
     strncpy(name_template,c_name_template,_namelen);
 
     delete[] c_name_template;
   }
 
-#ifdef _HPCT_FORTRAN_STRING_ORDER1
-extern "C" void hpct_create_scratch_dir_(char *name_template,int *flag,int _namelen)
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void grvy_create_scratch_dir_(char *name_template,int *flag,int _namelen)
 #else
-extern "C" void hpct_create_scratch_dir_(char *name_template,int _namelen,int *flag)
+extern "C" void grvy_create_scratch_dir_(char *name_template,int _namelen,int *flag)
 #endif
   {
-    char *c_name_template = hpct_f2c_char(name_template,_namelen);
+    char *c_name_template = grvy_f2c_char(name_template,_namelen);
 
-    *flag = hpct_create_scratch_dir(c_name_template);
+    *flag = grvy_create_scratch_dir(c_name_template);
     strncpy(name_template,c_name_template,_namelen);
 
     delete[] c_name_template;
@@ -366,9 +366,9 @@ extern "C" void hpct_create_scratch_dir_(char *name_template,int _namelen,int *f
   // -------------------- Convenience Functions ---------------------
   // ----------------------------------------------------------------
 
-  // hpct_f2c_char(): Convert evil Fortran character strings to C
+  // grvy_f2c_char(): Convert evil Fortran character strings to C
 
-  char *hpct_f2c_char(char*input,int len)
+  char *grvy_f2c_char(char*input,int len)
   {
     char* output = new char[len+1];
     strncpy(output,input,len);
@@ -390,7 +390,7 @@ extern "C" void hpct_create_scratch_dir_(char *name_template,int _namelen,int *f
     
     if(name_template == NULL)
       {
-	_HPCT_message(HPCT_ERROR,__func__,"Invalid directory template name (null) ");
+	_GRVY_message(GRVY_ERROR,__func__,"Invalid directory template name (null) ");
 	return 1;
       }
 
@@ -400,7 +400,7 @@ extern "C" void hpct_create_scratch_dir_(char *name_template,int _namelen,int *f
       {
 	if(name_template[i] != 'X')
 	  {
-	    _HPCT_message(HPCT_ERROR,__func__,
+	    _GRVY_message(GRVY_ERROR,__func__,
 			  "Invalid directory template (must end with XXXXXX) -",name_template);
 	    return 1;
 	  }

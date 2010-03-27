@@ -2,10 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(hpct, 0.27.0, karl@ices.utexas.edu)
+AC_INIT(grvy, 0.27.0, karl@ices.utexas.edu)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE(hpct,0.27.0)
+AM_INIT_AUTOMAKE(grvy,0.27.0)
 
 # Release versioning
 
@@ -86,7 +86,7 @@ DX_XML_FEATURE(OFF)
 DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(OFF)
 
-DX_INIT_DOXYGEN(HPCT, doxygen/hpct.dox, docs)
+DX_INIT_DOXYGEN(GRVY, doxygen/grvy.dox, docs)
 
 AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile hpct.pc hpct.spec doxygen/Makefile)
 

@@ -8,10 +8,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "hpct.h"
+#include <grvy.h>
 
 /*------------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  * Works in conjunction with wrapper_C_scratch_dir
  *
  * $Id$
@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
   /* Silence warning/error messages */
 
-  hpct_input_toggle_messages(0);
+  grvy_input_toggle_messages(0);
   
   /* Unable to create a directory on invalid template */
   {
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
     /* Check call fails and the template was not modified */
     template_backup = strdup(invalid_template);
-    flag           *= (0 != hpct_create_scratch_dir(invalid_template));
+    flag           *= (0 != grvy_create_scratch_dir(invalid_template));
     flag           *= (0 == strcmp(template_backup, invalid_template));
     free(template_backup);
 
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
     char *template_backup;
 
     template_backup = strdup(valid_template);
-    flag           *= (0 == hpct_create_scratch_dir(valid_template));
+    flag           *= (0 == grvy_create_scratch_dir(valid_template));
     flag           *= (0 != strcmp(template_backup, valid_template));
     free(template_backup);
 
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 
     /* Ensure valid_template directory exists afterwards */
 
-    flag *= (0 == hpct_create_scratch_dir(valid_template));
+    flag *= (0 == grvy_create_scratch_dir(valid_template));
     flag *= (0 == lstat(valid_template, &st));
     flag *= S_ISDIR(st.st_mode);
 
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
       {
 	valid_template[i] = 'X';
       }
-    flag *= (0 == hpct_create_scratch_dir(valid_template));
+    flag *= (0 == grvy_create_scratch_dir(valid_template));
 
     /* Change back to the parent directory */
     flag *= (0 == chdir(".."));

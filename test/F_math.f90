@@ -1,6 +1,5 @@
 program test_isnan_isinf
-
-  use hpct
+  use grvy
 
   implicit none
 
@@ -27,22 +26,22 @@ program test_isnan_isinf
 
   return_code = 0
 
-  is_nan = hpct_double_isnan( should_be_nan )
+  is_nan = grvy_double_isnan( should_be_nan )
   if( is_nan .ne. 1 )then
      return_code = 1
   endif
 
-  is_inf = hpct_double_isinf( should_be_inf )
+  is_inf = grvy_double_isinf( should_be_inf )
   if( is_inf .ne. 1 )then
      return_code = 1
   endif
 
-  is_nan =  hpct_double_isnan( 5.d0 )
+  is_nan =  grvy_double_isnan( 5.d0 )
   if( is_nan .ne. 0 )then
      return_code = 1
   endif
 
-  is_inf =  hpct_double_isinf( 1.d0 )
+  is_inf =  grvy_double_isinf( 1.d0 )
   if( is_inf .ne. 0 )then
      return_code = 1
   endif

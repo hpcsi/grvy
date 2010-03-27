@@ -7,7 +7,7 @@ char * build_example_file_path()
 {
   const char filename[] = "input-example.txt";
   char *retval;
-  char *input_dir = getenv("HPCT_INPUT_EXAMPLE_DIR");
+  char *input_dir = getenv("GRVY_INPUT_EXAMPLE_DIR");
 
   if (input_dir == NULL)
     {

@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "hpct.h"
+#include <grvy.h>
 
 /*----------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  *
  * $Id$
  *----------------------------------------------*/
@@ -18,16 +18,16 @@ int main(int argc, char **argv)
   char *key1, *key2;
   int flag = 1;
 
-  //  hpct_input_toggle_messages(0);
-  hpct_log_setlevel(HPCT_NOLOG);
+  //  grvy_input_toggle_messages(0);
+  grvy_log_setlevel(GRVY_NOLOG);
 
   /* Initialize/read the file */
 
-  flag *= hpct_input_fopen("./tori-rulez");
+  flag *= grvy_input_fopen("./tori-rulez");
 
   /* Close the file */
 
-  flag *= hpct_input_fclose();
+  flag *= grvy_input_fclose();
 
   if(flag == 0)
     exit(0);

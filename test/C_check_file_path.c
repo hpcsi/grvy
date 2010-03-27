@@ -5,10 +5,10 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "hpct.h"
+#include <grvy.h>
 
 /*----------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  *
  * $Id$
  *----------------------------------------------*/
@@ -24,24 +24,24 @@ int main(int argc, char **argv)
 
   /* Silence info/warn/error messages */
 
-  hpct_log_setlevel(HPCT_NOLOG);
+  grvy_log_setlevel(GRVY_NOLOG);
 
   /* Failure should occur if we attempt to clobber this binary */
   {
-    flag *= (-1 == hpct_check_file_path("C_check_file_path/foo"));
+    flag *= (-1 == grvy_check_file_path("C_check_file_path/foo"));
   }
 
   /* Success should occur for universally existent file paths */
   {
-    flag *= (0 == hpct_check_file_path("////"));
-    flag *= (0 == hpct_check_file_path("."));
-    flag *= (0 == hpct_check_file_path(".."));
+    flag *= (0 == grvy_check_file_path("////"));
+    flag *= (0 == grvy_check_file_path("."));
+    flag *= (0 == grvy_check_file_path(".."));
   }
 
   /* Success should occur for paths relative to the current directory */
   {
-    flag *= (0 == hpct_check_file_path("./CheckFilePathString"));
-    flag *= (0 == hpct_check_file_path("../CheckFilePathString"));
+    flag *= (0 == grvy_check_file_path("./CheckFilePathString"));
+    flag *= (0 == grvy_check_file_path("../CheckFilePathString"));
   }
 
   /* Create a single new directory */
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     DIR *dir_handle = opendir("CheckFilePathDir");
     flag *= (dir_handle == NULL && errno == ENOENT);
 
-    flag *= (0 == hpct_check_file_path("CheckFilePathDir/foo"));
+    flag *= (0 == grvy_check_file_path("CheckFilePathDir/foo"));
 
     /* Ensure directory exists afterwards and remove it */
     flag *= (0 == rmdir("CheckFilePathDir"));
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     DIR *dir_handle = opendir("CheckFilePathDir");
     flag *= (dir_handle == NULL && errno == ENOENT);
 
-    flag *= (0 == hpct_check_file_path("CheckFilePathDir/A/B/C/foo"));
+    flag *= (0 == grvy_check_file_path("CheckFilePathDir/A/B/C/foo"));
 
     /* Ensure directory structure exists afterwards and remove it */
     flag *= (0 == rmdir("CheckFilePathDir/A/B/C"));

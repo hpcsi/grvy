@@ -5,10 +5,10 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "hpct.h"
+#include <grvy.h>
 
 /*----------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  *
  * $Id$
  *----------------------------------------------*/
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 
   /* Silence warning/error messages */
 
-  hpct_input_toggle_messages(0);
+  grvy_input_toggle_messages(0);
 
   /* Unable to create a directory on invalid template */
 
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     /* Check call fails and the template was not modified */
 
     template_backup = strdup(invalid_template);
-    flag           *= (0 != hpct_create_unique_dir(invalid_template));
+    flag           *= (0 != grvy_create_unique_dir(invalid_template));
     flag           *= (0 == strcmp(template_backup, invalid_template));
     free(template_backup);
 
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
     char *template_backup;
 
     template_backup = strdup(valid_template);
-    flag           *= (0 == hpct_create_unique_dir(valid_template));
+    flag           *= (0 == grvy_create_unique_dir(valid_template));
     flag           *= (0 != strcmp(template_backup, valid_template));
     free(template_backup);
 

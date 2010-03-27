@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "hpct.h"
+#include <grvy.h>
 
 /*----------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  *
- * $Id:$
+ * $Id$
  *----------------------------------------------*/
 
 const char *test_name = "C math: test isnan functionality";
@@ -32,25 +32,25 @@ int main(int argc, char **argv)
 
   /* Make sure we get float isnan */
   fval = &should_be_f_nan;
-  is_my_val_nan = hpct_float_isnan( fval );
+  is_my_val_nan = grvy_float_isnan( fval );
   if( is_my_val_nan == 0 )
     flag = 1;
 
   /* Make sure we don't get a false positive */
   fval = &should_not_be_f_nan;
-  is_my_val_nan = hpct_float_isnan( fval );
+  is_my_val_nan = grvy_float_isnan( fval );
   if( is_my_val_nan == 1 )
     flag = 1;
 
   /* Make sure we get double isnan */
   dval = &should_be_d_nan;
-  is_my_val_nan = hpct_double_isnan( dval );
+  is_my_val_nan = grvy_double_isnan( dval );
   if( is_my_val_nan == 0 )
     flag = 1;
 
   /* Make sure we don't get a false positive */
   dval = &should_not_be_d_nan;
-  is_my_val_nan = hpct_double_isnan( dval );
+  is_my_val_nan = grvy_double_isnan( dval );
   if( is_my_val_nan == 1 )
       flag = 1;
 

@@ -1,5 +1,5 @@
 program main
-  use hpct
+  use grvy
 
   character :: filepath1*100 = './afile'
   character :: filepath2*100 = 'bfile'
@@ -20,11 +20,11 @@ program main
 
   ! Create parent directories if necessary
 
-  call hpct_check_file_path(filepath1);
-  call hpct_check_file_path(filepath2);
-  call hpct_check_file_path(filepath3);
-  call hpct_check_file_path(filepath4);
-  call hpct_check_file_path(filepath5);
+  call grvy_check_file_path(filepath1);
+  call grvy_check_file_path(filepath2);
+  call grvy_check_file_path(filepath3);
+  call grvy_check_file_path(filepath4);
+  call grvy_check_file_path(filepath5);
 
   ! Write to the files
 

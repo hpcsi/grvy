@@ -1,4 +1,4 @@
-#include<hpct.h>
+#include<grvy.h>
 #include<stdio.h>
 #include<unistd.h>
 #include<sys/time.h>
@@ -6,7 +6,7 @@
 #include<math.h>
 
 /*----------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  *
  * $Id$
  *----------------------------------------------*/
@@ -32,12 +32,12 @@ int main()
   for(itest=0;itest<num_repeat;itest++)
     {
 
-      hpct_timer_reset();
+      grvy_timer_reset();
 
       for(i=0;i<Max_Iters;i++)
 	{
 
-	  hpct_timer_init("HPCT");
+	  grvy_timer_init("GRVY");
 
 	  /* Define the beginning of the overall portion to be monitored */
 	  
@@ -45,17 +45,17 @@ int main()
 	  bar();
 	  poo();
 
-	  hpct_timer_finalize();
-	  //	  hpct_timer_summarize();
+	  grvy_timer_finalize();
+	  //	  grvy_timer_summarize();
 	}
 
 
       if(i=Max_Iters-1)
 	{
 	  double expecting = Max_Iters*(Foo_Sleep+Poo_Sleep+Bar_Sleep)/1.e6;
-	  double measured  = hpct_timer_elapsedseconds("bar") +
-	                     hpct_timer_elapsedseconds("foo") + 
-	                     hpct_timer_elapsedseconds("poo");
+	  double measured  = grvy_timer_elapsedseconds("bar") +
+	                     grvy_timer_elapsedseconds("foo") + 
+	                     grvy_timer_elapsedseconds("poo");
 
 	  if( fabs(measured-expecting) > Tolerance)
 	    {
@@ -77,9 +77,9 @@ int main()
 void foo()
 {
 
-  hpct_timer_begin(__func__);
+  grvy_timer_begin(__func__);
   usleep(Foo_Sleep);
-  hpct_timer_end(__func__);
+  grvy_timer_end(__func__);
 
   return;
     
@@ -87,9 +87,9 @@ void foo()
 
 void bar()
 {
-  hpct_timer_begin(__func__);
+  grvy_timer_begin(__func__);
   usleep(Bar_Sleep);
-  hpct_timer_end(__func__);
+  grvy_timer_end(__func__);
 
   return;
     
@@ -98,9 +98,9 @@ void bar()
 
 void poo()
 {
-  hpct_timer_begin(__func__);
+  grvy_timer_begin(__func__);
   usleep(Poo_Sleep);
-  hpct_timer_end(__func__);
+  grvy_timer_end(__func__);
 
   return;
     

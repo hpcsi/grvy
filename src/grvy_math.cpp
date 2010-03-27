@@ -2,72 +2,72 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 //
-// Copyright (C) 2008,2009 The PECOS Development Team
+// Copyright (C) 2008,2009,2010 The PECOS Development Team
 //
 // Please see http://pecos.ices.utexas.edu for more information.
 //
-// This file is part of the PECOS HPC Toolkit (HPCT)
+// This file is part of the PECOS GRVY Toolkit
 //
-// HPCT is free software: you can redistribute it and/or modify
+// GRVY is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// HPCT is distributed in the hope that it will be useful,
+// GRVY is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with HPCT.  If not, see <http://www.gnu.org/licenses/>.
+// along with GRVY.  If not, see <http://www.gnu.org/licenses/>.
 //
 //--------------------------------------------------------------------------
-// hpct_math: Convenience math utility functions.
+// grvy_math: Convenience math utility functions.
 //
 // $Id$
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
-#include<hpct_classes.h>
-#include<hpct.h>
+#include<grvy_classes.h>
+#include<grvy.h>
 
-using namespace HPCT;
+using namespace GRVY;
 
-HPCT_Math_Class _HPCT_Math; //math class
+GRVY_Math_Class _GRVY_Math; //math class
 
 //-----------------------------------------------------------------
 //                       ye ol' C Interfaces
 //-----------------------------------------------------------------
 
-int hpct_double_isnan(double *val)
+int grvy_double_isnan(double *val)
 {
-  return( _HPCT_Math.isnan<double>( *val ) );
+  return( _GRVY_Math.isnan<double>( *val ) );
 }
 
-int hpct_double_isinf(double *val)
+int grvy_double_isinf(double *val)
 {
-  return( _HPCT_Math.isinf<double>( *val ) );
+  return( _GRVY_Math.isinf<double>( *val ) );
 }
 
-int hpct_float_isnan(float *val)
+int grvy_float_isnan(float *val)
 {
-  return( _HPCT_Math.isnan<float>( *val ) );
+  return( _GRVY_Math.isnan<float>( *val ) );
 }
 
-int hpct_float_isinf(float *val)
+int grvy_float_isinf(float *val)
 {
-  return( _HPCT_Math.isinf<float>( *val ) );
+  return( _GRVY_Math.isinf<float>( *val ) );
 }
 
 //-----------------------------------------------------------------
 //                     Fortran Interfaces
 //-----------------------------------------------------------------
-extern "C" int hpct_double_isnan_( double *val )
+extern "C" int grvy_double_isnan_( double *val )
 {
-  return( _HPCT_Math.isnan<double>( *val ) );
+  return( _GRVY_Math.isnan<double>( *val ) );
 }
 
-extern "C" int hpct_double_isinf_( double *val )
+extern "C" int grvy_double_isinf_( double *val )
 {
-  return( _HPCT_Math.isinf<double>( *val ) );
+  return( _GRVY_Math.isinf<double>( *val ) );
 }

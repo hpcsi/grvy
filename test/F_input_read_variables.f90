@@ -1,11 +1,11 @@
 !*----------------------------------------------
-! * HPCT Test Suite
+! * GRVY Test Suite
 ! *
 ! * 2010-03-08  Nick
 ! *----------------------------------------------
 
 program main
-  use hpct
+  use grvy
   implicit none
   
   real           :: reyn,mach,aoa, A(3)
@@ -17,33 +17,33 @@ program main
 
   ret_value = 0
 
-  call hpct_input_fopen("./input-example.txt",flag)
+  call grvy_input_fopen("./input-example.txt",flag)
 
   ! ----- read from BASIC section -----
 
-  call hpct_input_fread_real ("reyn", reyn, flag)
-  call hpct_input_fread_real ("mach", mach, flag)
-  call hpct_input_fread_real ("aoa", aoa, flag)
-  call hpct_input_fread_int  ("iter_max",iter_max,flag)
-  call hpct_input_fread_char ("gridfile",gridfile,flag)
+  call grvy_input_fread_real ("reyn", reyn, flag)
+  call grvy_input_fread_real ("mach", mach, flag)
+  call grvy_input_fread_real ("aoa", aoa, flag)
+  call grvy_input_fread_int  ("iter_max",iter_max,flag)
+  call grvy_input_fread_char ("gridfile",gridfile,flag)
 
   ! ----- read from SOLVER section -----
 
-  call hpct_input_fread_int  ("solver/turbulence",turbulent,flag)
-  call hpct_input_fread_char_ivec("solver/keywords",key1,1,flag)
-  call hpct_input_fread_char_ivec("solver/keywords",key2,2,flag)
-  call hpct_input_fread_real_vec("turbulence/A",A,3,flag)
+  call grvy_input_fread_int  ("solver/turbulence",turbulent,flag)
+  call grvy_input_fread_char_ivec("solver/keywords",key1,1,flag)
+  call grvy_input_fread_char_ivec("solver/keywords",key2,2,flag)
+  call grvy_input_fread_real_vec("turbulence/A",A,3,flag)
 
   ! ----- read from VERIFY section -----
 
-  call hpct_input_fread_int     ("verify/ivar",ivar1,flag)
-  !call hpct_input_fread_int_ivec("verify/ivec",ivar2,2,flag)
-  call hpct_input_fread_int_vec ("verify/ivec",ivec,4,flag)
+  call grvy_input_fread_int     ("verify/ivar",ivar1,flag)
+  !call grvy_input_fread_int_ivec("verify/ivec",ivar2,2,flag)
+  call grvy_input_fread_int_vec ("verify/ivec",ivec,4,flag)
 
   ! ----- Test Results -----
   
 
-  call hpct_input_fclose()
+  call grvy_input_fclose()
   
   call exit(ret_value)
 

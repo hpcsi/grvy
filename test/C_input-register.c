@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hpct.h"
+#include <grvy.h>
 #include "examplefile.h"
 
 /*----------------------------------------------
- * HPCT Test Suite
+ * GRVY Test Suite
  *
  * Input variable registration
  *
@@ -31,17 +31,17 @@ int main(int argc, char **argv)
   /* Register variable (can be use for backwards-compatible
    * input file support) */
 
-  hpct_input_register_int   ("sec1/aint",   iset);
-  hpct_input_register_float ("sec1/afloat", fset);
-  hpct_input_register_double("sec1/adouble",dset);
-  hpct_input_register_char  ("sec1/astring",sset);
+  grvy_input_register_int   ("sec1/aint",   iset);
+  grvy_input_register_float ("sec1/afloat", fset);
+  grvy_input_register_double("sec1/adouble",dset);
+  grvy_input_register_char  ("sec1/astring",sset);
 
   /* Verify that we can recover what we registered as default */
 
-  flag *= hpct_input_register_get_int   ("sec1/aint",&igot);
-  flag *= hpct_input_register_get_float ("sec1/afloat",&fgot);
-  flag *= hpct_input_register_get_double("sec1/adouble",&dgot);
-  flag *= hpct_input_register_get_char  ("sec1/astring",&sgot);
+  flag *= grvy_input_register_get_int   ("sec1/aint",&igot);
+  flag *= grvy_input_register_get_float ("sec1/afloat",&fgot);
+  flag *= grvy_input_register_get_double("sec1/adouble",&dgot);
+  flag *= grvy_input_register_get_char  ("sec1/astring",&sgot);
 
   if(flag == 0)
       exit(1);
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
   /* Verify that we can recover registered default variables when they
      are not present in the input file */
 
-  hpct_log_setlevel(HPCT_NOLOG);
+  grvy_log_setlevel(GRVY_NOLOG);
 
   igot=-1;
   fgot=-1.;
@@ -64,13 +64,13 @@ int main(int argc, char **argv)
   sgot=NULL;
 
   input_example_file_path = build_example_file_path();
-  flag *= hpct_input_fopen(input_example_file_path);
+  flag *= grvy_input_fopen(input_example_file_path);
   free(input_example_file_path);
-  flag *= hpct_input_fread_int   ("sec1/aint",&igot);
-  flag *= hpct_input_fread_float ("sec1/afloat",&fgot);
-  flag *= hpct_input_fread_double("sec1/adouble",&dgot);
-  flag *= hpct_input_fread_char  ("sec1/astring",&sgot);
-  flag *= hpct_input_fclose      ();
+  flag *= grvy_input_fread_int   ("sec1/aint",&igot);
+  flag *= grvy_input_fread_float ("sec1/afloat",&fgot);
+  flag *= grvy_input_fread_double("sec1/adouble",&dgot);
+  flag *= grvy_input_fread_char  ("sec1/astring",&sgot);
+  flag *= grvy_input_fclose      ();
 
   if(flag == 0)
       exit(1);

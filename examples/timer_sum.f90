@@ -1,6 +1,6 @@
 
 program main
-  use hpct
+  use grvy
 
   integer :: Foo_Sleep = 1
   integer :: Bar_Sleep = 2
@@ -11,7 +11,7 @@ program main
 
   integer i
 
-  call hpct_asci_time(timestring)
+  call grvy_asci_time(timestring)
 
   write(*,'(a,a26)') 'Run on: ',trim(timestring)
 
@@ -21,37 +21,37 @@ program main
 
      ! Define the beginning of the overall portion to be monitored
 
-     call hpct_timer_init('Fortran is the best!');
+     call grvy_timer_init('Fortran is the best!');
 
      print*,'Main iteration loop = ',i
      
      call foo(Foo_Sleep);
 
-     call hpct_timer_elapsed_global(igot)
+     call grvy_timer_elapsed_global(igot)
      print*,'Elapsed time since global init is: ',igot
 
      call bar(Bar_Sleep);
      call poo(Poo_Sleep);
      
-     call hpct_timer_finalize();
+     call grvy_timer_finalize();
      
   enddo
 
-  call hpct_timer_summarize();
+  call grvy_timer_summarize();
 
   print*,' '
   print*,'Expecting ',Max_Iters*(Foo_Sleep+Poo_Sleep+Bar_Sleep),' secs '
 
   ! example use of timer directly
   
-  call hpct_timer(igot)
+  call grvy_timer(igot)
   call sleep(1)
-  call hpct_timer(igot2)
+  call grvy_timer(igot2)
 
   print*,' '
   print*,'Measured ',igot2-igot,' secs (expected 1.0)'
 
-  call hpct_timer_elapsed_global(igot)
+  call grvy_timer_elapsed_global(igot)
   print*,' '
   print*,'The total elapsed time since init is: ',igot
 
@@ -62,9 +62,9 @@ end program main
 subroutine foo(isleep)
   integer isleep
   
-  call hpct_timer_begin('foo');
+  call grvy_timer_begin('foo');
   call sleep(isleep);
-  call hpct_timer_end('foo');
+  call grvy_timer_end('foo');
 
   return
 end subroutine foo
@@ -72,9 +72,9 @@ end subroutine foo
 subroutine bar(isleep)
   integer isleep
 
-  call hpct_timer_begin('bar');
+  call grvy_timer_begin('bar');
   call sleep(isleep);
-  call hpct_timer_end('bar');
+  call grvy_timer_end('bar');
   return
 
 end subroutine bar
@@ -82,9 +82,9 @@ end subroutine bar
 subroutine poo(isleep)
   integer isleep
 
-  call hpct_timer_begin('poo');
+  call grvy_timer_begin('poo');
   call sleep(isleep);
-  call hpct_timer_end('poo');
+  call grvy_timer_end('poo');
   return
 end subroutine poo
 

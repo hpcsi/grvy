@@ -6,31 +6,31 @@
 //
 // Please see http://pecos.ices.utexas.edu for more information.
 //
-// This file is part of the PECOS HPC Toolkit (HPCT)
+// This file is part of the PECOS GRVY Toolkit
 //
-// HPCT is free software: you can redistribute it and/or modify
+// GRVY is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// HPCT is distributed in the hope that it will be useful,
+// GRVY is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with HPCT.  If not, see <http://www.gnu.org/licenses/>.
+// along with GRVY.  If not, see <http://www.gnu.org/licenses/>.
 //
 // -------------------------------------------------------------------------
 //
-// hpct_classes.h: Basic class definitions
+// grvy_classes.h: Basic class definitions
 //
 // $Id$
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 
-#ifndef HPCT_CLASSES_H_
-#define HPCT_CLASSES_H_
+#ifndef GRVY_CLASSES_H_
+#define GRVY_CLASSES_H_
 
 #include<limits>
 #include<map>
@@ -47,13 +47,13 @@
 using namespace std;
 using namespace boost::accumulators;
 
-namespace HPCT {
+namespace GRVY {
 
 //---------------------
 // Input Parsing Class
 //---------------------
 
-class HPCT_Input_Class {
+class GRVY_Input_Class {
  private:
   GetPot    ifile;                   // input file
   short int initialized;             // input file initialized?
@@ -76,7 +76,7 @@ class HPCT_Input_Class {
   const char  *comment_end;
 
  public:
-  HPCT_Input_Class  ();
+  GRVY_Input_Class  ();
   void Initialize   ();
   int  VerifyInit   ();
   int  Open         (const char *filename);
@@ -117,25 +117,25 @@ class HPCT_Input_Class {
 // Performance Timing Class
 //--------------------------
 
-typedef struct HPCT_Timer_Data {
+typedef struct GRVY_Timer_Data {
   double timings[2];
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats;
 } tTimer_Data;
 
-typedef map <std::string, HPCT_Timer_Data > _HPCT_Type_TimerMap2;
+typedef map <std::string, GRVY_Timer_Data > _GRVY_Type_TimerMap2;
 
-class HPCT_Timer_Class {
+class GRVY_Timer_Class {
  private:
   short int initialized;      // initialized?
   double    timer_last;           // raw timer value of last call
   double    timer_finalize;       // raw timer value at time of finalize()
   string    timer_name;       // user name supplied for the timer
-  _HPCT_Type_TimerMap2 TimerMap;  // map used to store performance timers for each defined key
+  _GRVY_Type_TimerMap2 TimerMap;  // map used to store performance timers for each defined key
 
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
 
  public:
-  HPCT_Timer_Class      ();
+  GRVY_Timer_Class      ();
   void Reset            ();
   void Summarize        ();
   void VerifyInit       ();
@@ -153,11 +153,11 @@ class HPCT_Timer_Class {
 // Math Class
 //--------------------------
 
-class HPCT_Math_Class {
+class GRVY_Math_Class {
  private:
 
  public:
-  HPCT_Math_Class      ();
+  GRVY_Math_Class      ();
 
 // See http://software.intel.com/en-us/forums/intel-c-compiler/topic/64188/
 #if    (defined __INTEL_COMPILER)                    \
@@ -215,26 +215,12 @@ class HPCT_Math_Class {
   // Logging Class
   //--------------------------
 
-#if 0  
-  // Logging priorities; roughly mimics syslog priority levels but with
-  // fewer options.
-  
-  typedef enum {HPCT_NOLOG  =  -1,
-		HPCT_FATAL  =   0,
-		HPCT_ERROR  = 100,
-		HPCT_WARN   = 200,
-		HPCT_INFO   = 300,
-		HPCT_DEBUG  = 400,
-		HPCT_NOTSET = 500
-  } PriorityLevel;
-#endif
-
-  class HPCT_Log_Class {
+  class GRVY_Log_Class {
   private:
     int log_level;			     // Current log level priority
     map<int,std::string> LogMask;            // String masks for log messages
   public:
-    HPCT_Log_Class();		
+    GRVY_Log_Class();		
 
     bool isLog (int priority);	             // log priority sufficient to generate message?
     void msg   (int priority, string msg);   // post new log message with a priority

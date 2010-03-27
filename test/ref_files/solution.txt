@@ -39,5 +39,5 @@
 # verify/is
 # verify/cool"
 
-# [HPCT Registered Variable Default Values]
+# [GRVY Registered Variable Default Values]
 
