@@ -568,7 +568,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = src/hpct.h examples/pecos-input.txt \
+INPUT                  = src/grvy.h examples/pecos-input.txt \
 		         doxygen/grvy.page \
 			 doxygen/txt_common
 
