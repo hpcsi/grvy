@@ -19,11 +19,15 @@ libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 # Fortran Module Interface
 #--------------------------
 
-noinst_PROGRAMS         = test
+noinst_PROGRAMS         = test test2
 test_SOURCES            = grvy.f90 main.f90
 test_LIBTOOLFLAGS       = --tag=FC
+
+test2_SOURCES            = grvy_hpct.f90 main_hpct.f90
+test2_LIBTOOLFLAGS       = --tag=FC
+
 moduledir               = @libdir@
-module_DATA             = grvy.mod
-CLEANFILES              = grvy.mod
+module_DATA             = grvy.mod hpct.mod
+CLEANFILES              = grvy.mod hpct.mod
 
 METASOURCES = AUTO

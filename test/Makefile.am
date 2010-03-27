@@ -1,3 +1,5 @@
+SUBDIRS         = hpct_api
+
 check_PROGRAMS  = # Append below
 check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 		  C_input_read_missing_variable C_input_register_variables \

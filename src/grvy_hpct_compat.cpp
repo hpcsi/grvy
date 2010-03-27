@@ -483,6 +483,8 @@ extern "C" int hpct_input_register_get_char   (const char *var,char **value)
 
 /* Timers */
 
+//GRVY_Timer_Class *_GRVY_TimerMap;                // performance timer map
+
 double hpct_timer ()
 {
   return( _GRVY_Timers->RawTimer() );
@@ -490,7 +492,7 @@ double hpct_timer ()
 
 // hpct_timer_begin(): Defines beginning of a specific timing region
 
-void hpct_timer_begin(const char *id)
+extern "C" void hpct_timer_begin(const char *id)
 {
   //_GRVY_Timers->VerifyInit();
   _GRVY_Timers->BeginTimer(id);
@@ -500,7 +502,7 @@ void hpct_timer_begin(const char *id)
 
 // hpct_timer_end(): Defines end of a specific timing region
 
-void hpct_timer_end(const char *id)
+extern "C" void hpct_timer_end(const char *id)
 {
   //  _GRVY_Timers->VerifyInit();
   _GRVY_Timers->EndTimer(id);
@@ -509,7 +511,7 @@ void hpct_timer_end(const char *id)
 
 // hpct_timer_elapsedseconds(): Get seconds spent between ..._begin, ..._end
 
-double hpct_timer_elapsedseconds(const char *id)
+extern "C" double hpct_timer_elapsedseconds(const char *id)
 {
   _GRVY_Timers->VerifyInit();
   return( _GRVY_Timers->ElapsedSeconds(id) );
@@ -517,7 +519,7 @@ double hpct_timer_elapsedseconds(const char *id)
 
 // hpct_timer_elapsed_global: provides elapsed time since first init() call
 
-double hpct_timer_elapsed_global()
+extern "C" double hpct_timer_elapsed_global()
 {
   _GRVY_Timers->VerifyInit();
   return ( _GRVY_Timers->ElapsedGlobal() );
@@ -527,7 +529,7 @@ double hpct_timer_elapsed_global()
 // hpct_timer_init(): Define beginning of global portion to be
 // monitored
 
-void hpct_timer_init(const char *id)
+extern "C" void hpct_timer_init(const char *id)
 {
 
   // create new timer on 1st call
@@ -548,7 +550,7 @@ void hpct_timer_init(const char *id)
 
 // hpct_timer_reset(): Reset a global counter to start at zero
 
-void hpct_timer_reset()
+extern "C" void hpct_timer_reset()
 {
   _GRVY_Timers->Reset();
   return;
@@ -556,7 +558,7 @@ void hpct_timer_reset()
 
 // hpct_timer_finalize(): Define end of global portion to be monitored
 
-void hpct_timer_finalize()
+extern "C" void hpct_timer_finalize()
 {
   //  _GRVY_Timers->VerifyInit();
   _GRVY_Timers->EndTimer(_GRVY_gtimer);
@@ -565,7 +567,7 @@ void hpct_timer_finalize()
 
 // hpct_timer_summarize(): Print a summary of all current timers
 
-void hpct_timer_summarize()
+extern "C" void hpct_timer_summarize()
 {
   _GRVY_Timers->VerifyInit();
   _GRVY_Timers->Summarize();
@@ -644,22 +646,22 @@ extern "C" void hpct_timer_elapsed_global_(double *value)
 
 GRVY_Math_Class _GRVY_Math2; //math class
 
-int hpct_double_isnan(double *val)
+extern "C" int hpct_double_isnan(double *val)
 {
   return( _GRVY_Math2.isnan<double>( *val ) );
 }
 
-int hpct_double_isinf(double *val)
+extern "C" int hpct_double_isinf(double *val)
 {
   return( _GRVY_Math2.isinf<double>( *val ) );
 }
 
-int hpct_float_isnan(float *val)
+extern "C" int hpct_float_isnan(float *val)
 {
   return( _GRVY_Math2.isnan<float>( *val ) );
 }
 
-int hpct_float_isinf(float *val)
+extern "C" int hpct_float_isinf(float *val)
 {
   return( _GRVY_Math2.isinf<float>( *val ) );
 }
@@ -667,6 +669,7 @@ int hpct_float_isinf(float *val)
 //-----------------------------------------------------------------
 //                     Fortran Interfaces
 //-----------------------------------------------------------------
+
 extern "C" int hpct_double_isnan_( double *val )
 {
   return( _GRVY_Math2.isnan<double>( *val ) );
@@ -675,4 +678,87 @@ extern "C" int hpct_double_isnan_( double *val )
 extern "C" int hpct_double_isinf_( double *val )
 {
   return( _GRVY_Math2.isinf<double>( *val ) );
+}
+
+/* File-system utils */
+
+extern "C" int hpct_create_unique_dir(char *name_template)
+{
+  return(grvy_create_unique_dir(name_template));
+}
+
+extern "C" int hpct_create_scratch_dir(char *name_template)
+{
+  return(grvy_create_scratch_dir(name_template));
+}
+
+extern "C" int hpct_check_file_path(const char *pathname)
+{
+  return(grvy_check_file_path(pathname));
+}
+
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void hpct_check_file_path_(char *pathname,int *flag,int _namelen)
+#else
+extern "C" void hpct_check_file_path_(char *pathname,int _namelen,int *flag)
+#endif
+{
+  char *name = grvy_f2c_char(pathname,_namelen);
+  
+  *flag = grvy_check_file_path(name);
+  
+  delete[] name;
+  return;
+}
+
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void hpct_create_unique_dir_(char *name_template,int *flag,int _namelen)
+#else
+extern "C" void hpct_create_unique_dir_(char *name_template,int _namelen,int *flag)
+#endif
+{
+  char *c_name_template = grvy_f2c_char(name_template,_namelen);
+  
+  *flag = grvy_create_unique_dir(c_name_template);
+  strncpy(name_template,c_name_template,_namelen);
+  
+  delete[] c_name_template;
+}
+
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void hpct_create_scratch_dir_(char *name_template,int *flag,int _namelen)
+#else
+extern "C" void hpct_create_scratch_dir_(char *name_template,int _namelen,int *flag)
+#endif
+{
+  char *c_name_template = grvy_f2c_char(name_template,_namelen);
+  
+  *flag = grvy_create_scratch_dir(c_name_template);
+  strncpy(name_template,c_name_template,_namelen);
+  
+  delete[] c_name_template;
+}
+
+/* Logging */
+
+extern "C" void hpct_log_setlevel(int priority)
+{
+  _GRVY_Log.change_priority(priority);
+  return;
+}
+
+extern "C" void hpct_log(int loglevel, const char *mesg)
+{
+  _GRVY_Log.msg(loglevel,mesg);
+}
+
+extern "C" void hpct_log_setlevel_(int *priority) {
+  grvy_log_setlevel(*priority);
+}
+
+extern "C" void hpct_log_(int *loglevel, char *mesg, int _namelen)
+{
+  char *message = grvy_f2c_char(mesg,_namelen);
+  _GRVY_Log.msg(*loglevel,message);
+  delete[] message;
 }
