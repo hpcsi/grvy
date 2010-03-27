@@ -1,16 +1,17 @@
 #
-# Spec file for HPC Toolkit
+# Spec file for GRVY Toolkit
 #
-Summary: HPCT is a toolkit for HPC Application Development
-Name: hpct
-Version: @VERSION@
-Release: 1
-License: GPL
-Group: applications
-Source: hpct-%{version}.tar.gz
+Summary:      GRVY is a toolkit library for HPC Application Development
+Name:         grvy
+Version:      @VERSION@
+Release:      1
+License:      GPL
+Group:        applications
+Source:       grvy-%{version}.tar.gz
 Distribution: Koomie Linux
-Vendor: Koomie
-Packager: karl@ices.utexas.edu
+Vendor:       Koomie
+Packager:     karl@ices.utexas.edu
+
 BuildRoot: /var/tmp/%{name}-%{version}-buildroot
 
 %define _topdir /h1/karl/build/rpms/
@@ -81,16 +82,16 @@ prepend-path    LD_LIBRARY_PATH   %{INSTALL_DIR}/lib
 prepend-path    PKG_CONFIG_PATH   %{INSTALL_DIR}/lib/pkgconfig
 prepend-path    INCLUDE           %{INSTALL_DIR}/include
 
-setenv HPCT_DIR %{INSTALL_DIR}
-setenv HPCT_INC %{INSTALL_DIR}/include
-setenv HPCT_LIB %{INSTALL_DIR}/lib
+setenv GRVY_DIR %{INSTALL_DIR}
+setenv GRVY_INC %{INSTALL_DIR}/include
+setenv GRVY_LIB %{INSTALL_DIR}/lib
 
 EOF
 
 cat > $RPM_BUILD_ROOT/%{MODULE_DIR}/.version.%{version} << 'EOF'
 #%Module1.0#################################################
 ##
-## version file for HPCT
+## version file for GRVY
 ##
  
 set     ModulesVersion      "%{version}"
