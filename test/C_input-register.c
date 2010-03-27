@@ -52,7 +52,6 @@ int main(int argc, char **argv)
   if(strcmp(sgot,sset) != 0)
     exit(1);
 
-
   /* Verify that we can recover registered default variables when they
      are not present in the input file */
 
@@ -66,6 +65,7 @@ int main(int argc, char **argv)
   input_example_file_path = build_example_file_path();
   flag *= grvy_input_fopen(input_example_file_path);
   free(input_example_file_path);
+
   flag *= grvy_input_fread_int   ("sec1/aint",&igot);
   flag *= grvy_input_fread_float ("sec1/afloat",&fgot);
   flag *= grvy_input_fread_double("sec1/adouble",&dgot);
