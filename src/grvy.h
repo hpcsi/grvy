@@ -137,6 +137,10 @@ extern "C" {
 
   extern void grvy_log_setlevel           (int priority);
   extern void grvy_log                    (int loglevel, const char *mesg);
+  extern void grvy_log_int                (int loglevel, const char *func, const char *mesg, int var);
+  extern void grvy_log_float              (int loglevel, const char *func, const char *mesg, float var);
+  extern void grvy_log_double             (int loglevel, const char *func, const char *mesg, double var);
+  extern void grvy_log_char               (int loglevel, const char *func, const char *mesg, const char *char_item);
 
   /*
    * Miscellaneous Utilities

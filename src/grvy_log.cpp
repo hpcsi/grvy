@@ -48,6 +48,33 @@ void grvy_log(int loglevel, const char *mesg)
   _GRVY_Log.msg(loglevel,mesg);
 }
 
+#if 0
+void grvy_log(int loglevel, const char *func, const char *mesg)
+{
+  _GRVY_message(loglevel,func,mesg);
+}
+#endif
+
+void grvy_log_int(int loglevel, const char *func, const char *mesg, int var)
+{
+  _GRVY_message(loglevel,func,mesg,var);
+}
+
+void grvy_log_float(int loglevel, const char *func, const char *mesg, float var)
+{
+  _GRVY_message(loglevel,func,mesg,var);
+}
+
+void grvy_log_double(int loglevel, const char *func, const char *mesg, double var)
+{
+  _GRVY_message(loglevel,func,mesg,var);
+}
+
+void grvy_log_char(int loglevel, const char *func, const char *mesg, const char *char_item)
+{
+  _GRVY_message(loglevel,func,mesg,char_item);
+}
+
 //-----------------------------------------------------------------
 //                     Fortran Interfaces
 //-----------------------------------------------------------------
