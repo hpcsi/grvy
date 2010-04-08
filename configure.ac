@@ -88,7 +88,7 @@ DX_PS_FEATURE(OFF)
 
 DX_INIT_DOXYGEN(GRVY, doxygen/grvy.dox, docs)
 
-AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile test/hpct_api/Makefile hpct.pc hpct.spec doxygen/Makefile)
+AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile test/hpct_api/Makefile grvy.pc hpct.spec doxygen/Makefile)
 
 # Final summary
 

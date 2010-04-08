@@ -13,5 +13,4 @@ AUX_DIST        += build-aux/missing
 # Support for pkgconfig
 
 pkgconfigdir     = $(libdir)/pkgconfig
-pkgconfig_DATA   = hpct.pc
-
+pkgconfig_DATA   = grvy.pc

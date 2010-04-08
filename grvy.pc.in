@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: hpct
-Description: HPCT is a toolkit for HPC Application Development
+Name: grvy
+Description: GRVY is a toolkit for HPC Application Development
 Requires:
 Version: @VERSION@
-Libs: -L${libdir} -lhpct
+Libs: -L${libdir} -lgrvy
 Cflags: -I${includedir}
