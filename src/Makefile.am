@@ -15,6 +15,10 @@ library_include_HEADERS = grvy.h hpct.h
 libgrvy_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
 libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
+install-exec-hook:
+	cd $(DESTDIR)$(libdir) && \
+	for file in libgrvy*; do $(LN_S) $$file `echo $$file | $(SED) s/grvy/hpct/`; done
+
 #--------------------------
 # Fortran Module Interface
 #--------------------------
