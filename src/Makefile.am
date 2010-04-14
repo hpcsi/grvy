@@ -11,7 +11,7 @@ AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
 
 lib_LTLIBRARIES         = libgrvy.la
 library_includedir      = $(includedir)
-library_include_HEADERS = grvy.h
+library_include_HEADERS = grvy.h hpct.h
 libgrvy_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
 libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
