@@ -36,7 +36,18 @@
 #include<map>
 #include<vector>
 #include<string>
+
+// We use our own namespace for GetPot to avoid collisions if we're
+// linked against a different version
+#define GETPOT_NAMESPACE GRVYGetPot
+// And we don't support threaded GetPot usage yet
+#define GETPOT_DISABLE_MUTEX
 #include<common/getpot/getpot.h>
+// But we don't want to confuse any other GetPot version that might be
+// included through a later header
+#undef GETPOT_DISABLE_MUTEX
+#undef GETPOT_NAMESPACE
+
 #include<boost/accumulators/accumulators.hpp>
 #include<boost/accumulators/statistics/mean.hpp>
 #include<boost/accumulators/statistics/stats.hpp>
@@ -55,8 +66,8 @@ namespace GRVY {
 
 class GRVY_Input_Class {
  private:
-  GetPot    ifile;                   // input file
-  short int initialized;             // input file initialized?
+  GRVYGetPot::GetPot ifile;          // input file
+  short int          initialized;    // input file initialized?
 
   // Registry Maps
 

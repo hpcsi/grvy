@@ -70,7 +70,7 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Open(const char *filename)
   {
-    ifile = GetPot(filename,comment_start,comment_end);
+    ifile = GRVYGetPot::GetPot(filename,comment_start,comment_end);
 
     if(ifile.size() <= 1)
       {
