@@ -9,11 +9,21 @@ AM_FCFLAGS              = $(INCLUDES)
 AM_CFLAGS               = $(INCLUDES)
 AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
 
-lib_LTLIBRARIES         = libgrvy.la
+# Note: the use of hpct_ api syntax and linkage to -lhpct is still
+# supported in libGRVY but will be deprecated in the future. 
+
+lib_LTLIBRARIES         = libgrvy.la libhpct.la
 library_includedir      = $(includedir)
 library_include_HEADERS = grvy.h hpct.h
 libgrvy_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
 libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
+
+libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
+libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
+
+#install-exec-hook:
+#	cd $(DESTDIR)$(libdir) && \
+#	for file in libgrvy*; do $(LN_S) $$file `echo $$file | $(SED) s/grvy/hpct/`; done
 
 #--------------------------
 # Fortran Module Interface

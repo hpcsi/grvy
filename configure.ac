@@ -39,6 +39,8 @@ AC_PROG_CXX
 AC_PROG_FC
 AC_PROG_F77
 AC_PROG_LIBTOOL
+AC_PROG_LN_S
+AC_PROG_SED
 AM_SANITY_CHECK
 
 #----------------------
@@ -88,7 +90,7 @@ DX_PS_FEATURE(OFF)
 
 DX_INIT_DOXYGEN(GRVY, doxygen/grvy.dox, docs)
 
-AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile test/hpct_api/Makefile grvy.pc hpct.spec doxygen/Makefile)
+AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile test/hpct_api/Makefile grvy.pc grvy.spec doxygen/Makefile)
 
 # Final summary
 
