@@ -7,7 +7,7 @@ check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math
 
 INCLUDES      = -I$(top_srcdir)/src -I$(top_builddir)/src
-LIBS          = -L$(top_builddir)/src -lgrvy
+LIBS          = -L$(top_builddir)/src -lhpct
 AM_CFLAGS     = $(INCLUDES)
 AM_CPPFLAGS   = $(INCLUDES)
 AM_F77FLAGS   = $(INCLUDES)
