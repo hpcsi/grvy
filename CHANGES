@@ -1,4 +1,11 @@
-Version 0.27 (March 2010)
+Version 0.27.1 (April 2010)
+https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.27.1
+  * bug fix for thread-safe Getpot version
+  * soft link of libhpct included to point ot libgrvy
+  * pkg-config update for name change
+  * bug fix to include previous hpct.h header in install target
+
+Version 0.27 (06 March 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.27
 
   * name/API change -> HPCT is now GRVY (affects all routines). Note
