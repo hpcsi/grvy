@@ -1,4 +1,4 @@
-Version 0.27.1 (April 2010)
+Version 0.27.1 (15 April 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.27.1
 
   * bug fix for thread-safe Getpot version
