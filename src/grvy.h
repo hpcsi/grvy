@@ -266,12 +266,24 @@ extern "C" {
    *
    * \code void grvy_log                    (int loglevel, const char *mesg); \endcode
    * 
-   * The verbosity of the application output can then be controlled by
-   * setting the current loglevel as desired (for example, the GRVY_INFO
-   * mode would show all messages except those set to the GRVY_DEBUG
-   * loglevel).
+   * Additional type-specific functions are also available for
+   * convenience to include intrinsic values (and a calling function
+   * name) within the log message.
    *
-   * \code void grvy_log                    (int loglevel, const char *mesg); \endcode
+   * \code
+   * void grvy_log_int                (int loglevel, const char *func, const char *mesg, int var);
+   * void grvy_log_float              (int loglevel, const char *func, const char *mesg, float var);
+   * void grvy_log_double             (int loglevel, const char *func, const char *mesg, double var);
+   * void grvy_log_char               (int loglevel, const char *func, const char *mesg, const char *char_item);
+   * \endcode
+   * 
+   * The verbosity of the application output can then be controlled by
+   * setting the current loglevel as desired (for example, the
+   * GRVY_INFO mode would show all messages except those set to the
+   * GRVY_DEBUG loglevel).  The default loglevel is set to GRVY_ERROR
+   * but can be altered via the following:
+   *
+   * \code void grvy_log_setlevel           (int priority);\endcode
    *
    * Note that two additional default priority loglevels exist,
    * GRVY_NOLOG and GRVY_ALL which can be used to disable or enable
