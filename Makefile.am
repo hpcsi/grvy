@@ -4,6 +4,7 @@ AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS  = -I m4
 SUBDIRS          = src examples test doxygen
 DISTDIRS         = src examples
+EXTRA_DIST       = CHANGES AUTHORS
 
 # Tools in the auxillary directory
 
