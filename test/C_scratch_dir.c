@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 	    link_template[strlen(link_template) - 1] = '0' + i;
 
 	    /* Create some files */
-	    flag *= (-1 != (fd = open(file_template, O_CREAT)));
+	    flag *= (-1 != (fd = open(file_template, O_CREAT,S_IRUSR|S_IWUSR)));
 	    flag *= (-1 != close(fd));
 
 	    /* Create some extra links and symlinks to those files */
