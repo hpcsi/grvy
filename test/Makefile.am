@@ -9,7 +9,7 @@ check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 
 check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math F_log \
 		  F_input_read_variables F_input_nofile_available F_input_read_missing_variable \
-		  F_input_register_variables
+		  F_input_register_variables F_input_read_bigstring
 
 INCLUDES        = -I$(top_srcdir)/src -I$(top_builddir)/src
 LIBS            = -L$(top_builddir)/src -lgrvy
@@ -50,6 +50,7 @@ F_input_read_variables_SOURCES                 = F_input_read_variables.f90
 F_input_nofile_available_SOURCES               = F_input-nofile.f90
 F_input_read_missing_variable_SOURCES          = F_input-missing-var.f90
 F_input_register_variables_SOURCES             = F_input-register.f90
+F_input_read_bigstring_SOURCES                 = F_input_read_bigstring.f90
 ##F_input_register_read_missing_variables_SOURCES = F_input-reg-missing-var.f90
 
 TESTS_ENVIRONMENT = HPCT_INPUT_EXAMPLE_DIR=$(srcdir)
@@ -75,6 +76,7 @@ TESTS             = init.sh \
 		    F_input_nofile_available \
 		    F_input_read_missing_variable \
                     F_input_register_variables \
+		    F_input_read_bigstring \
 		    finalize.sh
 
 EXTRA_DIST        = init.sh finalize.sh input-example.txt \

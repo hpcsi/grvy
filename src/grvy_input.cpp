@@ -398,7 +398,15 @@ extern "C" void grvy_input_fread_char_(char *var,int _namelen,char *value,int _s
   char *name = grvy_f2c_char(var,_namelen);
   *flag = grvy_input_fread_char(name,&tmpvar);
 
-  strncpy(value,tmpvar,strlen(tmpvar));
+  // make sure user provided enough space
+
+  if(strlen(tmpvar) > _storage)
+    {
+      _GRVY_message(GRVY_ERROR,__func__,"Provided character storage is too small (string not read)");
+      *flag=0;
+    }
+  else
+    strncpy(value,tmpvar,strlen(tmpvar));
 
   delete[] name;
   return;
@@ -434,7 +442,13 @@ extern "C" void grvy_input_fread_char_ivec_(char *var,int _namelen,char *value,
   for(int i=0;i<_storage;i++)
     value[i]=' ';
 
-  strncpy(value,tmpvar,strlen(tmpvar));
+  if(strlen(tmpvar) > _storage)
+    {
+      _GRVY_message(GRVY_ERROR,__func__,"Provided character storage is too small (string not read)");
+      *flag=0;
+    }
+  else
+    strncpy(value,tmpvar,strlen(tmpvar));
 
   delete[] name;
   free(tmpvar);
