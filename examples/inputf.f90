@@ -12,11 +12,9 @@ program main
   integer              :: iter_max
   integer              :: switches(4)
   integer, allocatable :: switches2(:)
-  character            :: filename*100 = ''
-  character            :: key1*100 = ''
-  character            :: key2*100 = ''
-
-
+  character            :: filename*100
+  character            :: key1*100
+  character            :: key2*100
 
   ! Initialize/read the file
 

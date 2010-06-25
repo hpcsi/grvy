@@ -10,10 +10,11 @@ program main
   
   real           :: reyn,mach,aoa, A(3)
   integer        :: iter_max,turbulent, ivar1,ivec(4),ivar2(2)
+  integer        :: string_size
   integer(4)     :: ret_value, flag ! 0 for success, 1 for failure
-  character      :: key1*100 = ''
-  character      :: key2*100 = ''
-  character      :: gridfile*100 = ''
+  character      :: key1*100
+  character      :: key2*100
+  character      :: gridfile*100
 
   ret_value = 0
 
@@ -27,12 +28,28 @@ program main
   call grvy_input_fread_int  ("iter_max",iter_max,flag)
   call grvy_input_fread_char ("gridfile",gridfile,flag)
 
+  ! verify that len_trim works as desired on parsed strings
+
+  string_size = len_trim(gridfile)
+
+  if(string_size .ne. 15) then
+     call exit(1)
+  endif
+
   ! ----- read from SOLVER section -----
 
   call grvy_input_fread_int  ("solver/turbulence",turbulent,flag)
   call grvy_input_fread_char_ivec("solver/keywords",key1,1,flag)
   call grvy_input_fread_char_ivec("solver/keywords",key2,2,flag)
   call grvy_input_fread_real_vec("turbulence/A",A,3,flag)
+
+  ! verify that len_trim works as desired on parsed string arrays
+
+  string_size = len_trim(key2)
+
+  if(string_size .ne. 4) then
+     call exit(1)
+  endif
 
   ! ----- read from VERIFY section -----
 

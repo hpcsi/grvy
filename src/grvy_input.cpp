@@ -382,6 +382,14 @@ extern "C" void grvy_input_fread_char_(char *var,int _namelen,char *value,int _s
 
   char *tmpvar;
 
+  // Initialize storage provided by user to be empty; this will allow
+  // the Fortran len_trim() intrinsic to behave as expected by Fortran
+  // users.  Thanks to Marco Panesi for pointing out the undesired
+  // Fortran behavior.
+
+  for(int i=0;i<_storage;i++)
+    value[i]=' ';
+
   // Note: tiny bit sneaky; for C/C++ we will receive a char * back
   // with the correct amount of storage space for the desired input string.
   // For Fortran, we will require that the space be allocated in advance and
@@ -417,6 +425,14 @@ extern "C" void grvy_input_fread_char_ivec_(char *var,int _namelen,char *value,
   // Read the desired string
 
   *flag = grvy_input_fread_char_ivec(name,&tmpvar,cindex);
+
+  // Initialize storage provided by user to be empty; this will allow
+  // the Fortran len_trim() intrinsic to behave as expected by Fortran
+  // users.  Thanks to Marco Panesi for pointing out the undesired
+  // Fortran behavior.
+
+  for(int i=0;i<_storage;i++)
+    value[i]=' ';
 
   strncpy(value,tmpvar,strlen(tmpvar));
 
