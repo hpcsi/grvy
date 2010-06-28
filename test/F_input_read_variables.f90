@@ -74,6 +74,7 @@ program main
 
   ! ----- Verify Results -----
   
+  ! ----- INTS -----
   if(ivec(1) .ne. 11 .or. ivec(2) .ne. 12 .or. ivec(3) .ne. 13 .or. ivec(4) .ne. 14) then
      flag = 0;
      error=error*flag  
@@ -85,9 +86,10 @@ program main
   call compare_int(ivar2,13,flag)
   error=error*flag
 
+  ! ----- REALS -----
   call grvy_input_fread_real     ("verify/fvar",fvar1,flag)
   error=error*flag
-  call grvy_input_fread_real_ivec("verify/fvec",fvar2,1,flag)
+  call grvy_input_fread_real_ivec("verify/fvec",fvar2,2,flag)
   error=error*flag
   call grvy_input_fread_real_vec ("verify/fvec",fvec,3,flag)
   error=error*flag
@@ -98,6 +100,31 @@ program main
      write(6,*) "Read float_ivec mismatch"
   endif
 
+  call compare_real(fvar1,100.,flag)
+  error=error*flag
+  call compare_real(fvar2,102.,flag)
+  error=error*flag
+
+  ! ----- DOUBLEs -----  
+  call grvy_input_fread_double     ("verify/dvar",dvar1,flag)
+  error=error*flag
+  call grvy_input_fread_double_ivec("verify/dvec",dvar2,2,flag)
+  error=error*flag
+  call grvy_input_fread_double_vec ("verify/dvec",dvec,3,flag)
+  error=error*flag
+
+  if(dvec(1) .ne. 1.1d20 .or. dvec(2) .ne. 1.2d20 .or. dvec(3) .ne. 1.3d20) then
+     flag = 1;
+     error=error*flag
+     write(6,*) "Read double_ivec mismatch"
+  endif
+  
+  call compare_double(dvar1,1.0d20,flag)
+  error=error*flag
+  call compare_double(dvar2,1.2d20,flag)
+  error=error*flag
+
+  ! ----- Close File // Error Handling -----  
   call grvy_input_fclose()
   
   if(error .eq. 0) then ! signal error
@@ -120,9 +147,50 @@ subroutine compare_int(var1, var2)
   
   if(var1 .ne. var2) then
      write(6,*) "FAILED: integer variable mismatch"
+     write(6,*) "expected ", var2, " received ", var1
      call exit(1)
   endif
   
   return
 
 end subroutine compare_int
+
+!#########################
+!#
+!# Compare float (err, reals)
+!# 
+!#########################
+
+subroutine compare_real(var1, var2)
+  implicit none
+  real(4), intent(in) :: var1, var2
+  
+  if(var1 .ne. var2) then
+     write(6,*) "FAILED: real variable mismatch"
+     write(6,*) "expected ", var2, " received ", var1
+     call exit(1)
+  endif
+  
+  return
+
+end subroutine compare_real
+
+!#########################
+!#
+!# Compare double
+!# 
+!#########################
+
+subroutine compare_double(var1, var2)
+  implicit none
+  real(8), intent(in) :: var1, var2
+  
+  if(var1 .ne. var2) then
+     write(6,*) "FAILED: double variable mismatch"
+     write(6,*) "expected ", var2, " received ", var1
+     call exit(1)
+  endif
+  
+  return
+
+end subroutine compare_double
