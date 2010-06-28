@@ -85,22 +85,22 @@ program main
   call compare_int(ivar2,13,flag)
   error=error*flag
 
-  !call grvy_input_fread_float     ("verify/fvar",fvar1,flag)
-  !error=error*flag
-  !call grvy_input_fread_float_ivec("verify/fvec",fvar2,1,flag)
-  !error=error*flag
-  !call grvy_input_fread_float_vec ("verify/fvec",fvec,3,flag)
-  !error=error*flag
+  call grvy_input_fread_real     ("verify/fvar",fvar1,flag)
+  error=error*flag
+  call grvy_input_fread_real_ivec("verify/fvec",fvar2,1,flag)
+  error=error*flag
+  call grvy_input_fread_real_vec ("verify/fvec",fvec,3,flag)
+  error=error*flag
 
-  !if(fvec(0) .ne. 101 .or. ivec(1) .ne. 102 .or. ivec(2) .ne. 103) then
-  !   flag = 1;
-  !error=error*flag
-  !   write(6,*) "Read float_ivec mismatch"
-  !endif
+  if(fvec(1) .ne. 101 .or. fvec(2) .ne. 102 .or. fvec(3) .ne. 103) then
+     flag = 1;
+     error=error*flag
+     write(6,*) "Read float_ivec mismatch"
+  endif
 
   call grvy_input_fclose()
   
-  if(error .eq. 0) then !signal error
+  if(error .eq. 0) then ! signal error
      call exit(1)
   endif
 

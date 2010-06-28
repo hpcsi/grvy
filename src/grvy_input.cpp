@@ -320,6 +320,21 @@ extern "C" void grvy_input_fread_int_ivec_(char *var,int _namelen,int *value,
   return;
 }
 
+#ifdef _GRVY_FORTRAN_STRING_ORDER1
+extern "C" void grvy_input_fread_real_ivec_(char *var,float *value,int *elem,int *flag,int _namelen)
+#else
+extern "C" void grvy_input_fread_real_ivec_(char *var,int _namelen,float *value,int *elem, int *flag)
+#endif
+{
+  // convert to c style indexing
+  int cindex  = *elem - 1;
+  char *name = grvy_f2c_char(var,_namelen);
+
+  *flag = grvy_input_fread_float_ivec(name,value,cindex);
+
+  delete[] name;
+  return;
+}
 
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void grvy_input_fread_real_vec_(char *var,float *value,int *nelems,int *flag,int _namelen)
