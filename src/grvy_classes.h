@@ -228,14 +228,17 @@ class GRVY_Math_Class {
 
   class GRVY_Log_Class {
   private:
-    int log_level;			     // Current log level priority
-    map<int,std::string> LogMask;            // String masks for log messages
+    int log_level;			               // Current log level priority
+    map<int,std::string> LogMask;                      // String masks for log messages
   public:
     GRVY_Log_Class();		
 
-    bool isLog (int priority);	             // log priority sufficient to generate message?
-    void msg   (int priority, string msg);   // post new log message with a priority
-    void change_priority(int priority);      // change current log level priority
+    bool isLog(int priority) {                                      // inlined log priority test
+      return(priority <= log_level); }                              
+    void msg       (int priority, string msg);                      // post new log message with a priority
+    int  msg_printf(int priority, const char *format,va_list argp); // post printf style log message
+    void change_priority(int priority);                             // change current log level priority
+
   };
 
 }

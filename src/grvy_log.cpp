@@ -48,12 +48,21 @@ void grvy_log(int loglevel, const char *mesg)
   _GRVY_Log.msg(loglevel,mesg);
 }
 
-#if 0
-void grvy_log(int loglevel, const char *func, const char *mesg)
+int grvy_printf(int loglevel, const char *format,...)
 {
-  _GRVY_message(loglevel,func,mesg);
+  va_list arg;
+  int status;
+
+  if(_GRVY_Log.isLog(loglevel))
+    {
+      va_start(arg,format);
+      status = _GRVY_Log.msg_printf(loglevel,format,arg);
+      va_end(arg);
+      return(status);
+    }
+    else
+      return 0;
 }
-#endif
 
 void grvy_log_int(int loglevel, const char *func, const char *mesg, int var)
 {

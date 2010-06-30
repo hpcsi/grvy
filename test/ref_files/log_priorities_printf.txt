@@ -1,0 +1,36 @@
+
+Priority = ALL
+[*] Fatal: a fine fatal message    (42)
+[*] Error: an astute error message (42.000000)
+[*]  Warn: a fabulous warn message (042)
+[*]  Info: a useful info message   (tori)
+[*] Debug: a clever debug message  (4.200000e+01)
+
+Priority = DEBUG
+[*] Fatal: a fine fatal message    (42)
+[*] Error: an astute error message (42.000000)
+[*]  Warn: a fabulous warn message (042)
+[*]  Info: a useful info message   (tori)
+[*] Debug: a clever debug message  (4.200000e+01)
+
+Priority = INFO
+[*] Fatal: a fine fatal message    (42)
+[*] Error: an astute error message (42.000000)
+[*]  Warn: a fabulous warn message (042)
+[*]  Info: a useful info message   (tori)
+
+Priority = WARN
+[*] Fatal: a fine fatal message    (42)
+[*] Error: an astute error message (42.000000)
+[*]  Warn: a fabulous warn message (042)
+
+Priority = ERROR
+[*] Fatal: a fine fatal message    (42)
+[*] Error: an astute error message (42.000000)
+
+Priority = FATAL
+[*] Fatal: a fine fatal message    (42)
+
+Priority = NOLOG
+
+[End of Test]

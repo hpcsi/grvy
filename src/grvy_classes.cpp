@@ -30,6 +30,7 @@
 // -------------------------------------------------------------------------
 
 #include<sys/time.h>
+#include<stdarg.h>
 #include<time.h>
 #include<grvy_classes.h>
 #include<grvy.h>
@@ -827,9 +828,13 @@ namespace GRVY {
     return;
   }
 
-  inline bool GRVY_Log_Class::isLog( int priority)
+  int GRVY_Log_Class::msg_printf(int priority, const char *format,va_list arg)
   {
-    return(priority <= log_level);
+    int done;
+
+    printf("%s",LogMask[priority].c_str());
+    done = vprintf (format, arg);
+    return done;
   }
 
 }
