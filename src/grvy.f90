@@ -223,6 +223,10 @@ module grvy
        real*8 :: value
      end subroutine grvy_timer_elapsed_global
 
+     real*8 function grvy_timer_elapsedseconds(id)
+       character :: id
+     end function grvy_timer_elapsedseconds
+
      ! ---------------
      ! Math
      ! ---------------

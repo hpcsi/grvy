@@ -55,6 +55,14 @@ program main
   print*,' '
   print*,'The total elapsed time since init is: ',igot
 
+  
+  print*,' '
+  print*,'Query individual timers individually - should match summary'
+
+  write(*,'(1x,"poo: ",es12.5," secs")') grvy_timer_elapsedseconds("poo")
+  write(*,'(1x,"bar: ",es12.5," secs")') grvy_timer_elapsedseconds("bar")
+  write(*,'(1x,"foo: ",es12.5," secs")') grvy_timer_elapsedseconds("foo")
+
   stop
 end program main
 

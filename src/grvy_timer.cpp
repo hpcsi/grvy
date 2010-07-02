@@ -198,3 +198,13 @@ extern "C" void grvy_timer_elapsed_global_(double *value)
   return;
 }
 
+extern "C" double grvy_timer_elapsedseconds_(char *id, int _namelen)
+{
+  double elapsed_time;
+  char *name = grvy_f2c_char(id,_namelen);
+  
+  elapsed_time = grvy_timer_elapsedseconds(name);
+
+  delete[] name;
+  return(elapsed_time);
+}
