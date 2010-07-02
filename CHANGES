@@ -1,6 +1,8 @@
 Version 0.27.1 (15 April 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.27.1
 
+  * exposed timing statistics via separate count,mean,variance routines
+  * exposed individual timer query to Fortran
   * bug fix for thread-safe Getpot version
   * direct -lhpct linkage supported but will be deprecated in future releases
   * pkg-config update for name change
