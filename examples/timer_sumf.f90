@@ -55,13 +55,19 @@ program main
   print*,' '
   print*,'The total elapsed time since init is: ',igot
 
-  
   print*,' '
-  print*,'Query individual timers individually - should match summary'
+  print*,'Query individual timers  - should match summary'
 
   write(*,'(1x,"poo: ",es12.5," secs")') grvy_timer_elapsedseconds("poo")
   write(*,'(1x,"bar: ",es12.5," secs")') grvy_timer_elapsedseconds("bar")
   write(*,'(1x,"foo: ",es12.5," secs")') grvy_timer_elapsedseconds("foo")
+
+  print*,' '
+  print*,'Query individual timer stats - should match summary'
+
+  write(*,'(1x,"foo-count:    ",i3)')     grvy_timer_stats_count    ("foo")
+  write(*,'(1x,"foo-mean:     ",es12.5)') grvy_timer_stats_mean     ("foo")
+  write(*,'(1x,"foo-variance: ",es12.5)') grvy_timer_stats_variance ("foo")
 
   stop
 end program main

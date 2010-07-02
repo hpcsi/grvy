@@ -55,6 +55,12 @@ int main()
 
       printf("\nElapsed global time = %10.5e\n",grvy_timer_elapsed_global());
       printf("\n");
+
+      printf("\n");
+      printf("Query stats individually\n");
+      printf("\tbar (   count): %i\n",grvy_timer_stats_count   ("bar"));
+      printf("\tbar (    mean): %e\n",grvy_timer_stats_mean    ("bar"));
+      printf("\tbar (variance): %e\n",grvy_timer_stats_variance("bar"));
     }
 
   return 0;

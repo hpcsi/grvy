@@ -99,14 +99,17 @@ extern "C" {
    */
 
   extern double grvy_timer                ();
-  extern void   grvy_timer_init           (const char *id);
-  extern void   grvy_timer_reset          ();
-  extern void   grvy_timer_finalize       ();
-  extern void   grvy_timer_begin          (const char *id);
-  extern void   grvy_timer_end            (const char *id);
+  extern   void grvy_timer_init           (const char *id);
+  extern   void grvy_timer_reset          ();
+  extern   void grvy_timer_finalize       ();
+  extern   void grvy_timer_begin          (const char *id);
+  extern   void grvy_timer_end            (const char *id);
   extern double grvy_timer_elapsedseconds (const char *id);
   extern double grvy_timer_elapsed_global ();
-  extern void   grvy_timer_summarize      ();
+  extern    int grvy_timer_stats_count    (const char *id);
+  extern double grvy_timer_stats_mean     (const char *id);
+  extern double grvy_timer_stats_variance (const char *id);
+  extern   void grvy_timer_summarize      ();
 
   /*
    * Basic API Definition for Math Utilities
@@ -137,7 +140,7 @@ extern "C" {
 
   extern void grvy_log_setlevel           (int priority);
   extern void grvy_log                    (int loglevel, const char *mesg);
-  extern int  grvy_printf                 (int loglevel, const char *format,...);
+  extern  int grvy_printf                 (int loglevel, const char *format,...);
   extern void grvy_log_int                (int loglevel, const char *func, const char *mesg, int var);
   extern void grvy_log_float              (int loglevel, const char *func, const char *mesg, float var);
   extern void grvy_log_double             (int loglevel, const char *func, const char *mesg, double var);
@@ -147,9 +150,9 @@ extern "C" {
    * Miscellaneous Utilities
    */
 
-  extern int    grvy_check_file_path      (const char *pathname);
-  extern int    grvy_create_unique_dir    (      char *name_template);
-  extern int    grvy_create_scratch_dir   (      char *name_template);
+  extern int  grvy_check_file_path      (const char *pathname);
+  extern int  grvy_create_unique_dir    (      char *name_template);
+  extern int  grvy_create_scratch_dir   (      char *name_template);
 
   /*
    * Doxygen API Definitions

@@ -227,6 +227,18 @@ module grvy
        character :: id
      end function grvy_timer_elapsedseconds
 
+     integer function grvy_timer_stats_count(id)
+       character :: id
+     end function grvy_timer_stats_count
+
+     real*8 function grvy_timer_stats_mean(id)
+       character :: id
+     end function grvy_timer_stats_mean
+
+     real*8 function grvy_timer_stats_variance(id)
+       character :: id
+     end function grvy_timer_stats_variance
+
      ! ---------------
      ! Math
      ! ---------------

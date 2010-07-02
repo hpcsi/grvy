@@ -137,10 +137,10 @@ typedef map <std::string, GRVY_Timer_Data > _GRVY_Type_TimerMap2;
 
 class GRVY_Timer_Class {
  private:
-  short int initialized;      // initialized?
+  short int initialized;          // initialized?
   double    timer_last;           // raw timer value of last call
   double    timer_finalize;       // raw timer value at time of finalize()
-  string    timer_name;       // user name supplied for the timer
+  string    timer_name;           // user name supplied for the timer
   _GRVY_Type_TimerMap2 TimerMap;  // map used to store performance timers for each defined key
 
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
@@ -156,6 +156,9 @@ class GRVY_Timer_Class {
   void EndTimer         (const char *name);
 
   double ElapsedSeconds (const char *id);
+     int StatsCount     (const char *id);
+  double StatsMean      (const char *id);
+  double StatsVariance  (const char *id);
   double ElapsedGlobal  ();
   double RawTimer       ();
 };

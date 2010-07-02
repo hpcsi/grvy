@@ -591,6 +591,33 @@ namespace GRVY {
     return elapsedseconds;
   }
 
+  int GRVY_Timer_Class:: StatsCount(const char *id)
+  {
+    _GRVY_Type_TimerMap2 :: const_iterator index = TimerMap.find(id);
+    if ( index == TimerMap.end() )
+      _GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id);
+    else
+      return(boost::accumulators::count((index->second).stats));
+  }
+
+  double GRVY_Timer_Class:: StatsMean(const char *id)
+  {
+    _GRVY_Type_TimerMap2 :: const_iterator index = TimerMap.find(id);
+    if ( index == TimerMap.end() )
+      _GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id);
+    else
+      return(boost::accumulators::mean((index->second).stats));
+  }
+
+  double GRVY_Timer_Class:: StatsVariance(const char *id)
+  {
+    _GRVY_Type_TimerMap2 :: const_iterator index = TimerMap.find(id);
+    if ( index == TimerMap.end() )
+      _GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id);
+    else
+      return(boost::accumulators::variance((index->second).stats));
+  }
+
   double GRVY_Timer_Class:: ElapsedGlobal()
   {
     double elapsedseconds = 0.0;

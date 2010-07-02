@@ -128,6 +128,27 @@ void grvy_timer_summarize()
   return;
 }
 
+// grvy_timer_stat_count(): provides number of calls to a timer
+
+int grvy_timer_stats_count(const char *id)
+{
+  return(_GRVY_Timers->StatsCount(id));
+}
+
+// grvy_timer_stat_mean(): provides mean timing for a timer
+
+double grvy_timer_stats_mean(const char *id)
+{
+  return(_GRVY_Timers->StatsMean(id));
+}
+
+// grvy_timer_stat_variance(): provides variance for a timer
+
+double grvy_timer_stats_variance(const char *id)
+{
+  return(_GRVY_Timers->StatsVariance(id));
+}
+
 //-----------------------------------------------------------------
 //                     Fortran Interfaces
 //-----------------------------------------------------------------
@@ -207,4 +228,37 @@ extern "C" double grvy_timer_elapsedseconds_(char *id, int _namelen)
 
   delete[] name;
   return(elapsed_time);
+}
+
+extern "C" int grvy_timer_stats_count_(char *id, int _namelen)
+{
+  int result;
+  char *name = grvy_f2c_char(id,_namelen);
+  
+  result = grvy_timer_stats_count(name);
+
+  delete[] name;
+  return(result);
+}
+
+extern "C" double grvy_timer_stats_mean_(char *id, int _namelen)
+{
+  double result;
+  char *name = grvy_f2c_char(id,_namelen);
+  
+  result = grvy_timer_stats_mean(name);
+
+  delete[] name;
+  return(result);
+}
+
+extern "C" double grvy_timer_stats_variance_(char *id, int _namelen)
+{
+  double result;
+  char *name = grvy_f2c_char(id,_namelen);
+  
+  result = grvy_timer_stats_variance(name);
+
+  delete[] name;
+  return(result);
 }
