@@ -1,8 +1,8 @@
 exampledir          = @prefix@/examples
 example_DATA        = input.c inputf.f90 pecos-input.txt \
-		    	timer_sum.c timer_sum.f90
+		    	timer_sum.c timer_sumf.f90
 EXTRA_DIST	    = input.c inputf.f90 pecos-input.txt \
-		    	timer_sum.c timer_sum.f90
+		    	timer_sum.c timer_sumf.f90
 
 INCLUDES            = -I$(top_srcdir)/src -I$(top_builddir)/src
 AM_FCFLAGS          = $(INCLUDES)
