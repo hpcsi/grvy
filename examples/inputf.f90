@@ -9,6 +9,7 @@ program main
   use grvy
   integer              :: flag
   real                 :: reyn
+  real*8               :: magicval         
   integer              :: iter_max
   integer              :: switches(4)
   integer, allocatable :: switches2(:)
@@ -56,6 +57,15 @@ program main
 
   call grvy_input_fread_int("koomie",iter_max,flag)
 
+  ! Register a default value and read variable which is not in input
+  ! file (allows for backwards compatability of input files)
+
+  call grvy_input_register_double  ("solver/magicval",0.03,flag)
+  error = error*flag
+
+  call grvy_input_fread_double ("solver/magicval",magicval,flag)
+  print*,'solver/magicval     = ',magicval
+  
   ! Disable error messages if you want to control them yourself
   ! If you query the unknown variable again it should be quiet
 
