@@ -60,7 +60,7 @@ program main
   ! Register a default value and read variable which is not in input
   ! file (allows for backwards compatability of input files)
 
-  call grvy_input_register_double  ("solver/magicval",0.03,flag)
+  call grvy_input_register_double  ("solver/magicval",0.03d0,flag)
   error = error*flag
 
   call grvy_input_fread_double ("solver/magicval",magicval,flag)
