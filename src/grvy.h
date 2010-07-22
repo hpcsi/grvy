@@ -41,7 +41,7 @@ extern "C" {
    * use, make sure to \#include <grvy.h> within your source code
    * files. Several simple examples using these functions are provided
    * in the examples section.  Functions which have an integer return
-   * value return "0" upon success. To illustrate the organizatinal
+   * value return "0" upon success. To illustrate the organizational
    * flexibility of the input file parsing, a
    * \ref inputFile "sample input file" is also provided.
    * <hr>
@@ -249,6 +249,10 @@ extern "C" {
    * double grvy_timer_elapsedseconds   (const char *id);
    * double grvy_timer_elapsed_global   ();
    * void   grvy_timer_summarize        ();
+   *
+   *    int grvy_timer_stats_count      (const char *id);
+   * double grvy_timer_stats_mean       (const char *id);
+   * double grvy_timer_stats_variance   (const char *id);
    * \endcode
 
    * \section logging Logging Utilities
@@ -270,6 +274,12 @@ extern "C" {
    *
    * \code void grvy_log                    (int loglevel, const char *mesg); \endcode
    * 
+   * For finer control over log messages, a printf style logger is
+   * available which follows the normal printf() variable argument
+   * list calling sequence with the addition of a priority loglevel.
+   *
+   * \code int grvy_printf                  (int loglevel, const char *format,...); \endcode
+   *
    * Additional type-specific functions are also available for
    * convenience to include intrinsic values (and a calling function
    * name) within the log message.
