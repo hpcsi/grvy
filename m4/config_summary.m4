@@ -24,27 +24,20 @@ echo
 echo C++ compiler.................. : $CXX
 echo Fortran compiler support...... : $FC
 echo Install dir................... : $prefix 
-echo Boost dir..................... : $BOOST_ROOT
+echo Boost dir..................... : $BOOST_DIR
 echo Build user.................... : $USER
 echo Build host.................... : $BUILD_HOST
 echo Configure date................ : $BUILD_DATE
 echo Build architecture............ : $BUILD_ARCH
-echo SVN revision number........... : $BUILD_REV
-echo SVN status.................... : $BUILD_STATUS
-echo
-#echo Optional Features:
-# if test $LINK_PETSC -eq 0; then
-#   echo '   'Link with PETSc............ : no
-# else
-#   echo '   'Link with PETSc............ : yes
-#   echo '   'PETSC DIR.................. : $PETSC_DIR
-# fi
-
+echo SVN revision number........... : $BUILD_VERSION
 echo
 echo '-------------------------------------------------------------------------------'
 
 echo
-echo Configure complete, now type \'make\' and then \'make install\'.
+echo Configure complete, now type \'make\' and then \'make install\'. 
+echo 
+echo To verify functionality of your local build, type \'make check\' to run a suite 
+echo of available regression tests.
 echo
 
 ])
