@@ -26,7 +26,6 @@ DOXYFILE_ENCODING      = UTF-8
 # by quotes) that should identify the project.
 
 PROJECT_NAME           = $(PROJECT)-$(VERSION)
-#PROJECT_NAME           = $(PROJECT)
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. 
 # This could be handy for archiving the generated documentation or 
@@ -569,7 +568,7 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = src/grvy.h examples/pecos-input.txt \
-		         doxygen/grvy.page \
+		       	 src/grvy.f90 doxygen/grvy.page \
 			 doxygen/txt_common
 
 # This tag can be used to specify the character encoding of the source files 

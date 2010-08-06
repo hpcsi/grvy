@@ -28,7 +28,7 @@ Thanks for your interest in libGRVY. To aid in usage, this manual is
 further divided into the following subsections:
 
 <ul>
-<li> \subpage model "Library Overview"
+<!-- <li> \subpage model "Library Overview" -->
 <li> \subpage installation
 <li> \subpage apiC "C/C++ Interface"
 <li> \subpage apiF "Fortran Interface"
@@ -156,24 +156,41 @@ following will be generated.
 
 \code
  > make check
-------------------------------------------------------- 
- Initializing GRVY Tests			        
-------------------------------------------------------- 
-PASS: init.sh					        
-PASS: C_input_read_variables			        
-PASS: C_input_nofile_available			        
-PASS: C_input_read_missing_variable		        
-PASS: C_input_register_variables		        
-PASS: C_input_register_read_missing_variable	        
-PASS: C_timer_sum				        
-------------------------------------------------------- 
- Finalizing GRVY Tests, have a groovy day 	        
-------------------------------------------------------- 
+-------------------------------------------------------
+Initializing GRVY Tests
+-------------------------------------------------------
+PASS: init.sh
+PASS: C_input_read_variables
+PASS: C_input_nofile_available
+PASS: C_input_read_missing_variable
+PASS: C_input_register_variables
+PASS: C_input_register_read_missing_variable
+PASS: C_math_isnan
+PASS: C_math_isinf
+PASS: C_check_file_path
+PASS: C_unique_dir
+PASS: C_wrapper_scratch_dir.sh
+PASS: C_input_fdump
+PASS: C_wrapper_log.sh
+PASS: C_wrapper_log_printf.sh
+PASS: F_wrapper_check_file_path.sh
+PASS: F_wrapper_unique_dir.sh
+PASS: F_wrapper_scratch_dir.sh
+PASS: F_wrapper_log.sh
+PASS: F_math
+PASS: F_input_read_variables
+PASS: F_input_nofile_available
+PASS: F_input_read_missing_variable
+PASS: F_input_register_variables
+PASS: F_input_read_bigstring
+-------------------------------------------------------
+Finalizing GRVY Tests, have a snazzy day
+-------------------------------------------------------
 
-PASS: finalize.sh  
-================== 
-All 8 tests passed 
-================== 
+PASS: finalize.sh
+===================
+All 25 tests passed
+===================
 \endcode
 
 <h2> Installation </h2>
