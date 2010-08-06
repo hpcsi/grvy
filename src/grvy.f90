@@ -27,40 +27,84 @@
 ! $Id$
 ! -------------------------------------------------------------------------
 ! -------------------------------------------------------------------------
+
+!> \page apiF Fortran Library Interface    
+!!
+!! This section outlines the available GRVY functions for Fortran.
+!! Note that library access is provided thru a Fortran90 module
+!! which requires the external calling application to include the
+!! following within the Fortran90 source code:
+!!
+!! \code
+!! use grvy
+!! \endcode                       
+!!
+!! Several simple examples using these functions are provided in the
+!! examples directory. Functions which have an integer return value
+!! return "0" upon success. To illustrate the organizational
+!! flexibility of the input file parsing, a \ref inputFile 
+!! "sample input file" is also provided.
+
 module grvy
   interface
-
+     
      ! ----------------------
      ! Input Parsing Support
      ! ----------------------
      
+     !> \page apiF 
+     !! \section input Input Parsing Routines
+     !! <b>Open/close a libGRVY style input file:</b>
+     !! \code
+     !! subroutine grvy_input_fopen
+     !! subroutine grvy_input_fclose
+     !! \endcode
+     
      subroutine grvy_input_fopen(filename,flag)
-       character :: filename
-       integer   :: flag
+       character :: filename    !< libGRVY style input filename
+       integer   :: flag        !< return flag
      end subroutine grvy_input_fopen
 
      subroutine grvy_input_fclose()
      end subroutine grvy_input_fclose
 
+     !> \page apiF
+     !!
+     !! <b> Dump the contents of a libGRVY style input file :</b>
+     !!
+     !! The following routines can be used to dump the entire contents of
+     !! a parsed libGRVY style input file to \e stdout or to an ASCII
+     !! file (note that all comments within the original input file are
+     !! stripped). The prefix variable can be used to include an
+     !! additional delimiter which prepends each line of the output.
+     !! These routines are normally used to save all relevant input
+     !! parameters in the application output for future traceability and
+     !! repeatability.
+     !! int read(int fd,char *buf,size_t count)
+     !! 
+     !! - subroutine grvy_input_fdump()
+     !! - subroutine grvy_input_fdump_delim()
+     !! - subroutine grvy_input_fdump_file()
+     
      subroutine grvy_input_fdump(flag)
-       integer   :: flag
+       integer   :: flag        !< return flag
      end subroutine grvy_input_fdump
-
+     
      subroutine grvy_input_fdump_delim(prefix,flag)
-       character :: prefix
-       integer   :: flag
+       character :: prefix      !< delimiter
+       integer   :: flag        !< return flag
      end subroutine grvy_input_fdump_delim
-
+     
      subroutine grvy_input_fdump_file(prefix,filename,flag)
-       character :: prefix
-       character :: filename
-       integer   :: flag
+       character :: prefix      !< delimiter
+       character :: filename    !< libGRVY style input filename
+       integer   :: flag        !< return flag
      end subroutine grvy_input_fdump_file
 
      subroutine grvy_input_fread_real(var,value,flag)
        character :: var
        real      :: value
-       integer   :: flag
+       integer   :: flag        !< libGRVY return flag
      end subroutine grvy_input_fread_real
 
      subroutine grvy_input_fread_double(var,value,flag)
