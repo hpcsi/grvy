@@ -31,6 +31,8 @@
 #ifndef GRVY_H_
 #define GRVY_H_
 
+#include <config_grvy.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -46,6 +48,12 @@ extern "C" {
    * \ref inputFile "sample input file" is also provided.
    * <hr>
    */
+
+  /*
+   * Library version info
+   */
+
+  extern int grvy_version_stdout            ();
 
   /*
    * Basic API Definition for ASCII input file parsing

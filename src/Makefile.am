@@ -1,6 +1,7 @@
 h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h hpct.h
 cc_sources              = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp \
-		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_hpct_compat.cpp
+		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_hpct_compat.cpp \
+			  grvy_version.cpp
 
 getpot_sources          = common/getpot/getpot.h
 
@@ -21,6 +22,9 @@ libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
 libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
+version_SOURCES         = version.cpp grvy.h
+version_LDADD           = -L$(top_builddir)/src -lgrvy
+
 #install-exec-hook:
 #	cd $(DESTDIR)$(libdir) && \
 #	for file in libgrvy*; do $(LN_S) $$file `echo $$file | $(SED) s/grvy/hpct/`; done
@@ -30,11 +34,16 @@ libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 #--------------------------
 
 noinst_PROGRAMS         = test test2
+standalonedir           = @prefix@/bin
+standalone_PROGRAMS     = version
+
 test_SOURCES            = grvy.f90 main.f90
 test_LIBTOOLFLAGS       = --tag=FC
 
-test2_SOURCES            = grvy_hpct.f90 main_hpct.f90
-test2_LIBTOOLFLAGS       = --tag=FC
+test2_SOURCES           = grvy_hpct.f90 main_hpct.f90
+test2_LIBTOOLFLAGS      = --tag=FC
+
+
 
 moduledir               = @libdir@
 module_DATA             = grvy.mod hpct.mod

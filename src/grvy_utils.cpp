@@ -168,7 +168,7 @@ namespace GRVY {
   // derived "uniqueness" at runtime.  Linux does not do this, so we
   // check explicitly to hopefully avoid confusion for the user.
 
-#ifdef TLS /* Use thread local storage for the stack, if possible */
+#ifdef TLS_TODO /* Use thread local storage for the stack, if possible */
   static TLS std::stack<char *> _grvy_create_scratch_dir_paths;
 #else
   static     std::stack<char *> _grvy_create_scratch_dir_paths;

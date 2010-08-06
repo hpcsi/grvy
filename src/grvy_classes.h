@@ -39,12 +39,17 @@
 
 // We use our own namespace for GetPot to avoid collisions if we're
 // linked against a different version
+
 #define GETPOT_NAMESPACE GRVYGetPot
+
 // And we don't support threaded GetPot usage yet
+
 #define GETPOT_DISABLE_MUTEX
 #include<common/getpot/getpot.h>
+
 // But we don't want to confuse any other GetPot version that might be
 // included through a later header
+
 #undef GETPOT_DISABLE_MUTEX
 #undef GETPOT_NAMESPACE
 
@@ -59,6 +64,12 @@ using namespace std;
 using namespace boost::accumulators;
 
 namespace GRVY {
+
+//---------------------
+// Versioning Routines
+//---------------------
+
+  void GRVY_version_stdout();
 
 //---------------------
 // Input Parsing Class
