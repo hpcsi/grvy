@@ -51,7 +51,7 @@ namespace GRVY {
     cout << "Build Date   = " << BUILD_DATE     << endl;
     cout << "Build Host   = " << BUILD_HOST     << endl;
     cout << "Build User   = " << BUILD_USER     << endl;
-    cout << "Build Archr  = " << BUILD_ARCH     << endl;
+    cout << "Build Arch   = " << BUILD_ARCH     << endl;
     cout << "Build Rev    = " << BUILD_VERSION  << endl;
     cout << "--------------------------------------------------------" << endl;
   }
