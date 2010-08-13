@@ -70,6 +70,7 @@ namespace GRVY {
 //---------------------
 
   void GRVY_version_stdout();
+  int  GRVY_get_numeric_version();
 
 //---------------------
 // Input Parsing Class

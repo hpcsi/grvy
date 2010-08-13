@@ -1,4 +1,4 @@
-h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h hpct.h
+h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h hpct.h 
 cc_sources              = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp \
 		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_hpct_compat.cpp \
 			  grvy_version.cpp
@@ -15,7 +15,7 @@ AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
 
 lib_LTLIBRARIES         = libgrvy.la libhpct.la
 library_includedir      = $(includedir)
-library_include_HEADERS = $(top_srcdir)/config_grvy.h grvy.h hpct.h
+library_include_HEADERS = grvy.h hpct.h
 libgrvy_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
 libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
@@ -42,8 +42,6 @@ test_LIBTOOLFLAGS       = --tag=FC
 
 test2_SOURCES           = grvy_hpct.f90 main_hpct.f90
 test2_LIBTOOLFLAGS      = --tag=FC
-
-
 
 moduledir               = @libdir@
 module_DATA             = grvy.mod hpct.mod

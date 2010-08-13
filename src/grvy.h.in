@@ -31,11 +31,27 @@
 #ifndef GRVY_H_
 #define GRVY_H_
 
-#include <config_grvy.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+  /*
+   * Library version info
+   */
+
+#define GRVY_MAJOR_VERSION  @GENERIC_MAJOR_VERSION@
+#define GRVY_MINOR_VERSION  @GENERIC_MINOR_VERSION@
+#define GRVY_MICRO_VERSION  @GENERIC_MICRO_VERSION@
+
+#define GRVY_BUILD_USER     "@BUILD_USER@"
+#define GRVY_BUILD_ARCH     "@BUILD_ARCH@"
+#define GRVY_BUILD_HOST     "@BUILD_HOST@"
+#define GRVY_BUILD_DATE     "@BUILD_DATE@"
+#define GRVY_BUILD_VERSION  "@BUILD_VERSION@"
+
+#define GRVY_LIB_VERSION    "@VERSION@"
+
+  extern int grvy_version_stdout            ();
 
   /*! \page apiC C/C++ Library Interface
    *
@@ -49,11 +65,7 @@ extern "C" {
    * <hr>
    */
 
-  /*
-   * Library version info
-   */
 
-  extern int grvy_version_stdout            ();
 
   /*
    * Basic API Definition for ASCII input file parsing

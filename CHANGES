@@ -5,6 +5,7 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.28
   * exposed individual timer query to Fortran
   * exposed timing statistics via separate count,mean,variance routines
   * added/improved Fortran regressions
+  * addition of library versioning routines
   * tarball distribution includes svn version info
 
 Version 0.27.1 (15 April 2010)

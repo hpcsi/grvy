@@ -46,14 +46,49 @@ namespace GRVY {
 
   void GRVY_version_stdout()
   {
+
     cout << "--------------------------------------------------------" << endl;
-    cout << "libGRVY Library: Version = " << PACKAGE_VERSION << endl << endl;
-    cout << "Build Date   = " << BUILD_DATE     << endl;
-    cout << "Build Host   = " << BUILD_HOST     << endl;
-    cout << "Build User   = " << BUILD_USER     << endl;
-    cout << "Build Arch   = " << BUILD_ARCH     << endl;
-    cout << "Build Rev    = " << BUILD_VERSION  << endl;
+    cout << "libGRVY Library: Version = " << GRVY_LIB_VERSION;
+    cout << " (" << GRVY_get_numeric_version() << ")" << endl << endl;
+    cout << "Build Date   = " << GRVY_BUILD_DATE     << endl;
+    cout << "Build Host   = " << GRVY_BUILD_HOST     << endl;
+    cout << "Build User   = " << GRVY_BUILD_USER     << endl;
+    cout << "Build Arch   = " << GRVY_BUILD_ARCH     << endl;
+    cout << "Build Rev    = " << GRVY_BUILD_VERSION  << endl;
     cout << "--------------------------------------------------------" << endl;
+  }
+
+  int GRVY_get_numeric_version()
+  {
+    // Note: return format follows the versioning convention xx.yy.zz where
+    // 
+    // xx = major version number
+    // yy = minor version number
+    // zz = micro version number
+    // 
+    // For example:
+    // v.   0.23  -> 002300 = 2300
+    // v   0.23.1 -> 002301 = 2301
+    // v. 10.23.2 -> 102302
+
+    int major_version = 0;
+    int minor_version = 0;
+    int micro_version = 0;
+
+#ifdef GRVY_MAJOR_VERSION
+    major_version = GRVY_MAJOR_VERSION;
+#endif
+
+#ifdef GRVY_MINOR_VERSION
+    minor_version = GRVY_MINOR_VERSION;
+#endif
+
+#ifdef GRVY_MICRO_VERSION
+    micro_version = GRVY_MICRO_VERSION;
+#endif
+      
+    return(major_version*10000 + minor_version*100 + micro_version);
+
   }
 
   //-------------------------------------

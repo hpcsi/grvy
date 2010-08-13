@@ -39,6 +39,11 @@ extern "C" void grvy_version_stdout()
   return( GRVY_version_stdout() );
 }
 
+extern "C" int grvy_get_numeric_version()
+{
+  return( GRVY_get_numeric_version() );
+}
+
 
 
 

@@ -14,11 +14,11 @@ GENERIC_MINOR_VERSION=28
 GENERIC_MICRO_VERSION=0
 
 GENERIC_RELEASE=$GENERIC_MAJOR_VERSION.$GENERIC_MINOR_VERSION
-AC_SUBST(GENERIC_RELEASE)
 
-AC_DEFINE_UNQUOTED([GRVY_MAJOR_VERSION],$GENERIC_MAJOR_VERSION,[Major version])
-AC_DEFINE_UNQUOTED([GRVY_MINOR_VERSION],$GENERIC_MINOR_VERSION,[Minor version])
-AC_DEFINE_UNQUOTED([GRVY_MICRO_VERSION],$GENERIC_MICRO_VERSION,[Micro version])
+AC_SUBST(GENERIC_RELEASE)
+AC_SUBST(GENERIC_MAJOR_VERSION)
+AC_SUBST(GENERIC_MINOR_VERSION)
+AC_SUBST(GENERIC_MICRO_VERSION)
 
 # Required for some macros
 
@@ -84,7 +84,8 @@ DX_PS_FEATURE(OFF)
 
 DX_INIT_DOXYGEN(GRVY, doxygen/grvy.dox, docs)
 
-AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile test/hpct_api/Makefile grvy.pc grvy.spec doxygen/Makefile)
+AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile test/hpct_api/Makefile grvy.pc \
+	   grvy.spec doxygen/Makefile src/grvy.h )
 
 # Final summary
 
