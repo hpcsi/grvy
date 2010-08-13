@@ -22,8 +22,11 @@ libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
 libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
-version_SOURCES         = version.cpp grvy.h
+bin_PROGRAMS            = version
+version_SOURCES         = version.cpp grvy.h libgrvy.la
 version_LDADD           = -L$(top_builddir)/src -lgrvy
+version_DEPENDENCIES    = libgrvy.la
+
 
 #install-exec-hook:
 #	cd $(DESTDIR)$(libdir) && \
@@ -42,6 +45,9 @@ test_LIBTOOLFLAGS       = --tag=FC
 
 test2_SOURCES           = grvy_hpct.f90 main_hpct.f90
 test2_LIBTOOLFLAGS      = --tag=FC
+
+main.f90: grvy.f90
+main_hpct.f90: grvy_hpct.f90
 
 moduledir               = @libdir@
 module_DATA             = grvy.mod hpct.mod
