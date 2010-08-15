@@ -1,10 +1,38 @@
+!!--------------------------------------------------------------------------
+!!--------------------------------------------------------------------------
+!!
+!! libGRVY - a utility library for scientific computing.
+!!
+!! Copyright (C) 2008,2009,2010 The PECOS Development Team
+!!
+!! This library is free software; you can redistribute it and/or
+!! modify it under the terms of the Version 2.1 GNU Lesser General
+!! Public License as published by the Free Software Foundation.
+!!
+!! This library is distributed in the hope that it will be useful,
+!! but WITHOUT ANY WARRANTY; without even the implied warranty of
+!! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+!! Lesser General Public License for more details.
+!!
+!! You should have received a copy of the GNU Lesser General Public
+!! License along with this library; if not, write to the Free Software
+!! Foundation, Inc. 51 Franklin Street, Fifth Floor, 
+!! Boston, MA  02110-1301  USA
+!!
+!!--------------------------------------------------------------------------
+!!
+!! timer_sumf.f90: Fortran example illustrating performance timing.
+!!
+!! $Id: grvy.h.in 12360 2010-08-15 14:02:03Z karl $
+!!--------------------------------------------------------------------------
+!!--------------------------------------------------------------------------
 
 program main
   use grvy
 
   integer :: Foo_Sleep = 1
   integer :: Bar_Sleep = 2
-  integer :: Poo_Sleep = 3
+  integer :: Boo_Sleep = 3
   integer :: Max_Iters = 2
   real*8  :: igot,igot2
   character :: timestring*50 = ''
@@ -31,7 +59,7 @@ program main
      print*,'Elapsed time since global init is: ',igot
 
      call bar(Bar_Sleep);
-     call poo(Poo_Sleep);
+     call boo(Boo_Sleep);
      
      call grvy_timer_finalize();
      
@@ -40,7 +68,7 @@ program main
   call grvy_timer_summarize();
 
   print*,' '
-  print*,'Expecting ',Max_Iters*(Foo_Sleep+Poo_Sleep+Bar_Sleep),' secs '
+  print*,'Expecting ',Max_Iters*(Foo_Sleep+Boo_Sleep+Bar_Sleep),' secs '
 
   ! example use of timer directly
   
@@ -58,7 +86,7 @@ program main
   print*,' '
   print*,'Query individual timers  - should match summary'
 
-  write(*,'(1x,"poo: ",es12.5," secs")') grvy_timer_elapsedseconds("poo")
+  write(*,'(1x,"boo: ",es12.5," secs")') grvy_timer_elapsedseconds("boo")
   write(*,'(1x,"bar: ",es12.5," secs")') grvy_timer_elapsedseconds("bar")
   write(*,'(1x,"foo: ",es12.5," secs")') grvy_timer_elapsedseconds("foo")
 
@@ -93,12 +121,12 @@ subroutine bar(isleep)
 
 end subroutine bar
 
-subroutine poo(isleep)
+subroutine boo(isleep)
   integer isleep
 
-  call grvy_timer_begin('poo');
+  call grvy_timer_begin('boo');
   call sleep(isleep);
-  call grvy_timer_end('poo');
+  call grvy_timer_end('boo');
   return
-end subroutine poo
+end subroutine boo
 

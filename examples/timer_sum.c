@@ -1,18 +1,46 @@
-#include<grvy.h>
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+//
+// libGRVY - a utility library for scientific computing.
+//
+// Copyright (C) 2008,2009,2010 The PECOS Development Team
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the Version 2.1 GNU Lesser General
+// Public License as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc. 51 Franklin Street, Fifth Floor, 
+// Boston, MA  02110-1301  USA
+//
+//--------------------------------------------------------------------------
+//
+// timer_sum.c: Example illustrating performance timing via libGRVY.
+//
+// $Id: grvy.h.in 12360 2010-08-15 14:02:03Z karl $
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+
 #include<stdio.h>
 #include<unistd.h>
-
+#include<grvy.h>
 #include<sys/time.h>
 #include<time.h>
 
 double Foo_Sleep = 0.3 * 1.e6;
 double Bar_Sleep = 0.05 * 1.e6;
-double Poo_Sleep = 0.1167 * 1.e6;
+double Boo_Sleep = 0.1167 * 1.e6;
 double Max_Iters = 10;
 
 void foo();
 void bar();
-void poo();
+void boo();
 
 int main()
 {
@@ -38,20 +66,20 @@ int main()
 	  
 	  foo();
 	  bar();
-	  poo();
+	  boo();
 
 	  grvy_timer_finalize();
 	  grvy_timer_summarize();
 
 	}
 
-      printf("\nExpecting %10.5e secs\n",Max_Iters*(Foo_Sleep+Poo_Sleep+Bar_Sleep)/1.e6);
+      printf("\nExpecting %10.5e secs\n",Max_Iters*(Foo_Sleep+Boo_Sleep+Bar_Sleep)/1.e6);
 
       printf("\n");
       printf("Summary data should match grvy_timer_elapsedseconds data points:\n");
       printf("\tbar: %10.5e secs\n",grvy_timer_elapsedseconds("bar"));
       printf("\tfoo: %10.5e secs\n",grvy_timer_elapsedseconds("foo"));
-      printf("\tpoo: %10.5e secs\n",grvy_timer_elapsedseconds("poo"));
+      printf("\tboo: %10.5e secs\n",grvy_timer_elapsedseconds("boo"));
 
       printf("\nElapsed global time = %10.5e\n",grvy_timer_elapsed_global());
       printf("\n");
@@ -70,15 +98,9 @@ int main()
 void foo()
 {
 
-  char *id = "koomie is the coolest cranes are better";
-
   grvy_timer_begin(__func__);
-  //grvy_timer_begin(id);
-
   usleep(Foo_Sleep);
-
   grvy_timer_end(__func__);
-  //grvy_timer_end(id);
 
   return;
     
@@ -95,10 +117,10 @@ void bar()
 }
 
 
-void poo()
+void boo()
 {
   grvy_timer_begin(__func__);
-  usleep(Poo_Sleep);
+  usleep(Boo_Sleep);
   grvy_timer_end(__func__);
 
   return;
