@@ -29,7 +29,6 @@
 
 program main
   use grvy
-  use my_shared
 
   integer :: Max_Iters = 3
   real*8  :: grvy_total_timing
