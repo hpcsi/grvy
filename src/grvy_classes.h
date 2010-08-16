@@ -36,6 +36,7 @@
 #include<map>
 #include<vector>
 #include<string>
+#include<stack>
 
 // We use our own namespace for GetPot to avoid collisions if we're
 // linked against a different version
@@ -153,22 +154,25 @@ class GRVY_Timer_Class {
   double    timer_last;           // raw timer value of last call
   double    timer_finalize;       // raw timer value at time of finalize()
   string    timer_name;           // user name supplied for the timer
+  int       num_begins;	          // number of active begin timers (used for callgraph determination)
+  stack <string> callgraph;       // callgraph to support embedded timers
+  bool      beginTrigger;         // a trigger used for embedded timers
   _GRVY_Type_TimerMap2 TimerMap;  // map used to store performance timers for each defined key
 
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
 
  public:
   GRVY_Timer_Class      ();
-  void Reset            ();
-  void Summarize        ();
-  void VerifyInit       ();
+  void   Reset          ();
+  void   Summarize      ();
+  void   VerifyInit     ();
 
-  void SaveTimerName    (const char *id);
-  void BeginTimer       (const char *name);
-  void EndTimer         (const char *name);
+  void   SaveTimerName  (const char *id);
+  void   BeginTimer     (const char *name, bool embeddedFlag);
+  void   EndTimer       (const char *name, bool embeddedFlag);
 
   double ElapsedSeconds (const char *id);
-     int StatsCount     (const char *id);
+  int    StatsCount     (const char *id);
   double StatsMean      (const char *id);
   double StatsVariance  (const char *id);
   double ElapsedGlobal  ();

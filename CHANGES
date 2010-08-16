@@ -1,6 +1,7 @@
 Version 0.28 (August 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.28
 
+  * performance timing functionality updated to allow for embedded timers
   * addition of grvy_printf() function for C/C++ logging
   * exposed individual timer query to Fortran
   * exposed timing statistics via separate count,mean,variance routines

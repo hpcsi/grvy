@@ -480,6 +480,8 @@ namespace GRVY {
     initialized    = 1;
     timer_last     = 0.0;
     timer_finalize = -1;
+    num_begins     = 0;	
+    beginTrigger   = false;
   }
 
   void GRVY_Timer_Class:: VerifyInit ()
@@ -505,7 +507,7 @@ namespace GRVY {
     return;
   }
 
-  void GRVY_Timer_Class:: BeginTimer (const char *id)
+  void GRVY_Timer_Class:: BeginTimer (const char *id, bool embeddedFlag)
   {
     double mytime;
     _GRVY_Type_TimerMap2 :: iterator index;
@@ -514,7 +516,41 @@ namespace GRVY {
 
     //  VerifyInit();
 
+    // ------------------
+    // Get current time
+    // ------------------
+
     mytime = RawTimer();
+
+    // ----------------------------------------------------------------
+    // Embedded Timer Support:
+    // 
+    // Maintain callgraph for embedded timers; note that we detect an
+    // embedded timer when num_begins exceeds a value of 2 as we
+    // always have one global catch-all timer created during the init()
+    // process.  When we detect an embedded timer, we use the
+    // callgraph information to automatically EndTimer() the surrounding
+    // timer. Since the EndTimer routine will have to do the opposite
+    // to restart the timer, an embeddedFlag is used to distinguish
+    // embedded begin/end calls from normal entries.
+    // ----------------------------------------------------------------
+
+    if(!embeddedFlag)
+      {
+	num_begins++; 
+
+	if(num_begins > 2)
+	  {
+	    //grvy_printf(GRVY_INFO,"begin: ending previous timer %s (newtimer = %s)\n",callgraph.top().c_str(),id);
+	    EndTimer(callgraph.top().c_str(),true);
+	  }
+	
+	if(num_begins > callgraph.size())
+	  {
+	    callgraph.push(id);
+	    //grvy_printf(GRVY_INFO,"begin: num_begins = %i (%s)\n",num_begins,id);
+	  }
+      }
 
     // Is this the first call for this id?
 
@@ -523,19 +559,18 @@ namespace GRVY {
     if ( index == TimerMap.end() )
       {
 	Data.timings[0] = 0.0;	                        // stores accumulated time
-	Data.timings[1] = mytime;                         // stores latest timestamp
+	Data.timings[1] = mytime;                       // stores latest timestamp
 
 	TimerMap[id] = Data;
       }
     else
       {
-	(index->second).timings[1] = mytime;             // stores latest timestamp
+	(index->second).timings[1] = mytime;           // stores latest timestamp
       }
-
   
   }
 
-  void GRVY_Timer_Class:: EndTimer (const char *id)
+  void GRVY_Timer_Class:: EndTimer (const char *id, bool embeddedFlag)
   {
     double      mytime, increment;
     tTimer_Data Data;
@@ -552,26 +587,63 @@ namespace GRVY {
       _GRVY_message(GRVY_ERROR,__func__,"No matching begin timer call for",id);
     else
       {
+	
 	// update map with latest increment info
 
 	increment = mytime - (index->second).timings[1];
 
 	// warn against potential measurements that are too small
 
-	if( increment <= _GRVY_TIMER_THRESH )
+	if(!beginTrigger)
 	  {
-	    sprintf(temp_string,"Timer accuracy may be insufficient (%.30s) - just measured",id);
-	    _GRVY_message(GRVY_WARN,__func__,temp_string,increment);
+
+	    if( increment <= _GRVY_TIMER_THRESH )
+	      {
+		grvy_printf(GRVY_WARN,"Timer acuracy may be insufficient (%.30s) -> measured %le secs\n",
+			    id,increment);
+	      }
+	  }
+	else
+	  {
+	    beginTrigger = false;
 	  }
 
 	(index->second).timings[0] += increment;
 	(index->second).timings[1]  = -1.;
 
 	(index->second).stats(increment);
+
+	// ----------------------------------------------------------------
+	// Embedded Timer Support:
+	// 
+	// Pop curent timer off the callgraph stack and restart
+	// surrounding timer if necessary.
+	// ----------------------------------------------------------------
+
+	if(!embeddedFlag)
+	  {
+
+	    //grvy_printf(GRVY_INFO,"end: popping id %s (size = %i)\n",callgraph.top().c_str(),callgraph.size());
+	    //grvy_printf(GRVY_INFO,"end: num_begins = %i\n",num_begins);
+
+	    if(callgraph.size() >= 1)
+	      callgraph.pop();
+	    else
+	      grvy_printf(GRVY_ERROR,"GRVY (%s): no callgraph left for %s\n",__func__,id);
+
+	    if(num_begins > 2)
+	      {
+		BeginTimer(callgraph.top().c_str(),true);
+		beginTrigger = true;
+		//grvy_printf(GRVY_INFO,"end: re-beginning timer for %s\n",callgraph.top().c_str());
+	      }
+
+	    num_begins--;
+	  }
       }
 
     // Store the latest raw timer snapshot for the global timer region
-    // to allow users to query the global elapsed time after an
+    // to allow users to query the global elapsed time after 
     // grvy_timer_finalize()
 
     if ( strcmp(id,_GRVY_gtimer) == 0 )
@@ -607,19 +679,15 @@ namespace GRVY {
     struct timeval tv;
 
     rc = gettimeofday (&tv, NULL);
+#if 0
     if (rc == -1) {
       printf("tmrc: gettimeofday\n");
       return -1.;
     }
+#endif
 
     double t1 =  ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec);
 
-    // moved warning check to EndTimer
-    //
-    //  if( (t1 - timer_last) <= _GRVY_TIMER_THRESH )
-    //    _GRVY_message(GRVY_WARN,__func__,"Timer accuracy may be insufficient - just measured:",
-    //		  t1-timer_last);
-  
     timer_last = t1;
     return(t1);
 

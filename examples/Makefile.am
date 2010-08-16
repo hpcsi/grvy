@@ -10,13 +10,14 @@ AM_CFLAGS               = $(INCLUDES)
 AM_CPPFLAGS             = $(INCLUDES)
 LIBS                    = -L$(top_builddir)/src -lgrvy
 
-example_PROGRAMS        = input timer_sum check_dir inputf timer_sumf message
+example_PROGRAMS        = input timer_sum check_dir inputf timer_sumf message timer
 input_SOURCES           = input.c
 
 inputf_SOURCES          = inputf.f90
 inputf_LIBTOOLFLAGS     = --tag=FC
 
 timer_sum_SOURCES       = timer_sum.c
+timer_SOURCES           = timer.c
 timer_sumf_SOURCES      = timer_sumf.f90
 timer_sumf_LIBTOOLFLAGS = --tag=FC
 

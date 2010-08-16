@@ -48,8 +48,7 @@ double grvy_timer ()
 
 void grvy_timer_begin(const char *id)
 {
-  //_GRVY_Timers->VerifyInit();
-  _GRVY_Timers->BeginTimer(id);
+  _GRVY_Timers->BeginTimer(id,false);
 
   return;
 }
@@ -58,8 +57,7 @@ void grvy_timer_begin(const char *id)
 
 void grvy_timer_end(const char *id)
 {
-  //  _GRVY_Timers->VerifyInit();
-  _GRVY_Timers->EndTimer(id);
+  _GRVY_Timers->EndTimer(id,false);
   return;
 }
 
@@ -97,7 +95,7 @@ void grvy_timer_init(const char *id)
 
   // initialize global timer region
 
-  _GRVY_Timers->BeginTimer(_GRVY_gtimer);
+  _GRVY_Timers->BeginTimer(_GRVY_gtimer,false);
 
   return;
 }
@@ -115,7 +113,7 @@ void grvy_timer_reset()
 void grvy_timer_finalize()
 {
   //  _GRVY_Timers->VerifyInit();
-  _GRVY_Timers->EndTimer(_GRVY_gtimer);
+  _GRVY_Timers->EndTimer(_GRVY_gtimer,false);
   return;
 }
 

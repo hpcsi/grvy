@@ -493,8 +493,7 @@ double hpct_timer ()
 
 extern "C" void hpct_timer_begin(const char *id)
 {
-  //_GRVY_Timers->VerifyInit();
-  _GRVY_Timers->BeginTimer(id);
+  _GRVY_Timers->BeginTimer(id,false);
 
   return;
 }
@@ -503,8 +502,7 @@ extern "C" void hpct_timer_begin(const char *id)
 
 extern "C" void hpct_timer_end(const char *id)
 {
-  //  _GRVY_Timers->VerifyInit();
-  _GRVY_Timers->EndTimer(id);
+  _GRVY_Timers->EndTimer(id,false);
   return;
 }
 
@@ -542,7 +540,7 @@ extern "C" void hpct_timer_init(const char *id)
 
   // initialize global timer region
 
-  _GRVY_Timers->BeginTimer(_GRVY_gtimer);
+  _GRVY_Timers->BeginTimer(_GRVY_gtimer,false);
 
   return;
 }
@@ -560,7 +558,7 @@ extern "C" void hpct_timer_reset()
 extern "C" void hpct_timer_finalize()
 {
   //  _GRVY_Timers->VerifyInit();
-  _GRVY_Timers->EndTimer(_GRVY_gtimer);
+  _GRVY_Timers->EndTimer(_GRVY_gtimer,false);
   return;
 }
 

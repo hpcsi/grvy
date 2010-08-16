@@ -21,88 +21,64 @@
 //
 //--------------------------------------------------------------------------
 //
-// Regression/Test Suite for libGRVY.
+// timer_sum.c: Example illustrating performance timing via libGRVY.
 //
 // $Id$
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
-#include<grvy.h>
 #include<stdio.h>
 #include<unistd.h>
+#include<grvy.h>
 #include<sys/time.h>
 #include<time.h>
-#include<math.h>
-#include <sys/time.h>
 
-double Foo_Sleep = 0.098 * 1.e6;
-double Bar_Sleep = 0.075 * 1.e6;
-double boo_Sleep = 0.23  * 1.e6;
-double Max_Iters = 3;
-double Tolerance = 5e-4;	/* a coarse-grained check to compare against gettimeofday() */
+double Foo_Sleep = 0.3 * 1.e6;
+double Bar_Sleep = 0.05 * 1.e6;
+double Boo_Sleep = 0.1167 * 1.e6;
+double Max_Iters = 10;
 
 void foo();
 void bar();
 void boo();
-
-double gtod_total_timing = 0.0;
-double boo_gtod_timing   = 0.0;
-
-struct timeval tv;
 
 int main()
 {
 
   int i,itest;
   int num_repeat = 2;
-  double t1;
-
-  double grvy_total_timing;
-  double grvy_boo_timing;
 
   /* Primary Iteration Loop */
 
-  gettimeofday(&tv,NULL);
-  t1 =  ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec);
-
-  grvy_timer_init("GRVY");
-  
-  /* Do some work - note that foo() includes calls to other
-   * routines to test embedded timer capability.  */
-  
   for(itest=0;itest<num_repeat;itest++)
     {
+
+      grvy_timer_reset();
+
+      grvy_timer_init("GRVY Example Timing");
+      grvy_timer_begin("Main Program");
+
       for(i=0;i<Max_Iters;i++)
-	foo();
+	{
+
+	  /* Define the beginning of the overall portion to be monitored */
+	  
+	  printf("Main iteration loop = %i\n",i);
+
+	  foo();
+
+	}
+
+      grvy_timer_end("Main Program");
+      grvy_timer_finalize();
+      grvy_timer_summarize();
+
     }
 
-  grvy_total_timing = grvy_timer_elapsed_global();
-  grvy_boo_timing   = grvy_timer_elapsedseconds("boo");
 
-  gettimeofday(&tv,NULL);
-  gtod_total_timing +=   ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec) - t1;
+  //  grvy_timer_finalize();
+  //  grvy_timer_summarize();
 
-  grvy_timer_finalize();
-  //grvy_timer_summarize();
-
-  double diff = fabs(grvy_boo_timing-boo_gtod_timing);
-
-  if( diff > Tolerance)
-    {
-      grvy_printf(GRVY_ERROR,"Function timing mismatch -> diff = %e (secs)\n",diff);
-      grvy_printf(GRVY_ERROR,"The test host could be overloaded or the timer may be incorrect\n");
-      return(1);
-    }
-
-  diff = fabs(grvy_total_timing-gtod_total_timing);
-
-  if( diff > Tolerance)
-    {
-      grvy_printf(GRVY_ERROR,"Global timing mismatch -> diff = %e (secs)\n",diff);
-      grvy_printf(GRVY_ERROR,"The test host could be overloaded or the timer may be incorrect\n");
-      return(1);
-    }
-  
   return 0;
 }
 
@@ -116,6 +92,7 @@ void foo()
 
   grvy_timer_end(__func__);
   return;
+    
 }
 
 void bar()
@@ -128,24 +105,17 @@ void bar()
   grvy_timer_end(__func__);
 
   return;
+    
 }
 
 
 void boo()
 {
-  static double t1;
-
-  gettimeofday(&tv,NULL);
-  t1 =  ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec);
-
   grvy_timer_begin(__func__);
 
-  usleep(boo_Sleep);
+  usleep(Boo_Sleep);
 
   grvy_timer_end(__func__);
-
-  gettimeofday(&tv,NULL);
-  boo_gtod_timing +=   ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec) - t1;
 
   return;
     
