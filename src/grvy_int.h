@@ -92,18 +92,18 @@ namespace GRVY {
 
   class TimerCmpHighLow {
   public:
-    bool operator()(const vector <double> v1, const vector <double> v2 )  {
+    bool operator()(const std::vector <double> v1, const std::vector <double> v2 )  {
       return ( v1[0] - v2[0] ) > 0; }
   };
 
   class TimerCmpLowHigh {
   public:
-    bool operator()(const vector <double> v1, const vector <double> v2 )  {
+    bool operator()(const std::vector <double> v1, const std::vector <double> v2 )  {
       return ( v1[0] - v2[0] ) < 0; }
   };
 
-  typedef map<std::string,vector <double> >                      _GRVY_Type_TimerMap;
-  typedef map<std::vector <double>,std::string,TimerCmpHighLow > _GRVY_Type_TimerMapSortHL;  
-  typedef map<std::vector <double>,std::string,TimerCmpLowHigh > _GRVY_Type_TimerMapSortLH;  
+  typedef std::map<std::string,std::vector <double> >                      _GRVY_Type_TimerMap;
+  typedef std::map<std::vector <double>,std::string,TimerCmpHighLow > _GRVY_Type_TimerMapSortHL;  
+  typedef std::map<std::vector <double>,std::string,TimerCmpLowHigh > _GRVY_Type_TimerMapSortLH;  
 
 }

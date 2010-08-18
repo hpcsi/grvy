@@ -46,15 +46,15 @@ namespace GRVY {
   void GRVY_version_stdout()
   {
 
-    cout << "--------------------------------------------------------" << endl;
-    cout << "libGRVY Library: Version = " << GRVY_LIB_VERSION;
-    cout << " (" << GRVY_get_numeric_version() << ")" << endl << endl;
-    cout << "Build Date   = " << GRVY_BUILD_DATE     << endl;
-    cout << "Build Host   = " << GRVY_BUILD_HOST     << endl;
-    cout << "Build User   = " << GRVY_BUILD_USER     << endl;
-    cout << "Build Arch   = " << GRVY_BUILD_ARCH     << endl;
-    cout << "Build Rev    = " << GRVY_BUILD_VERSION  << endl;
-    cout << "--------------------------------------------------------" << endl;
+    std::cout << "--------------------------------------------------------" << std::endl;
+    std::cout << "libGRVY Library: Version = " << GRVY_LIB_VERSION;
+    std::cout << " (" << GRVY_get_numeric_version() << ")" << std::endl << std::endl;
+    std::cout << "Build Date   = " << GRVY_BUILD_DATE     << std::endl;
+    std::cout << "Build Host   = " << GRVY_BUILD_HOST     << std::endl;
+    std::cout << "Build User   = " << GRVY_BUILD_USER     << std::endl;
+    std::cout << "Build Arch   = " << GRVY_BUILD_ARCH     << std::endl;
+    std::cout << "Build Rev    = " << GRVY_BUILD_VERSION  << std::endl;
+    std::cout << "--------------------------------------------------------" << std::endl;
   }
 
   int GRVY_get_numeric_version()
@@ -168,7 +168,7 @@ namespace GRVY {
     if(! VerifyInit()) return 0;
 
     std::streambuf *cout_sbuf = std::cout.rdbuf();   // save original stdout buff
-    std::ofstream fout(filename,ios::app|ios::out);  // file for append
+    std::ofstream fout(filename,std::ios::app|std::ios::out);  // file for append
     std::cout.rdbuf(fout.rdbuf());                   // redirect cout to file        
 
     ifile.print(prefix);				   // dumpe the raw file contents
@@ -181,26 +181,26 @@ namespace GRVY {
   void GRVY_Input_Class::PrintRegVars(const char *prefix)
   {
 
-    map<std::string, int    > :: const_iterator int_index;
-    map<std::string, float  > :: const_iterator flt_index;
-    map<std::string, double > :: const_iterator dbl_index;
-    map<std::string, string > :: const_iterator str_index;
+    std::map<std::string, int    > :: const_iterator int_index;
+    std::map<std::string, float  > :: const_iterator flt_index;
+    std::map<std::string, double > :: const_iterator dbl_index;
+    std::map<std::string, std::string > :: const_iterator str_index;
 
-    cout << prefix << "[GRVY Registered Variable Default Values]" << endl;
+    std::cout << prefix << "[GRVY Registered Variable Default Values]" << std::endl;
 
     for(int_index=default_ints.begin(); int_index != default_ints.end(); ++int_index)
-      cout << prefix << (int_index->first).c_str() << "=" << int_index->second << endl;
+      std::cout << prefix << (int_index->first).c_str() << "=" << int_index->second << std::endl;
 
     for(flt_index=default_floats.begin(); flt_index != default_floats.end(); ++flt_index)
-      cout << prefix << (flt_index->first).c_str() << "=" << flt_index->second << endl;
+      std::cout << prefix << (flt_index->first).c_str() << "=" << flt_index->second << std::endl;
 
     for(dbl_index=default_doubles.begin(); dbl_index != default_doubles.end(); ++dbl_index)
-      cout << prefix << (dbl_index->first).c_str() << "=" << dbl_index->second << endl;
+      std::cout << prefix << (dbl_index->first).c_str() << "=" << dbl_index->second << std::endl;
 
     for(str_index=default_strings.begin(); str_index != default_strings.end(); ++str_index)
-      cout << prefix << (str_index->first).c_str() << "=" << str_index->second << endl;
+      std::cout << prefix << (str_index->first).c_str() << "=" << str_index->second << std::endl;
 
-    cout << endl;
+    std::cout << std::endl;
   }
 
   void GRVY_Input_Class:: MsgToggle(int flag)
@@ -294,7 +294,7 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Read_Var(const char *var, char **value)
   {
-    string tstring;
+    std::string tstring;
 
     if(! VerifyInit()) return 0;
   
@@ -320,7 +320,7 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Read_Var_iVec(const char *var, char **value, int elem)
   {
-    string tstring;
+    std::string tstring;
 
     if(! VerifyInit()) return 0;
   
@@ -367,7 +367,7 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Get_Var (const char *varname, int *var)
   {
-    map<std::string, int > :: const_iterator index;
+    std::map<std::string, int > :: const_iterator index;
   
     index = default_ints.find(varname);
 
@@ -386,7 +386,7 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Get_Var (const char *varname, float *var)
   {
-    map<std::string, float > :: const_iterator index;
+    std::map<std::string, float > :: const_iterator index;
   
     index = default_floats.find(varname);
 
@@ -405,7 +405,7 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Get_Var (const char *varname, double *var)
   {
-    map<std::string, double > :: const_iterator index;
+    std::map<std::string, double > :: const_iterator index;
   
     index = default_doubles.find(varname);
 
@@ -424,8 +424,8 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Get_Var (const char *varname, char **var)
   {
-    map<std::string, string > :: const_iterator index;
-    string tstring;
+    std::map<std::string, std::string > :: const_iterator index;
+    std::string tstring;
   
     index = default_strings.find(varname);
 
@@ -781,7 +781,7 @@ namespace GRVY {
 
   void GRVY_Timer_Class:: Summarize()
   {
-    vector <double> timings(2);
+    std::vector <double> timings(2);
     double totaltime,subtime;
     double local_percentage, total_percentage;
     int    global_time_defined = 0;
@@ -837,8 +837,8 @@ namespace GRVY {
 
 	    // Update display width if this identifier is longer than default
 
-	    display_id_width = max(display_id_width, index->first.length()+1);
-	    display_id_width = min(display_id_width, max_stdout_width - 35);
+	    display_id_width = std::max(display_id_width, index->first.length()+1);
+	    display_id_width = std::min(display_id_width, max_stdout_width - 35);
 	  }
       }
 
@@ -856,7 +856,7 @@ namespace GRVY {
 
     max_timer_name_width = display_id_width + 13;
 
-    string varstring = timer_name.substr(0,max_timer_name_width-1);
+    std::string varstring = timer_name.substr(0,max_timer_name_width-1);
 
     printf("%s - %-*s ",varstring.c_str(),(int)(display_id_width+32-varstring.length()),"Performance Timings:");
 
@@ -870,7 +870,7 @@ namespace GRVY {
     for(indexHL=_GRVY_TimerMapSortHL.begin(); indexHL != _GRVY_TimerMapSortHL.end(); ++indexHL)
       {
 
-	string varstring = indexHL->second.substr(0,display_id_width-1);
+	std::string varstring = indexHL->second.substr(0,display_id_width-1);
 	printf("--> %-*s: %10.5e secs",(int)display_id_width,varstring.c_str(),indexHL->first[0]);
 
 	if(global_time_defined)
@@ -980,12 +980,12 @@ namespace GRVY {
     return;
   }
 
-  void GRVY_Log_Class::msg(int priority, const string msg)
+  void GRVY_Log_Class::msg(int priority, const std::string msg)
   {
     if(isLog(priority))
       {
-	cout << LogMask[priority];
-	cout << msg << endl;
+	std::cout << LogMask[priority];
+	std::cout << msg << std::endl;
       }
 
     return;

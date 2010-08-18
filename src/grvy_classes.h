@@ -46,7 +46,7 @@
 // And we don't support threaded GetPot usage yet
 
 #define GETPOT_DISABLE_MUTEX
-#include<common/getpot/getpot.h>
+#include "getpot.h"
 
 // But we don't want to confuse any other GetPot version that might be
 // included through a later header
@@ -61,7 +61,6 @@
 #include<boost/accumulators/statistics/variance.hpp>
 #include<boost/math/special_functions.hpp>
 
-using namespace std;
 using namespace boost::accumulators;
 
 namespace GRVY {
@@ -84,10 +83,10 @@ class GRVY_Input_Class {
 
   // Registry Maps
 
-  map<std::string, int         > default_ints;
-  map<std::string, float       > default_floats;
-  map<std::string, double      > default_doubles;
-  map<std::string, std::string > default_strings;
+  std::map<std::string, int         > default_ints;
+  std::map<std::string, float       > default_floats;
+  std::map<std::string, double      > default_doubles;
+  std::map<std::string, std::string > default_strings;
 
   // GetPot Defaults
 
@@ -146,18 +145,18 @@ typedef struct GRVY_Timer_Data {
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats;
 } tTimer_Data;
 
-typedef map <std::string, GRVY_Timer_Data > _GRVY_Type_TimerMap2;
+typedef std::map <std::string, GRVY_Timer_Data > _GRVY_Type_TimerMap2;
 
 class GRVY_Timer_Class {
  private:
-  short int initialized;          // initialized?
-  double    timer_last;           // raw timer value of last call
-  double    timer_finalize;       // raw timer value at time of finalize()
-  string    timer_name;           // user name supplied for the timer
-  int       num_begins;	          // number of active begin timers (used for callgraph determination)
-  stack <string> callgraph;       // callgraph to support embedded timers
-  bool      beginTrigger;         // a trigger used for embedded timers
-  _GRVY_Type_TimerMap2 TimerMap;  // map used to store performance timers for each defined key
+  short int initialized;              // initialized?
+  double    timer_last;               // raw timer value of last call
+  double    timer_finalize;           // raw timer value at time of finalize()
+  std::string    timer_name;          // user name supplied for the timer
+  int       num_begins;	              // number of active begin timers (used for callgraph determination)
+  std::stack <std::string> callgraph; // callgraph to support embedded timers
+  bool      beginTrigger;             // a trigger used for embedded timers
+  _GRVY_Type_TimerMap2     TimerMap;  // map used to store performance timers for each defined key
 
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
 
@@ -248,13 +247,13 @@ class GRVY_Math_Class {
   class GRVY_Log_Class {
   private:
     int log_level;			               // Current log level priority
-    map<int,std::string> LogMask;                      // String masks for log messages
+    std::map<int,std::string> LogMask;                      // String masks for log messages
   public:
     GRVY_Log_Class();		
 
     bool isLog(int priority) {                                      // inlined log priority test
       return(priority <= log_level); }                              
-    void msg       (int priority, string msg);                      // post new log message with a priority
+    void msg       (int priority, std::string msg);                      // post new log message with a priority
     int  msg_printf(int priority, const char *format,va_list argp); // post printf style log message
     void change_priority(int priority);                             // change current log level priority
 
