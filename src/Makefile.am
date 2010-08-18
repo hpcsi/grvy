@@ -28,7 +28,7 @@ version_LDADD           = -L$(top_builddir)/src -lgrvy
 version_DEPENDENCIES    = libgrvy.la
 
 hostinfo_SOURCES        = hostinfo.cpp
-hostinfo_LDADD          = -L$(top_builddir)/src -lgrvy
+hostinfo_LDADD          = -L$(top_builddir)/src -lgrvy $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS)
 hostinfo_DEPENDENCIES   = libgrvy.la
 
 
