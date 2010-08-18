@@ -1,7 +1,7 @@
-h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h hpct.h 
+h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h hpct.h grvy_env.h
 cc_sources              = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp \
 		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_hpct_compat.cpp \
-			  grvy_version.cpp
+			  grvy_version.cpp grvy_env.cpp 
 
 getpot_sources          = common/getpot/getpot.h
 
@@ -22,10 +22,14 @@ libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
 libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
-bin_PROGRAMS            = version
+bin_PROGRAMS            = version hostinfo
 version_SOURCES         = version.cpp grvy.h libgrvy.la
 version_LDADD           = -L$(top_builddir)/src -lgrvy
 version_DEPENDENCIES    = libgrvy.la
+
+hostinfo_SOURCES        = hostinfo.cpp
+hostinfo_LDADD          = -L$(top_builddir)/src -lgrvy
+hostinfo_DEPENDENCIES   = libgrvy.la
 
 
 #install-exec-hook:
