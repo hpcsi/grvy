@@ -2,15 +2,15 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(grvy, 0.28.0, karl@ices.utexas.edu)
+AC_INIT(grvy, 0.29.0, karl@ices.utexas.edu)
 AC_CONFIG_HEADER(config_grvy.h)
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE(grvy,0.28.0)
+AM_INIT_AUTOMAKE(grvy,0.29.0)
 
 # Release versioning
 
 GENERIC_MAJOR_VERSION=0
-GENERIC_MINOR_VERSION=28
+GENERIC_MINOR_VERSION=29
 GENERIC_MICRO_VERSION=0
 
 GENERIC_RELEASE=$GENERIC_MAJOR_VERSION.$GENERIC_MINOR_VERSION
