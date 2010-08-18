@@ -1,4 +1,4 @@
-Version 0.28 (August 2010)
+Version 0.28 (18 August 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.28
 
   * performance timing functionality updated to allow for embedded timers
