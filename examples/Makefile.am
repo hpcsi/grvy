@@ -8,7 +8,7 @@ INCLUDES                = -I$(top_srcdir)/src -I$(top_builddir)/src
 AM_FCFLAGS              = $(INCLUDES)
 AM_CFLAGS               = $(INCLUDES)
 AM_CPPFLAGS             = $(INCLUDES)
-LIBS                    = -L$(top_builddir)/src -lgrvy
+LIBS                    = -L$(top_builddir)/src -lgrvy $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
 
 example_PROGRAMS        = input timer_sum check_dir inputf timer_sumf message timer
 input_SOURCES           = input.c

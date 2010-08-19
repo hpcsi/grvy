@@ -14,9 +14,11 @@ AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
 # supported in libGRVY but will be deprecated in the future. 
 
 lib_LTLIBRARIES         = libgrvy.la libhpct.la
+LIBS                    = $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
+
 library_includedir      = $(includedir)
 library_include_HEADERS = grvy.h hpct.h grvy_classes.h common/getpot/getpot.h 
-libgrvy_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
+libgrvy_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE) 
 libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
 libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
@@ -28,7 +30,7 @@ version_LDADD           = -L$(top_builddir)/src -lgrvy
 version_DEPENDENCIES    = libgrvy.la
 
 hostinfo_SOURCES        = hostinfo.cpp
-hostinfo_LDADD          = -L$(top_builddir)/src -lgrvy $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS)
+hostinfo_LDADD          = -L$(top_builddir)/src -lgrvy
 hostinfo_DEPENDENCIES   = libgrvy.la
 
 
