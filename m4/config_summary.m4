@@ -25,7 +25,7 @@ echo C++ compiler.................. : $CXX
 echo Fortran compiler support...... : $FC
 echo Install dir................... : $prefix 
 echo Boost dir..................... : $BOOST_DIR
-echo Boost regex lib............... : $(BOOST_REGEX_LDFLAGS) $BOOST_REGEX_LIBS
+echo Boost regex lib............... : $BOOST_REGEX_LDFLAGS $BOOST_REGEX_LIBS
 echo Build user.................... : $USER
 echo Build host.................... : $BUILD_HOST
 echo Configure date................ : $BUILD_DATE
