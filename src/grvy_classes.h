@@ -94,9 +94,12 @@ class GRVY_Input_Class {
   double Double_Def;
   int    Int_Def;
   long   Long_Def;
+  const std::string String_Def;
   const char  *Char_Def;
   const char  *comment_start;
   const char  *comment_end;
+
+  template <typename T> T Get_Default   (T);
 
  public:
   GRVY_Input_Class  ();
@@ -111,6 +114,10 @@ class GRVY_Input_Class {
   int  Fdump        (const char *prefix, const char *filename);
 
   // Numerical Read Functions
+
+  template <typename T> int Read_Var      (const char *var, T *value );
+  template <typename T> int Read_Var_Vec  (const char *var, T *value, int nelems);
+  template <typename T> int Read_Var_iVec (const char *var, T *value, int elem);
 
   template <typename T> int Read_Var      (const char *var, T *value, T vardef);
   template <typename T> int Read_Var_Vec  (const char *var, T *value, int nelems, T vardef);

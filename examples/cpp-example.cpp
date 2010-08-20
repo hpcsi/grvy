@@ -132,7 +132,7 @@ int main(int argc, char **argv)
   iparse.Fdump("# ");
   printf(" ---- End Full Dump ----\n\n");
 
-  // Dump the whole file to a file (appends to file if it exists)
+  // Dump the whole file to a file (appends to file if it already exists)
 
   printf("\n ------ Full Dump to test.out ------\n\n");
   iparse.Fdump("% ","test.out");

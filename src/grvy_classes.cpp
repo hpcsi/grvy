@@ -221,9 +221,46 @@ namespace GRVY {
   // Scalar Reads
   //--------------
 
+  template <typename T> int GRVY_Input_Class:: Read_Var(const char *var, T *value)
+  {
+    Read_Var( var,value,Get_Default(*value) );
+  }
+
+  template <typename T> int GRVY_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelem)
+  {
+    Read_Var_Vec( var,value,nelem,Get_Default(*value) );
+  }
+
+  template <typename T> int GRVY_Input_Class:: Read_Var_iVec(const char *var, T *value, int elem)
+  {
+    Read_Var_iVec( var,value,elem,Get_Default(*value) );
+  }
+
+  template<> int GRVY_Input_Class::Get_Default<int>(int var)
+  {
+    return(Int_Def);
+  }
+
+  template <> float GRVY_Input_Class::Get_Default<float>(float)
+  {
+    return(Float_Def);
+  }
+
+  template <> double GRVY_Input_Class::Get_Default<double>(double)
+  {
+    return(Double_Def);
+  }
+
+
   template <typename T> int GRVY_Input_Class:: Read_Var(const char *var, T *value, T Var_Def)
   {
     if(! VerifyInit()) return 0;
+
+    if(Var_Def != Get_Default(Var_Def) )
+      {
+	grvy_printf(GRVY_DEBUG,"Registering user-supplied default value for %s\n",var);
+	Register_Var(var,Var_Def);
+      }
 
     *value = ifile(var,Var_Def);
 
@@ -244,7 +281,7 @@ namespace GRVY {
   }
 
   //--------------
-  // Vector Reads
+  // Array Reads
   //--------------
 
   template <typename T> int GRVY_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelems,T Var_Def)
@@ -287,6 +324,38 @@ namespace GRVY {
  
     return 1;
   } 
+
+#if 0
+  //------------------------
+  // C++ String Reads (TODO finish me)
+  //------------------------
+
+  int GRVY_Input_Class:: Read_Var(const char *var, std::string value, std::string Var_Def)
+  {
+
+    if(! VerifyInit()) return 0;
+  
+    value = ifile(var,Char_Def);
+
+    //    *value = (char *) malloc(tstring.length()*sizeof(char)+1);
+    //    strcpy(value[0],tstring.c_str());
+
+    if( value == Var_Def )
+      {
+	if( !Get_Var(var,value) )
+	  {
+	    _GRVY_message(GRVY_ERROR,"fread_char","Unable to query variable -> ",var);
+	    return 0;
+	  }
+	else 
+	  {
+	    _GRVY_message(GRVY_INFO,"fread_char","Using pre-registered value for variable",var);
+	  }
+      }
+    return 1;
+  }
+
+#endif
 
   //------------------------
   // Character String Reads
@@ -448,17 +517,33 @@ namespace GRVY {
   // Supported Function Templates
   //------------------------------
 
+  // (a) cases with no default value....
+
+  template int GRVY_Input_Class::Read_Var <int>          (const char *var, int    *value);
+  template int GRVY_Input_Class::Read_Var <float>        (const char *var, float  *value);
+  template int GRVY_Input_Class::Read_Var <double>       (const char *var, double *value);
+
+  template int GRVY_Input_Class::Read_Var_Vec <int>      (const char *var, int    *value, int nelem);
+  template int GRVY_Input_Class::Read_Var_Vec <float>    (const char *var, float  *value, int nelem);
+  template int GRVY_Input_Class::Read_Var_Vec <double>   (const char *var, double *value, int nelem);
+
+  template int GRVY_Input_Class::Read_Var_iVec <int>     (const char *var, int    *value, int elem);
+  template int GRVY_Input_Class::Read_Var_iVec <float>   (const char *var, float  *value, int elem);
+  template int GRVY_Input_Class::Read_Var_iVec <double>  (const char *var, double *value, int elem);
+
+  // (a) cases with default value provided....
+
   template int GRVY_Input_Class::Read_Var <int>          (const char *var, int    *value, int    vardef);
   template int GRVY_Input_Class::Read_Var <float>        (const char *var, float  *value, float  vardef);
   template int GRVY_Input_Class::Read_Var <double>       (const char *var, double *value, double vardef);
 
-  template int GRVY_Input_Class:: Read_Var_Vec <int>     (const char *var, int    *value, int nelem, int    Var_Def);
-  template int GRVY_Input_Class:: Read_Var_Vec <float>   (const char *var, float  *value, int nelem, float  Var_Def);
-  template int GRVY_Input_Class:: Read_Var_Vec <double>  (const char *var, double *value, int nelem, double Var_Def);
+  template int GRVY_Input_Class::Read_Var_Vec <int>      (const char *var, int    *value, int nelem, int    Var_Def);
+  template int GRVY_Input_Class::Read_Var_Vec <float>    (const char *var, float  *value, int nelem, float  Var_Def);
+  template int GRVY_Input_Class::Read_Var_Vec <double>   (const char *var, double *value, int nelem, double Var_Def);
 
-  template int GRVY_Input_Class:: Read_Var_iVec <int>    (const char *var, int    *value, int elem,  int    Var_Def);
-  template int GRVY_Input_Class:: Read_Var_iVec <float>  (const char *var, float  *value, int elem,  float  Var_Def);
-  template int GRVY_Input_Class:: Read_Var_iVec <double> (const char *var, double *value, int elem,  double Var_Def);
+  template int GRVY_Input_Class::Read_Var_iVec <int>    (const char *var, int    *value, int elem,  int    Var_Def);
+  template int GRVY_Input_Class::Read_Var_iVec <float>  (const char *var, float  *value, int elem,  float  Var_Def);
+  template int GRVY_Input_Class::Read_Var_iVec <double> (const char *var, double *value, int elem,  double Var_Def);
 
 
   //-------------------------------------
