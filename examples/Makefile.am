@@ -7,7 +7,7 @@ EXTRA_DIST	        = input.c inputf.f90 pecos-input.txt \
 INCLUDES                = -I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_builddir)/src/common/getpot
 AM_FCFLAGS              = $(INCLUDES)
 AM_CFLAGS               = $(INCLUDES)
-AM_CPPFLAGS             = $(INCLUDES)
+AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
 LIBS                    = -L$(top_builddir)/src -lgrvy $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
 
 example_PROGRAMS        = input timer_sum check_dir inputf timer_sumf message timer cpp-example
