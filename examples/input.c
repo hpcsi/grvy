@@ -78,7 +78,7 @@ int main(int argc, char **argv)
   if(grvy_input_fread_char_ivec("solver/keywords",&key2,1))
     printf("--> %-10s = %s \n","solver/keyword 2",key2);
 
-  if(grvy_input_fread_float_vec("turbulence/Abcd",A,3))
+  if(grvy_input_fread_float_vec("turbulence/A",A,3))
     printf("--> %-10s = %f %f %f\n","turbulence/A",A[0],A[1],A[2]);
 
   /* Attempt to read unknown variable */

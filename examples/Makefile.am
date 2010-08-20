@@ -4,14 +4,15 @@ example_DATA            = input.c inputf.f90 pecos-input.txt \
 EXTRA_DIST	        = input.c inputf.f90 pecos-input.txt \
 		    	  timer_sum.c timer_sumf.f90 messages.c
 
-INCLUDES                = -I$(top_srcdir)/src -I$(top_builddir)/src
+INCLUDES                = -I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_builddir)/src/common/getpot
 AM_FCFLAGS              = $(INCLUDES)
 AM_CFLAGS               = $(INCLUDES)
 AM_CPPFLAGS             = $(INCLUDES)
 LIBS                    = -L$(top_builddir)/src -lgrvy $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
 
-example_PROGRAMS        = input timer_sum check_dir inputf timer_sumf message timer
+example_PROGRAMS        = input timer_sum check_dir inputf timer_sumf message timer cpp-example
 input_SOURCES           = input.c
+cpp_example_SOURCES     = cpp-example.cpp
 
 inputf_SOURCES          = inputf.f90
 inputf_LIBTOOLFLAGS     = --tag=FC
