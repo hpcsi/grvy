@@ -101,6 +101,7 @@ namespace GRVY {
     Int_Def       = -9999999;
     Long_Def      = -9999999;
     Char_Def      = "unknown";
+    String_Def    = "unknown";
     comment_start = "#";
     comment_end   = "\n";
 
@@ -251,6 +252,11 @@ namespace GRVY {
     return(Double_Def);
   }
 
+  template <> std::string GRVY_Input_Class::Get_Default<std::string>(std::string)
+  {
+    return(String_Def);
+  }
+
 
   template <typename T> int GRVY_Input_Class:: Read_Var(const char *var, T *value, T Var_Def)
   {
@@ -304,9 +310,9 @@ namespace GRVY {
     return 1;
   }
 
-  //------------------
-  // ith Vector Reads
-  //------------------
+  //-------------------------
+  // ith Element Array Reads
+  //-------------------------
 
   template <typename T> int GRVY_Input_Class:: Read_Var_iVec(const char *var, T *value, int elem,T Var_Def)
   {
@@ -325,37 +331,43 @@ namespace GRVY {
     return 1;
   } 
 
-#if 0
   //------------------------
-  // C++ String Reads (TODO finish me)
+  // C++ String Reads
   //------------------------
 
-  int GRVY_Input_Class:: Read_Var(const char *var, std::string value, std::string Var_Def)
+  int GRVY_Input_Class:: Read_Var(const char *var, std::string *value)
+  {
+    return(Read_Var(var,value,String_Def) );
+  }
+
+  int GRVY_Input_Class:: Read_Var(const char *var, std::string *value, std::string Var_Def)
   {
 
     if(! VerifyInit()) return 0;
+
+    if(Var_Def != Get_Default(Var_Def) )
+      {
+	grvy_printf(GRVY_DEBUG,"Registering user-supplied default value for %s\n",var);
+	Register_Var(var,Var_Def);
+      }
+    
   
-    value = ifile(var,Char_Def);
+    *value = ifile(var,Var_Def.c_str());
 
-    //    *value = (char *) malloc(tstring.length()*sizeof(char)+1);
-    //    strcpy(value[0],tstring.c_str());
-
-    if( value == Var_Def )
+    if( *value == Var_Def )
       {
 	if( !Get_Var(var,value) )
 	  {
-	    _GRVY_message(GRVY_ERROR,"fread_char","Unable to query variable -> ",var);
+	    _GRVY_message(GRVY_ERROR,"fread_string","Unable to query variable -> ",var);
 	    return 0;
 	  }
 	else 
 	  {
-	    _GRVY_message(GRVY_INFO,"fread_char","Using pre-registered value for variable",var);
+	    _GRVY_message(GRVY_INFO,"fread_string","Using pre-registered value for variable",var);
 	  }
       }
     return 1;
   }
-
-#endif
 
   //------------------------
   // Character String Reads
@@ -429,6 +441,12 @@ namespace GRVY {
   }
 
   void GRVY_Input_Class:: Register_Var (const char *varname, char *var)
+  {
+    default_strings[varname] = var;
+    return;
+  }
+
+  void GRVY_Input_Class:: Register_Var (const char *varname, std::string var)
   {
     default_strings[varname] = var;
     return;
@@ -510,7 +528,24 @@ namespace GRVY {
 	strcpy(var[0],tstring.c_str());
 	return(1);
       }
+  }
 
+  int GRVY_Input_Class:: Get_Var (const char *varname, std::string *var)
+  {
+    std::map<std::string, std::string > :: const_iterator index;
+  
+    index = default_strings.find(varname);
+
+    if( index == default_strings.end() )
+      {
+	_GRVY_message(GRVY_INFO,"register_get","No registered variable named",varname);
+	return(0);
+      }
+    else
+      {
+	*var = index->second;
+	return(1);
+      }
   }
 
   //------------------------------

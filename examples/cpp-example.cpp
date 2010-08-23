@@ -40,10 +40,9 @@ int main(int argc, char **argv)
 
   double reyn, mach, temp;
   float aoa,A[3];
-  int iter_max,turbulent;
-  char *gridfile;
-  char *koomie;
+  int   iter_max,turbulent, ikoomie;
   char *key1, *key2;
+  std::string GridFile, RestartFile;
 
   //----------------------------
   // Example input file parsing
@@ -57,33 +56,32 @@ int main(int argc, char **argv)
   // Read specific variables (with no default values provided)
 
   if( iparse.Read_Var("reyn",&reyn,0.) )
-    printf("--> %-10s = %f\n","reyn",reyn);
+    printf("--> %-11s = %f\n","reyn",reyn);
 
   if( iparse.Read_Var("mach",&mach) )
-    printf("--> %-10s = %f\n","mach",mach);
+    printf("--> %-11s = %f\n","mach",mach);
 
-  // Read variables with default values provided (the default is only
-  // used if the keyword does not exist within the input file and
-  // provides a means to have backwards-compatibile input file
-  // support).
+  // Read variables with default values provided (note that the
+  // default is only used if the keyword does not exist within the
+  // input file; this provides a means to have backwards-compatibile
+  // input file support).
 
   if ( iparse.Read_Var("temp",&temp,1200.) )
-    printf("--> %-10s = %f\n","temp",temp);
+    printf("--> %-11s = %f\n","temp",temp);
 
   if( iparse.Read_Var("aoa",&aoa,0.0f) )
-    printf("--> %-10s = %f\n","aoa",aoa);
+    printf("--> %-11s = %f\n","aoa",aoa);
 
   if( iparse.Read_Var("iter_max",&iter_max,100) )
-    printf("--> %-10s = %i\n","iter_max",iter_max);
+    printf("--> %-11s = %i\n","iter_max",iter_max);
 
-  if( iparse.Read_Var("gridfile",&gridfile) )
-    printf("--> %-10s = %s\n","gridfile",gridfile);
 
-  /* Note that GRVY will allocate memory for the
-   * string; if you are a purist and want to cleanup, you should
-   * call free() when done with the variable */
 
-  free(gridfile);
+  if( iparse.Read_Var("gridfile",&GridFile) )
+    cout << "--> gridfile    = " << GridFile << endl;
+
+  if( iparse.Read_Var("restartfile",&RestartFile,"sol.h5") )
+    cout << "--> restartfile = " << RestartFile << endl;
 
   // Read from the soler subsection of input file
 
@@ -101,10 +99,8 @@ int main(int argc, char **argv)
 
   // Attempt to read unknown variable
 
-  if( iparse.Read_Var("koomie",&koomie) )
-    printf("--> %-10s = %s\n","koomie",koomie);
-
-  free(koomie);
+  if( iparse.Read_Var("koomie",&ikoomie) )
+    printf("--> %-11s = %i\n","koomie",ikoomie);
 
   // Disable error messages if you want to control them yourself If
   // you query the unknown variable again, stdout should be quiet
@@ -112,10 +108,8 @@ int main(int argc, char **argv)
   grvy_printf(GRVY_INFO,"Switching to silent message mode...\n");
   grvy_log_setlevel(GRVY_NOLOG);
 
-  if( iparse.Read_Var("koomie",&koomie))
-    printf("--> %-10s = %s\n","koomie",koomie);
-
-  free(koomie);
+  if( iparse.Read_Var("koomie",&ikoomie))
+    printf("--> %-11s = %s\n","koomie",ikoomie);
 
   grvy_log_setlevel(GRVY_INFO);
   grvy_printf(GRVY_INFO,"Switching back to standard INFO mode...\n");

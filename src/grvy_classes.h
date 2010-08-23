@@ -94,7 +94,7 @@ class GRVY_Input_Class {
   double Double_Def;
   int    Int_Def;
   long   Long_Def;
-  const std::string String_Def;
+  std::string String_Def;
   const char  *Char_Def;
   const char  *comment_start;
   const char  *comment_end;
@@ -123,10 +123,16 @@ class GRVY_Input_Class {
   template <typename T> int Read_Var_Vec  (const char *var, T *value, int nelems, T vardef);
   template <typename T> int Read_Var_iVec (const char *var, T *value, int elem,   T vardef);
 
-  // String Read Functions
+  // Character String Read Functions
 
   int Read_Var                            (const char *var, char **value);
   int Read_Var_iVec                       (const char *var, char **value, int elem);
+
+  // C++ String Read Functions
+
+  int Read_Var                            (const char *var, std::string *value);
+  int Read_Var                            (const char *var, std::string *value, std::string vardef);
+  //  int Read_Var_iVec                       (const char *var, char **value, int elem);
 
   // Default Variable Registration Functions
 
@@ -134,11 +140,13 @@ class GRVY_Input_Class {
   void Register_Var  (const char *varname, float   var);
   void Register_Var  (const char *varname, double  var);
   void Register_Var  (const char *varname, char   *var);
+  void Register_Var  (const char *varname, std::string var);
 
   int  Get_Var       (const char *varname, int    *var);
   int  Get_Var       (const char *varname, float  *var);
   int  Get_Var       (const char *varname, double *var);
   int  Get_Var       (const char *varname, char  **var);
+  int  Get_Var       (const char *varname, std::string *var);
 
   void PrintRegVars  (const char *prefix);
 };
