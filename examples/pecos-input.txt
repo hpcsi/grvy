@@ -20,6 +20,7 @@ iter_max = 1000	  	    	# Max number of timesteps
 time_max = 15.5			# Max simulation time [secs]
 aoa      = 20.5			# Angle of attack [deg]
 gridfile = './grid_plate.nc'    # Input gridfile 
+restart  = true			# Restart flag (boolean)
 
 #--------------------------------
 # Example solver control section 

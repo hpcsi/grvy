@@ -42,6 +42,7 @@ int main(int argc, char **argv)
   float aoa,A[3];
   int   iter_max,turbulent, ikoomie;
   char *key1, *key2;
+  bool restart;
   std::string GridFile, RestartFile;
 
   //----------------------------
@@ -80,8 +81,15 @@ int main(int argc, char **argv)
   if( iparse.Read_Var("gridfile",&GridFile) )
     cout << "--> gridfile    = " << GridFile << endl;
 
-  if( iparse.Read_Var("restartfile",&RestartFile,"sol.h5") )
-    cout << "--> restartfile = " << RestartFile << endl;
+  if( iparse.Read_Var("restart",&restart,false) )
+    cout << "--> restart     = " << restart << endl;
+
+  if(restart)
+    {
+      cout << endl << "Restart enabled - parsing desired restart file" << endl;
+      if( iparse.Read_Var("restartfile",&RestartFile,"sol.h5") )
+	cout << "--> restartfile = " << RestartFile << endl;
+    }
 
   // Read from the soler subsection of input file
 

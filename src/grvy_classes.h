@@ -86,6 +86,7 @@ class GRVY_Input_Class {
   std::map<std::string, int         > default_ints;
   std::map<std::string, float       > default_floats;
   std::map<std::string, double      > default_doubles;
+  std::map<std::string, bool        > default_bools;
   std::map<std::string, std::string > default_strings;
 
   // GetPot Defaults
@@ -134,11 +135,16 @@ class GRVY_Input_Class {
   int Read_Var                            (const char *var, std::string *value, std::string vardef);
   //  int Read_Var_iVec                       (const char *var, char **value, int elem);
 
+  // Bool Read Functions
+
+  int Read_Var                            (const char *var, bool *value, bool vardef);
+
   // Default Variable Registration Functions
 
   void Register_Var  (const char *varname, int     var);
   void Register_Var  (const char *varname, float   var);
   void Register_Var  (const char *varname, double  var);
+  void Register_Var  (const char *varname, bool    var);
   void Register_Var  (const char *varname, char   *var);
   void Register_Var  (const char *varname, std::string var);
 

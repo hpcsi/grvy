@@ -185,6 +185,7 @@ namespace GRVY {
     std::map<std::string, int    > :: const_iterator int_index;
     std::map<std::string, float  > :: const_iterator flt_index;
     std::map<std::string, double > :: const_iterator dbl_index;
+    std::map<std::string, bool   > :: const_iterator bool_index;
     std::map<std::string, std::string > :: const_iterator str_index;
 
     std::cout << prefix << "[GRVY Registered Variable Default Values]" << std::endl;
@@ -200,6 +201,9 @@ namespace GRVY {
 
     for(str_index=default_strings.begin(); str_index != default_strings.end(); ++str_index)
       std::cout << prefix << (str_index->first).c_str() << "=" << str_index->second << std::endl;
+
+    for(bool_index=default_bools.begin(); bool_index != default_bools.end(); ++bool_index)
+      std::cout << prefix << (bool_index->first).c_str() << "=" << bool_index->second << std::endl;
 
     std::cout << std::endl;
   }
@@ -369,6 +373,21 @@ namespace GRVY {
     return 1;
   }
 
+  int GRVY_Input_Class:: Read_Var(const char *var, bool *value, bool Var_Def)
+  {
+
+    if(! VerifyInit()) return 0;
+
+    // All boolean queries must supply a default so let's register them.
+
+    grvy_printf(GRVY_DEBUG,"Registering user-supplied default bool value for %s\n",var);
+    Register_Var(var,Var_Def);
+  
+    *value = ifile(var,Var_Def);
+
+    return 1;
+  }
+
   //------------------------
   // Character String Reads
   //------------------------
@@ -449,6 +468,12 @@ namespace GRVY {
   void GRVY_Input_Class:: Register_Var (const char *varname, std::string var)
   {
     default_strings[varname] = var;
+    return;
+  }
+
+  void GRVY_Input_Class:: Register_Var (const char *varname, bool var)
+  {
+    default_bools[varname] = var;
     return;
   }
 
