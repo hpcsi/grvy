@@ -9,6 +9,7 @@
 # -----------------------------------------------------------------
 
 use warnings;
+use File::Compare;
 
 my $license_begin_delim='----------bl-$';
 my $license_end_delim='----------el-$';
@@ -68,9 +69,13 @@ while (@ARGV)
     close($IN);
     close($TMPFILE);
 
-    if($found_delim) {
-	print "[license_tool]: updating license in file $infile\n";
-	rename(".$infile.tmp",$infile) || die "Cannot rename updated file\n";
+    if( $found_delim ) {
+	if ( compare($infile,".$infile.tmp") != 0 )  {
+	    print "[license_tool]: updating license in file $infile\n";
+	    rename(".$infile.tmp",$infile) || die "Cannot rename updated file\n";
+	} else {
+	    unlink(".$infile.tmp") || die "Unable to remove temporary file\n";
+	}
     } else {
 	print "[license_tool]: warning: no license delimiters found in file $infile\n";
 	unlink(".$infile.tmp") || die "Unable to remove temporary file\n";
