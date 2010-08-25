@@ -33,11 +33,6 @@ hostinfo_SOURCES        = hostinfo.cpp
 hostinfo_LDADD          = -L$(top_builddir)/src -lgrvy
 hostinfo_DEPENDENCIES   = libgrvy.la
 
-
-#install-exec-hook:
-#	cd $(DESTDIR)$(libdir) && \
-#	for file in libgrvy*; do $(LN_S) $$file `echo $$file | $(SED) s/grvy/hpct/`; done
-
 #--------------------------
 # Fortran Module Interface
 #--------------------------
@@ -54,6 +49,18 @@ test2_LIBTOOLFLAGS      = --tag=FC
 
 main.f90: grvy.f90
 main_hpct.f90: grvy_hpct.f90
+
+#---------------------------------
+# Embedded license header support
+#---------------------------------
+
+#grvy.h.in: license_header
+
+libgrvy.la: license_header
+
+license_header: $(top_srcdir)/LICENSE
+	$(top_srcdir)/src/update_license.pl $(top_srcdir)/LICENSE $(cc_sources) $(h_sources)
+
 
 moduledir               = @libdir@
 module_DATA             = grvy.mod hpct.mod
