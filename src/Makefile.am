@@ -10,6 +10,8 @@ AM_FCFLAGS              = $(INCLUDES)
 AM_CFLAGS               = $(INCLUDES)
 AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
 
+BUILT_SOURCES = .license.stamp
+
 # Note: the use of hpct_ api syntax and linkage to -lhpct is still
 # supported in libGRVY but will be deprecated in the future. 
 
@@ -54,16 +56,13 @@ main_hpct.f90: grvy_hpct.f90
 # Embedded license header support
 #---------------------------------
 
-#grvy.h.in: license_header
-
-libgrvy.la: license_header
-
-license_header: $(top_srcdir)/LICENSE
+.license.stamp: $(top_srcdir)/LICENSE
 	$(top_srcdir)/src/update_license.pl $(top_srcdir)/LICENSE $(cc_sources) $(h_sources)
+	echo 'updated source license headers' >$@
 
 
 moduledir               = @libdir@
 module_DATA             = grvy.mod hpct.mod
-CLEANFILES              = grvy.mod hpct.mod
+CLEANFILES              = grvy.mod hpct.mod .license.stamp
 
 METASOURCES = AUTO

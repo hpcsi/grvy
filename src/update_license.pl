@@ -77,7 +77,7 @@ while (@ARGV)
 	    unlink(".$infile.tmp") || die "Unable to remove temporary file\n";
 	}
     } else {
-	print "[license_tool]: warning: no license delimiters found in file $infile\n";
+#	print "[license_tool]: warning: no license delimiters found in file $infile\n";
 	unlink(".$infile.tmp") || die "Unable to remove temporary file\n";
     }
 }
