@@ -35,7 +35,7 @@ extern "C" {
 #endif
 
   /*
-   * Library version info
+   * Library version/build info
    */
 
 #define GRVY_MAJOR_VERSION  @GENERIC_MAJOR_VERSION@
@@ -49,6 +49,12 @@ extern "C" {
 #define GRVY_BUILD_VERSION  "@BUILD_VERSION@"
 
 #define GRVY_LIB_VERSION    "@VERSION@"
+
+#define GRVY_CXX            "@CXX@"
+#define GRVY_CXXFLAGS       "@CXXFLAGS@"
+
+#define GRVY_FC             "@FC@"
+#define GRVY_FCFLAGS        "@FCFLAGS@"
 
   extern int grvy_version_stdout            ();
 
