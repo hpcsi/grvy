@@ -32,6 +32,13 @@ echo Configure date................ : $BUILD_DATE
 echo Build architecture............ : $BUILD_ARCH
 echo SVN revision number........... : $BUILD_VERSION
 echo
+echo Optional Features:
+   if test "$HAVE_HDF5" = "0"; then
+     echo '   'Link with HDF5............. : no
+   else
+     echo '   'Link with HDF5............. : yes
+   fi
+echo
 echo '-------------------------------------------------------------------------------'
 
 echo
