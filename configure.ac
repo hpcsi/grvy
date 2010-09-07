@@ -66,6 +66,8 @@ AC_CACHE_SAVE
 
 AC_FUNC_MALLOC
 
+AX_PATH_HDF5_NEW(1.8.0,no)
+
 # Query configuration environment
 
 AX_SUMMARIZE_ENV
