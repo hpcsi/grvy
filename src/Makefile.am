@@ -33,7 +33,7 @@ endif
 libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
 libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
-bin_PROGRAMS            = version hostinfo foo
+bin_PROGRAMS            = version hostinfo # foo
 version_SOURCES         = version.cpp grvy.h libgrvy.la
 version_LDADD           = -L$(top_builddir)/src -lgrvy
 version_DEPENDENCIES    = libgrvy.la
@@ -42,9 +42,9 @@ hostinfo_SOURCES        = hostinfo.cpp
 hostinfo_LDADD          = -L$(top_builddir)/src -lgrvy
 hostinfo_DEPENDENCIES   = libgrvy.la
 
-foo_SOURCES        = foo2.cpp
-foo_LDADD          = -L$(top_builddir)/src -lgrvy
-foo_DEPENDENCIES   = libgrvy.la
+# foo_SOURCES        = foo2.cpp
+# foo_LDADD          = -L$(top_builddir)/src -lgrvy
+# foo_DEPENDENCIES   = libgrvy.la
 
 #--------------------------
 # Fortran Module Interface
