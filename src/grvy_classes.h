@@ -38,6 +38,10 @@
 #include<stack>
 #include<config_grvy.h>
 
+#ifdef HAVE_HDF5
+#include <hdf5.h>
+#endif
+
 // We use our own namespace for GetPot to avoid collisions if we're
 // linked against a different version
 
@@ -285,8 +289,6 @@ class GRVY_Math_Class {
 //--------------------------
 // HDF5 Utility Class
 //--------------------------
-
-#include <hdf5.h>
 
   class GRVY_HDF5_Class {
   private: 
