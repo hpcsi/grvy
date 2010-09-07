@@ -1,7 +1,7 @@
 h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h hpct.h grvy_env.h
 cc_sources              = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp \
 		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_hpct_compat.cpp \
-			  grvy_version.cpp grvy_env.cpp 
+			  grvy_version.cpp grvy_env.cpp grvy_hdf5.cpp
 
 getpot_sources          = common/getpot/getpot.h
 
@@ -18,15 +18,22 @@ BUILT_SOURCES = .license.stamp
 lib_LTLIBRARIES         = libgrvy.la libhpct.la
 LIBS                    = $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
 
+
+
 library_includedir      = $(includedir)
 library_include_HEADERS = grvy.h hpct.h grvy_classes.h common/getpot/getpot.h 
 libgrvy_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE) 
 libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
+if HDF5_ENABLED
+  AM_CPPFLAGS          += $(HDF5_CFLAGS)
+  libgrvy_la_LDFLAGS   += $(HDF5_LIBS)
+endif
+
 libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
 libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
-bin_PROGRAMS            = version hostinfo
+bin_PROGRAMS            = version hostinfo foo
 version_SOURCES         = version.cpp grvy.h libgrvy.la
 version_LDADD           = -L$(top_builddir)/src -lgrvy
 version_DEPENDENCIES    = libgrvy.la
@@ -34,6 +41,10 @@ version_DEPENDENCIES    = libgrvy.la
 hostinfo_SOURCES        = hostinfo.cpp
 hostinfo_LDADD          = -L$(top_builddir)/src -lgrvy
 hostinfo_DEPENDENCIES   = libgrvy.la
+
+foo_SOURCES        = foo2.cpp
+foo_LDADD          = -L$(top_builddir)/src -lgrvy
+foo_DEPENDENCIES   = libgrvy.la
 
 #--------------------------
 # Fortran Module Interface
@@ -57,7 +68,7 @@ main_hpct.f90: grvy_hpct.f90
 #---------------------------------
 
 .license.stamp: $(top_srcdir)/LICENSE
-	$(top_srcdir)/src/update_license.pl $(top_srcdir)/LICENSE $(cc_sources) $(h_sources)
+	$(top_srcdir)/src/common/lic_utils/update_license.pl $(top_srcdir)/LICENSE $(cc_sources) $(h_sources)
 	echo 'updated source license headers' >$@
 
 
