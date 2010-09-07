@@ -165,7 +165,7 @@ if test "${with_hdf5}" != no ; then
 
     if test "$succeeded" = no; then
        if test "$is_package_required" = yes; then
-          AC_MSG_ERROR([HDF5 not found.  Try either --with-hdf5 or setting HDF5_DIR.]),
+          AC_MSG_ERROR([HDF5 not found.  Try either --with-hdf5 or setting HDF5_DIR.])
        else		             
 	  AC_MSG_NOTICE([optional HDF5 library not found, or does not meet version requirements])
        fi
