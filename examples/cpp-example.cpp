@@ -117,7 +117,7 @@ int main(int argc, char **argv)
   grvy_log_setlevel(GRVY_NOLOG);
 
   if( iparse.Read_Var("koomie",&ikoomie))
-    printf("--> %-11s = %s\n","koomie",ikoomie);
+    printf("--> %-11s = %i\n","koomie",ikoomie);
 
   grvy_log_setlevel(GRVY_INFO);
   grvy_printf(GRVY_INFO,"Switching back to standard INFO mode...\n");
