@@ -21,7 +21,7 @@ LIBS                    = $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS)
 
 
 library_includedir      = $(includedir)
-library_include_HEADERS = grvy.h hpct.h grvy_classes.h common/getpot/getpot.h 
+library_include_HEADERS = grvy.h hpct.h grvy_classes.h 
 libgrvy_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE) 
 libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 

@@ -42,22 +42,6 @@
 #include <hdf5.h>
 #endif
 
-// We use our own namespace for GetPot to avoid collisions if we're
-// linked against a different version
-
-#define GETPOT_NAMESPACE GRVYGetPot
-
-// And we don't support threaded GetPot usage yet
-
-#define GETPOT_DISABLE_MUTEX
-#include "getpot.h"
-
-// But we don't want to confuse any other GetPot version that might be
-// included through a later header
-
-#undef GETPOT_DISABLE_MUTEX
-#undef GETPOT_NAMESPACE
-
 #include<boost/accumulators/accumulators.hpp>
 #include<boost/accumulators/statistics/mean.hpp>
 #include<boost/accumulators/statistics/stats.hpp>
@@ -66,6 +50,13 @@
 #include<boost/math/special_functions.hpp>
 
 using namespace boost::accumulators;
+
+// Forward declare GetPot class so we don't need
+// to include getpot.h here.
+namespace GRVYGetPot
+  {
+    class GetPot;
+  }
 
 namespace GRVY {
 
@@ -82,8 +73,8 @@ int  GRVY_get_numeric_version();
 
 class GRVY_Input_Class {
  private:
-  GRVYGetPot::GetPot ifile;          // input file
-  short int          initialized;    // input file initialized?
+  GRVYGetPot::GetPot* ifile;          // input file
+  short int           initialized;    // input file initialized?
 
   // Registry Maps
 
@@ -108,6 +99,7 @@ class GRVY_Input_Class {
 
  public:
   GRVY_Input_Class  ();
+  ~GRVY_Input_Class ();
   void Initialize   ();
   int  VerifyInit   ();
   int  Open         (const char *filename);

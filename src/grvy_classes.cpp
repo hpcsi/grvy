@@ -31,9 +31,17 @@
 #include<sys/time.h>
 #include<stdarg.h>
 #include<time.h>
-#include<grvy_classes.h>
-#include<grvy.h>
-#include<grvy_int.h>
+#include "grvy_classes.h"
+#include "grvy.h"
+#include "grvy_int.h"
+
+// We use our own namespace for GetPot to avoid collisions if we're
+// linked against a different version
+#define GETPOT_NAMESPACE GRVYGetPot
+
+// And we don't support threaded GetPot usage yet
+#define GETPOT_DISABLE_MUTEX
+#include "getpot.h"
 
 namespace GRVY {
 
@@ -110,6 +118,11 @@ namespace GRVY {
     initialized   = 0;
   }
 
+  GRVY_Input_Class::~GRVY_Input_Class()
+  {
+    delete ifile;
+  }
+
   int GRVY_Input_Class:: VerifyInit()
   {
     if(!initialized)
@@ -124,9 +137,9 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Open(const char *filename)
   {
-    ifile = GRVYGetPot::GetPot(filename,comment_start,comment_end);
+    ifile = new GETPOT_NAMESPACE::GetPot(filename,comment_start,comment_end);
 
-    if(ifile.size() <= 1)
+    if(ifile->size() <= 1)
       {
 	_GRVY_message(GRVY_ERROR,__func__,"non-existent or empty file -> ",filename);
 	return 0;
@@ -148,7 +161,7 @@ namespace GRVY {
   {
     if(! VerifyInit()) return 0;
 
-    ifile.print();		// dump the raw file contents
+    ifile->print();		// dump the raw file contents
     PrintRegVars("");		// include any registered defaults
 
     return 1;
@@ -159,7 +172,7 @@ namespace GRVY {
 
     if(! VerifyInit()) return 0;
 
-    ifile.print(prefix);		// dump the raw file contents
+    ifile->print(prefix);		// dump the raw file contents
     PrintRegVars(prefix);		// include any registered defaults
 
     return 1;
@@ -174,7 +187,7 @@ namespace GRVY {
     std::ofstream fout(filename,std::ios::app|std::ios::out);  // file for append
     std::cout.rdbuf(fout.rdbuf());                   // redirect cout to file        
 
-    ifile.print(prefix);				   // dumpe the raw file contents
+    ifile->print(prefix);				   // dumpe the raw file contents
     PrintRegVars(prefix);		                   // include any registered defaults
     std::cout.rdbuf(cout_sbuf);                      // restore cout stream
 
@@ -274,7 +287,7 @@ namespace GRVY {
 	Register_Var(var,Var_Def);
       }
 
-    *value = ifile(var,Var_Def);
+    *value = (*ifile)(var,Var_Def);
 
     if(*value == Var_Def)
       {
@@ -304,7 +317,7 @@ namespace GRVY {
 
     for(i=0;i<nelems;i++)
       {
-	value[i] = ifile(var,Var_Def,i);
+	value[i] = (*ifile)(var,Var_Def,i);
 
 	if(value[i] == Var_Def)
 	  {
@@ -326,7 +339,7 @@ namespace GRVY {
 
     if(! VerifyInit()) return 0;
 
-    *value = ifile(var,Var_Def,elem);
+    *value = (*ifile)(var,Var_Def,elem);
 
     if(*value == Var_Def)
       {
@@ -358,7 +371,7 @@ namespace GRVY {
       }
     
   
-    *value = ifile(var,Var_Def.c_str());
+    *value = (*ifile)(var,Var_Def.c_str());
 
     if( *value == Var_Def )
       {
@@ -385,7 +398,7 @@ namespace GRVY {
     grvy_printf(GRVY_DEBUG,"Registering user-supplied default bool value for %s\n",var);
     Register_Var(var,Var_Def);
   
-    *value = ifile(var,Var_Def);
+    *value = (*ifile)(var,Var_Def);
 
     return 1;
   }
@@ -400,7 +413,7 @@ namespace GRVY {
 
     if(! VerifyInit()) return 0;
   
-    tstring = ifile(var,Char_Def);
+    tstring = (*ifile)(var,Char_Def);
     *value = (char *) malloc(tstring.length()*sizeof(char)+1);
     strcpy(value[0],tstring.c_str());
 
@@ -426,7 +439,7 @@ namespace GRVY {
 
     if(! VerifyInit()) return 0;
   
-    tstring = ifile(var,Char_Def,elem);
+    tstring = (*ifile)(var,Char_Def,elem);
     *value = (char *) malloc(tstring.length()*sizeof(char)+1);
     strcpy(value[0],tstring.c_str());
 
