@@ -29,6 +29,7 @@
 //--------------------------------------------------------------------------
 
 #include<stdio.h>
+#include<string.h>
 #include<grvy_classes.h>
 #include<grvy_int.h>
 #include<grvy.h>
