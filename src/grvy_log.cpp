@@ -33,6 +33,7 @@
 #include<grvy_int.h>
 #include<grvy.h>
 #include<string>
+#include<stdarg.h>
 
 using namespace std;
 using namespace GRVY;

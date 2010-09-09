@@ -53,6 +53,7 @@ using namespace boost::accumulators;
 
 // Forward declare GetPot class so we don't need
 // to include getpot.h here.
+
 namespace GRVYGetPot
   {
     class GetPot;
