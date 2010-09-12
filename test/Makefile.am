@@ -5,7 +5,8 @@ check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 		  C_input_read_missing_variable C_input_register_variables \
 		  C_input_register_read_missing_variable C_timer_sum \
 		  C_math_isnan C_math_isinf C_unique_dir C_scratch_dir \
-		  C_check_file_path C_input_fdump C_log C_log_printf
+		  C_check_file_path C_input_fdump C_log C_log_printf \
+		  C_version C_version_stdout
 
 check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math F_log \
 		  F_input_read_variables F_input_nofile_available F_input_read_missing_variable \
@@ -37,6 +38,8 @@ C_check_file_path_SOURCES                      = C_check_file_path.c
 C_input_fdump_SOURCES                          = C_input_dump.c C_examplefile.c examplefile.h
 C_log					       = C_log.c
 C_log_printf				       = C_log_printf.c
+C_version				       = C_version.c
+C_version_stdout			       = C_version_stdout.c
 
 #-----------------
 # F90 Test Sources
@@ -72,6 +75,8 @@ TESTS             = init.sh \
 		    C_input_fdump \
 		    C_wrapper_log.sh \
 		    C_wrapper_log_printf.sh \
+		    C_version \
+		    C_version_stdout \
 		    F_wrapper_check_file_path.sh \
 		    F_wrapper_unique_dir.sh \
 		    F_wrapper_scratch_dir.sh \
