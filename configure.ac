@@ -31,7 +31,6 @@ AC_SUBST(GENERIC_MICRO_VERSION)
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_FC
-AC_PROG_F77
 AC_PROG_LIBTOOL
 AC_PROG_LN_S
 AC_PROG_SED
@@ -41,6 +40,8 @@ AM_SANITY_CHECK
 # Checks for libraries.
 #----------------------
 
+AX_PATH_HDF5_NEW(1.8.0,no)
+
 #---------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
 #---------------------------------------------------------------
@@ -48,6 +49,7 @@ AM_SANITY_CHECK
 AC_C_CONST
 AC_HEADER_STDBOOL
 AX_TLS
+AC_FUNC_MALLOC
 
 #----------------
 # Check for boost
@@ -60,13 +62,11 @@ BOOST_REGEX
 #BOOST_PROGRAM_OPTIONS
 AC_CACHE_SAVE
 
-#------------------------------
-# Checks for library functions.
-#------------------------------
+#--------------------------
+# Checks for code coverage
+#-------------------------
 
-AC_FUNC_MALLOC
-
-AX_PATH_HDF5_NEW(1.8.0,no)
+AX_CODE_COVERAGE
 
 # Query configuration environment
 

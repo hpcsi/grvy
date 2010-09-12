@@ -22,7 +22,9 @@ echo
 echo Package version............... : $PACKAGE-$VERSION
 echo
 echo C++ compiler.................. : $CXX
-echo Fortran compiler support...... : $FC
+echo C++ compiler flags............ : $CXXFLAGS
+echo Fortran compiler ............. : $FC
+echo Fortran compiler flags........ : $FCFLAGS
 echo Install dir................... : $prefix 
 echo Boost dir..................... : $BOOST_DIR
 echo Boost regex lib............... : $BOOST_REGEX_LDFLAGS $BOOST_REGEX_LIBS
@@ -37,6 +39,11 @@ echo Optional Features:
      echo '   'Link with HDF5............. : no
    else
      echo '   'Link with HDF5............. : yes
+   fi
+   if test "$HAVE_GCOV_TOOLS" = "0"; then
+     echo '   'Enable gcov code coverage.. : no
+   else
+     echo '   'Enable gcov code coverage.. : yes
    fi
 echo
 echo '-------------------------------------------------------------------------------'
