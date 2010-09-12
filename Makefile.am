@@ -37,7 +37,12 @@ lcov-report:
 	@mv $(lcov_dir)/lcov.cleaned.info $(lcov_dir)/lcov.info
 	@genhtml -t "libGRVY" -o $(lcov_dir) $(lcov_dir)/lcov.info
 
-coverage: docs lcov-report
+lcov-reset:
+	@rm -rf $(lcov_dir)
+	@find . -name "*.gcda" -exec rm {} \;
+	@lcov --directory . --zerocounters
+
+coverage: docs lcov-reset check lcov-report
 
 endif
 
