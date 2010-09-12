@@ -6,7 +6,7 @@ SUBDIRS          = src examples test doxygen
 DISTDIRS         = src examples
 EXTRA_DIST       = CHANGES AUTHORS dist_version
 
-# Tools in the auxillary directory
+# Tools in the auxiliary directory
 
 AUX_DIST         = build-aux/install-sh
 AUX_DIST        += build-aux/missing
