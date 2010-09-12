@@ -33,6 +33,8 @@
 AC_DEFUN([AX_PATH_HDF5_NEW],
 [
 
+HAVE_HDF5=0
+
 AC_ARG_VAR(HDF5_DIR,[root directory of HDF5 installation])
 
 AC_ARG_WITH(hdf5, 
@@ -161,8 +163,6 @@ if test "${with_hdf5}" != no ; then
 
     fi   dnl end test if header if available
 
-    HAVE_HDF5=0
-
     if test "$succeeded" = no; then
        if test "$is_package_required" = yes; then
           AC_MSG_ERROR([HDF5 not found.  Try either --with-hdf5 or setting HDF5_DIR.])
@@ -181,8 +181,9 @@ if test "${with_hdf5}" != no ; then
     fi
 
     AC_SUBST(HAVE_HDF5)
-    AM_CONDITIONAL(HDF5_ENABLED,test x$HAVE_HDF5 = x1)
 
 fi
+
+AM_CONDITIONAL(HDF5_ENABLED,test x$HAVE_HDF5 = x1)
 
 ])
