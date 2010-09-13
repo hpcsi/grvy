@@ -40,7 +40,7 @@ lcov-report:
 	@lcov --list-full-path -l $(lcov_dir)/lcov.info | grep "grvy_hdf5.cpp" | cut -d: -f1 >> $(lcov_dir)/remove
 	@lcov --list-full-path -l $(lcov_dir)/lcov.info | grep "grvy_hpct_compat.cpp" | cut -d: -f1 >> $(lcov_dir)/remove
 	@lcov -q -r $(lcov_dir)/lcov.info `cat $(lcov_dir)/remove` > $(lcov_dir)/lcov.cleaned.info
-	@rm $(lcov_dir)/remove
+#	@rm $(lcov_dir)/remove
 	@mv $(lcov_dir)/lcov.cleaned.info $(lcov_dir)/lcov.info
 	@genhtml -t "libGRVY" -o $(lcov_dir) $(lcov_dir)/lcov.info
 
