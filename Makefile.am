@@ -30,8 +30,9 @@ lcov_dir=$(top_builddir)/docs/html/lcov
 lcov-report:
 	@mkdir -p $(lcov_dir)
 	@lcov --compat-libtool --directory . --capture --output-file $(lcov_dir)/lcov.info
-	@lcov -l $(lcov_dir)/lcov.info | grep -v "`cd $(top_srcdir)/src && pwd`" | cut -d: -f1 > $(lcov_dir)/remove
-	@lcov -l $(lcov_dir)/lcov.info | grep "common/getpot" | cut -d: -f1 >> $(lcov_dir)/remove
+	@echo "leaving $(top_srcdir)/src"
+	@lcov --list-full-path -l $(lcov_dir)/lcov.info | grep -v "`cd $(top_srcdir)/src && pwd`" | cut -d: -f1 > $(lcov_dir)/remove
+	@lcov --list-full-path -l $(lcov_dir)/lcov.info | grep "common/getpot" | cut -d: -f1 >> $(lcov_dir)/remove
 	@lcov -q -r $(lcov_dir)/lcov.info `cat $(lcov_dir)/remove` > $(lcov_dir)/lcov.cleaned.info
 	@rm $(lcov_dir)/remove
 	@mv $(lcov_dir)/lcov.cleaned.info $(lcov_dir)/lcov.info
