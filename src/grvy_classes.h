@@ -31,6 +31,7 @@
 #ifndef GRVY_CLASSES_H_
 #define GRVY_CLASSES_H_
 
+#include<cstdarg>
 #include<limits>
 #include<map>
 #include<vector>
