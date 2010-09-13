@@ -134,12 +134,16 @@ extern "C" int grvy_input_fread_char_ivec(const char *var,char **value,int elem)
   return( _GRVY_Input.Read_Var_iVec(var,value,elem) );
 }
 
+// DEPRECATED function; can be controlled via grvy_log_setlevel
+
+#if 0
 // grvy_input_toggle_messages(): enable/disable error messages
 
 extern "C" void grvy_input_toggle_messages(int flag)
 {
   _GRVY_Input.MsgToggle(flag);
 }
+#endif
 
 // Variable Registration Routines
 
@@ -470,11 +474,15 @@ extern "C" void grvy_input_fread_char_ivec_(char *var,int _namelen,char *value,
   return;
 }
 
+// DEPRECATED function; can be controlled via grvy_log_setlevel
+
+#if 0
 extern "C" void grvy_input_toggle_messages_(int *flag)
 {
   grvy_input_toggle_messages(*flag);
   return;
 }
+#endif
 
 // Variable Registration Routines
 

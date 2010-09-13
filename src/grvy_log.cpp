@@ -65,6 +65,13 @@ int grvy_printf(int loglevel, const char *format,...)
       return 0;
 }
 
+// the following 5 routines are not terribly useful (compared to
+// _printf) except for potentially exposing to Fortran. Disabling for
+// now since they are not exposed to Fortran and it would be super
+// cool to have a va printf in Fortran somewhoe.
+
+# if 0 
+
 void grvy_log_int(int loglevel, const char *func, const char *mesg, int var)
 {
   _GRVY_message(loglevel,func,mesg,var);
@@ -84,6 +91,8 @@ void grvy_log_char(int loglevel, const char *func, const char *mesg, const char 
 {
   _GRVY_message(loglevel,func,mesg,char_item);
 }
+
+#endif
 
 //-----------------------------------------------------------------
 //                     Fortran Interfaces
