@@ -368,11 +368,13 @@ extern "C" void hpct_input_fread_char_ivec_(char *var,int _namelen,char *value,
   return;
 }
 
+#if 0
 extern "C" void hpct_input_toggle_messages_(int *flag)
 {
   grvy_input_toggle_messages(*flag);
   return;
 }
+#endif
 
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void hpct_input_register_int_(char *var,int *value,int *flag,int _namelen)

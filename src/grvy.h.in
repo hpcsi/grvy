@@ -117,7 +117,9 @@ extern "C" {
 
   /* Error Message Output Control */
 
+#if 0
   extern void grvy_input_toggle_messages(int flag);
+#endif
 
   /*
    * Basic API Definition for Performance Timers
