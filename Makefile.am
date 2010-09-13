@@ -33,6 +33,9 @@ lcov-report:
 	@echo "leaving $(top_srcdir)/src"
 	@lcov --list-full-path -l $(lcov_dir)/lcov.info | grep -v "`cd $(top_srcdir)/src && pwd`" | cut -d: -f1 > $(lcov_dir)/remove
 	@lcov --list-full-path -l $(lcov_dir)/lcov.info | grep "common/getpot" | cut -d: -f1 >> $(lcov_dir)/remove
+	@lcov -l $(lcov_dir)/lcov.info | grep "grvy_env.cpp" | cut -d: -f1 >> $(lcov_dir)/remove
+	@lcov -l $(lcov_dir)/lcov.info | grep "grvy_hdf5.cpp" | cut -d: -f1 >> $(lcov_dir)/remove
+	@lcov -l $(lcov_dir)/lcov.info | grep "grvy_hpct_compat.cpp" | cut -d: -f1 >> $(lcov_dir)/remove
 	@lcov -q -r $(lcov_dir)/lcov.info `cat $(lcov_dir)/remove` > $(lcov_dir)/lcov.cleaned.info
 	@rm $(lcov_dir)/remove
 	@mv $(lcov_dir)/lcov.cleaned.info $(lcov_dir)/lcov.info

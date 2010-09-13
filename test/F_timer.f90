@@ -33,10 +33,16 @@ program main
   integer :: Max_Iters = 3
   real*8  :: grvy_total_timing
   real*8  :: dtime_global
-  real*8  :: Tolerance = 1.0d-1 ! resolution of dtime is terrible, be very generous here.
+!  real*8  :: Tolerance = 1.0d-1 ! resolution of dtime is terrible, be very generous here.
+  real*8  :: Tolerance = 1.0d-3 ! resolution of dtime is terrible, be very generous here.
   real    :: timearray(2)
   real*8  :: work1
+  real*8  :: raw_timer
+  real*8  :: raw_grvy_timer1,raw_grvy_timer2
+  integer :: call_count
+  real*8  :: call_mean, call_variance
   real*8  :: diff
+  character :: timestring*50 = ''
   integer :: i
 
   call grvy_log_setlevel(GRVY_INFO)
@@ -44,6 +50,7 @@ program main
   dtime_global = dtime(timearray)
   
   call grvy_timer_init('Fortran is the best!');
+  call grvy_timer(raw_grvy_timer1)
 
   ! Primary Iteration Loop 
 
@@ -58,11 +65,43 @@ program main
 
   call grvy_timer_finalize()
 
+  call grvy_timer(raw_grvy_timer2)
+
   call grvy_timer_elapsed_global(grvy_total_timing);
   dtime_global = dtime(timearray)
 
   grvy_work1_timing = grvy_timer_elapsedseconds("work1")
 
+  ! Compare raw timer to total elapsed
+
+  raw_timer = raw_grvy_timer2 - raw_grvy_timer1
+
+  if( abs(grvy_total_timing - raw_timer) > Tolerance )then
+     call exit(1)
+  endif
+
+  call grvy_asci_time(timestring)
+
+  ! Verify timer call count
+
+  call_count = grvy_timer_stats_count   ("work1")
+  call_mean  = grvy_timer_stats_mean    ("work1")
+  call_mean  = grvy_timer_stats_variance("work1")
+
+  if (call_count .ne. Max_Iters)then
+     call exit(1)
+  endif
+
+  ! Verify reset nullifies timer
+
+  call grvy_timer_reset()
+
+  grvy_work1_timing = grvy_timer_elapsedseconds("work1")
+
+  if( abs(grvy_work1_timing) > 1e-15 )then
+     call exit(1)
+  endif
+  
   !print*,'Fortran timer = ',dtime_global
   !print*,'GRVY timer = ',grvy_total_timing
 
