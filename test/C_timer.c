@@ -59,6 +59,7 @@ int main()
 
   double grvy_total_timing;
   double grvy_boo_timing;
+  double raw_grvy_timer;
 
   /* Primary Iteration Loop */
 
@@ -66,6 +67,7 @@ int main()
   t1 =  ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec);
 
   grvy_timer_init("GRVY");
+  raw_grvy_timer = grvy_timer();
   
   /* Do some work - note that foo() includes calls to other
    * routines to test embedded timer capability.  */
@@ -83,7 +85,8 @@ int main()
   gtod_total_timing +=   ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec) - t1;
 
   grvy_timer_finalize();
-  //grvy_timer_summarize();
+  raw_grvy_timer = grvy_timer() - raw_grvy_timer;
+
 
   double diff = fabs(grvy_boo_timing-boo_gtod_timing);
 
@@ -102,7 +105,31 @@ int main()
       grvy_printf(GRVY_ERROR,"The test host could be overloaded or the timer may be incorrect\n");
       return(1);
     }
-  
+
+  diff = fabs(grvy_total_timing-raw_grvy_timer);
+
+  if( diff > Tolerance)
+    {
+      grvy_printf(GRVY_ERROR,"Internal global timing mismatch -> diff = %e (secs)\n",diff);
+      grvy_printf(GRVY_ERROR,"The test host could be overloaded or the timer may be incorrect\n");
+      return(1);
+    }
+
+  // Test a reset()
+
+  grvy_timer_reset();
+
+  grvy_total_timing = grvy_timer_elapsed_global();
+  grvy_boo_timing   = grvy_timer_elapsedseconds("boo");
+
+  if( (grvy_total_timing > Tolerance) || (grvy_boo_timing != 0.0) )
+    {
+      grvy_printf(GRVY_ERROR,"Problem with timer reset\n");
+      grvy_printf(GRVY_ERROR," --> total timing = %f\n",grvy_total_timing);
+      grvy_printf(GRVY_ERROR," -->   boo timing = %f\n",grvy_boo_timing);
+      return(1);
+    }
+
   return 0;
 }
 

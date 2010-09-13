@@ -38,7 +38,7 @@ int main(int argc, char **argv)
   int flag = 0;
   int igot;
 
-  grvy_input_toggle_messages(0);
+  grvy_log_setlevel(GRVY_NOLOG);
 
   /* Verify error on unknown variable query */
 

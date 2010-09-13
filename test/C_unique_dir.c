@@ -44,8 +44,8 @@ int main(int argc, char **argv)
 
   /* Silence warning/error messages */
 
-  grvy_input_toggle_messages(0);
-
+  grvy_log_setlevel(GRVY_NOLOG);
+  
   /* Unable to create a directory on invalid template */
 
   {

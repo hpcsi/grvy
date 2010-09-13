@@ -3,7 +3,7 @@ SUBDIRS         = hpct_api
 check_PROGRAMS  = # Append below
 check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 		  C_input_read_missing_variable C_input_register_variables \
-		  C_input_register_read_missing_variable C_timer_sum \
+		  C_input_register_read_missing_variable C_timer_sum C_timer_stats \
 		  C_math_isnan C_math_isinf C_unique_dir C_scratch_dir \
 		  C_check_file_path C_input_fdump C_log C_log_printf \
 		  C_version C_version_stdout
@@ -30,6 +30,7 @@ C_input_read_missing_variable_SOURCES          = C_input-missing-var.c C_example
 C_input_register_variables_SOURCES             = C_input-register.c C_examplefile.c examplefile.h
 C_input_register_read_missing_variable_SOURCES = C_input-reg-missing-var.c
 C_timer_sum_SOURCES                            = C_timer.c
+C_timer_stats_SOURCE                           = C_timer_stats.c
 C_unique_dir_SOURCES                           = C_unique_dir.c
 C_scratch_dir_SOURCES                          = C_scratch_dir.c
 C_math_isnan_SOURCES                           = C_math-isnan.c
@@ -67,6 +68,7 @@ TESTS             = init.sh \
 		    C_input_register_variables \
 		    C_input_register_read_missing_variable \
 		    C_timer_sum \
+		    C_timer_stats \
 		    C_math_isnan \
 		    C_math_isinf \
 		    C_check_file_path \

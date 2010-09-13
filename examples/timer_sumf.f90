@@ -53,19 +53,19 @@ program main
 
      print*,'Main iteration loop = ',i
      
-     call foo(Foo_Sleep);
+     call foo(Foo_Sleep)
 
      call grvy_timer_elapsed_global(igot)
      print*,'Elapsed time since global init is: ',igot
 
-     call bar(Bar_Sleep);
-     call boo(Boo_Sleep);
+     call bar(Bar_Sleep)
+     call boo(Boo_Sleep)
      
-     call grvy_timer_finalize();
+     call grvy_timer_finalize()
      
   enddo
 
-  call grvy_timer_summarize();
+  call grvy_timer_summarize()
 
   print*,' '
   print*,'Expecting ',Max_Iters*(Foo_Sleep+Boo_Sleep+Bar_Sleep),' secs '

@@ -56,6 +56,8 @@ program main
 
   enddo
 
+  call grvy_timer_finalize()
+
   call grvy_timer_elapsed_global(grvy_total_timing);
   dtime_global = dtime(timearray)
 
