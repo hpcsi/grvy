@@ -771,7 +771,16 @@ namespace GRVY {
 	(index->second).timings[0] += increment;
 	(index->second).timings[1]  = -1.;
 
-	(index->second).stats(increment);
+	// TODO: with support for embedded timers, we need to retool
+	// the boost accumulators a bit.  In order to not over-count
+	// the timer calls, we have to avoid calling the accumulator
+	// when this is an embedded closure; however, we will lose
+	// some of the statistics coverage -> probably going to have
+	// to switch to an increment value which is accumulated until
+	// the final endtimer.
+
+	if(!embeddedFlag)
+	  (index->second).stats(increment);
 
 	// ----------------------------------------------------------------
 	// Embedded Timer Support:
@@ -1045,10 +1054,19 @@ namespace GRVY {
 	    if(indexHL->second !=  _GRVY_gtimer )
 	      {
 		gindex = TimerMap.find(indexHL->second);
-		printf(" | [%10.5e  %10.5e  %9zi]",
-		       boost::accumulators::mean    ((gindex->second).stats),
-		       boost::accumulators::variance((gindex->second).stats),
-		       boost::accumulators::count   ((gindex->second).stats));
+		if(boost::accumulators::count((gindex->second).stats) > 0)
+		  {
+		    printf(" | [%10.5e  %10.5e  %9zi]",
+			   boost::accumulators::mean    ((gindex->second).stats),
+			   boost::accumulators::variance((gindex->second).stats),
+			   boost::accumulators::count   ((gindex->second).stats));
+		  }
+		else
+		  {
+		    printf(" | [%10s  %10.5e  %9zi]","   N/A   ",
+			   boost::accumulators::variance((gindex->second).stats),
+			   boost::accumulators::count   ((gindex->second).stats));
+		  }
 	      }
 	  }
       
