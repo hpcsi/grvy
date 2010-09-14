@@ -47,7 +47,7 @@ lcov-report:
 lcov-reset:
 	@rm -rf $(lcov_dir)
 	@find . -name "*.gcda" -exec rm {} \;
-	@lcov --directory . --zerocounters
+	$(top_srcdir)/src/common/lcov/lcov --directory . --zerocounters
 
 coverage: docs lcov-reset check lcov-report
 
