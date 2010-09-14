@@ -33,6 +33,8 @@ lcov-report:
 	@mkdir -p $(lcov_dir)
 
 	$(top_srcdir)/src/common/lcov/lcov --compat-libtool --directory . --capture --output-file $(lcov_dir)/lcov.info
+	@cp $(lcov_dir)/lcov.info $(lcov_dir)/lcov.info.orig
+	@echo "`cd $(top_srcdir)/src && pwd`" > $(lcov_dir)/dir_to_keep
 	$(top_srcdir)/src/common/lcov/lcov --list-full-path -l $(lcov_dir)/lcov.info | grep -v "`cd $(top_srcdir)/src && pwd`" | cut -d\| -f1 > $(lcov_dir)/remove
 	$(top_srcdir)/src/common/lcov/lcov --list-full-path -l $(lcov_dir)/lcov.info | grep "common/getpot" | cut -d\| -f1 >> $(lcov_dir)/remove
 	$(top_srcdir)/src/common/lcov/lcov --list-full-path -l $(lcov_dir)/lcov.info | grep "framework/accumulators" | cut -d\| -f1 >> $(lcov_dir)/remove
