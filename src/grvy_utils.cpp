@@ -275,12 +275,6 @@ namespace GRVY {
   // Basic stdout warning/error messages
   //------------------------------------
 
-  void _GRVY_message(char *message)
-  {
-    _GRVY_Log.msg(GRVY_INFO,message);
-    return;
-  }
-
   void _GRVY_message(int LogLevel, const char *func, const char *message)
   {
     static string log_message;
