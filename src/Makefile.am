@@ -74,6 +74,13 @@ main_hpct.f90: grvy_hpct.f90
 
 moduledir               = @libdir@
 module_DATA             = grvy.mod hpct.mod
+
+EXTRA_DIST              = common/lic_utils
+
+dist-hook:
+	rm -rf `find $(distdir)/ -name .svn`
+
+
 CLEANFILES              = grvy.mod hpct.mod .license.stamp
 
 METASOURCES = AUTO

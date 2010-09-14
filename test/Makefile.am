@@ -100,4 +100,5 @@ EXTRA_DIST        = init.sh finalize.sh input-example.txt \
                     C_wrapper_log.sh \
 		    C_wrapper_log_printf.sh \
                     F_wrapper_log.sh \
+                    F_timer.sh \
                     ref_files
