@@ -49,6 +49,7 @@ extern "C" {
 #define GRVY_BUILD_VERSION  "@BUILD_VERSION@"
 
 #define GRVY_LIB_VERSION    "@VERSION@"
+#define GRVY_LIB_RELEASE    "@BUILD_DEVSTATUS@"
 
 #define GRVY_CXX            "@CXX@"
 #define GRVY_CXXFLAGS       "@CXXFLAGS@"
