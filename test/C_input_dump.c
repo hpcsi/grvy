@@ -50,6 +50,13 @@ int main(int argc, char **argv)
   flag *= grvy_input_fopen(input_example_file_path);
   free(input_example_file_path);
 
+  /* Define registered variable which may not be present in input file */
+
+  grvy_input_register_int   ("sec1/aint",   1);
+  grvy_input_register_float ("sec1/afloat", 2.2);
+  grvy_input_register_double("sec1/adouble",3.3e3);
+  grvy_input_register_char  ("sec1/astring","plankton");
+
   /* Dump the input contents to a temporary file */
 
   flag *= (0 == grvy_create_scratch_dir(dir_template1));

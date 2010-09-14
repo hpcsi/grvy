@@ -40,4 +40,8 @@
 # verify/cool"
 
 # [GRVY Registered Variable Default Values]
+# sec1/aint=1
+# sec1/afloat=2.2
+# sec1/adouble=3300
+# sec1/astring=plankton
 

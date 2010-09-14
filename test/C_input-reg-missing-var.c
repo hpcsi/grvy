@@ -36,16 +36,19 @@ int main(int argc, char **argv)
 {
 
   int flag = 0;
-  int igot;
+  int    igot;
+  float  fgot;
+  double dgot;
+  char  *sgot;
 
   grvy_log_setlevel(GRVY_NOLOG);
 
   /* Verify error on unknown variable query */
 
-  flag *= grvy_input_register_get_int   ("solver/aint",&igot);
-
-  if(flag == 1)
-      exit(1);
+  flag = grvy_input_register_get_int   ("sec1/aint",&igot);     if(flag != 0 ) exit(1);
+  flag = grvy_input_register_get_float ("sec1/afloat",&fgot);   if(flag != 0 ) exit(1);
+  flag = grvy_input_register_get_double("sec1/adouble",&dgot);  if(flag != 0 ) exit(1);
+  flag = grvy_input_register_get_char  ("sec1/astring",&sgot);  if(flag != 0 ) exit(1);
 
   return 0;
 }

@@ -92,6 +92,8 @@ program main
      call exit(1)
   endif
 
+  call grvy_timer_summarize
+
   ! Verify reset nullifies timer
 
   call grvy_timer_reset()

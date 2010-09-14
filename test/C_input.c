@@ -52,9 +52,13 @@ int main(int argc, char **argv)
 
   int flag = 1;
 
+  /* Silence warning/error messages */
+
   grvy_log_setlevel(GRVY_NOLOG);
 
-  //  printf("--> %s\n",test_name);
+  /* Verify read call fails prior to file open */
+
+  flag *= (1 != grvy_input_fread_float("reyn",&reyn));
 
   /* Initialize/read the file */
 

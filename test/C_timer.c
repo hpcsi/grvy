@@ -56,6 +56,7 @@ int main()
   int i,itest;
   int num_repeat = 2;
   double t1;
+  int flag;
 
   double grvy_total_timing;
   double grvy_boo_timing;

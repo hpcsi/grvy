@@ -83,7 +83,7 @@ TESTS             = init.sh \
 		    F_wrapper_unique_dir.sh \
 		    F_wrapper_scratch_dir.sh \
 		    F_wrapper_log.sh \
-		    F_timer \
+		    F_timer.sh \
 		    F_math \
 		    F_input_read_variables \
 		    F_input_nofile_available \

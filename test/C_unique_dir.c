@@ -65,6 +65,10 @@ int main(int argc, char **argv)
     flag           *= (0 == strcmp(template_backup, invalid_template));
     free(template_backup);
 
+    /* Check call fails with NULL template */
+
+    flag           *= (0 != grvy_create_unique_dir(NULL));
+
     /* Ensure invalid_template directory does not exist afterwards */
 
     dir_handle = opendir(invalid_template);
