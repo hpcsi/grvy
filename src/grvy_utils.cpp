@@ -130,17 +130,13 @@ namespace GRVY {
       {
 	if( mkdir(dirname,0700) != 0 )
 	  {
-	    //	    _GRVY_message(_GRVY_emask,__func__,
-	    _GRVY_message(GRVY_ERROR,__func__,
-		"unable to create directory",dirname);
+	    _GRVY_message(GRVY_ERROR,__func__,"unable to create directory",dirname);
 	    return -1;
 	  }
       }
     else if (!S_ISDIR(st.st_mode))
       {
-	//	_GRVY_message(_GRVY_emask,__func__,
-	_GRVY_message(GRVY_ERROR,__func__,
-	    "entry exists but is not a directory",dirname);
+	_GRVY_message(GRVY_ERROR,__func__,"entry exists but is not a directory",dirname);
 	return -1;
       }
 
