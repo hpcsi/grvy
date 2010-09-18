@@ -6,7 +6,9 @@ check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 		  C_input_register_read_missing_variable C_timer_sum C_timer_stats \
 		  C_math_isnan C_math_isinf C_unique_dir C_scratch_dir \
 		  C_check_file_path C_input_fdump C_log C_log_printf \
-		  C_version C_version_stdout
+		  C_version C_version_stdout 
+
+check_PROGRAMS += CXX_input CXX_input_dump CXX_input_register_variables
 
 check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math F_log \
 		  F_input_read_variables F_input_nofile_available F_input_read_missing_variable \
@@ -37,10 +39,14 @@ C_math_isnan_SOURCES                           = C_math-isnan.c
 C_math_isinf_SOURCES                           = C_math-isinf.c
 C_check_file_path_SOURCES                      = C_check_file_path.c
 C_input_fdump_SOURCES                          = C_input_dump.c C_examplefile.c examplefile.h
-C_log					       = C_log.c
-C_log_printf				       = C_log_printf.c
-C_version				       = C_version.c
-C_version_stdout			       = C_version_stdout.c
+C_log_SOURCES				       = C_log.c
+C_log_printf_SOURCES			       = C_log_printf.c
+C_version_SOURCES			       = C_version.c
+C_version_stdout_SOURCES		       = C_version_stdout.c
+
+CXX_input_SOURCES                              = C++_input.cpp C_examplefile.c examplefile.h
+CXX_input_register_variables_SOURCES           = C++_input-register.cpp C_examplefile.c examplefile.h
+CXX_input_dump_SOURCES                         = C++_input_dump.cpp C_examplefile.c examplefile.h
 
 #-----------------
 # F90 Test Sources
@@ -79,6 +85,9 @@ TESTS             = init.sh \
 		    C_wrapper_log_printf.sh \
 		    C_version \
 		    C_version_stdout \
+		    CXX_input \
+		    CXX_input_register_variables \
+		    CXX_input_dump \
 		    F_wrapper_check_file_path.sh \
 		    F_wrapper_unique_dir.sh \
 		    F_wrapper_scratch_dir.sh \
