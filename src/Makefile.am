@@ -56,7 +56,7 @@ test_DEPENDENCIES       = grvy.o
 
 test2_SOURCES           = grvy_hpct.f90 main_hpct.f90
 test2_LIBTOOLFLAGS      = --tag=FC
-test_DEPENDENCIES       = grvy_hpct.o
+test2_DEPENDENCIES      = grvy_hpct.o
 
 main.f90: grvy.f90
 main_hpct.f90: grvy_hpct.f90
