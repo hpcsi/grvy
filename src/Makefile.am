@@ -42,10 +42,6 @@ hostinfo_SOURCES        = hostinfo.cpp
 hostinfo_LDADD          = -L$(top_builddir)/src -lgrvy
 hostinfo_DEPENDENCIES   = libgrvy.la
 
-# foo_SOURCES        = foo2.cpp
-# foo_LDADD          = -L$(top_builddir)/src -lgrvy
-# foo_DEPENDENCIES   = libgrvy.la
-
 #--------------------------
 # Fortran Module Interface
 #--------------------------
@@ -56,9 +52,11 @@ standalone_PROGRAMS     = version
 
 test_SOURCES            = grvy.f90 main.f90
 test_LIBTOOLFLAGS       = --tag=FC
+test_DEPENDENCIES       = grvy.o
 
 test2_SOURCES           = grvy_hpct.f90 main_hpct.f90
 test2_LIBTOOLFLAGS      = --tag=FC
+test_DEPENDENCIES       = grvy_hpct.o
 
 main.f90: grvy.f90
 main_hpct.f90: grvy_hpct.f90
