@@ -58,6 +58,7 @@ extern "C" {
 #define GRVY_FCFLAGS        "@FCFLAGS@"
 
   extern int grvy_version_stdout            ();
+  extern int grvy_get_numeric_version       ();
 
   /*! \page apiC C/C++ Library Interface
    *
@@ -70,8 +71,6 @@ extern "C" {
    * \ref inputFile "sample input file" is also provided.
    * <hr>
    */
-
-
 
   /*
    * Basic API Definition for ASCII input file parsing
