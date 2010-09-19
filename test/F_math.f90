@@ -1,6 +1,6 @@
+!!-----------------------------------------------------------------------bl-
 !!--------------------------------------------------------------------------
-!!--------------------------------------------------------------------------
-!!
+!! 
 !! libGRVY - a utility library for scientific computing.
 !!
 !! Copyright (C) 2008,2009,2010 The PECOS Development Team
@@ -19,7 +19,7 @@
 !! Foundation, Inc. 51 Franklin Street, Fifth Floor, 
 !! Boston, MA  02110-1301  USA
 !!
-!!--------------------------------------------------------------------------
+!!-----------------------------------------------------------------------el-
 !!
 !! Regression/Test Suite for libGRVY.
 !!
@@ -32,18 +32,14 @@ program test_isnan_isinf
 
   implicit none
 
-  real*8 :: should_be_nan 
-  real*8 :: should_be_inf
-
-  real*8 :: m_one, one, zero
-
+  real*8  :: should_be_nan 
+  real*8  :: should_be_inf
+  real*8  :: m_one, one, zero
   integer :: is_nan, is_inf, return_code
 
   !------------------------------------------------
   ! Simple FORTRAN 90 example to test isnan and 
   ! isinf interfaces.
-  !
-  ! $Id$
   !------------------------------------------------
   
   m_one = -1.d0
