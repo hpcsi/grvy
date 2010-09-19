@@ -247,17 +247,17 @@ namespace GRVY {
 
   template <typename T> int GRVY_Input_Class:: Read_Var(const char *var, T *value)
   {
-    Read_Var( var,value,Get_Default(*value) );
+    return Read_Var( var,value,Get_Default(*value) );
   }
 
   template <typename T> int GRVY_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelem)
   {
-    Read_Var_Vec( var,value,nelem,Get_Default(*value) );
+    return Read_Var_Vec( var,value,nelem,Get_Default(*value) );
   }
 
   template <typename T> int GRVY_Input_Class:: Read_Var_iVec(const char *var, T *value, int elem)
   {
-    Read_Var_iVec( var,value,elem,Get_Default(*value) );
+    return Read_Var_iVec( var,value,elem,Get_Default(*value) );
   }
 
   template<> int GRVY_Input_Class::Get_Default<int>(int var)
