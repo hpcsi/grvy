@@ -31,6 +31,8 @@
 #ifndef GRVY_CLASSES_H_
 #define GRVY_CLASSES_H_
 
+#include<grvy.h>
+
 #include<cstdarg>
 #include<limits>
 #include<map>
@@ -52,108 +54,7 @@
 
 using namespace boost::accumulators;
 
-// Forward declare GetPot class so we don't need
-// to include getpot.h here.
-
-namespace GRVYGetPot
-  {
-    class GetPot;
-  }
-
 namespace GRVY {
-
-//---------------------
-// Versioning Routines
-//---------------------
-
-void GRVY_version_stdout();
-int  GRVY_get_numeric_version();
-
-//---------------------
-// Input Parsing Class
-//---------------------
-
-class GRVY_Input_Class {
- private:
-  GRVYGetPot::GetPot* ifile;          // input file
-  short int           initialized;    // input file initialized?
-
-  // Registry Maps
-
-  std::map<std::string, int         > default_ints;
-  std::map<std::string, float       > default_floats;
-  std::map<std::string, double      > default_doubles;
-  std::map<std::string, bool        > default_bools;
-  std::map<std::string, std::string > default_strings;
-
-  // GetPot Defaults
-
-  float  Float_Def;
-  double Double_Def;
-  int    Int_Def;
-  long   Long_Def;
-  std::string String_Def;
-  const char  *Char_Def;
-  const char  *comment_start;
-  const char  *comment_end;
-
-  template <typename T> T Get_Default   (T);
-
- public:
-  GRVY_Input_Class  ();
-  ~GRVY_Input_Class ();
-  void Initialize   ();
-  int  VerifyInit   ();
-  int  Open         (const char *filename);
-  int  Close        ();
-  void MsgToggle    (int flag);
-
-  int  Fdump        ();
-  int  Fdump        (const char *prefix);
-  int  Fdump        (const char *prefix, const char *filename);
-
-  // Numerical Read Functions
-
-  template <typename T> int Read_Var      (const char *var, T *value );
-  template <typename T> int Read_Var_Vec  (const char *var, T *value, int nelems);
-  template <typename T> int Read_Var_iVec (const char *var, T *value, int elem);
-
-  template <typename T> int Read_Var      (const char *var, T *value, T vardef);
-  template <typename T> int Read_Var_Vec  (const char *var, T *value, int nelems, T vardef);
-  template <typename T> int Read_Var_iVec (const char *var, T *value, int elem,   T vardef);
-
-  // Character String Read Functions
-
-  int Read_Var                            (const char *var, char **value);
-  int Read_Var_iVec                       (const char *var, char **value, int elem);
-
-  // C++ String Read Functions
-
-  int Read_Var                            (const char *var, std::string *value);
-  int Read_Var                            (const char *var, std::string *value, std::string vardef);
-  //  int Read_Var_iVec                       (const char *var, char **value, int elem);
-
-  // Bool Read Functions
-
-  int Read_Var                            (const char *var, bool *value, bool vardef);
-
-  // Default Variable Registration Functions
-
-  void Register_Var  (const char *varname, int     var);
-  void Register_Var  (const char *varname, float   var);
-  void Register_Var  (const char *varname, double  var);
-  void Register_Var  (const char *varname, bool    var);
-  void Register_Var  (const char *varname, char   *var);
-  void Register_Var  (const char *varname, std::string var);
-
-  int  Get_Var       (const char *varname, int    *var);
-  int  Get_Var       (const char *varname, float  *var);
-  int  Get_Var       (const char *varname, double *var);
-  int  Get_Var       (const char *varname, char  **var);
-  int  Get_Var       (const char *varname, std::string *var);
-
-  void PrintRegVars  (const char *prefix);
-};
 
 //--------------------------
 // Performance Timing Class
@@ -278,8 +179,6 @@ class GRVY_Math_Class {
 
   };
 
-
-
 //--------------------------
 // HDF5 Utility Class
 //--------------------------
@@ -302,8 +201,6 @@ class GRVY_Math_Class {
     void restore_hdf_error_handler();
 #endif
   };
-
-
 
 }
 

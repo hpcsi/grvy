@@ -30,7 +30,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <grvy.h>
-#include <grvy_classes.h>
 #include "examplefile.h"
 
 using namespace GRVY;

@@ -28,7 +28,8 @@
 //--------------------------------------------------------------------------
 
 #include<cstdio>
-#include<grvy_classes.h>
+#include<cstdlib>
+#include<iostream>
 #include<grvy.h>
 
 using namespace GRVY;
