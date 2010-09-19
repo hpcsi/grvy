@@ -1,7 +1,9 @@
-Version 0.28 (September 2010)
+Version 0.28 (19 September 2010)
+https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.29
 
   * bug fix in timer counting statistic (affects embedded timers only)
   * inclusion of automatic licensing header support
+  * C++ class for input parsing included in grvy.h
   * added/improved regressions
   * removal of getpot header from install target
   * added support for GNU code coverage analysis (--enable-coverage)
