@@ -1,5 +1,7 @@
 SUBDIRS         = hpct_api
 
+BUILT_SOURCES   = .license.stamp
+
 check_PROGRAMS  = # Append below
 check_PROGRAMS += C_input_read_variables C_input_nofile_available \
 		  C_input_read_missing_variable C_input_register_variables \
@@ -44,6 +46,10 @@ C_log_printf_SOURCES			       = C_log_printf.c
 C_version_SOURCES			       = C_version.c
 C_version_stdout_SOURCES		       = C_version_stdout.c
 
+#-----------------
+# C++ Test Sources
+#-----------------
+
 CXX_input_SOURCES                              = C++_input.cpp C_examplefile.c examplefile.h
 CXX_input_register_variables_SOURCES           = C++_input-register.cpp C_examplefile.c examplefile.h
 CXX_input_dump_SOURCES                         = C++_input_dump.cpp C_examplefile.c examplefile.h
@@ -64,7 +70,50 @@ F_input_register_variables_SOURCES             = F_input-register.f90
 F_input_read_bigstring_SOURCES                 = F_input_read_bigstring.f90
 F_timer_SOURCES                                = F_timer.f90
 
-##F_input_register_read_missing_variables_SOURCES = F_input-reg-missing-var.f90
+#---------------------------------
+# Embedded license header support
+#---------------------------------
+
+test_csources =  \
+     $(C_input_read_variables_SOURCES) \
+     $(C_input_nofile_available_SOURCES) \
+     $(C_input_read_missing_variable_SOURCES) \
+     $(C_input_register_variables_SOURCES) \
+     $(C_input_register_read_missing_variable_SOURCES) \
+     $(C_timer_sum_SOURCES) \
+     $(C_unique_dir_SOURCES) \
+     $(C_scratch_dir_SOURCES) \
+     $(C_math_isnan_SOURCES) \
+     $(C_math_isinf_SOURCES) \
+     $(C_check_file_path_SOURCES) \
+     $(C_input_fdump_SOURCES) \
+     $(C_log_SOURCES) \
+     $(C_log_printf_SOURCES) \
+     $(C_version_SOURCES) \
+     $(C_version_stdout_SOURCES) \
+     $(CXX_input_SOURCES) \
+     $(CXX_input_register_variables_SOURCES) \
+     $(CXX_input_dump_SOURCES)
+
+test_fsources =  \
+     $(F_unique_dir_SOURCES) \
+     $(F_scratch_dir_SOURCES) \
+     $(F_math_SOURCES) \
+     $(F_check_file_path_SOURCES) \
+     $(F_log_SOURCES) \
+     $(F_input_read_variables_SOURCES) \
+     $(F_input_nofile_available_SOURCES) \
+     $(F_input_read_missing_variable_SOURCES) \
+     $(F_input_register_variables_SOURCES) \
+     $(F_input_read_bigstring_SOURCES) \
+     $(F_timer_SOURCES)
+
+
+.license.stamp: $(top_srcdir)/LICENSE
+	$(top_srcdir)/src/common/lic_utils/update_license.pl $(top_srcdir)/LICENSE $(test_csources)
+	$(top_srcdir)/src/common/lic_utils/update_license.pl --c2f_comment $(top_srcdir)/LICENSE $(test_fsources)
+	echo 'updated source license headers' >$@
+
 
 TESTS_ENVIRONMENT = HPCT_INPUT_EXAMPLE_DIR=$(srcdir)
 TESTS             = init.sh \
