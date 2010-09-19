@@ -73,7 +73,7 @@ main_hpct.f90: grvy_hpct.f90
 moduledir               = @libdir@
 module_DATA             = grvy.mod hpct.mod
 
-EXTRA_DIST              = common/lic_utils
+EXTRA_DIST              = common/lic_utils common/lcov
 
 dist-hook:
 	rm -rf `find $(distdir)/ -name .svn`
