@@ -149,7 +149,7 @@ void foo()
 
 void foo_fast()
 {
-  static i=0;
+  static int i=0;
 
   grvy_timer_begin(__func__);
 
