@@ -15,23 +15,23 @@ Packager:     karl@ices.utexas.edu
 BuildRoot: /var/tmp/%{name}-%{version}-buildroot
 
 %define _topdir /h1/karl/build/rpms/
-%define APPS /h1/karl/public
-%define MODULES modulefiles
-%define BOOST_DIR /org/centers/pecos/LIBRARIES/BOOST/boost-1.37.0-gcc-4.3.2-ubuntu-amd64
-
-%define INSTALL_DIR %{APPS}/%{name}/%{version}
-%define MODULE_DIR  %{APPS}/%{MODULES}/%{name}
 
 # PECOS Library settings
 
-%define APPS /org/centers/pecos/LIBRARIES
-%define MODULES /org/centers/pecos/modulefiles
+%define APPS /org/centers/pecos
+%define MODULES derived_modulefiles
 
-%define INSTALL_DIR %{APPS}/%{name}/%{version}
-%define MODULE_DIR  %{MODULES}/%{name}
+%include compiler-defines.inc
 
+%define INSTALL_DIR %{APPS}/LIBRARIES/%{name}/%{APPSUB}/%{version}
+%define MODULE_DIR  %{APPS}/%{MODULES}/%{APPSUB}/%{name}
+
+%package -n %{name}-%{comp_fam_ver}
+Summary:      GRVY is a toolkit library for HPC Application Development
+Group:        applications
 
 %description
+%description -n %{name}-%{comp_fam_ver}
 
 The GRVY Toolkit is a library used to house various support functions
 often required for application development of high-performance,
@@ -47,8 +47,14 @@ mkdir -p $RPM_BUILD_ROOT/%{INSTALL_DIR}
 
 %build
 
-./configure FC=ifort F77=ifort CC=gcc CXX=g++ --prefix=%{INSTALL_DIR} --with-boost=%{BOOST_DIR}
-make
+%include compiler-load.inc
+
+# Add external module dependencies here
+
+module load boost
+
+./configure --prefix=%{INSTALL_DIR}
+make -j 2
 make DESTDIR=$RPM_BUILD_ROOT install
 
 rm -rf $RPM_BUILD_ROOT/%{MODULE_DIR}
@@ -98,10 +104,11 @@ cat > $RPM_BUILD_ROOT/%{MODULE_DIR}/.version.%{version} << 'EOF'
 set     ModulesVersion      "%{version}"
 EOF
 
-%files
+%files -n %{name}-%{comp_fam_ver}
 %defattr(-,karl,pecos)
 %{INSTALL_DIR}
-%{MODULE_DIR}
+%{MODULE_DIR}/.version.%{version}
+%{MODULE_DIR}/%{version}
 
 %post
 
