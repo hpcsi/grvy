@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 {
   int flag = 1;
   char *input_example_file_path;
-  char tmp_string[256];
+  char tmp_string[1024];
   char dir_template1[] = "grvy-scratch-XXXXXX";
   char dir_template2[] = "grvy-scratch-XXXXXX";
 
@@ -56,7 +56,6 @@ int main(int argc, char **argv)
   grvy_input_register_float ("sec1/afloat", 2.2);
   grvy_input_register_double("sec1/adouble",3.3e3);
   grvy_input_register_char  ("sec1/astring","plankton");
-
 
   /* Dump the input contents to a temporary file */
 
