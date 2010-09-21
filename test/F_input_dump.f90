@@ -56,7 +56,8 @@ program main
 
   ! Dump the input contents to a temporary file 
 
-  call grvy_create_unique_dir(dir_template,flag);
+!  call grvy_create_unique_dir(dir_template,flag);
+  call grvy_create_scratch_dir(dir_template,flag);
   if(flag .ne. 0)then
      call grvy_log(GRVY_INFO,"Unable to create unique directory");
      call exit(1)
