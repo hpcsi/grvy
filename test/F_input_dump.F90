@@ -29,11 +29,14 @@
 
 program main
   use grvy
+#ifdef __INTEL_COMPILER
+  use ifport
+#endif
   implicit none
   
   integer(4)     :: error, flag ! 1 for success, 0 for failure
   character*19   :: dir_template = "grvy-scratch-XXXXXX"
-  integer(4)     :: status
+  integer        :: status
 
   call grvy_log_setlevel(GRVY_WARN)
 
@@ -41,8 +44,6 @@ program main
 
   call grvy_input_fopen("./input-example.txt",flag)
   error=error*flag
-
-
 
   ! Define registered variable which may not be present in input file 
 
@@ -66,7 +67,8 @@ program main
   call grvy_input_fdump_file("# ",dir_template//"/solution.txt",flag)
   error=error*flag
 
-  status = system ("diff "//dir_template//"/solution.txt file2 2>&1 > /dev/null");
+  status = system ("diff "//dir_template//"/solution.txt ref_files/solution.C.txt 2>&1 > /dev/null")
+
   if(status .ne. 0)then
      call exit(1)
   endif

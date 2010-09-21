@@ -68,7 +68,7 @@ F_input_nofile_available_SOURCES               = F_input-nofile.f90
 F_input_read_missing_variable_SOURCES          = F_input-missing-var.f90
 F_input_register_variables_SOURCES             = F_input-register.f90
 F_input_read_bigstring_SOURCES                 = F_input_read_bigstring.f90
-F_input_dump_SOURCES                           = F_input_dump.f90
+F_input_dump_SOURCES                           = F_input_dump.F90
 F_timer_SOURCES                                = F_timer.f90
 
 #---------------------------------
