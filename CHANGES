@@ -1,4 +1,4 @@
-Version 0.28 (19 September 2010)
+Version 0.28 (21 September 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.29
 
   * bug fix in timer counting statistic (affects embedded timers only)
