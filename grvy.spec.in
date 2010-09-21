@@ -33,9 +33,10 @@ BuildRoot: /var/tmp/%{name}-%{version}-buildroot
 
 %description
 
-The GRVY Toolkit is a library to support common functionality desired
-across HPC application development done in house.
-
+The GRVY Toolkit is a library used to house various support functions
+often required for application development of high-performance,
+scientific applications. The library is written in C++, but provides
+an API for development in C and Fortran.
 
 %prep
 
