@@ -49,15 +49,19 @@ Bugs in the code and errors or omissions in the documentation can be
 reported to karl@ices.utexas.edu.  Requests and contributions are
 welcome at the same e-mail address.  All bug reports should include:
 <ul>
-<li>the version number of the GRVY library,
+
+<li>the version number of the GRVY library (versioning information can
+be obtained by running the <code>version</code> binary located in the
+bin directory of a local libGRVY installation),
 <li>the hardware and operating system,
-<li>the compiler used, including version number and compilation options,
+<li>the local compiler version number,
 <li>a description of the bug behavior, and ideally, 
 <li>a short program which reproduces the bug.
 </ul>
 
 \section licence License
-\copydoc License
+Copyright (C) 2008,2009,2010 The PECOS Development Team
+\copydoc LicenseLGPL
 
 \section acknowledgements Acknowledgments
 \copydoc Acknowledgments
