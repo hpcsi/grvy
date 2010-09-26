@@ -122,10 +122,14 @@ namespace GRVY {
     initialized   = 0;
   }
 
+  // Moved clean up of ifile to Close
+
+#if 0
   GRVY_Input_Class::~GRVY_Input_Class()
   {
     delete ifile;
   }
+#endif
 
   int GRVY_Input_Class:: VerifyInit()
   {
@@ -157,7 +161,11 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Close()
   {
-    initialized=0;
+    if(initialized)
+      {
+	initialized=0;
+	delete ifile;
+      }
     return 1;
   }
 
