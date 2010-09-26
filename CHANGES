@@ -1,4 +1,9 @@
-Version 0.30 
+
+Version 0.29.1 (26 September 2010)
+https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.29.1
+  * bug fix in mixed language input parsing of multiple files resulting in double free()
+  * inclusion of versioning routines in Fortran interface
+  * updated regressions
 
 Version 0.29 (21 September 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.29
