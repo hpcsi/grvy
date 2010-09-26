@@ -14,7 +14,7 @@ check_PROGRAMS += CXX_input CXX_input_dump CXX_input_register_variables
 
 check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math F_log \
 		  F_input_read_variables F_input_nofile_available F_input_read_missing_variable \
-		  F_input_register_variables F_input_read_bigstring F_timer F_input_dump 
+		  F_input_register_variables F_input_read_bigstring F_timer F_input_dump F_version
 
 INCLUDES        = -I$(top_srcdir)/src -I$(top_builddir)/src
 LIBS            = -L$(top_builddir)/src -lgrvy
@@ -70,6 +70,7 @@ F_input_register_variables_SOURCES             = F_input-register.f90
 F_input_read_bigstring_SOURCES                 = F_input_read_bigstring.f90
 F_input_dump_SOURCES                           = F_input_dump.F90
 F_timer_SOURCES                                = F_timer.f90
+F_version_SOURCES                              = F_version.F90
 
 #---------------------------------
 # Embedded license header support

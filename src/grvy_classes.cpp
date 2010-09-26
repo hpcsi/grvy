@@ -54,21 +54,24 @@ namespace GRVY {
   void GRVY_version_stdout()
   {
 
-    std::cout << "--------------------------------------------------------" << std::endl;
-    std::cout << "libGRVY Library: Version = " << GRVY_LIB_VERSION; 
-    std::cout << " (" << GRVY_get_numeric_version() << ")" << std::endl << std::endl; 
-
-    std::cout << GRVY_LIB_RELEASE << std::endl << std::endl;
-
-    std::cout << "Build Date   = " << GRVY_BUILD_DATE     << std::endl;
-    std::cout << "Build Host   = " << GRVY_BUILD_HOST     << std::endl;
-    std::cout << "Build User   = " << GRVY_BUILD_USER     << std::endl;
-    std::cout << "Build Arch   = " << GRVY_BUILD_ARCH     << std::endl;
-    std::cout << "Build Rev    = " << GRVY_BUILD_VERSION  << std::endl << std::endl;
-
-    std::cout << "C++ Config   = " << GRVY_CXX << " " << GRVY_CXXFLAGS << std::endl;
-    std::cout << "F90 Config   = " << GRVY_FC  << " " << GRVY_FCFLAGS  << std::endl;
-    std::cout << "--------------------------------------------------------" << std::endl;
+    if(_GRVY_Log.isLog(GRVY_INFO))
+      {
+	std::cout << "--------------------------------------------------------" << std::endl;
+	std::cout << "libGRVY Library: Version = " << GRVY_LIB_VERSION; 
+	std::cout << " (" << GRVY_get_numeric_version() << ")" << std::endl << std::endl; 
+	
+	std::cout << GRVY_LIB_RELEASE << std::endl << std::endl;
+	
+	std::cout << "Build Date   = " << GRVY_BUILD_DATE     << std::endl;
+	std::cout << "Build Host   = " << GRVY_BUILD_HOST     << std::endl;
+	std::cout << "Build User   = " << GRVY_BUILD_USER     << std::endl;
+	std::cout << "Build Arch   = " << GRVY_BUILD_ARCH     << std::endl;
+	std::cout << "Build Rev    = " << GRVY_BUILD_VERSION  << std::endl << std::endl;
+	
+	std::cout << "C++ Config   = " << GRVY_CXX << " " << GRVY_CXXFLAGS << std::endl;
+	std::cout << "F90 Config   = " << GRVY_FC  << " " << GRVY_FCFLAGS  << std::endl;
+	std::cout << "--------------------------------------------------------" << std::endl;
+      }
   }
 
   int GRVY_get_numeric_version()

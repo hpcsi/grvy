@@ -1,3 +1,4 @@
+!! -*-f90-*-
 !!-----------------------------------------------------------------------bl-
 !!--------------------------------------------------------------------------
 !! 
@@ -27,9 +28,9 @@
 !!--------------------------------------------------------------------------
 !!--------------------------------------------------------------------------
 
-#define GRVY_MAJOR_VERSION "@GRVY_MAJOR_VERSION@"
-#define GRVY_MINOR_VERSION "@GRVY_MINOR_VERSION@"
-#define GRVY_MICRO_VERSION "@GRVY_MICRO_VERSION@"
+#define GRVY_MAJOR_VERSION  @GENERIC_MAJOR_VERSION@
+#define GRVY_MINOR_VERSION  @GENERIC_MINOR_VERSION@
+#define GRVY_MICRO_VERSION  @GENERIC_MICRO_VERSION@
 
 program main
   use grvy
@@ -44,6 +45,12 @@ program main
   if(grvy_version .ne. expected_version)then
      call exit(1)
   endif
+
+  ! Verify stdout call is cooperating
+
+  call grvy_log_setlevel(GRVY_NOLOG)
+
+  call grvy_version_stdout()
 
   stop
 end program main

@@ -36,9 +36,11 @@ const char *test_name = "C version: unit tests";
 int main(int argc, char **argv)
 {
 
-  // simply makes sure version_stdout() function is cooperating.
+  // Silence stdout 
 
-  freopen("/dev/null","w",stdout);
+  grvy_log_setlevel(GRVY_NOLOG);
+
+  // simply makes sure version_stdout() function is cooperating.
 
   grvy_version_stdout();
 
