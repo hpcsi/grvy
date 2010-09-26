@@ -43,6 +43,8 @@ program main
   character      :: key2*100
   character      :: gridfile*100
 
+  call grvy_log_setlevel(GRVY_NOLOG)
+
   error=1 ! start with no error condition
   call grvy_input_fopen("./input-example.txt",flag)
   error=error*flag
@@ -60,11 +62,13 @@ program main
   error=error*flag
 
   ! verify that len_trim works as desired on parsed strings
+
   string_size = len_trim(gridfile)
   if(string_size .ne. 15) then
      write(6,*) "Failed len_trim test"     
      call exit(1)
   endif
+
   ! ----- read from SOLVER section -----
 
   call grvy_input_fread_int      ("solver/turbulence",turbulent,flag)
@@ -77,6 +81,7 @@ program main
   error=error*flag
 
   ! verify that len_trim works as desired on parsed string arrays
+
   string_size = len_trim(key2)
   if(string_size .ne. 4) then
      write(6,*) "Failed len_trim test"
@@ -144,7 +149,38 @@ program main
   call compare_double(dvar2,1.2d20,flag)
   error=error*flag
 
+  ! Verify that we get an error if we try to open a new file prior to
+  ! closing the currently open file
+
+  call grvy_input_fopen("./input-example.txt",flag)
+  if(flag .ne. 0)then
+     call exit(1)
+  endif
+  
   ! ----- Close File // Error Handling -----  
+
+  call grvy_input_fclose()
+
+  ! Verify that we don't cause an error if we try to close multiple
+  ! times (should be a noop)
+
+  call grvy_input_fclose()
+
+  ! Double check that we can open and read the same file again.
+
+  call grvy_input_fopen("./input-example.txt",flag)
+  error=error*flag
+
+  ! ----- read from BASIC section -----
+  call grvy_input_fread_real ("reyn", reyn, flag)
+  error=error*flag
+  call grvy_input_fread_real ("mach", mach, flag)
+  error=error*flag
+  call grvy_input_fread_real ("aoa", aoa, flag)
+  error=error*flag
+  call grvy_input_fread_int  ("iter_max",iter_max,flag)
+  error=error*flag
+
   call grvy_input_fclose()
   
   if(error .eq. 0) then ! signal error

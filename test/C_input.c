@@ -129,7 +129,31 @@ int main(int argc, char **argv)
   flag *= compare_double(dvar1,1.e20);
   flag *= compare_double(dvar2,1.2e20);
 
+  // Verify that we get an error if we try to open a new file prior to
+  //closing the currently open file
+
+  flag *= (0 == grvy_input_fopen(input_example_file_path));
+
   /* Close the file */
+
+  flag *= grvy_input_fclose();
+
+  // Verify that we don't cause an error if we try to close multiple
+  // times (should be a noop).
+
+  flag *= grvy_input_fclose();
+
+  // Double check that we can open and read from the same file again.
+
+  input_example_file_path = build_example_file_path();
+  flag *= grvy_input_fopen(input_example_file_path);
+  free(input_example_file_path);
+
+  flag *= grvy_input_fread_float("reyn",&reyn);
+  flag *= flag*grvy_input_fread_float("mach",&mach);
+
+  flag *= grvy_input_fread_float("aoa",&aoa);
+  flag *= grvy_input_fread_int("iter_max",&iter_max);
 
   flag *= grvy_input_fclose();
 

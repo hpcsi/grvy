@@ -14,7 +14,7 @@ check_PROGRAMS += CXX_input CXX_input_dump CXX_input_register_variables
 
 check_PROGRAMS += F_unique_dir F_scratch_dir F_check_file_path F_math F_log \
 		  F_input_read_variables F_input_nofile_available F_input_read_missing_variable \
-		  F_input_register_variables F_input_read_bigstring F_timer F_input_dump
+		  F_input_register_variables F_input_read_bigstring F_timer F_input_dump 
 
 INCLUDES        = -I$(top_srcdir)/src -I$(top_builddir)/src
 LIBS            = -L$(top_builddir)/src -lgrvy
