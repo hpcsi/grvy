@@ -45,8 +45,23 @@
 !! "sample input file" is also provided.
 
 module grvy
-  interface
-     
+
+  interface 
+
+     ! -------------------
+     ! Versioning routines
+     ! -------------------
+
+     subroutine grvy_version_stdout() bind (C)
+       use iso_c_binding
+       implicit none
+     end subroutine grvy_version_stdout
+
+     integer (C_int) function grvy_get_numeric_version() bind (C)
+       use iso_c_binding
+       implicit none
+     end function grvy_get_numeric_version
+
      ! ----------------------
      ! Input Parsing Support
      ! ----------------------
