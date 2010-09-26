@@ -148,6 +148,12 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Open(const char *filename)
   {
+    if(initialized)
+      {
+	_GRVY_message(GRVY_ERROR,__func__,"close previous input file first prior to opening new input file -> ",filename);
+	return 0;
+      }
+
     ifile = new GETPOT_NAMESPACE::GetPot(filename,comment_start,comment_end);
 
     if(ifile->size() <= 1)
