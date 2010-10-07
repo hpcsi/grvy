@@ -79,6 +79,6 @@ dist-hook:
 	rm -rf `find $(distdir)/ -name .svn`
 
 
-CLEANFILES              = grvy.mod hpct.mod .license.stamp
+CLEANFILES              = grvy.mod hpct.mod .license.stamp *.gcno
 
 METASOURCES = AUTO

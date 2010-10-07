@@ -96,6 +96,15 @@ class GRVY_Timer_Class {
   double StatsVariance  (const char *id);
   double ElapsedGlobal  ();
   double RawTimer       ();
+
+  // Historical Timing Functions
+
+  int InitHistDB           (const char *filename);
+  int SaveHistTiming       ();
+  int SaveHistTiming       (const char *id, double timing);
+  void SummarizeHistTiming (const char *filename);
+  
+
 };
 
 //--------------------------

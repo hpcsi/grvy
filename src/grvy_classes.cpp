@@ -1142,6 +1142,30 @@ namespace GRVY {
     printf("\n\n");
   }
 
+  int GRVY_Timer_Class::InitHistDB(const char *filename)
+  {
+    
+    return 0;
+  }
+
+  int GRVY_Timer_Class::SaveHistTiming()
+  {
+    
+    return 0;
+  }
+
+  int GRVY_Timer_Class::SaveHistTiming(const char *id, double timing)
+  {
+    
+    return 0;
+  }
+
+  void GRVY_Timer_Class::SummarizeHistTiming(const char *filename)
+  {
+    return;
+  }
+  
+
   //-------------------------------------
   // GRVY_Math_Class:: Member Functions
   //-------------------------------------
