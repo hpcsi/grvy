@@ -56,7 +56,7 @@ int GRVY_HDF5_Class::file_create(const char *filename,bool overwrite_existing)
       grvy_printf(GRVY_DEBUG,"%s: Creating new hdf file %s (overwrite=false)\n",__func__,filename);
     }
 
-  if(m_fileId != NULL)
+  if(!m_fileId)
     {
       grvy_printf(GRVY_FATAL,"hdf5_open: current state has actively opened file - please close first\n",filename);
       exit(1);
@@ -79,11 +79,52 @@ int GRVY_HDF5_Class::file_create(const char *filename,bool overwrite_existing)
   return(0); 
 }
 
+#if 0
+int GRVY_HDF5_Class::file_open(const char *filename,bool readonly)
+{
+  unsigned int flags;
+
+  if(overwrite_existing)
+    {
+      flags = H5F_ACC_TRUNC;
+      grvy_printf(GRVY_DEBUG,"%s: Creating new hdf file %s (overwrite=true)\n",__func__,filename);
+    }
+  else
+    {
+      flags = H5F_ACC_EXCL;
+      grvy_printf(GRVY_DEBUG,"%s: Creating new hdf file %s (overwrite=false)\n",__func__,filename);
+    }
+
+  if(!m_fileId)
+    {
+      grvy_printf(GRVY_FATAL,"hdf5_open: current state has actively opened file - please close first\n",filename);
+      exit(1);
+    }
+
+  silence_hdf_error_handler();
+
+  if ( (m_fileId = H5Fcreate(filename, flags, H5P_DEFAULT, H5P_DEFAULT)) < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to create *new* HDF file\n",__func__,filename);
+      if(!overwrite_existing)
+	{
+	  grvy_printf(GRVY_FATAL,"%s: Note that the file must not exist when overwrite_existing=false\n",__func__);
+	}
+      exit(1);
+    }
+
+  restore_hdf_error_handler();  
+  grvy_printf(GRVY_DEBUG,"%s: Successfully created new HDF file\n",filename);
+  return(0); 
+}
+
+#endif
+
 int GRVY_HDF5_Class::close()
 {
   grvy_printf(GRVY_DEBUG,"%s: Closing HDF file and resetting state\n",__func__);
 
-  if(m_fileId == NULL)
+  if(!m_fileId)
     {
       grvy_printf(GRVY_WARN,"%s: current state has no actively opened file - ignoring close request\n",__func__);
       return(0);
