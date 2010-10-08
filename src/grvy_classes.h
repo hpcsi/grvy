@@ -39,6 +39,8 @@
 #include<vector>
 #include<string>
 #include<stack>
+#include<ostream>
+#include<iostream>
 #include<config_grvy.h>
 
 #ifdef HAVE_HDF5
@@ -174,17 +176,29 @@ class GRVY_Math_Class {
   //--------------------------
 
   class GRVY_Log_Class {
-  private:
-    int log_level;			               // Current log level priority
-    std::map<int,std::string> LogMask;                      // String masks for log messages
   public:
     GRVY_Log_Class();		
-
-    bool isLog(int priority) {                                      // inlined log priority test
-      return(priority <= log_level); }                              
-    void msg       (int priority, std::string msg);                      // post new log message with a priority
-    int  msg_printf(int priority, const char *format,va_list argp); // post printf style log message
+    bool isLog(int priority) {return(priority <= log_level);}       // log priority test
     void change_priority(int priority);                             // change current log level priority
+
+    // C++ ostream style logging (<<)
+
+    template <typename T> 
+    inline GRVY_Log_Class operator <<(const T &val) {{std::cout << val;}};
+    inline GRVY_Log_Class operator <<(std::ostream &(*pf)(std::ostream&)) {{std::cout << *pf;}};
+
+    // Basic std::string message
+
+    void msg       (int priority, std::string msg);                 // post new log message with a priority
+
+    // C style printf logging
+
+    int  msg_printf(int priority, const char *format,va_list argp); // post printf style log message
+  
+
+  private:
+    int log_level;			                            // Current log level priority
+    std::map<int,std::string> LogMask;                              // String masks for log messages
 
   };
 

@@ -1214,6 +1214,8 @@ namespace GRVY {
     return;
   }
 
+  // C style printf logging
+
   int GRVY_Log_Class::msg_printf(int priority, const char *format,va_list arg)
   {
     int done;
