@@ -1145,7 +1145,7 @@ namespace GRVY {
   int GRVY_Timer_Class::InitHistDB(const char *filename)
   {
     GRVY_HDF5_Class h5_file;
-    return(h5_file.file_create(filename,true));
+    //return(h5_file.file_create(filename,true));
   }
 
   int GRVY_Timer_Class::SaveHistTiming()
