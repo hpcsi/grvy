@@ -202,28 +202,7 @@ class GRVY_Math_Class {
 
   };
 
-//--------------------------
-// HDF5 Utility Class
-//--------------------------
 
-  class GRVY_HDF5_Class {
-  private: 
-
-#ifdef HAVE_HDF5
-    hid_t m_fileId;		        // hdf5 file handle
-    H5E_auto2_t error_orig_func;	// error-handle func
-    void       *error_orig_data;        // error-handle stack data
-#endif
-
-  public:
-    GRVY_HDF5_Class      ();
-#ifdef HAVE_HDF5
-    int  file_create(const char *filename, bool overwrite_existing);
-    int  close();
-    void silence_hdf_error_handler();
-    void restore_hdf_error_handler();
-#endif
-  };
 
 }
 

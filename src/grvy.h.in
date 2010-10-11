@@ -1,3 +1,4 @@
+// -*-c++-*-
 //-----------------------------------------------------------------------bl-
 //--------------------------------------------------------------------------
 // 
@@ -377,6 +378,7 @@ extern "C" {
 
 #include<map>
 #include<string>
+#include<memory>
 
 // Forward declare GetPot class so we don't need
 // to include getpot.h here.
@@ -477,6 +479,30 @@ class GRVY_Input_Class {
   template <typename T> T Get_Default   (T);
 };
 
+//--------------------
+// HDF5 Utility Class
+//--------------------
+
+ class GRVY_HDF5_ClassImp;	            // forward declaration of HDF5 implementation
+
+ class GRVY_HDF5_Class //: private boost::noncopyable
+ {
+ public:
+   GRVY_HDF5_Class  ();
+   ~GRVY_HDF5_Class ();
+   
+   int Create     (const char *filename, bool overwrite_existing);
+   int Open       (const char *filename, bool overwrite_existing);
+   int Close      ();
+   
+   int CreateGroup(const char *descname);
+   int GroupExists(const char *descname);
+   
+ private:
+   //boost::scoped_ptr<GRVY_HDF5_ClassImp> m_pimpl;
+   std::auto_ptr<GRVY_HDF5_ClassImp> m_pimpl;
+   
+ };
 }
 
 #endif

@@ -10,9 +10,10 @@ AM_CFLAGS               = $(INCLUDES)
 AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
 LIBS                    = -L$(top_builddir)/src -lgrvy $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
 
-example_PROGRAMS        = input timer_sum check_dir inputf timer_sumf message timer cpp-example
+example_PROGRAMS        = input timer_sum check_dir inputf timer_sumf message timer cpp-example hdf5_access
 input_SOURCES           = input.c
 cpp_example_SOURCES     = cpp-example.cpp
+hdf5_access_SOURCES     = hdf5_access.cpp
 
 inputf_SOURCES          = inputf.f90
 inputf_LIBTOOLFLAGS     = --tag=FC
