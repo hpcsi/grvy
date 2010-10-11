@@ -42,7 +42,8 @@ class GRVY_HDF5_ClassImp
 
   GRVY_HDF5_ClassImp() {}
  ~GRVY_HDF5_ClassImp() {}
-  
+
+#ifdef HAVE_HDF5  
   hid_t m_fileId;                        // hdf5 file handle
   std::map<std::string,hid_t> m_groupIds;// hdf5 group handles
   
@@ -51,6 +52,7 @@ class GRVY_HDF5_ClassImp
   
   void silence_hdf_error_handler();
   void restore_hdf_error_handler();
+#endif
 };
 
 }  // matches namespace GRVY
@@ -233,12 +235,22 @@ GRVY_HDF5_Class::GRVY_HDF5_Class()
   exit(1);
 }
 
-GRVY_HDF5_Class::Create(const char *, bool){}
-GRVY_HDF5_Class::Open  (const char *, bool){}
-GRVY_HDF5_Class::Close (){}
+GRVY_HDF5_Class::~GRVY_HDF5_Class()
+{
+  cout << endl;
+  grvy_printf(GRVY_FATAL,"libGRVY not built with HDF support\n\n");
+  grvy_printf(GRVY_FATAL,"Please enable support using the \"--with-hdf5\" option to configure \n");
+  grvy_printf(GRVY_FATAL,"and reinstall if you desire to use HDF5 related functionality.\n\n");
+  cout << endl;
+  exit(1);
+}
 
-GRVY_HDF5_Class::CreateGroup(const char *){}
-GRVY_HDF5_Class::GroupExists(const char *){}
+int GRVY_HDF5_Class::Create(const char *, bool){return 0;}
+int GRVY_HDF5_Class::Open  (const char *, bool){return 0;}
+int GRVY_HDF5_Class::Close (){return 0;}
+
+int GRVY_HDF5_Class::CreateGroup(const char *){return 0;}
+int GRVY_HDF5_Class::GroupExists(const char *){return 0;}
 
 
 #endif
