@@ -34,15 +34,15 @@
 using namespace std;
 using namespace GRVY;
 
-namespace GRVY{
+namespace GRVY {
 
-class GRVY_HDF5_ClassImp
+class GRVY_HDF5_Class::GRVY_HDF5_ClassImp
 {
- public:
-
+public:
+  
   GRVY_HDF5_ClassImp() {}
  ~GRVY_HDF5_ClassImp() {}
-
+  
 #ifdef HAVE_HDF5  
   hid_t m_fileId;                        // hdf5 file handle
   std::map<std::string,hid_t> m_groupIds;// hdf5 group handles
@@ -203,7 +203,7 @@ int GRVY_HDF5_Class::Close()
   return(0); 
 }
 
-void GRVY_HDF5_ClassImp::silence_hdf_error_handler()
+void GRVY_HDF5_Class::GRVY_HDF5_ClassImp::silence_hdf_error_handler()
 {
   
   // save state of internal hdf error handler
@@ -215,7 +215,7 @@ void GRVY_HDF5_ClassImp::silence_hdf_error_handler()
   H5Eset_auto2(H5E_DEFAULT,NULL, NULL);
 }
 
-void GRVY_HDF5_ClassImp::restore_hdf_error_handler()
+void GRVY_HDF5_Class::GRVY_HDF5_ClassImp::restore_hdf_error_handler()
 {
   // Restore previous error handler
 
