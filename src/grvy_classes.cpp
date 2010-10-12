@@ -637,9 +637,9 @@ namespace GRVY {
   template int GRVY_Input_Class::Read_Var_Vec <float>    (const char *var, float  *value, int nelem, float  Var_Def);
   template int GRVY_Input_Class::Read_Var_Vec <double>   (const char *var, double *value, int nelem, double Var_Def);
 
-  template int GRVY_Input_Class::Read_Var_iVec <int>    (const char *var, int    *value, int elem,  int    Var_Def);
-  template int GRVY_Input_Class::Read_Var_iVec <float>  (const char *var, float  *value, int elem,  float  Var_Def);
-  template int GRVY_Input_Class::Read_Var_iVec <double> (const char *var, double *value, int elem,  double Var_Def);
+  template int GRVY_Input_Class::Read_Var_iVec <int>     (const char *var, int    *value, int elem,  int    Var_Def);
+  template int GRVY_Input_Class::Read_Var_iVec <float>   (const char *var, float  *value, int elem,  float  Var_Def);
+  template int GRVY_Input_Class::Read_Var_iVec <double>  (const char *var, double *value, int elem,  double Var_Def);
 
 
   //-------------------------------------
