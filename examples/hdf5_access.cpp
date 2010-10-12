@@ -40,14 +40,19 @@ int main(int argc, char **argv)
 
   GRVY_HDF5_Class h5;	// HDF5 object for interacting with HDF5 files
 
-  //----------------------------
+  grvy_log_setlevel(GRVY_INFO);
+  //  grvy_log_setlevel(GRVY_DEBUG);
+
   // Create a new hdf file
-  //----------------------------
 
   grvy_printf(GRVY_INFO,"About to create hdf file\n");
 
-  if(! h5.Create("koomie.h5",true))
+  if(h5.Create("koomie.h5",true))
     exit(1);
+
+  // Create a new group
+
+  h5.CreateGroup("GRVY_performance_timings");
 
   // Close the file
 

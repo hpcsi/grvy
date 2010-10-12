@@ -44,14 +44,15 @@ public:
  ~GRVY_HDF5_ClassImp() {}
   
 #ifdef HAVE_HDF5  
-  hid_t m_fileId;                        // hdf5 file handle
-  std::map<std::string,hid_t> m_groupIds;// hdf5 group handles
+  hid_t fileId;                          // hdf5 file handle
+  std::map<std::string,hid_t> groupIds;  // hdf5 group handles
   
   H5E_auto2_t error_orig_func;           // error-handle func
   void       *error_orig_data;           // error-handle stack data
   
   void silence_hdf_error_handler();
   void restore_hdf_error_handler();
+  void close_open_objects();
 #endif
 };
 
@@ -61,12 +62,13 @@ public:
 
 GRVY_HDF5_Class::GRVY_HDF5_Class() :m_pimpl(new GRVY_HDF5_ClassImp() )
 {
-  m_pimpl->m_fileId = NULL;
+  m_pimpl->fileId = NULL;
 }
 
 GRVY_HDF5_Class::~GRVY_HDF5_Class() 
 {
-  //  delete m_pimpl;
+  // switched to auto_ptr for dtor;
+  // delete m_pimpl;
 }
 
 int GRVY_HDF5_Class::Create(const char *filename,bool overwrite_existing)
@@ -84,7 +86,7 @@ int GRVY_HDF5_Class::Create(const char *filename,bool overwrite_existing)
       grvy_printf(GRVY_DEBUG,"%s: Creating new hdf file %s (overwrite=false)\n",__func__,filename);
     }
 
-  if(m_pimpl->m_fileId)
+  if(m_pimpl->fileId)
     {
       grvy_printf(GRVY_FATAL,"hdf5_open: current state has actively opened file - please close first\n",filename);
       exit(1);
@@ -92,7 +94,7 @@ int GRVY_HDF5_Class::Create(const char *filename,bool overwrite_existing)
 
   m_pimpl->silence_hdf_error_handler();
 
-  if ( (m_pimpl->m_fileId = H5Fcreate(filename, flags, H5P_DEFAULT, H5P_DEFAULT)) < 0)
+  if ( (m_pimpl->fileId = H5Fcreate(filename, flags, H5P_DEFAULT, H5P_DEFAULT)) < 0)
     {
       grvy_printf(GRVY_FATAL,"%s: Unable to create *new* HDF file (%s)\n",__func__,filename);
       if(!overwrite_existing)
@@ -122,9 +124,7 @@ int GRVY_HDF5_Class::Open(const char *filename,bool readonly)
       grvy_printf(GRVY_DEBUG,"%s: Opening existing hdf file %s (readonly=false)\n",__func__,filename);
     }
 
-
-
-  if(!m_pimpl->m_fileId)
+  if(!m_pimpl->fileId)
     {
       grvy_printf(GRVY_FATAL,"hdf5_open: current state has actively opened file - please close first\n",filename);
       exit(1);
@@ -132,14 +132,14 @@ int GRVY_HDF5_Class::Open(const char *filename,bool readonly)
 
   m_pimpl->silence_hdf_error_handler();
 
-  if ( (m_pimpl->m_fileId = H5Fopen(filename, flags, H5P_DEFAULT)) < 0)
+  if ( (m_pimpl->fileId = H5Fopen(filename, flags, H5P_DEFAULT)) < 0)
     {
       grvy_printf(GRVY_FATAL,"%s: Unable to open *existing* HDF file (%s)\n",__func__,filename);
       exit(1);
     }
     
   m_pimpl->restore_hdf_error_handler();  
-  grvy_printf(GRVY_DEBUG,"%s: Successfully opened existing HDF file\n",filename);
+  grvy_printf(GRVY_DEBUG,"%s: Successfully opened existing HDF file (%s)\n",__func__,filename);
   return(0); 
 }
 
@@ -157,7 +157,7 @@ int GRVY_HDF5_Class::CreateGroup(const char *descname)
       return 1;
     }
 
-  if ( (groupId = H5Gcreate2(m_pimpl->m_fileId,descname,H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT)) < 0)
+  if ( (groupId = H5Gcreate2(m_pimpl->fileId,descname,H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT)) < 0)
     {
       grvy_printf(GRVY_FATAL,"%s: Unable to create HDF group (%s)\n",__func__,descname);
       exit(1);
@@ -166,38 +166,46 @@ int GRVY_HDF5_Class::CreateGroup(const char *descname)
   time (&now);
   sprintf(comment,"Created on %.24s",ctime(&now));
   
-  if( H5Gset_comment(m_pimpl->m_fileId,descname,comment) < 0)
+  if( H5Gset_comment(m_pimpl->fileId,descname,comment) < 0)
     {
       grvy_printf(GRVY_FATAL,"%s: Unable to add comment for group (%s)\n",__func__,descname);
       exit(1);
     }
 
-  grvy_log_char(GRVY_DEBUG,__func__,"Successfully created new HDF group",descname);
+  // this groupId is now active -> we save the hdf identifier for future use
+
+  m_pimpl->groupIds[descname] = groupId;
+
+  grvy_printf(GRVY_DEBUG,"%s: Successfully created new  HDF group (%s)\n",__func__,descname);
   return 0;
 }
 
-int GRVY_HDF5_Class::GroupExists(const char *descname)
+inline int GRVY_HDF5_Class::GroupExists(const char *descname)
 {
-  map<std::string,hid_t>::iterator it = m_pimpl->m_groupIds.find(descname);
-
-  return(it != m_pimpl->m_groupIds.end());
+  return(m_pimpl->groupIds.count(descname));
 }
     
 int GRVY_HDF5_Class::Close()
 {
   grvy_printf(GRVY_DEBUG,"%s: Closing HDF file and resetting state\n",__func__);
 
-  if(!m_pimpl->m_fileId)
+  if(!m_pimpl->fileId)
     {
       grvy_printf(GRVY_WARN,"%s: current state has no actively opened file - ignoring close request\n",__func__);
       return(0);
     }
 
-  // TODO: verify correct error code for close
+  // Note: according to the hdf spec a file close() is a bit sneaky in
+  // that if other datasets or groups are still open prior to the
+  // close(), then the file is not really closed.  Consequently, we do
+  // a little extra dirty work here and make sure to close all objects
+  // opened previously via the public interface.
 
-  H5Fclose(m_pimpl->m_fileId);
+  m_pimpl->close_open_objects();
 
-  m_pimpl->m_fileId = NULL;
+  H5Fclose(m_pimpl->fileId);
+
+  m_pimpl->fileId = NULL;
   
   grvy_printf(GRVY_DEBUG,"%s: Successfully closed HDF file\n",__func__);
   return(0); 
@@ -223,7 +231,30 @@ void GRVY_HDF5_Class::GRVY_HDF5_ClassImp::restore_hdf_error_handler()
   
 }
 
+void GRVY_HDF5_Class::GRVY_HDF5_ClassImp::close_open_objects()
+{
+  // Close any open groups
+
+  map<std::string,hid_t>::iterator it;
+
+  for ( it=groupIds.begin(); it != groupIds.end(); it++ )
+    {
+      grvy_printf(GRVY_DEBUG,"%s: Closing open group (%s)\n",__func__,(*it).first.c_str());
+
+      if(H5Gclose((*it).second) < 0)
+	grvy_printf(GRVY_WARN,"%s: Unable to close group (%s)\n",__func__,(*it).second);
+
+      groupIds.erase(it);
+    }
+
+  // TODO: continue to add here for any other hdf objects which get opened
+}
+
 #else
+
+//----------------------------------------------------------
+// NOOP public interface for case when hdf5 is not linked in
+//----------------------------------------------------------
 
 GRVY_HDF5_Class::GRVY_HDF5_Class()
 {

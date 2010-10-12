@@ -483,8 +483,6 @@ class GRVY_Input_Class {
 // HDF5 Utility Class
 //--------------------
 
-// class GRVY_HDF5_ClassImp;	            // forward declaration of HDF5 implementation
-
  class GRVY_HDF5_Class //: private boost::noncopyable
  {
  public:
@@ -505,7 +503,6 @@ class GRVY_Input_Class {
    //boost::scoped_ptr<GRVY_HDF5_ClassImp> m_pimpl;
    class GRVY_HDF5_ClassImp;	               // forward declaration of HDF5 implementation
    std::auto_ptr<GRVY_HDF5_ClassImp> m_pimpl;  // pointer to implementation
-   
  };
 }
 
