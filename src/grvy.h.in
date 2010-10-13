@@ -495,9 +495,17 @@ class GRVY_Input_Class {
    int Create      (const char *filename, bool overwrite_existing);
    int Open        (const char *filename, bool overwrite_existing);
    int Close       ();
+
+   // Group-related functions
    
-   int CreateGroup (const char *descname);
-   int GroupExists (const char *descname);
+   int CreateGroup (const char *groupname);
+   int GroupExists (const char *groupname);
+
+   // Dataset-related functions
+
+   int CreatePTable(const char *groupname, const char *tablename);
+
+   //   int CreateDataSet1d_unlimited(const char *groupname, const char *varname);
    
  private:
    //boost::scoped_ptr<GRVY_HDF5_ClassImp> m_pimpl;

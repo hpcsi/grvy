@@ -31,6 +31,10 @@
 #include<grvy_int.h>
 #include<grvy.h>
 
+#ifdef HAVE_HDF5
+#include <H5PTpublic.h>
+#endif
+
 using namespace std;
 using namespace GRVY;
 
@@ -44,11 +48,12 @@ public:
  ~GRVY_HDF5_ClassImp() {}
   
 #ifdef HAVE_HDF5  
-  hid_t fileId;                          // hdf5 file handle
-  std::map<std::string,hid_t> groupIds;  // hdf5 group handles
+  hid_t fileId;                             // hdf5 file handle
+  std::map<std::string,hid_t> groupIds;     // hdf5 group handles
+  std::map<std::string,hid_t> dataspaceIds; // hdf5 dataspace hancles
   
-  H5E_auto2_t error_orig_func;           // error-handle func
-  void       *error_orig_data;           // error-handle stack data
+  H5E_auto2_t error_orig_func;              // error-handle func
+  void       *error_orig_data;              // error-handle stack data
   
   void silence_hdf_error_handler();
   void restore_hdf_error_handler();
@@ -179,6 +184,82 @@ int GRVY_HDF5_Class::CreateGroup(const char *descname)
   grvy_printf(GRVY_DEBUG,"%s: Successfully created new  HDF group (%s)\n",__func__,descname);
   return 0;
 }
+
+int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
+{
+  hid_t tableId;
+  hid_t groupId, dataspaceId;
+  time_t now;
+  char comment[120];
+
+  // make sure the group exist
+
+  if(GroupExists(groupname))
+    {
+      groupId = m_pimpl->groupIds[groupname];
+    }
+  else 
+    {
+      grvy_printf(GRVY_FATAL,"%s: Group %s does not exist, please create first\n",__func__,groupname);
+      exit(1);
+    }
+
+  const int MAX_TIMER_WIDTH=120;
+
+  typedef struct ptable_v0_10 {
+    char timer_name[MAX_TIMER_WIDTH];
+    double measurement;
+    double mean;
+    double variance;
+    int count;
+  };
+
+  hid_t strtype;
+  ptable_v0_10 data[2];
+
+  strtype = H5Tcopy(H5T_C_S1);
+
+  H5Tset_size(strtype,MAX_TIMER_WIDTH);
+  H5Tset_strpad(strtype,H5T_STR_NULLTERM);
+
+  grvy_printf(GRVY_INFO,"creating compound datatype\n");
+
+  hid_t ptable_type = H5Tcreate (H5T_COMPOUND, sizeof(ptable_v0_10));
+
+
+  H5Tinsert(ptable_type, "timer_name", HOFFSET(ptable_v0_10, timer_name), strtype);
+  H5Tinsert(ptable_type, "measurement",HOFFSET(ptable_v0_10, measurement),H5T_NATIVE_DOUBLE);
+  H5Tinsert(ptable_type, "mean",       HOFFSET(ptable_v0_10, mean),       H5T_NATIVE_DOUBLE);
+  H5Tinsert(ptable_type, "variance",   HOFFSET(ptable_v0_10, variance),   H5T_NATIVE_DOUBLE);
+  H5Tinsert(ptable_type, "count",      HOFFSET(ptable_v0_10, count),      H5T_NATIVE_INT);
+
+  if( (tableId = H5PTcreate_fl(groupId,tablename,ptable_type,1024,-1) == H5I_BADID))
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename);
+      exit(1);
+    }
+
+  printf("valid table = %i\n",H5PTis_valid(tableId));
+
+  // just prototyping; create a couple of example entries by hand
+
+  sprintf(data[0].timer_name,"foo foo");
+  data[0].measurement = 123.456;
+  data[0].mean = 122.5;
+  data[0].variance = 6e-5;
+  data[0].count = 25;
+
+  //  assert(H5PTappend( tableId, 1, &(data[0]) ) >= 0);
+
+  // this groupId is now active -> we save the hdf identifier for future use
+
+  //  m_pimpl->groupIds[descname] = groupId;
+
+  grvy_printf(GRVY_DEBUG,"%s: Successfully created new packet table (%s)\n",__func__,tableId);
+  return 0;
+}
+
+
 
 inline int GRVY_HDF5_Class::GroupExists(const char *descname)
 {

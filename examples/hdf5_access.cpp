@@ -54,6 +54,8 @@ int main(int argc, char **argv)
 
   h5.CreateGroup("GRVY_performance_timings");
 
+  h5.CreatePTable("GRVY_performance_timings","atable");
+
   // Close the file
 
   h5.Close();

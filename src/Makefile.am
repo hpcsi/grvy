@@ -27,7 +27,7 @@ libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
 if HDF5_ENABLED
   AM_CPPFLAGS          += $(HDF5_CFLAGS)
-  libgrvy_la_LDFLAGS   += $(HDF5_LIBS)
+  libgrvy_la_LDFLAGS   += $(HDF5_LIBS) -lhdf5_hl
 endif
 
 libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
