@@ -35,6 +35,8 @@
 #include <H5PTpublic.h>
 #endif
 
+const int MAX_TIMER_WIDTH=120;	// 
+
 using namespace std;
 using namespace GRVY;
 
@@ -204,7 +206,7 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
       exit(1);
     }
 
-  const int MAX_TIMER_WIDTH=120;
+
 
   typedef struct ptable_v0_10 {
     char timer_name[MAX_TIMER_WIDTH];
@@ -216,30 +218,32 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
 
   hid_t strtype;
   ptable_v0_10 data[2];
+  hid_t ptable_type;
 
   strtype = H5Tcopy(H5T_C_S1);
 
-  H5Tset_size(strtype,MAX_TIMER_WIDTH);
+  H5Tset_size(strtype,(size_t)MAX_TIMER_WIDTH);
   H5Tset_strpad(strtype,H5T_STR_NULLTERM);
 
   grvy_printf(GRVY_INFO,"creating compound datatype\n");
 
-  hid_t ptable_type = H5Tcreate (H5T_COMPOUND, sizeof(ptable_v0_10));
-
-
+  if( (ptable_type = H5Tcreate (H5T_COMPOUND, sizeof(ptable_v0_10))) < 0 )
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to create compound HDF datatype\n",__func__);
+      exit(1);
+    }
+    
   H5Tinsert(ptable_type, "timer_name", HOFFSET(ptable_v0_10, timer_name), strtype);
   H5Tinsert(ptable_type, "measurement",HOFFSET(ptable_v0_10, measurement),H5T_NATIVE_DOUBLE);
   H5Tinsert(ptable_type, "mean",       HOFFSET(ptable_v0_10, mean),       H5T_NATIVE_DOUBLE);
   H5Tinsert(ptable_type, "variance",   HOFFSET(ptable_v0_10, variance),   H5T_NATIVE_DOUBLE);
   H5Tinsert(ptable_type, "count",      HOFFSET(ptable_v0_10, count),      H5T_NATIVE_INT);
 
-  if( (tableId = H5PTcreate_fl(groupId,tablename,ptable_type,1024,-1) == H5I_BADID))
+  if( (tableId = H5PTcreate_fl(groupId,tablename,ptable_type,(hsize_t)256,-1)) == H5I_BADID)
     {
       grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename);
       exit(1);
     }
-
-  printf("valid table = %i\n",H5PTis_valid(tableId));
 
   // just prototyping; create a couple of example entries by hand
 
@@ -249,7 +253,15 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
   data[0].variance = 6e-5;
   data[0].count = 25;
 
-  //  assert(H5PTappend( tableId, 1, &(data[0]) ) >= 0);
+  assert(H5PTappend( tableId, 1, &(data[0]) ) >= 0);
+
+  sprintf(data[0].timer_name,"boo boo");
+  data[0].measurement = 789.123;
+  data[0].mean = 80.0;
+  data[0].variance = 5e-1;
+  data[0].count = 100001;
+
+  assert(H5PTappend( tableId, 1, &(data[0]) ) >= 0);
 
   // this groupId is now active -> we save the hdf identifier for future use
 

@@ -1,5 +1,5 @@
 h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h hpct.h grvy_env.h
-cc_sources              = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp \
+cc_sources              = grvy_input.cpp grvy_classes.cpp grvy_timer_interface.cpp \
 		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_hpct_compat.cpp \
 			  grvy_version.cpp grvy_env.cpp grvy_hdf5.cpp
 
