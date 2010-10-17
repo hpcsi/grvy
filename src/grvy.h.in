@@ -442,8 +442,8 @@ class GRVY_Input_Class {
   void Register_Var  (const char *varname, float   var);
   void Register_Var  (const char *varname, double  var);
   void Register_Var  (const char *varname, bool    var);
-  void Register_Var  (const char *varname, char   *var);
-  void Register_Var  (const char *varname, std::string var);
+  void Register_Var  (const char *varname, const char  *var);
+  void Register_Var  (const char *varname, std::string  var);
 
   int  Get_Var       (const char *varname, int    *var);
   int  Get_Var       (const char *varname, float  *var);

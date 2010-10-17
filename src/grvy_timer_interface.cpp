@@ -22,7 +22,7 @@
 //
 //-----------------------------------------------------------------------el-
 //
-// grvy_timer: Timing routines for performance monitoring
+// grvy_timer_interface: C interface for performance timing routines
 //
 // $Id$
 //--------------------------------------------------------------------------
@@ -37,8 +37,6 @@
 
 using namespace std;
 using namespace GRVY;
-
-//GRVY_Timer_Class *_GRVY_TimerMap;                // performance timer map
 
 double grvy_timer ()
 {
