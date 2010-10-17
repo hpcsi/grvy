@@ -1,4 +1,4 @@
-h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h hpct.h grvy_env.h
+h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h grvy_env.h
 cc_sources              = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp grvy_timer_interface.cpp \
 		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp \
 			  grvy_version.cpp grvy_env.cpp grvy_hdf5.cpp
@@ -12,16 +12,12 @@ AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
 
 BUILT_SOURCES = .license.stamp
 
-# Note: the use of hpct_ api syntax and linkage to -lhpct is still
-# supported in libGRVY but will be deprecated in the future. 
 
-lib_LTLIBRARIES         = libgrvy.la libhpct.la
+lib_LTLIBRARIES         = libgrvy.la 
 LIBS                    = $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
 
-
-
 library_includedir      = $(includedir)
-library_include_HEADERS = grvy.h hpct.h grvy_classes.h 
+library_include_HEADERS = grvy.h grvy_classes.h 
 libgrvy_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE) 
 libgrvy_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
@@ -29,9 +25,6 @@ if HDF5_ENABLED
   AM_CPPFLAGS          += $(HDF5_CFLAGS)
   libgrvy_la_LDFLAGS   += $(HDF5_LIBS) -lhdf5_hl
 endif
-
-libhpct_la_LDFLAGS      = $(all_libraries) -release $(GENERIC_RELEASE)
-libhpct_la_SOURCES      = $(getpot_sources) $(cc_sources) $(h_sources)
 
 bin_PROGRAMS            = version hostinfo # foo
 version_SOURCES         = version.cpp grvy.h libgrvy.la
@@ -54,12 +47,7 @@ test_SOURCES            = grvy.f90 main.f90
 test_LIBTOOLFLAGS       = --tag=FC
 test_DEPENDENCIES       = grvy.o
 
-#test2_SOURCES           = grvy_hpct.f90 main_hpct.f90
-#test2_LIBTOOLFLAGS      = --tag=FC
-#test2_DEPENDENCIES      = grvy_hpct.o
-
 main.f90: grvy.f90
-main_hpct.f90: grvy_hpct.f90
 
 #---------------------------------
 # Embedded license header support
@@ -71,7 +59,7 @@ main_hpct.f90: grvy_hpct.f90
 
 
 moduledir               = @libdir@
-module_DATA             = grvy.mod hpct.mod
+module_DATA             = grvy.mod
 
 EXTRA_DIST              = common/lic_utils common/lcov
 
@@ -79,6 +67,6 @@ dist-hook:
 	rm -rf `find $(distdir)/ -name .svn`
 
 
-CLEANFILES              = grvy.mod hpct.mod .license.stamp *.gcno *.gcda
+CLEANFILES              = grvy.mod .license.stamp *.gcno *.gcda
 
 METASOURCES = AUTO
