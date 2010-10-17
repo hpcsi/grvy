@@ -1,4 +1,4 @@
-SUBDIRS         = hpct_api
+SUBDIRS         = 
 
 BUILT_SOURCES   = .license.stamp
 
@@ -164,3 +164,5 @@ EXTRA_DIST        = init.sh finalize.sh input-example.txt \
                     F_wrapper_log.sh \
                     F_timer.sh \
                     ref_files
+
+CLEANFILES        = .license.stamp *.gcno *.gcda
