@@ -1,6 +1,6 @@
 h_sources               = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h hpct.h grvy_env.h
 cc_sources              = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp grvy_timer_interface.cpp \
-		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_hpct_compat.cpp \
+		          grvy_utils.cpp grvy_math.cpp grvy_log.cpp \
 			  grvy_version.cpp grvy_env.cpp grvy_hdf5.cpp
 
 getpot_sources          = common/getpot/getpot.h
@@ -46,7 +46,7 @@ hostinfo_DEPENDENCIES   = libgrvy.la
 # Fortran Module Interface
 #--------------------------
 
-noinst_PROGRAMS         = test test2
+noinst_PROGRAMS         = test
 standalonedir           = @prefix@/bin
 standalone_PROGRAMS     = version
 
@@ -54,9 +54,9 @@ test_SOURCES            = grvy.f90 main.f90
 test_LIBTOOLFLAGS       = --tag=FC
 test_DEPENDENCIES       = grvy.o
 
-test2_SOURCES           = grvy_hpct.f90 main_hpct.f90
-test2_LIBTOOLFLAGS      = --tag=FC
-test2_DEPENDENCIES      = grvy_hpct.o
+#test2_SOURCES           = grvy_hpct.f90 main_hpct.f90
+#test2_LIBTOOLFLAGS      = --tag=FC
+#test2_DEPENDENCIES      = grvy_hpct.o
 
 main.f90: grvy.f90
 main_hpct.f90: grvy_hpct.f90
