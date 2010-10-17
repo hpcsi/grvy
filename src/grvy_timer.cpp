@@ -79,10 +79,12 @@ public:
   GRVY_Timer_ClassImp() {}
  ~GRVY_Timer_ClassImp() {}
 
-  void VerifyInit();
+  void VerifyInit ();
+  void BeginTimer (const char *,bool); 
+  void EndTimer   (const char *,bool);
+  double RawTimer ();
 
   short int   initialized;            // initialized?
-  double      timer_last;             // raw timer value of last call
   double      timer_finalize;         // raw timer value at time of finalize()
   std::string timer_name;             // user name supplied for the timer
   int         num_begins;	      // number of active begin timers (used for callgraph determination)
@@ -97,11 +99,10 @@ public:
 
 int show_statistics = 1;
 
-GRVY_Timer_Class::GRVY_Timer_Class(string name) :m_pimpl(new GRVY_Timer_ClassImp() )
+GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
 {
-  m_pimpl->timer_name     = name;
+  //m_pimpl->timer_name     = name;
   m_pimpl->initialized    = 1;
-  m_pimpl->timer_last     = 0.0;
   m_pimpl->timer_finalize = -1;
   m_pimpl->num_begins     = 0;	
   m_pimpl->beginTrigger   = false;
@@ -112,16 +113,39 @@ GRVY_Timer_Class::~GRVY_Timer_Class()
   // using auto_ptr for proper cleanup
 }
 
+void GRVY_Timer_Class::Init(string name)
+{
+  m_pimpl->timer_name = name;
+  BeginTimer(_GRVY_gtimer);
+  return;
+}
+
+void GRVY_Timer_Class::Finalize()
+{
+  EndTimer(_GRVY_gtimer);
+  return;
+}
+
 void GRVY_Timer_Class::GRVY_Timer_ClassImp:: VerifyInit ()
 {
-  if( (_GRVY_Timers == NULL) || !initialized )
+  if( !initialized )
     {
       grvy_printf(GRVY_ERROR,"%s: timer uninitialized\n",__func__);
       exit(1);
     }
 }
 
-void GRVY_Timer_Class:: BeginTimer (const char *id, bool embeddedFlag)
+void GRVY_Timer_Class::BeginTimer (const char *id)
+{
+  return(m_pimpl->BeginTimer(id,false));
+}
+
+void GRVY_Timer_Class::EndTimer (const char *id)
+{
+  return(m_pimpl->EndTimer(id,false));
+}
+
+void GRVY_Timer_Class::GRVY_Timer_ClassImp::BeginTimer (const char *id, bool embeddedFlag)
 {
   double mytime;
   _GRVY_Type_TimerMap2 :: iterator index;
@@ -151,31 +175,31 @@ void GRVY_Timer_Class:: BeginTimer (const char *id, bool embeddedFlag)
 
   if(!embeddedFlag)
     {
-      m_pimpl->num_begins++; 
+      num_begins++; 
 
-      if(m_pimpl->num_begins > 2)
+      if(num_begins > 2)
 	{
 	  //grvy_printf(GRVY_INFO,"begin: ending previous timer %s (newtimer = %s)\n",callgraph.top().c_str(),id);
-	  EndTimer(m_pimpl->callgraph.top().c_str(),true);
+	  EndTimer(callgraph.top().c_str(),true);
 	}
 	
-      if(m_pimpl->num_begins > m_pimpl->callgraph.size())
+      if(num_begins > callgraph.size())
 	{
-	  m_pimpl->callgraph.push(id);
-	  //grvy_printf(GRVY_INFO,"begin: m_pimpl->num_begins = %i (%s)\n",m_pimpl->num_begins,id);
+	  callgraph.push(id);
+	  //grvy_printf(GRVY_INFO,"begin: num_begins = %i (%s)\n",num_begins,id);
 	}
     }
 
   // Is this the first call for this id?
 
-  index = m_pimpl->TimerMap.find(id);
+  index = TimerMap.find(id);
 
-  if ( index == m_pimpl->TimerMap.end() )
+  if ( index == TimerMap.end() )
     {
       Data.timings[0] = 0.0;	                      // stores accumulated time
       Data.timings[1] = mytime;                       // stores latest timestamp
 
-      m_pimpl->TimerMap[id] = Data;
+      TimerMap[id] = Data;
     }
   else
     {
@@ -184,7 +208,7 @@ void GRVY_Timer_Class:: BeginTimer (const char *id, bool embeddedFlag)
   
 }
 
-void GRVY_Timer_Class:: EndTimer (const char *id, bool embeddedFlag)
+void GRVY_Timer_Class::GRVY_Timer_ClassImp::EndTimer (const char *id, bool embeddedFlag)
 {
   double      mytime, increment;
   tTimer_Data Data;
@@ -193,9 +217,9 @@ void GRVY_Timer_Class:: EndTimer (const char *id, bool embeddedFlag)
   _GRVY_Type_TimerMap2 :: iterator index;
 
   mytime = RawTimer();
-  index  = m_pimpl->TimerMap.find(id);
+  index  = TimerMap.find(id);
 
-  if ( index == m_pimpl->TimerMap.end() )
+  if ( index == TimerMap.end() )
     _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",id);
   else if(index->first[1] < 0)
     _GRVY_message(GRVY_ERROR,__func__,"No matching begin timer call for",id);
@@ -207,7 +231,7 @@ void GRVY_Timer_Class:: EndTimer (const char *id, bool embeddedFlag)
 
       // warn against potential measurements that are too small
 
-      if(!m_pimpl->beginTrigger)
+      if(!beginTrigger)
 	{
 	  if( increment <= _GRVY_TIMER_THRESH )
 	    {
@@ -217,7 +241,7 @@ void GRVY_Timer_Class:: EndTimer (const char *id, bool embeddedFlag)
 	}
       else
 	{
-	  m_pimpl->beginTrigger = false;
+	  beginTrigger = false;
 	}
 
       (index->second).timings[0] += increment;
@@ -245,21 +269,21 @@ void GRVY_Timer_Class:: EndTimer (const char *id, bool embeddedFlag)
 	{
 
 	  //grvy_printf(GRVY_INFO,"end: popping id %s (size = %i)\n",callgraph.top().c_str(),callgraph.size());
-	  //grvy_printf(GRVY_INFO,"end: m_pimpl->num_begins = %i\n",m_pimpl->num_begins);
+	  //grvy_printf(GRVY_INFO,"end: num_begins = %i\n",num_begins);
 
-	  if(m_pimpl->callgraph.size() >= 1)
-	    m_pimpl->callgraph.pop();
+	  if(callgraph.size() >= 1)
+	    callgraph.pop();
 	  else
 	    grvy_printf(GRVY_ERROR,"GRVY (%s): no callgraph left for %s\n",__func__,id);
 
-	  if(m_pimpl->num_begins > 2)
+	  if(num_begins > 2)
 	    {
-	      BeginTimer(m_pimpl->callgraph.top().c_str(),true);
-	      m_pimpl->beginTrigger = true;
+	      BeginTimer(callgraph.top().c_str(),true);
+	      beginTrigger = true;
 	      //grvy_printf(GRVY_INFO,"end: re-beginning timer for %s\n",callgraph.top().c_str());
 	    }
 
-	  m_pimpl->num_begins--;
+	  num_begins--;
 	}
     }
 
@@ -268,7 +292,7 @@ void GRVY_Timer_Class:: EndTimer (const char *id, bool embeddedFlag)
   // grvy_timer_finalize()
 
   if ( strcmp(id,_GRVY_gtimer) == 0 )
-    m_pimpl->timer_finalize = RawTimer();
+    timer_finalize = RawTimer();
 
   return;
 }
@@ -276,9 +300,6 @@ void GRVY_Timer_Class:: EndTimer (const char *id, bool embeddedFlag)
 void GRVY_Timer_Class:: Reset()
 {
   _GRVY_Type_TimerMap2 :: iterator index;
-
-  if(_GRVY_Timers == NULL)
-    return;
 
   if(!m_pimpl->initialized)
     return;
@@ -294,7 +315,12 @@ void GRVY_Timer_Class:: Reset()
   return;
 }
 
-double GRVY_Timer_Class:: RawTimer()
+double GRVY_Timer_Class::RawTimer() 
+{
+  return(m_pimpl->RawTimer());
+}
+
+double GRVY_Timer_Class::GRVY_Timer_ClassImp::RawTimer()
 {
   int rc;
   struct timeval tv;
@@ -309,9 +335,7 @@ double GRVY_Timer_Class:: RawTimer()
 
   double t1 =  ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec);
 
-  m_pimpl->timer_last = t1;
   return(t1);
-
 }
 
 double GRVY_Timer_Class:: ElapsedSeconds(const char *id)
@@ -579,19 +603,44 @@ void GRVY_Timer_Class:: Summarize()
   printf("\n\n");
 }
 
+#if 0
 int GRVY_Timer_Class::InitHistDB(const char *filename)
 {
   GRVY::GRVY_HDF5_Class h5_file;
   //return(h5_file.file_create(filename,true));
 }
+#endif
 
-int GRVY_Timer_Class::SaveHistTiming()
+// SaveHistTime(): used to save the current timer to an HDF5 file for
+// historical monitoring purposed.  Should be called after the global
+// timer has been finalized.
+
+int GRVY_Timer_Class::SaveHistTiming(const char *filename)
 {
-    
+
+  m_pimpl->VerifyInit();
+
+  GRVY_HDF5_Class h5;
+
+  // Open existing file or create new one if not present
+
+  if( h5.Exists(filename) )
+    h5.Open(filename,false);
+  else
+    h5.Create(filename,false);
+
+  // Open or create GRVY timer group
+
+  if (h5.GroupExists("GRVY/performance_timings"))
+    h5.GroupOpen("GRVY/performance_timings");
+  else
+    h5.GroupCreate("GRVY/performance_timings");
+
+
   return 0;
 }
 
-int GRVY_Timer_Class::SaveHistTiming(const char *id, double timing)
+int GRVY_Timer_Class::SaveHistTiming(const char *filename, const char *id, double timing)
 {
     
   return 0;

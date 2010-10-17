@@ -374,10 +374,6 @@ extern "C" {
 #include<string>
 #include<memory>
 
-//--------------------------
-// Performance Timing Class
-//--------------------------
-
 // Forward declare GetPot class so we don't need
 // to include getpot.h here.
 
@@ -484,27 +480,29 @@ class GRVY_Input_Class {
 class GRVY_Timer_Class {
 
  public:
-  GRVY_Timer_Class      (std::string Name); 
+  GRVY_Timer_Class      (); 
  ~GRVY_Timer_Class      ();
 
-  void   BeginTimer     (const char *name, bool embeddedFlag);
-  void   EndTimer       (const char *name, bool embeddedFlag);
+  void   Init           (std::string name);    // intialize global timing process
+  void   BeginTimer     (const char *name);    // start local timer
+  void   EndTimer       (const char *name);    //   end local timer
+  void   Finalize       ();                    //  end global timer
+  
   double ElapsedSeconds (const char *id);
   double ElapsedGlobal  ();
   double RawTimer       ();
 
-  void   Reset          ();	// reset all timers
-  void   Summarize      ();	// pretty-print timing information
+  void   Reset          ();	              // reset all timers
+  void   Summarize      ();	              // pretty-print timing information
 
-  int    StatsCount     (const char *id);
-  double StatsMean      (const char *id);
-  double StatsVariance  (const char *id);
+  int    StatsCount     (const char *id);     // # of calls to timer (id)
+  double StatsMean      (const char *id);     // mean time for timer (id)
+  double StatsVariance  (const char *id);     //  variance for timer (id)
 
   // Historical timing support
 
-  int  InitHistDB          (const char *filename);
-  int  SaveHistTiming      ();
-  int  SaveHistTiming      (const char *id, double timing);
+  int  SaveHistTiming      (const char *filename);
+  int  SaveHistTiming      (const char *filename, const char *id, double timing);
   void SummarizeHistTiming (const char *filename);
 
 private:
@@ -520,24 +518,28 @@ private:
  class GRVY_HDF5_Class //: private boost::noncopyable
  {
  public:
-   GRVY_HDF5_Class ();
-  ~GRVY_HDF5_Class ();
+   GRVY_HDF5_Class  ();
+  ~GRVY_HDF5_Class  ();
 
-   GRVY_HDF5_Class (const GRVY_HDF5_Class &rhs);
-   GRVY_HDF5_Class &operator= (GRVY_HDF5_Class );
+   GRVY_HDF5_Class  (const GRVY_HDF5_Class &rhs);
+   GRVY_HDF5_Class  &operator= (GRVY_HDF5_Class );
+
+   // File-related functions
    
-   int Create      (const char *filename, bool overwrite_existing);
-   int Open        (const char *filename, bool overwrite_existing);
-   int Close       ();
+   int  Create  (const char *filename, bool overwrite_existing);
+   int  Open    (const char *filename, bool read_only         );
+   bool Exists  (const char *filename);
+   int  Close   ();
 
    // Group-related functions
    
-   int CreateGroup (const char *groupname);
-   int GroupExists (const char *groupname);
+   int  GroupCreate (const char *groupname);
+   int  GroupOpen   (const char *groupname);
+   bool GroupExists (const char *groupname);
 
    // Dataset-related functions
 
-   int CreatePTable(const char *groupname, const char *tablename);
+   int CreatePTable (const char *groupname, const char *tablename);
 
    //   int CreateDataSet1d_unlimited(const char *groupname, const char *varname);
    
