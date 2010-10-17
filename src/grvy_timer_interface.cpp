@@ -64,7 +64,6 @@ void grvy_timer_end(const char *id)
 
 double grvy_timer_elapsedseconds(const char *id)
 {
-  _GRVY_Timers->VerifyInit();
   return( _GRVY_Timers->ElapsedSeconds(id) );
 }
 
@@ -72,10 +71,8 @@ double grvy_timer_elapsedseconds(const char *id)
 
 double grvy_timer_elapsed_global()
 {
-  _GRVY_Timers->VerifyInit();
   return ( _GRVY_Timers->ElapsedGlobal() );
 }
-
 
 // grvy_timer_init(): Define beginning of global portion to be
 // monitored
@@ -86,11 +83,7 @@ void grvy_timer_init(const char *id)
   // create new timer on 1st call
 
   if(_GRVY_Timers == NULL)
-    _GRVY_Timers = new GRVY_Timer_Class();
-
-  // register the name for the timer
-
-  _GRVY_Timers->SaveTimerName(id);
+    _GRVY_Timers = new GRVY_Timer_Class(id);
 
   // initialize global timer region
 
@@ -111,7 +104,6 @@ void grvy_timer_reset()
 
 void grvy_timer_finalize()
 {
-  //  _GRVY_Timers->VerifyInit();
   _GRVY_Timers->EndTimer(_GRVY_gtimer,false);
   return;
 }
@@ -120,7 +112,6 @@ void grvy_timer_finalize()
 
 void grvy_timer_summarize()
 {
-  _GRVY_Timers->VerifyInit();
   _GRVY_Timers->Summarize();
   return;
 }

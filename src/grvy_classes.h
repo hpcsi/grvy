@@ -47,67 +47,9 @@
 #include <hdf5.h>
 #endif
 
-#include<boost/accumulators/accumulators.hpp>
-#include<boost/accumulators/statistics/mean.hpp>
-#include<boost/accumulators/statistics/stats.hpp>
-#include<boost/accumulators/statistics/count.hpp>
-#include<boost/accumulators/statistics/variance.hpp>
 #include<boost/math/special_functions.hpp>
 
-using namespace boost::accumulators;
-
 namespace GRVY {
-
-//--------------------------
-// Performance Timing Class
-//--------------------------
-
-typedef struct GRVY_Timer_Data {
-  double timings[2];
-  accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats;
-} tTimer_Data;
-
-typedef std::map <std::string, GRVY_Timer_Data > _GRVY_Type_TimerMap2;
-
-class GRVY_Timer_Class {
- private:
-  short int initialized;              // initialized?
-  double    timer_last;               // raw timer value of last call
-  double    timer_finalize;           // raw timer value at time of finalize()
-  std::string    timer_name;          // user name supplied for the timer
-  int       num_begins;	              // number of active begin timers (used for callgraph determination)
-  std::stack <std::string> callgraph; // callgraph to support embedded timers
-  bool      beginTrigger;             // a trigger used for embedded timers
-  _GRVY_Type_TimerMap2     TimerMap;  // map used to store performance timers for each defined key
-
-  accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
-
- public:
-  GRVY_Timer_Class      ();
-  void   Reset          ();
-  void   Summarize      ();
-  void   VerifyInit     ();
-
-  void   SaveTimerName  (const char *id);
-  void   BeginTimer     (const char *name, bool embeddedFlag);
-  void   EndTimer       (const char *name, bool embeddedFlag);
-
-  double ElapsedSeconds (const char *id);
-  int    StatsCount     (const char *id);
-  double StatsMean      (const char *id);
-  double StatsVariance  (const char *id);
-  double ElapsedGlobal  ();
-  double RawTimer       ();
-
-  // Historical Timing Functions
-
-  int InitHistDB           (const char *filename);
-  int SaveHistTiming       ();
-  int SaveHistTiming       (const char *id, double timing);
-  void SummarizeHistTiming (const char *filename);
-  
-
-};
 
 //--------------------------
 // Math Class

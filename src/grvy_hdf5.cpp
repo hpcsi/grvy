@@ -40,6 +40,10 @@ const int MAX_TIMER_WIDTH=120;	//
 using namespace std;
 using namespace GRVY;
 
+//------------------------------------------------------- 
+// private implementation class definition for GRVY_HDF5
+//-------------------------------------------------------
+
 namespace GRVY {
 
 class GRVY_HDF5_Class::GRVY_HDF5_ClassImp

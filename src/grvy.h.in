@@ -114,12 +114,6 @@ extern "C" {
   extern int grvy_input_register_get_double (const char *var, double *value);
   extern int grvy_input_register_get_char   (const char *var,  char **value);
 
-  /* Error Message Output Control */
-
-#if 0
-  extern void grvy_input_toggle_messages(int flag);
-#endif
-
   /*
    * Basic API Definition for Performance Timers
    */
@@ -176,9 +170,9 @@ extern "C" {
    * Miscellaneous Utilities
    */
 
-  extern int  grvy_check_file_path      (const char *pathname);
-  extern int  grvy_create_unique_dir    (      char *name_template);
-  extern int  grvy_create_scratch_dir   (      char *name_template);
+  extern int  grvy_check_file_path        (const char *pathname);
+  extern int  grvy_create_unique_dir      (      char *name_template);
+  extern int  grvy_create_scratch_dir     (      char *name_template);
 
   /*
    * Doxygen API Definitions
@@ -380,6 +374,10 @@ extern "C" {
 #include<string>
 #include<memory>
 
+//--------------------------
+// Performance Timing Class
+//--------------------------
+
 // Forward declare GetPot class so we don't need
 // to include getpot.h here.
 
@@ -477,6 +475,42 @@ class GRVY_Input_Class {
   const char  *comment_end;
 
   template <typename T> T Get_Default   (T);
+};
+
+//--------------------------
+// Performance Timing Class
+//--------------------------
+
+class GRVY_Timer_Class {
+
+ public:
+  GRVY_Timer_Class      (std::string Name); 
+ ~GRVY_Timer_Class      ();
+
+  void   BeginTimer     (const char *name, bool embeddedFlag);
+  void   EndTimer       (const char *name, bool embeddedFlag);
+  double ElapsedSeconds (const char *id);
+  double ElapsedGlobal  ();
+  double RawTimer       ();
+
+  void   Reset          ();	// reset all timers
+  void   Summarize      ();	// pretty-print timing information
+
+  int    StatsCount     (const char *id);
+  double StatsMean      (const char *id);
+  double StatsVariance  (const char *id);
+
+  // Historical timing support
+
+  int  InitHistDB          (const char *filename);
+  int  SaveHistTiming      ();
+  int  SaveHistTiming      (const char *id, double timing);
+  void SummarizeHistTiming (const char *filename);
+
+private:
+  class GRVY_Timer_ClassImp;	              // forware declaration to Timer implementation
+  std::auto_ptr<GRVY_Timer_ClassImp> m_pimpl; // pointer to implementation
+
 };
 
 //--------------------
