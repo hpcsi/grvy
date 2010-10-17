@@ -1,5 +1,6 @@
 Version 0.30.0 (In Progress)
 
+  * deprecated hpct-based api, all library access should use grvy semantics
 
 Version 0.29.1 (26 September 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.29.1
