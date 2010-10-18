@@ -35,7 +35,7 @@
 #include <H5PTpublic.h>
 #endif
 
-const int MAX_TIMER_WIDTH=120;	// 
+const int MAX_TIMER_WIDTH=120;	
 
 using namespace std;
 using namespace GRVY;
@@ -240,6 +240,7 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
       exit(1);
     }
 
+#if 1
   typedef struct ptable_v0_10 {
     char timer_name[MAX_TIMER_WIDTH];
     double measurement;
@@ -247,6 +248,7 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
     double variance;
     int count;
   } ptable_v0_10;
+#endif
 
   hid_t strtype;
   ptable_v0_10 data[2];
@@ -469,8 +471,8 @@ int  GRVY_HDF5_Class::Open  (const char *, bool){return 0;}
 int  GRVY_HDF5_Class::Close (){return 0;}
 bool GRVY_HDF5_Class::Exists(const char *){return 0;}
 
-int  GRVY_HDF5_Class::GroupCreate (const char *){return 0;}
-int  GRVY_HDF5_Class::GroupExists (const char *){return 0;}
+int  GRVY_HDF5_Class::GroupCreate (std::string){return 0;}
+bool GRVY_HDF5_Class::GroupExists (std::string){return 0;}
 int  GRVY_HDF5_Class::CreatePTable(const char *, const char *){return 0;};
 
 
