@@ -35,6 +35,7 @@
 #include "grvy_classes.h"
 #include "grvy.h"
 #include "grvy_int.h"
+#include "grvy_env.h"
 
 #include<boost/accumulators/accumulators.hpp>
 #include<boost/accumulators/statistics/mean.hpp>
@@ -611,9 +612,9 @@ int GRVY_Timer_Class::InitHistDB(const char *filename)
 }
 #endif
 
-// SaveHistTime(): used to save the current timer to an HDF5 file for
+// SaveHistTime(): used to save the current profiled timer to an HDF5 file for
 // historical monitoring purposed.  Should be called after the global
-// timer has been finalized.
+// timer has been Finalized.
 
 int GRVY_Timer_Class::SaveHistTiming(const char *filename)
 {
@@ -629,13 +630,24 @@ int GRVY_Timer_Class::SaveHistTiming(const char *filename)
   else
     h5.Create(filename,false);
 
+  grvy_printf(GRVY_DEBUG,"%s: hdf5 file opened/created for %s\n",__func__,filename);
+
   // Open or create GRVY timer group
 
-  if (h5.GroupExists("GRVY/performance_timings"))
-    h5.GroupOpen("GRVY/performance_timings");
-  else
-    h5.GroupCreate("GRVY/performance_timings");
+  string toplevel("GRVY/Performance_timings");
 
+  if (h5.GroupExists(toplevel))
+    h5.GroupOpen(toplevel);
+  else
+    h5.GroupCreate(toplevel);
+
+  // Query host information
+
+  GRVY_Hostenv_Class myenv;
+
+    
+
+  h5.Close();
 
   return 0;
 }

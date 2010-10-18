@@ -61,7 +61,7 @@ public:
   H5E_auto2_t error_orig_func;              // error-handle func
   void       *error_orig_data;              // error-handle stack data
 
-  bool is_group_open(const char *groupname);
+  bool is_group_open(string groupname);
   
   void silence_hdf_error_handler();
   void restore_hdf_error_handler();
@@ -156,7 +156,7 @@ int GRVY_HDF5_Class::Open(const char *filename,bool readonly)
       grvy_printf(GRVY_DEBUG,"%s: Opening existing hdf file %s (readonly=false)\n",__func__,filename);
     }
 
-  if(!m_pimpl->fileId)
+  if(m_pimpl->fileId)
     {
       grvy_printf(GRVY_FATAL,"hdf5_open: current state has actively opened file - please close first\n",filename);
       exit(1);
@@ -175,7 +175,7 @@ int GRVY_HDF5_Class::Open(const char *filename,bool readonly)
   return(0); 
 }
 
-int GRVY_HDF5_Class::GroupCreate(const char *descname)
+int GRVY_HDF5_Class::GroupCreate(string descname)
 {
   hid_t groupId;
   time_t now;
@@ -185,30 +185,39 @@ int GRVY_HDF5_Class::GroupCreate(const char *descname)
 
   if(m_pimpl->is_group_open(descname))
     {
-      grvy_printf(GRVY_WARN,"%s: Group %s already exists\n",__func__,descname);
+      grvy_printf(GRVY_WARN,"%s: Group %s already exists\n",__func__,descname.c_str());
       return 1;
     }
 
-  if ( (groupId = H5Gcreate2(m_pimpl->fileId,descname,H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT)) < 0)
+  // Enable intermediate group creation to allow for user providing a
+  // nested path
+
+  herr_t status;
+  hid_t grp_crt_plist;
+
+  grp_crt_plist = H5Pcreate(H5P_LINK_CREATE);
+  status = H5Pset_create_intermediate_group(grp_crt_plist, 1);
+
+  if ( (groupId = H5Gcreate2(m_pimpl->fileId,descname.c_str(),grp_crt_plist,H5P_DEFAULT,H5P_DEFAULT)) < 0)
     {
-      grvy_printf(GRVY_FATAL,"%s: Unable to create HDF group (%s)\n",__func__,descname);
+      grvy_printf(GRVY_FATAL,"%s: Unable to create HDF group (%s)\n",__func__,descname.c_str());
       exit(1);
     }
 
   time (&now);
   sprintf(comment,"Created on %.24s",ctime(&now));
   
-  if( H5Gset_comment(m_pimpl->fileId,descname,comment) < 0)
+  if( H5Gset_comment(m_pimpl->fileId,descname.c_str(),comment) < 0)
     {
-      grvy_printf(GRVY_FATAL,"%s: Unable to add comment for group (%s)\n",__func__,descname);
+      grvy_printf(GRVY_FATAL,"%s: Unable to add comment for group (%s)\n",__func__,descname.c_str());
       exit(1);
     }
 
-  // this groupId is now active -> we save the hdf identifier for future use
+  // this groupId is now active -> save the hdf identifier for future use
 
   m_pimpl->groupIds[descname] = groupId;
 
-  grvy_printf(GRVY_DEBUG,"%s: Successfully created new  HDF group (%s)\n",__func__,descname);
+  grvy_printf(GRVY_DEBUG,"%s: Successfully created new  HDF group (%s)\n",__func__,descname.c_str());
   return 0;
 }
 
@@ -309,17 +318,18 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
 
   //  m_pimpl->groupIds[descname] = groupId;
 
-  grvy_printf(GRVY_DEBUG,"%s: Successfully created new packet table (%s)\n",__func__,tableId);
+  printf("almost done\n");
+  grvy_printf(GRVY_DEBUG,"%s: Successfully created new packet table (%s)\n",__func__,tablename);
   return 0;
 }
 
-bool GRVY_HDF5_Class::GroupExists(const char *groupname)
+bool GRVY_HDF5_Class::GroupExists(string groupname)
 {
   hid_t groupId;
 
   m_pimpl->silence_hdf_error_handler();
 
-  if ( (groupId = H5Gopen(m_pimpl->fileId, groupname,H5P_DEFAULT)) < 0)
+  if ( (groupId = H5Gopen(m_pimpl->fileId, groupname.c_str(),H5P_DEFAULT)) < 0)
     {
       m_pimpl->restore_hdf_error_handler();  
       return(false);
@@ -332,7 +342,30 @@ bool GRVY_HDF5_Class::GroupExists(const char *groupname)
     }
 }
 
-inline bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::is_group_open(const char *descname)
+int GRVY_HDF5_Class::GroupOpen(string groupname)
+{
+  if(!m_pimpl->fileId)
+    {
+      grvy_printf(GRVY_FATAL,"%s: no hdf5 file is actively open - unable to open group %s\n",
+		  __func__,groupname.c_str());
+      exit(1);
+    }
+
+  m_pimpl->silence_hdf_error_handler();
+
+  if ( (m_pimpl->groupIds[groupname] = H5Gopen(m_pimpl->fileId, groupname.c_str(),H5P_DEFAULT)) < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to open *existing* HDF group (%s)\n",__func__,groupname.c_str());
+      exit(1);
+    }  
+
+  m_pimpl->restore_hdf_error_handler();  
+
+  grvy_printf(GRVY_DEBUG,"%s: Successfully opened existing HDF group (%s)\n",__func__,groupname.c_str());
+  return(0); 
+}
+
+inline bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::is_group_open(string descname)
 {
   if(groupIds.count(descname) > 0)
     return true;
