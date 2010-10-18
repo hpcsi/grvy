@@ -6,5 +6,8 @@
 int main()
 {
   GRVY_Hostenv_Class myenv;
+
+  myenv.Print();
+
   return 0;
 }

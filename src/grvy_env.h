@@ -20,16 +20,30 @@
 // Boston, MA  02110-1301  USA
 //
 //-----------------------------------------------------------------------el-
+//
+// grvy_env.h: Header for internal environment class
+//
+// $Id$
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+
+#ifndef GRVY_ENV_H
+#define GRVY_ENV_H
 
 #include <string>
 
 class GRVY_Hostenv_Class {
-private:
-  std::string hostname;
-  std::string domainname;
-  std::string cputype;
-
 public:
   GRVY_Hostenv_Class();
+  void Print();
+
+private:
+  std::string hostname;
+  std::string os_sysname;
+  std::string os_release;
+  std::string os_version;
+  std::string domainname;
+  std::string cputype;
 };
 
+#endif

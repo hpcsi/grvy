@@ -533,9 +533,9 @@ private:
 
    // Group-related functions
    
-   int  GroupCreate (const char *groupname);
-   int  GroupOpen   (const char *groupname);
-   bool GroupExists (const char *groupname);
+   int  GroupCreate (std::string groupname);
+   int  GroupOpen   (std::string groupname);
+   bool GroupExists (std::string groupname);
 
    // Dataset-related functions
 
