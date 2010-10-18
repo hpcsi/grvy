@@ -436,9 +436,9 @@ int  GRVY_HDF5_Class::Open  (const char *, bool){return 0;}
 int  GRVY_HDF5_Class::Close (){return 0;}
 bool GRVY_HDF5_Class::Exists(const char *){return 0;}
 
-int GRVY_HDF5_Class::CreateGroup (const char *){return 0;}
-int GRVY_HDF5_Class::GroupExists (const char *){return 0;}
-int GRVY_HDF5_Class::CreatePTable(const char *, const char *){return 0;};
+int  GRVY_HDF5_Class::GroupCreate (const char *){return 0;}
+int  GRVY_HDF5_Class::GroupExists (const char *){return 0;}
+int  GRVY_HDF5_Class::CreatePTable(const char *, const char *){return 0;};
 
 
 #endif

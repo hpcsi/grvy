@@ -38,6 +38,11 @@ using namespace std;
 int main(int argc, char **argv)
 {
 
+  //GRVY_Timer_Class timer("mytimer");
+  
+  grvy_timer_init("mytimer");
+  grvy_timer_begin("Main Program");
+  
   GRVY_HDF5_Class h5;	// HDF5 object for interacting with HDF5 files
 
   grvy_log_setlevel(GRVY_INFO);
@@ -52,9 +57,13 @@ int main(int argc, char **argv)
 
   // Create a new group
 
-  h5.CreateGroup("GRVY_performance_timings");
+  h5.GroupCreate("GRVY_performance_timings");
 
   h5.CreatePTable("GRVY_performance_timings","atable");
+
+  grvy_timer_finalize();
+
+  
 
   // Close the file
 
