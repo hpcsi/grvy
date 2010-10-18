@@ -29,8 +29,6 @@
 
 #include<sys/utsname.h>
 #include<grvy.h>
-//#include<stdio.h>
-//#include<grvy_int.h>
 #include<grvy_env.h>
 #include<boost/regex.hpp>
 #include<iostream> 
@@ -40,12 +38,12 @@ GRVY_Hostenv_Class::GRVY_Hostenv_Class()
   struct utsname uts;
 
   uname (&uts);
-  
-  grvy_printf(GRVY_INFO,"nodename = %s\n",uts.nodename);
-  grvy_printf(GRVY_INFO,"sysname  = %s\n",uts.sysname);
-  grvy_printf(GRVY_INFO,"release  = %s\n",uts.release);
-  grvy_printf(GRVY_INFO,"version  = %s\n",uts.version);
 
+  hostname   = uts.nodename;
+  os_sysname = uts.sysname;
+  os_release = uts.release;
+  os_version = uts.version;
+  
   // Cull domainname from nodename
 
   boost::regex re("(\\S+)\\.(\\S+)");
@@ -56,11 +54,24 @@ GRVY_Hostenv_Class::GRVY_Hostenv_Class()
   if(boost::regex_match(uts.nodename,regex_match,re))
     {
       domainname = regex_match[2];
-      grvy_printf(GRVY_INFO,"domainname  = %s\n",domainname.c_str());
     }
   else
     grvy_printf(GRVY_WARN,"unable to determine domainname\n");
+
+  cputype = "Unknown";
   
+  return;
+}
+
+void GRVY_Hostenv_Class::Print()
+{
+  grvy_printf(GRVY_INFO,"hostname = %s\n",hostname.c_str()    );
+  grvy_printf(GRVY_INFO,"sysname  = %s\n",os_sysname.c_str()  );
+  grvy_printf(GRVY_INFO,"release  = %s\n",os_release.c_str()  );
+  grvy_printf(GRVY_INFO,"version  = %s\n",os_version.c_str()  );
+  grvy_printf(GRVY_INFO,"domainname = %s\n",domainname.c_str());
+  grvy_printf(GRVY_INFO,"cputype    = %s\n",cputype.c_str()   );
+
   return;
 }
 
