@@ -761,14 +761,14 @@ int GRVY_Timer_Class::SaveHistTiming(const char *filename )
     {
       if(index->first != _GRVY_gtimer)
 	{
-	  if(index->first.length() > 120)
-	    {
-	      sprintf(data_tmp.timer_name,"%s",index->first.c_str());
-	    }
-	  else
+	  if(index->first.length() > 119)
 	    {
 	      sprintf(data_tmp.timer_name,"%119s",index->first.c_str());
 	      data_tmp.timer_name[119] = '\0';
+	    }
+	  else
+	    {
+	      sprintf(data_tmp.timer_name,"%s",index->first.c_str());
 	    }
 
 	  data_tmp.measurement = ElapsedSeconds(index->first);
