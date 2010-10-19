@@ -65,7 +65,9 @@ using namespace GRVY;
 #define MAX_TIMER_WIDTH_V1 120
 #define PTABLE_VERSION     1	// default version beginning Oct. 2010
 
-// Packet table data structures
+// Packet table data structures for historical hdf logging
+
+#ifdef HAVE_HDF5
 
 typedef struct SubTimer_PTable_V1 {
   char timer_name[MAX_TIMER_WIDTH_V1];
@@ -81,6 +83,8 @@ typedef struct TimerPTable_V1 {
   int code_revision;
   hvl_t vl_subtimers;
 } Timer_PTable_V1;
+
+#endif
 
 // Individual timer data structure
 
