@@ -482,7 +482,9 @@ bool GRVY_HDF5_Class::Exists(const char *){return 0;}
 int  GRVY_HDF5_Class::GroupOpen   (std::string){return 0;}
 int  GRVY_HDF5_Class::GroupCreate (std::string){return 0;}
 bool GRVY_HDF5_Class::GroupExists (std::string){return 0;}
+#if 0
 int  GRVY_HDF5_Class::CreatePTable(const char *, const char *){return 0;};
+#endif
 
 
 #endif
