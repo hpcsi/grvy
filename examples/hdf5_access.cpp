@@ -44,7 +44,7 @@ int main(int argc, char **argv)
   gt.BeginTimer("Main Program");
   
   grvy_log_setlevel(GRVY_INFO);
-  grvy_log_setlevel(GRVY_DEBUG);
+  //  grvy_log_setlevel(GRVY_DEBUG);
 
   // Create a new hdf file
 
@@ -55,19 +55,18 @@ int main(int argc, char **argv)
 
   // Create a new group
 
-  h5.GroupCreate("GRVY_performance_timings");
-  //  h5.CreatePTable("GRVY_performance_timings","atable");
+  h5.GroupCreate("solution_data");
 
   // Close the file
   h5.Close();
 
+  // Finalize the performance timer
+
+  gt.EndTimer("Main Program");
   gt.Finalize();
   gt.Summarize();
+
   gt.SaveHistTiming("koomie2.h5");
-
-
-
-  //  h5.Close();
 
   return 0;
 }

@@ -40,45 +40,13 @@ const int MAX_TIMER_WIDTH=120;
 using namespace std;
 using namespace GRVY;
 
-//------------------------------------------------------- 
-// private implementation class definition for GRVY_HDF5
-//-------------------------------------------------------
-
-namespace GRVY {
-
-#if 0
-class GRVY_HDF5_Class::GRVY_HDF5_ClassImp
-{
-public:
-  
-  GRVY_HDF5_ClassImp() {}
- ~GRVY_HDF5_ClassImp() {}
-  
-#ifdef HAVE_HDF5  
-  hid_t fileId;                             // hdf5 file handle
-  std::map<std::string,hid_t> groupIds;     // hdf5 group handles
-  std::map<std::string,hid_t> dataspaceIds; // hdf5 dataspace hancles
-  
-  H5E_auto2_t error_orig_func;              // error-handle func
-  void       *error_orig_data;              // error-handle stack data
-
-  bool  is_group_open(string groupname);
-  //  hid_t CreatePTable (string, string, hid_t);  
-
-  void silence_hdf_error_handler();
-  void restore_hdf_error_handler();
-  void close_open_objects();
-#endif
-};
-#endif
-
-}  // matches namespace GRVY
+// Note: see grvy_int.h for GRVY_HDF5_ClassImp declaration
 
 #ifdef HAVE_HDF5
 
 GRVY_HDF5_Class::GRVY_HDF5_Class() :m_pimpl(new GRVY_HDF5_ClassImp() )
 {
-  m_pimpl->fileId = NULL;
+  m_pimpl->fileId = -1;
 }
 
 GRVY_HDF5_Class::~GRVY_HDF5_Class() 
@@ -102,9 +70,9 @@ int GRVY_HDF5_Class::Create(const char *filename,bool overwrite_existing)
       grvy_printf(GRVY_DEBUG,"%s: Creating new hdf file %s (overwrite=false)\n",__func__,filename);
     }
 
-  if(m_pimpl->fileId)
+  if(m_pimpl->fileId >= 0)
     {
-      grvy_printf(GRVY_FATAL,"hdf5_open: current state has actively opened file - please close first\n",filename);
+      grvy_printf(GRVY_FATAL,"%s: current state has actively opened file - please close first\n",__func__,filename);
       exit(1);
     }
 
@@ -159,7 +127,7 @@ int GRVY_HDF5_Class::Open(const char *filename,bool readonly)
       grvy_printf(GRVY_DEBUG,"%s: Opening existing hdf file %s (readonly=false)\n",__func__,filename);
     }
 
-  if(m_pimpl->fileId)
+  if(m_pimpl->fileId >= 0)
     {
       grvy_printf(GRVY_FATAL,"hdf5_open: current state has actively opened file - please close first\n",filename);
       exit(1);
@@ -224,115 +192,6 @@ int GRVY_HDF5_Class::GroupCreate(string descname)
   return 0;
 }
 
-#if 0
-hid_t GRVY_HDF5_Class::GRVY_HDF5_ClassImp::CreatePTable(string groupname, string tablename, hid_t datatype)
-{
-  hid_t tableId;
-  hid_t groupId, dataspaceId;
-  time_t now;
-  char comment[120];
-
-  // make sure the desired group is actively open
-
-  if(is_group_open(groupname))
-    {
-      groupId = groupIds[groupname];
-    }
-  else 
-    {
-      grvy_printf(GRVY_FATAL,"%s: Group %s does not exist, please create first\n",__func__,groupname);
-      exit(1);
-    }
-
-#if 0
-  typedef struct ptable_v0_10 {
-    char timer_name[MAX_TIMER_WIDTH];
-    double measurement;
-    double mean;
-    double variance;
-    int count;
-  } ptable_v0_10;
-
-
-  hid_t strtype;
-  ptable_v0_10 data[2];
-  hid_t ptable_type;
-
-  strtype = H5Tcopy(H5T_C_S1);
-
-  H5Tset_size(strtype,(size_t)MAX_TIMER_WIDTH);
-  H5Tset_strpad(strtype,H5T_STR_NULLTERM);
-
-  grvy_printf(GRVY_INFO,"creating compound datatype\n");
-
-  if( (ptable_type = H5Tcreate (H5T_COMPOUND, sizeof(ptable_v0_10))) < 0 )
-    {
-      grvy_printf(GRVY_FATAL,"%s: Unable to create compound HDF datatype\n",__func__);
-      exit(1);
-    }
-    
-  H5Tinsert(ptable_type, "timer_name", HOFFSET(ptable_v0_10, timer_name), strtype);
-  H5Tinsert(ptable_type, "measurement",HOFFSET(ptable_v0_10, measurement),H5T_NATIVE_DOUBLE);
-  H5Tinsert(ptable_type, "mean",       HOFFSET(ptable_v0_10, mean),       H5T_NATIVE_DOUBLE);
-  H5Tinsert(ptable_type, "variance",   HOFFSET(ptable_v0_10, variance),   H5T_NATIVE_DOUBLE);
-  H5Tinsert(ptable_type, "count",      HOFFSET(ptable_v0_10, count),      H5T_NATIVE_INT);
-
-  grvy_printf(GRVY_INFO,"creating variable-length datatype\n");
-
-  hid_t timers_type;
-
-
-  timers_type = H5Tvlen_create( ptable_type );
-#endif
-
-  if( (tableId = H5PTcreate_fl(groupId,tablename.c_str(),timers_type,(hsize_t)256,-1)) == H5I_BADID)
-    {
-      grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename);
-      exit(1);
-    }
-  return(tableId);
-
-#if 0
-  // just prototyping; create a couple of example entries by hand
-
-  sprintf(data[0].timer_name,"foo foo");
-  data[0].measurement = 123.456;
-  data[0].mean = 122.5;
-  data[0].variance = 6e-5;
-  data[0].count = 25;
-
-  //  assert(H5PTappend( tableId, 1, &(data[0]) ) >= 0);
-
-  sprintf(data[1].timer_name,"boo boo");
-  data[1].measurement = 789.123;
-  data[1].mean = 80.0;
-  data[1].variance = 5e-1;
-  data[1].count = 100001;
-
-  hvl_t buffer;
-  int num_timers = 2;
-
-  buffer.p = &data[0];
-  buffer.len = num_timers*sizeof( ptable_v0_10 );
-  buffer.len = num_timers;
-
-  //assert(H5PTappend( tableId, 2, &(data[0]) ) >= 0);
-  //  assert(H5PTappend( tableId, 1, &(buffer) ) >= 0);
-  assert(H5PTappend( tableId, 1, &(buffer) ) >= 0);
-
-  assert(H5PTappend( tableId, 1, &(buffer) ) >= 0);
-
-  // this groupId is now active -> we save the hdf identifier for future use
-
-  //  m_pimpl->groupIds[descname] = groupId;
-
-  printf("almost done\n");
-  grvy_printf(GRVY_DEBUG,"%s: Successfully created new packet table (%s)\n",__func__,tablename);
-  return 0;
-#endif
-}
-#endif
-
 bool GRVY_HDF5_Class::GroupExists(string groupname)
 {
   hid_t groupId;
@@ -354,7 +213,7 @@ bool GRVY_HDF5_Class::GroupExists(string groupname)
 
 int GRVY_HDF5_Class::GroupOpen(string groupname)
 {
-  if(!m_pimpl->fileId)
+  if(m_pimpl->fileId < 0)
     {
       grvy_printf(GRVY_FATAL,"%s: no hdf5 file is actively open - unable to open group %s\n",
 		  __func__,groupname.c_str());
@@ -382,12 +241,51 @@ bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::is_group_open(string descname)
   else
     return false;
 }
+
+// Packet Table related functions
+
+bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::PTableExists(string groupname,string tablename)
+{
+  hid_t tableId;
+
+  silence_hdf_error_handler();
+
+  if ( (tableId = H5PTopen(groupIds[groupname],tablename.c_str())) == H5I_BADID )
+    {
+      restore_hdf_error_handler();  
+      return(false);
+    }
+  else
+    {
+      H5PTclose(tableId);
+      restore_hdf_error_handler();  
+      return(true);
+    }
+}
+
+hid_t GRVY_HDF5_Class::GRVY_HDF5_ClassImp::PTableOpen(string groupname,string tablename)
+{
+  hid_t tableId;
+
+  silence_hdf_error_handler();
+
+  if ( (tableId = H5PTopen(groupIds[groupname],tablename.c_str())) == H5I_BADID )
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to open *existing* HDF PTable (%s)\n",__func__,tablename.c_str());
+      restore_hdf_error_handler();  
+      exit(1);
+    }
+  else
+    {
+      return(tableId);
+    }
+}
     
 int GRVY_HDF5_Class::Close()
 {
   grvy_printf(GRVY_DEBUG,"%s: Closing HDF file and resetting state\n",__func__);
 
-  if(!m_pimpl->fileId)
+  if(m_pimpl->fileId < 0)
     {
       grvy_printf(GRVY_WARN,"%s: current state has no actively opened file - ignoring close request\n",__func__);
       return(0);
@@ -403,7 +301,7 @@ int GRVY_HDF5_Class::Close()
 
   H5Fclose(m_pimpl->fileId);
 
-  m_pimpl->fileId = NULL;
+  m_pimpl->fileId = -1;
   
   grvy_printf(GRVY_DEBUG,"%s: Successfully closed HDF file\n",__func__);
   return(0); 

@@ -46,8 +46,6 @@ namespace GRVY {
 
   // Internal Routines
 
-  //  extern void _GRVY_message (const char *mask, const char *func, const char *message);
-
   extern void _GRVY_message (char *message);
   extern void _GRVY_message (int LogLevel, const char *func, const char *message);
   extern void _GRVY_message (int LogLevel, const char *func, const char *message, const char *char_item);
@@ -120,7 +118,7 @@ namespace GRVY {
   public:
     
     GRVY_HDF5_ClassImp() {}
-    ~GRVY_HDF5_ClassImp() {}
+   ~GRVY_HDF5_ClassImp() {}
     
 #ifdef HAVE_HDF5  
     hid_t fileId;                             // hdf5 file handle
@@ -130,10 +128,12 @@ namespace GRVY {
     H5E_auto2_t error_orig_func;              // error-handle func
     void       *error_orig_data;              // error-handle stack data
     
-    bool  is_group_open(std::string groupname);
-    void silence_hdf_error_handler();
-    void restore_hdf_error_handler();
-    void close_open_objects();
+    bool  is_group_open            (std::string groupname);
+    void  silence_hdf_error_handler();
+    void  restore_hdf_error_handler();
+    void  close_open_objects       ();
+    bool  PTableExists             (std::string groupname, std::string tablename);
+    hid_t PTableOpen               (std::string groupname, std::string tablename);
 #endif
   };
 

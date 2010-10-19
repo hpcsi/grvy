@@ -490,16 +490,16 @@ class GRVY_Timer_Class {
   void   EndTimer       (const char *name);    //   end local timer
   void   Finalize       ();                    //  end global timer
   
-  double ElapsedSeconds (const char *id);
+  double ElapsedSeconds (std::string id);
   double ElapsedGlobal  ();
   double RawTimer       ();
 
   void   Reset          ();	              // reset all timers
   void   Summarize      ();	              // pretty-print timing information
 
-  int    StatsCount     (const char *id);     // # of calls to timer (id)
-  double StatsMean      (const char *id);     // mean time for timer (id)
-  double StatsVariance  (const char *id);     //  variance for timer (id)
+  int    StatsCount     (std::string id);     // # of calls to timer (id)
+  double StatsMean      (std::string id);     // mean time for timer (id)
+  double StatsVariance  (std::string id);     //  variance for timer (id)
 
   // Historical timing support
 

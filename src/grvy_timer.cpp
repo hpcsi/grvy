@@ -63,14 +63,23 @@ using namespace GRVY;
 // Historical logging packet table type for HDF
 
 #define MAX_TIMER_WIDTH_V1 120
-#define PTABLE_VERSION     1
+#define PTABLE_VERSION     1	// default version beginning Oct. 2010
 
-typedef struct Timer_PTable_V1 {
+// Packet table data structures
+
+typedef struct SubTimer_PTable_V1 {
   char timer_name[MAX_TIMER_WIDTH_V1];
   double measurement;
   double mean;
   double variance;
   int count;
+} SubTimer_PTable_V1;
+
+typedef struct TimerPTable_V1 {
+  double total_time;	
+  int job_Id;
+  int code_revision;
+  hvl_t vl_subtimers;
 } Timer_PTable_V1;
 
 // Individual timer data structure
@@ -91,13 +100,16 @@ namespace GRVY {
 class GRVY_Timer_Class::GRVY_Timer_ClassImp
 {
 public:
-  GRVY_Timer_ClassImp() {}
- ~GRVY_Timer_ClassImp() {}
-
-  void   VerifyInit  ();
-  void   BeginTimer  (const char *,bool); 
-  void   EndTimer    (const char *,bool);
-  double RawTimer    ();
+  GRVY_Timer_ClassImp  () {}
+ ~GRVY_Timer_ClassImp  () {}
+		       
+  void   VerifyInit    ();
+  void   BeginTimer    (const char *,bool); 
+  void   EndTimer      (const char *,bool);
+  double RawTimer      ();
+#ifdef HAVE_HDF5
+  hid_t  CreateHistType(int version); 
+#endif
 
   short int   initialized;            // initialized?
   double      timer_finalize;         // raw timer value at time of finalize()
@@ -355,7 +367,8 @@ double GRVY_Timer_Class::GRVY_Timer_ClassImp::RawTimer()
   return(t1);
 }
 
-double GRVY_Timer_Class:: ElapsedSeconds(const char *id)
+  //double GRVY_Timer_Class:: ElapsedSeconds(const char *id)
+double GRVY_Timer_Class:: ElapsedSeconds(string id)
 {
   double elapsedseconds = 0.0;
 
@@ -373,7 +386,7 @@ double GRVY_Timer_Class:: ElapsedSeconds(const char *id)
   return elapsedseconds;
 }
 
-int GRVY_Timer_Class:: StatsCount(const char *id)
+int GRVY_Timer_Class:: StatsCount(string id)
 {
   _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
 
@@ -388,7 +401,7 @@ int GRVY_Timer_Class:: StatsCount(const char *id)
     }
 }
 
-double GRVY_Timer_Class:: StatsMean(const char *id)
+double GRVY_Timer_Class:: StatsMean(string id)
 {
   _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
 
@@ -403,7 +416,7 @@ double GRVY_Timer_Class:: StatsMean(const char *id)
     }
 }
 
-double GRVY_Timer_Class:: StatsVariance(const char *id)
+double GRVY_Timer_Class:: StatsVariance(string id)
 {
   _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
 
@@ -620,17 +633,19 @@ void GRVY_Timer_Class:: Summarize()
   printf("\n\n");
 }
 
-// SaveHistTime(): used to save the current profiled timer to an HDF5 file for
-// historical monitoring purposed.  Should be called after the global
-// timer has been Finalized.
+//--------------------------------------------------------------------
+// SaveHistTime(): used to save the current profiled timer to an HDF5
+// file for historical monitoring purposed.  Should be called after
+// the global timer has been Finalized.
+//--------------------------------------------------------------------
 
-int GRVY_Timer_Class::SaveHistTiming(const char *filename)
+int GRVY_Timer_Class::SaveHistTiming(const char *filename )
 {
 
   GRVY_HDF5_Class h5;
 
 #ifndef HAVE_HDF5
-  return 1;
+  return 1;  // above h5 ctor will error if HDF5 is not available
 #else
 
   m_pimpl->VerifyInit();
@@ -668,68 +683,183 @@ int GRVY_Timer_Class::SaveHistTiming(const char *filename)
 
   // Setup packet table datatype for storing timer information
 
-  hid_t ptable_type;
-
-  if(PTABLE_VERSION == 1 )
-    {
-      hid_t strtype;
-      Timer_PTable_V1 *data;
-
-      strtype = H5Tcopy(H5T_C_S1);
-
-      H5Tset_size(strtype,(size_t)MAX_TIMER_WIDTH_V1);
-      H5Tset_strpad(strtype,H5T_STR_NULLTERM);
-
-      grvy_printf(GRVY_DEBUG,"creating compound datatype\n");
-
-      if( (ptable_type = H5Tcreate (H5T_COMPOUND, sizeof(Timer_PTable_V1))) < 0 )
-	{
-	  grvy_printf(GRVY_FATAL,"%s: Unable to create compound HDF datatype\n",__func__);
-	  exit(1);
-	}
-
-      H5Tinsert(ptable_type, "timer_name", HOFFSET(Timer_PTable_V1, timer_name), strtype);
-      H5Tinsert(ptable_type, "measurement",HOFFSET(Timer_PTable_V1, measurement),H5T_NATIVE_DOUBLE);
-      H5Tinsert(ptable_type, "mean",       HOFFSET(Timer_PTable_V1, mean),       H5T_NATIVE_DOUBLE);
-      H5Tinsert(ptable_type, "variance",   HOFFSET(Timer_PTable_V1, variance),   H5T_NATIVE_DOUBLE);
-      H5Tinsert(ptable_type, "count",      HOFFSET(Timer_PTable_V1, count),      H5T_NATIVE_INT);
-
-    }
-  else
-    {
-      grvy_printf(GRVY_FATAL,"%s: unknown timer packet table version\n",__func__);
-    }
-
-  grvy_printf(GRVY_DEBUG,"creating variable-length datatype\n");
-
-  hid_t timers_type;
+  hid_t timers_type = m_pimpl->CreateHistType(PTABLE_VERSION);
 
   // Open/create packet table for this host/machine using variable
   // length packets
 
-  timers_type = H5Tvlen_create( ptable_type );
-
+  string tablename("PTable");
+  //  hid_t timers_type;
   hid_t tableId;
 
-  if( (tableId = H5PTcreate_fl(h5.m_pimpl->groupIds[hostlevel],"PTable",timers_type,(hsize_t)256,-1)) == H5I_BADID)
+#if 0
+  timers_type = H5Tvlen_create( ptable_type );
+
+  struct complex {
+    double total_time;
+    int job_Id;
+    int code_revision;
+    hvl_t vl_subtimers;
+  };
+
+
+  hid_t timers2_type = H5Tcreate(H5T_COMPOUND,sizeof(struct complex));
+  H5Tinsert(timers2_type,"Total Time",     HOFFSET(struct complex,total_time),      H5T_NATIVE_DOUBLE);
+  H5Tinsert(timers2_type,"Job Id",         HOFFSET(struct complex,job_Id),          H5T_NATIVE_INT   );
+  H5Tinsert(timers2_type,"Code Revision"  ,HOFFSET(struct complex,code_revision), H5T_NATIVE_INT   );
+  H5Tinsert(timers2_type,"SubTimers",      HOFFSET(struct complex,vl_subtimers),    timers_type      );
+
+#endif
+
+  if (h5.m_pimpl->PTableExists(hostlevel,tablename))
+    tableId = h5.m_pimpl->PTableOpen(hostlevel,tablename);
+  else
     {
-      grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,"PTable");
-      exit(1);
+      if( (tableId = H5PTcreate_fl(h5.m_pimpl->groupIds[hostlevel],tablename.c_str(),
+				   timers_type,(hsize_t)256,-1)) == H5I_BADID)
+	{
+	  grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename.c_str());
+	  exit(1);
+	}
     }
 
-  // TODO: assign local packet table version as attribute in case we ever need to change.
-  
-  // TODO: write grvy performance data
+  // Assign local packet table version as attribute in case we ever
+  // need to make a change in the future
 
-  // TODO: provide mechanism to embed batch system job number
+  hid_t dataspaceId  = H5Screate(H5S_SCALAR);
+  hid_t attrId       = H5Acreate(h5.m_pimpl->groupIds[hostlevel],"format_version",
+  				 H5T_NATIVE_INT,dataspaceId,H5P_DEFAULT,H5P_DEFAULT);
+  int format_version = PTABLE_VERSION;
+
+  H5Awrite(attrId,H5T_NATIVE_INT,&format_version);
+  H5Aclose(attrId);
+    
+  // Pull grvy performance data and store in hdf datatype (header + arbitrary number of subtimers)
+
+  int num_subtimers = m_pimpl->TimerMap.size() - 1;  // -1 since global timer is in header
+
+  Timer_PTable_V1    header;
+  vector<SubTimer_PTable_V1> subtimers;
+
+  subtimers.reserve(num_subtimers);
+
+  header.total_time       = ElapsedSeconds(_GRVY_gtimer);
+  header.job_Id           = -1;	            // TODO allow for setting me
+  header.code_revision    = -1;	            // TODO allow for setting me
+  header.vl_subtimers.p   = &subtimers[0];
+  header.vl_subtimers.len = num_subtimers;
+
+  _GRVY_Type_TimerMap2 :: iterator index;
+
+  SubTimer_PTable_V1 data_tmp;
+
+  for(index=m_pimpl->TimerMap.begin(); index != m_pimpl->TimerMap.end(); ++index)
+    {
+      if(index->first != _GRVY_gtimer)
+	{
+	  if(index->first.length() > 120)
+	    {
+	      sprintf(data_tmp.timer_name,"%s",index->first.c_str());
+	    }
+	  else
+	    {
+	      sprintf(data_tmp.timer_name,"%119s",index->first.c_str());
+	      data_tmp.timer_name[119] = '\0';
+	    }
+
+	  data_tmp.measurement = ElapsedSeconds(index->first);
+	  data_tmp.mean        = StatsMean     (index->first);
+	  data_tmp.variance    = StatsVariance (index->first);
+	  data_tmp.count       = StatsCount    (index->first);
+
+	  subtimers.push_back(data_tmp);
+	}
+    }
+
+  assert(subtimers.size() == num_subtimers);
+    
+  // That was fun, now we can append the packet data
+
+  assert(H5PTappend( tableId, 1, &(header) ) >= 0);
 
   // Clean up shop
+
+  H5Tclose(timers_type);
+  H5PTclose(tableId);
 
   h5.Close();
 
   return 0;
 #endif
 }
+
+//--------------------------------------------------------------------
+// CreateHistType(): create a compound HDF datatype as the basis
+// for storing historical performance data in a packet table.
+//--------------------------------------------------------------------
+
+#ifdef HAVE_HDF5
+hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
+{
+
+  grvy_printf(GRVY_DEBUG,"Creating HDF TimerHist packet datatype version %i\n",version);
+
+  switch(version) {
+  
+  case 1:
+      hid_t ptable_type;
+      hid_t strtype;
+      
+      // Create our basic subtimer packet...
+      
+      strtype = H5Tcopy(H5T_C_S1);
+      
+      H5Tset_size(strtype,(size_t)MAX_TIMER_WIDTH_V1);
+      H5Tset_strpad(strtype,H5T_STR_NULLTERM);
+      
+      if( (ptable_type = H5Tcreate (H5T_COMPOUND, sizeof(SubTimer_PTable_V1))) < 0 )
+	{
+	  grvy_printf(GRVY_FATAL,"%s: Unable to create compound HDF datatype\n",__func__);
+	  exit(1);
+	}
+
+      H5Tinsert(ptable_type, "timer name",  HOFFSET(SubTimer_PTable_V1, timer_name),  strtype);
+      H5Tinsert(ptable_type, "measurement", HOFFSET(SubTimer_PTable_V1, measurement), H5T_NATIVE_DOUBLE);
+      H5Tinsert(ptable_type, "mean",        HOFFSET(SubTimer_PTable_V1, mean),        H5T_NATIVE_DOUBLE);
+      H5Tinsert(ptable_type, "variance",    HOFFSET(SubTimer_PTable_V1, variance),    H5T_NATIVE_DOUBLE);
+      H5Tinsert(ptable_type, "count",       HOFFSET(SubTimer_PTable_V1, count),       H5T_NATIVE_INT);
+      
+      hid_t subtimer_type;
+      
+      subtimer_type = H5Tvlen_create(ptable_type);
+      
+      // Now, create a combined complex datatype with the header and VL subtimer(s)
+      
+      hid_t timers_type;
+      
+      if ( (timers_type = H5Tcreate(H5T_COMPOUND,sizeof(TimerPTable_V1))) < 0)
+      {
+	grvy_printf(GRVY_FATAL,"%s: Unable to create compound HDF datatype\n",__func__);
+	exit(1);
+      }
+
+      H5Tinsert(timers_type,"Total Time",     HOFFSET(TimerPTable_V1,total_time),    H5T_NATIVE_DOUBLE);
+      H5Tinsert(timers_type,"Job Id",         HOFFSET(TimerPTable_V1,job_Id),        H5T_NATIVE_INT   );
+      H5Tinsert(timers_type,"Code Revision"  ,HOFFSET(TimerPTable_V1,code_revision), H5T_NATIVE_INT   );
+      H5Tinsert(timers_type,"SubTimers",      HOFFSET(TimerPTable_V1,vl_subtimers),  subtimer_type    );
+
+      H5Tclose(strtype);
+      H5Tclose(ptable_type);
+    
+      return(timers_type);
+      break;
+
+  default:
+    grvy_printf(GRVY_FATAL,"%s: Unknown timer packet version requested (%i)\n",__func__,version);
+    exit(1);
+  }
+}
+#endif
 
 int GRVY_Timer_Class::SaveHistTiming(const char *filename, const char *id, double timing)
 {
