@@ -45,6 +45,7 @@
 
 #ifdef HAVE_HDF5
 #include <hdf5.h>
+#include <H5PTpublic.h>
 #endif
 
 #include<boost/math/special_functions.hpp>

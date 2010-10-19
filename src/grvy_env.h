@@ -36,6 +36,7 @@ class GRVY_Hostenv_Class {
 public:
   GRVY_Hostenv_Class();
   void Print();
+  std::string Hostname();
 
 private:
   std::string hostname;

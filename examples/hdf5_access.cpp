@@ -37,16 +37,14 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-
-  //GRVY_Timer_Class timer("mytimer");
+  GRVY_Timer_Class gt;	// GRVY performance timer
+  GRVY_HDF5_Class h5;	// GRVY object for interacting with HDF5 files
   
-  grvy_timer_init("mytimer");
-  grvy_timer_begin("Main Program");
+  gt.Init("mytimer");
+  gt.BeginTimer("Main Program");
   
-  GRVY_HDF5_Class h5;	// HDF5 object for interacting with HDF5 files
-
   grvy_log_setlevel(GRVY_INFO);
-  //  grvy_log_setlevel(GRVY_DEBUG);
+  grvy_log_setlevel(GRVY_DEBUG);
 
   // Create a new hdf file
 
@@ -58,16 +56,18 @@ int main(int argc, char **argv)
   // Create a new group
 
   h5.GroupCreate("GRVY_performance_timings");
-
-  h5.CreatePTable("GRVY_performance_timings","atable");
-
-  grvy_timer_finalize();
-
-  
+  //  h5.CreatePTable("GRVY_performance_timings","atable");
 
   // Close the file
-
   h5.Close();
+
+  gt.Finalize();
+  gt.Summarize();
+  gt.SaveHistTiming("koomie2.h5");
+
+
+
+  //  h5.Close();
 
   return 0;
 }

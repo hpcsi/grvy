@@ -28,6 +28,18 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
+//--------------------------------------------------------------------------
+// Notes: for portability concerns, we will go with a simple timeofday
+// based timer.  This should give resolution that is order
+// micro-seconds on desired systems.  Note that this also avoids any
+// issues that cycle-based counters face due to cpu freqeuncy
+// throttling or SMP issues due to potential thread migration.
+//
+// A check is included to potentially warn against accuracy problems
+// when the timer is used at a level below anticipated threshold
+// accuracy.
+//--------------------------------------------------------------------------
+
 #include<sys/time.h>
 #include<stdarg.h>
 #include<time.h>
@@ -45,21 +57,23 @@
 #include<boost/math/special_functions.hpp>
 
 using namespace boost::accumulators;
-
-//--------------------------------------------------------------------------
-// Notes: for portability concerns, we will go with a simple timeofday
-// based timer.  This should give resolution that is order
-// micro-seconds on desired systems.  Note that this also avoids any
-// issues that cycle-based counters face due to cpu freqeuncy
-// throttling or SMP issues due to potential thread migration.
-//
-// A check is included to potentially warn against accuracy problems
-// when the timer is used at a level below anticipated threshold
-// accuracy.
-//--------------------------------------------------------------------------
-
 using namespace std;
 using namespace GRVY;
+
+// Historical logging packet table type for HDF
+
+#define MAX_TIMER_WIDTH_V1 120
+#define PTABLE_VERSION     1
+
+typedef struct Timer_PTable_V1 {
+  char timer_name[MAX_TIMER_WIDTH_V1];
+  double measurement;
+  double mean;
+  double variance;
+  int count;
+} Timer_PTable_V1;
+
+// Individual timer data structure
 
 typedef struct GRVY_Timer_Data {
   double timings[2];
@@ -80,10 +94,10 @@ public:
   GRVY_Timer_ClassImp() {}
  ~GRVY_Timer_ClassImp() {}
 
-  void VerifyInit ();
-  void BeginTimer (const char *,bool); 
-  void EndTimer   (const char *,bool);
-  double RawTimer ();
+  void   VerifyInit  ();
+  void   BeginTimer  (const char *,bool); 
+  void   EndTimer    (const char *,bool);
+  double RawTimer    ();
 
   short int   initialized;            // initialized?
   double      timer_finalize;         // raw timer value at time of finalize()
@@ -97,6 +111,8 @@ public:
 };
 
 } // matches namespace GRVY
+
+namespace GRVY {
 
 int show_statistics = 1;
 
@@ -604,14 +620,6 @@ void GRVY_Timer_Class:: Summarize()
   printf("\n\n");
 }
 
-#if 0
-int GRVY_Timer_Class::InitHistDB(const char *filename)
-{
-  GRVY::GRVY_HDF5_Class h5_file;
-  //return(h5_file.file_create(filename,true));
-}
-#endif
-
 // SaveHistTime(): used to save the current profiled timer to an HDF5 file for
 // historical monitoring purposed.  Should be called after the global
 // timer has been Finalized.
@@ -619,9 +627,13 @@ int GRVY_Timer_Class::InitHistDB(const char *filename)
 int GRVY_Timer_Class::SaveHistTiming(const char *filename)
 {
 
-  m_pimpl->VerifyInit();
-
   GRVY_HDF5_Class h5;
+
+#ifndef HAVE_HDF5
+  return 1;
+#endif
+
+  m_pimpl->VerifyInit();
 
   // Open existing file or create new one if not present
 
@@ -632,20 +644,86 @@ int GRVY_Timer_Class::SaveHistTiming(const char *filename)
 
   grvy_printf(GRVY_DEBUG,"%s: hdf5 file opened/created for %s\n",__func__,filename);
 
-  // Open or create GRVY timer group
+  // Open/create GRVY timer group
 
-  string toplevel("GRVY/Performance_timings");
+  string toplevel("GRVY/Performance_timings/");
 
   if (h5.GroupExists(toplevel))
     h5.GroupOpen(toplevel);
   else
     h5.GroupCreate(toplevel);
 
-  // Query host information
+  // Query runtime host environment
 
   GRVY_Hostenv_Class myenv;
 
-    
+  // Open/create group for this host/machine
+
+  string hostlevel = toplevel+myenv.Hostname();
+
+  if (h5.GroupExists(hostlevel))
+    h5.GroupOpen(hostlevel);
+  else
+    h5.GroupCreate(hostlevel);
+
+  // Setup packet table datatype for storing timer information
+
+  hid_t ptable_type;
+
+  if(PTABLE_VERSION == 1 )
+    {
+      hid_t strtype;
+      Timer_PTable_V1 *data;
+
+      strtype = H5Tcopy(H5T_C_S1);
+
+      H5Tset_size(strtype,(size_t)MAX_TIMER_WIDTH_V1);
+      H5Tset_strpad(strtype,H5T_STR_NULLTERM);
+
+      grvy_printf(GRVY_DEBUG,"creating compound datatype\n");
+
+      if( (ptable_type = H5Tcreate (H5T_COMPOUND, sizeof(Timer_PTable_V1))) < 0 )
+	{
+	  grvy_printf(GRVY_FATAL,"%s: Unable to create compound HDF datatype\n",__func__);
+	  exit(1);
+	}
+
+      H5Tinsert(ptable_type, "timer_name", HOFFSET(Timer_PTable_V1, timer_name), strtype);
+      H5Tinsert(ptable_type, "measurement",HOFFSET(Timer_PTable_V1, measurement),H5T_NATIVE_DOUBLE);
+      H5Tinsert(ptable_type, "mean",       HOFFSET(Timer_PTable_V1, mean),       H5T_NATIVE_DOUBLE);
+      H5Tinsert(ptable_type, "variance",   HOFFSET(Timer_PTable_V1, variance),   H5T_NATIVE_DOUBLE);
+      H5Tinsert(ptable_type, "count",      HOFFSET(Timer_PTable_V1, count),      H5T_NATIVE_INT);
+
+    }
+  else
+    {
+      grvy_printf(GRVY_FATAL,"%s: unknown timer packet table version\n",__func__);
+    }
+
+  grvy_printf(GRVY_DEBUG,"creating variable-length datatype\n");
+
+  hid_t timers_type;
+
+  // Open/create packet table for this host/machine using variable
+  // length packets
+
+  timers_type = H5Tvlen_create( ptable_type );
+
+  hid_t tableId;
+
+  if( (tableId = H5PTcreate_fl(h5.m_pimpl->groupIds[hostlevel],"PTable",timers_type,(hsize_t)256,-1)) == H5I_BADID)
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,"PTable");
+      exit(1);
+    }
+
+  // TODO: assign local packet table version as attribute in case we ever need to change.
+  
+  // TODO: write grvy performance data
+
+  // TODO: provide mechanism to embed batch system job number
+
+  // Clean up shop
 
   h5.Close();
 
@@ -663,3 +741,4 @@ void GRVY_Timer_Class::SummarizeHistTiming(const char *filename)
   return;
 }
   
+}

@@ -28,9 +28,13 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
+#ifndef GRVY_INT_H
+#define GRVY_INT_H
+
 #include<map>
 #include<vector>
 #include<string>
+#include<grvy.h>
 
 namespace GRVY {
 
@@ -106,4 +110,33 @@ namespace GRVY {
   typedef std::map<std::vector <double>,std::string,TimerCmpHighLow > _GRVY_Type_TimerMapSortHL;  
   typedef std::map<std::vector <double>,std::string,TimerCmpLowHigh > _GRVY_Type_TimerMapSortLH;  
 
+  // ---------------------------------------------------------------
+  // Private class implementations which require declaration across
+  // multiple classes
+  // ---------------------------------------------------------------
+
+  class GRVY_HDF5_Class::GRVY_HDF5_ClassImp
+  {
+  public:
+    
+    GRVY_HDF5_ClassImp() {}
+    ~GRVY_HDF5_ClassImp() {}
+    
+#ifdef HAVE_HDF5  
+    hid_t fileId;                             // hdf5 file handle
+    std::map<std::string,hid_t> groupIds;     // hdf5 group handles
+    std::map<std::string,hid_t> dataspaceIds; // hdf5 dataspace hancles
+    
+    H5E_auto2_t error_orig_func;              // error-handle func
+    void       *error_orig_data;              // error-handle stack data
+    
+    bool  is_group_open(std::string groupname);
+    void silence_hdf_error_handler();
+    void restore_hdf_error_handler();
+    void close_open_objects();
+#endif
+  };
+
 }
+
+#endif

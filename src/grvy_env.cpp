@@ -75,5 +75,10 @@ void GRVY_Hostenv_Class::Print()
   return;
 }
 
+std::string GRVY_Hostenv_Class::Hostname()
+{
+  return(hostname);
+}
+
 
 

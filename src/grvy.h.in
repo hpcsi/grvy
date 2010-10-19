@@ -473,6 +473,8 @@ class GRVY_Input_Class {
   template <typename T> T Get_Default   (T);
 };
 
+  //  class GRVY_HDF5_ClassImp;	               // forward declaration of HDF5 implementation
+
 //--------------------------
 // Performance Timing Class
 //--------------------------
@@ -517,6 +519,8 @@ private:
 
  class GRVY_HDF5_Class //: private boost::noncopyable
  {
+   friend class GRVY_Timer_Class;
+
  public:
    GRVY_HDF5_Class  ();
   ~GRVY_HDF5_Class  ();
@@ -539,9 +543,11 @@ private:
 
    // Dataset-related functions
 
-   int CreatePTable (const char *groupname, const char *tablename);
+   //   hid_t CreatePTable (const char *groupname, const char *tablename, hid_t datatype);
 
    //   int CreateDataSet1d_unlimited(const char *groupname, const char *varname);
+
+   // Packet Table related functions
    
  private:
    //boost::scoped_ptr<GRVY_HDF5_ClassImp> m_pimpl;

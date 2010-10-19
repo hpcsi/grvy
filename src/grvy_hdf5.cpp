@@ -46,6 +46,7 @@ using namespace GRVY;
 
 namespace GRVY {
 
+#if 0
 class GRVY_HDF5_Class::GRVY_HDF5_ClassImp
 {
 public:
@@ -61,13 +62,15 @@ public:
   H5E_auto2_t error_orig_func;              // error-handle func
   void       *error_orig_data;              // error-handle stack data
 
-  bool is_group_open(string groupname);
-  
+  bool  is_group_open(string groupname);
+  //  hid_t CreatePTable (string, string, hid_t);  
+
   void silence_hdf_error_handler();
   void restore_hdf_error_handler();
   void close_open_objects();
 #endif
 };
+#endif
 
 }  // matches namespace GRVY
 
@@ -221,7 +224,8 @@ int GRVY_HDF5_Class::GroupCreate(string descname)
   return 0;
 }
 
-int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
+#if 0
+hid_t GRVY_HDF5_Class::GRVY_HDF5_ClassImp::CreatePTable(string groupname, string tablename, hid_t datatype)
 {
   hid_t tableId;
   hid_t groupId, dataspaceId;
@@ -230,9 +234,9 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
 
   // make sure the desired group is actively open
 
-  if(m_pimpl->is_group_open(groupname))
+  if(is_group_open(groupname))
     {
-      groupId = m_pimpl->groupIds[groupname];
+      groupId = groupIds[groupname];
     }
   else 
     {
@@ -240,7 +244,7 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
       exit(1);
     }
 
-#if 1
+#if 0
   typedef struct ptable_v0_10 {
     char timer_name[MAX_TIMER_WIDTH];
     double measurement;
@@ -248,7 +252,7 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
     double variance;
     int count;
   } ptable_v0_10;
-#endif
+
 
   hid_t strtype;
   ptable_v0_10 data[2];
@@ -277,16 +281,18 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
 
   hid_t timers_type;
 
-  timers_type = H5Tvlen_create( ptable_type );
 
-  //if( (tableId = H5PTcreate_fl(groupId,tablename,ptable_type,(hsize_t)256,-1)) == H5I_BADID)
-  if( (tableId = H5PTcreate_fl(groupId,tablename,timers_type,(hsize_t)256,-1)) == H5I_BADID)
+  timers_type = H5Tvlen_create( ptable_type );
+#endif
+
+  if( (tableId = H5PTcreate_fl(groupId,tablename.c_str(),timers_type,(hsize_t)256,-1)) == H5I_BADID)
     {
       grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename);
       exit(1);
     }
+  return(tableId);
 
-
+#if 0
   // just prototyping; create a couple of example entries by hand
 
   sprintf(data[0].timer_name,"foo foo");
@@ -323,7 +329,9 @@ int GRVY_HDF5_Class::CreatePTable(const char *groupname, const char *tablename)
   printf("almost done\n");
   grvy_printf(GRVY_DEBUG,"%s: Successfully created new packet table (%s)\n",__func__,tablename);
   return 0;
+#endif
 }
+#endif
 
 bool GRVY_HDF5_Class::GroupExists(string groupname)
 {
@@ -367,7 +375,7 @@ int GRVY_HDF5_Class::GroupOpen(string groupname)
   return(0); 
 }
 
-inline bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::is_group_open(string descname)
+bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::is_group_open(string descname)
 {
   if(groupIds.count(descname) > 0)
     return true;
