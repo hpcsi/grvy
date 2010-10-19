@@ -631,7 +631,7 @@ int GRVY_Timer_Class::SaveHistTiming(const char *filename)
 
 #ifndef HAVE_HDF5
   return 1;
-#endif
+#else
 
   m_pimpl->VerifyInit();
 
@@ -728,6 +728,7 @@ int GRVY_Timer_Class::SaveHistTiming(const char *filename)
   h5.Close();
 
   return 0;
+#endif
 }
 
 int GRVY_Timer_Class::SaveHistTiming(const char *filename, const char *id, double timing)
