@@ -112,7 +112,8 @@ public:
   void   EndTimer      (const char *,bool);
   double RawTimer      ();
 #ifdef HAVE_HDF5
-  hid_t  CreateHistType(int version); 
+  hid_t  CreateHistType (int version); 
+  int    AppendHistData (int version, hid_t tableId);
 #endif
 
   short int   initialized;            // initialized?
@@ -122,6 +123,7 @@ public:
   std::stack <std::string> callgraph; // callgraph to support embedded timers
   bool        beginTrigger;           // a trigger used for embedded timers
   _GRVY_Type_TimerMap2     TimerMap;  // map used to store performance timers for each defined key
+  GRVY_Timer_Class *self;	      // back pointer to public class
 
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
 };
@@ -134,11 +136,11 @@ int show_statistics = 1;
 
 GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
 {
-  //m_pimpl->timer_name     = name;
   m_pimpl->initialized    = 1;
   m_pimpl->timer_finalize = -1;
   m_pimpl->num_begins     = 0;	
   m_pimpl->beginTrigger   = false;
+  m_pimpl->self           = this;
 }
 
 GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -694,27 +696,7 @@ int GRVY_Timer_Class::SaveHistTiming(const char *filename )
   // length packets
 
   string tablename("PTable");
-  //  hid_t timers_type;
-  hid_t tableId;
-
-#if 0
-  timers_type = H5Tvlen_create( ptable_type );
-
-  struct complex {
-    double total_time;
-    int job_Id;
-    int code_revision;
-    hvl_t vl_subtimers;
-  };
-
-
-  hid_t timers2_type = H5Tcreate(H5T_COMPOUND,sizeof(struct complex));
-  H5Tinsert(timers2_type,"Total Time",     HOFFSET(struct complex,total_time),      H5T_NATIVE_DOUBLE);
-  H5Tinsert(timers2_type,"Job Id",         HOFFSET(struct complex,job_Id),          H5T_NATIVE_INT   );
-  H5Tinsert(timers2_type,"Code Revision"  ,HOFFSET(struct complex,code_revision), H5T_NATIVE_INT   );
-  H5Tinsert(timers2_type,"SubTimers",      HOFFSET(struct complex,vl_subtimers),    timers_type      );
-
-#endif
+  hid_t  tableId;
 
   if (h5.m_pimpl->PTableExists(hostlevel,tablename))
     tableId = h5.m_pimpl->PTableOpen(hostlevel,tablename);
@@ -739,54 +721,10 @@ int GRVY_Timer_Class::SaveHistTiming(const char *filename )
   H5Awrite(attrId,H5T_NATIVE_INT,&format_version);
   H5Aclose(attrId);
     
-  // Pull grvy performance data and store in hdf datatype (header + arbitrary number of subtimers)
+  // Pull grvy performance data and append results to hist HDF log
 
-  int num_subtimers = m_pimpl->TimerMap.size() - 1;  // -1 since global timer is in header
-
-  Timer_PTable_V1    header;
-  vector<SubTimer_PTable_V1> subtimers;
-
-  subtimers.reserve(num_subtimers);
-
-  header.total_time       = ElapsedSeconds(_GRVY_gtimer);
-  header.job_Id           = -1;	            // TODO allow for setting me
-  header.code_revision    = -1;	            // TODO allow for setting me
-  header.vl_subtimers.p   = &subtimers[0];
-  header.vl_subtimers.len = num_subtimers;
-
-  _GRVY_Type_TimerMap2 :: iterator index;
-
-  SubTimer_PTable_V1 data_tmp;
-
-  for(index=m_pimpl->TimerMap.begin(); index != m_pimpl->TimerMap.end(); ++index)
-    {
-      if(index->first != _GRVY_gtimer)
-	{
-	  if(index->first.length() > 119)
-	    {
-	      sprintf(data_tmp.timer_name,"%119s",index->first.c_str());
-	      data_tmp.timer_name[119] = '\0';
-	    }
-	  else
-	    {
-	      sprintf(data_tmp.timer_name,"%s",index->first.c_str());
-	    }
-
-	  data_tmp.measurement = ElapsedSeconds(index->first);
-	  data_tmp.mean        = StatsMean     (index->first);
-	  data_tmp.variance    = StatsVariance (index->first);
-	  data_tmp.count       = StatsCount    (index->first);
-
-	  subtimers.push_back(data_tmp);
-	}
-    }
-
-  assert(subtimers.size() == num_subtimers);
-    
-  // That was fun, now we can append the packet data
-
-  assert(H5PTappend( tableId, 1, &(header) ) >= 0);
-
+  m_pimpl->AppendHistData(PTABLE_VERSION,tableId);
+  
   // Clean up shop
 
   H5Tclose(timers_type);
@@ -864,11 +802,74 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
     exit(1);
   }
 }
+
+int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(int version, hid_t tableId)
+{
+  grvy_printf(GRVY_DEBUG,"Appending historical timer data for PTable version %i\n",version);
+
+  int num_subtimers = TimerMap.size() - 1;  // -1 since global timer goes in header
+
+  switch(version) {
+  
+  case 1:
+    {
+    Timer_PTable_V1            header;
+    vector<SubTimer_PTable_V1> subtimers;
+
+    subtimers.reserve(num_subtimers);
+
+    header.total_time       = self->ElapsedSeconds(_GRVY_gtimer);
+    header.job_Id           = -1;	            // TODO allow for setting me
+    header.code_revision    = -1;	            // TODO allow for setting me
+    header.vl_subtimers.p   = &subtimers[0];
+    header.vl_subtimers.len = num_subtimers;
+
+    _GRVY_Type_TimerMap2 :: iterator index;
+
+    SubTimer_PTable_V1 data_tmp;
+
+    for(index=TimerMap.begin(); index != TimerMap.end(); ++index)
+      {
+	if(index->first != _GRVY_gtimer)
+	  {
+	    if(index->first.length() > 119)
+	      {
+		sprintf(data_tmp.timer_name,"%*s",MAX_TIMER_WIDTH_V1-1,index->first.c_str());
+		data_tmp.timer_name[MAX_TIMER_WIDTH_V1-1] = '\0';
+	      }
+	    else
+	      {
+		sprintf(data_tmp.timer_name,"%s",index->first.c_str());
+	      }
+
+	    data_tmp.measurement = self->ElapsedSeconds(index->first);
+	    data_tmp.mean        = self->StatsMean     (index->first);
+	    data_tmp.variance    = self->StatsVariance (index->first);
+	    data_tmp.count       = self->StatsCount    (index->first);
+	    
+	    subtimers.push_back(data_tmp);
+	  }
+      }
+
+    assert(subtimers.size() == num_subtimers);
+
+    // That was fun, now we can append the packet data
+
+    assert(H5PTappend( tableId, 1, &(header) ) >= 0);
+    }
+    break;
+
+  default:
+    grvy_printf(GRVY_FATAL,"%s: Unknown timer packet version requested (%i)\n",__func__,version);
+    exit(1);
+  }
+
+
+}
 #endif
 
 int GRVY_Timer_Class::SaveHistTiming(const char *filename, const char *id, double timing)
 {
-    
   return 0;
 }
 
