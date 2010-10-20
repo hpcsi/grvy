@@ -371,7 +371,6 @@ double GRVY_Timer_Class::GRVY_Timer_ClassImp::RawTimer()
   return(t1);
 }
 
-  //double GRVY_Timer_Class:: ElapsedSeconds(const char *id)
 double GRVY_Timer_Class:: ElapsedSeconds(string id)
 {
   double elapsedseconds = 0.0;
@@ -381,9 +380,9 @@ double GRVY_Timer_Class:: ElapsedSeconds(string id)
   _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
 
   if ( index == m_pimpl->TimerMap.end() )
-    _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",id);
+    _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",id.c_str());
   else if( (index->second).timings[1] != -1)
-    _GRVY_message(GRVY_ERROR,__func__,"Timer still active for",id);
+    _GRVY_message(GRVY_ERROR,__func__,"Timer still active for",id.c_str());
   else
     elapsedseconds = (index->second).timings[0];
 
@@ -396,7 +395,7 @@ int GRVY_Timer_Class:: StatsCount(string id)
 
   if ( index == m_pimpl->TimerMap.end() )
     {
-      _GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id);
+      _GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id.c_str());
       return(-1);
     }
   else
@@ -411,7 +410,7 @@ double GRVY_Timer_Class:: StatsMean(string id)
 
   if ( index == m_pimpl->TimerMap.end() )
     {
-      _GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id);
+      _GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id.c_str());
       return -1.0;
     }
   else
@@ -426,7 +425,7 @@ double GRVY_Timer_Class:: StatsVariance(string id)
 
   if ( index == m_pimpl->TimerMap.end() )
     {
-      _GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id);
+      _GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id.c_str());
       return -1.0;
     }
   else
@@ -434,6 +433,8 @@ double GRVY_Timer_Class:: StatsVariance(string id)
       return(boost::accumulators::variance((index->second).stats));
     }
 }
+
+
 
 double GRVY_Timer_Class:: ElapsedGlobal()
 {
