@@ -766,11 +766,13 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
 	  exit(1);
 	}
 
+      // H5T_IEEE_F64LE
+
       H5Tinsert(ptable_type, "timer name",  HOFFSET(SubTimer_PTable_V1, timer_name),  strtype);
-      H5Tinsert(ptable_type, "measurement", HOFFSET(SubTimer_PTable_V1, measurement), H5T_NATIVE_DOUBLE);
-      H5Tinsert(ptable_type, "mean",        HOFFSET(SubTimer_PTable_V1, mean),        H5T_NATIVE_DOUBLE);
-      H5Tinsert(ptable_type, "variance",    HOFFSET(SubTimer_PTable_V1, variance),    H5T_NATIVE_DOUBLE);
-      H5Tinsert(ptable_type, "count",       HOFFSET(SubTimer_PTable_V1, count),       H5T_NATIVE_INT);
+      H5Tinsert(ptable_type, "measurement", HOFFSET(SubTimer_PTable_V1, measurement), H5T_NATIVE_DOUBLE  );
+      H5Tinsert(ptable_type, "mean",        HOFFSET(SubTimer_PTable_V1, mean),        H5T_NATIVE_DOUBLE  );
+      H5Tinsert(ptable_type, "variance",    HOFFSET(SubTimer_PTable_V1, variance),    H5T_NATIVE_DOUBLE  );
+      H5Tinsert(ptable_type, "count",       HOFFSET(SubTimer_PTable_V1, count),       H5T_NATIVE_ULONG   );
       
       hid_t subtimer_type;
       
