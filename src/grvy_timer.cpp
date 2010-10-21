@@ -867,7 +867,7 @@ int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(int version, hid_t tab
     exit(1);
   }
 
-
+  return 0;
 }
 #endif
 
