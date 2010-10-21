@@ -16,7 +16,7 @@
 !!
 !! You should have received a copy of the GNU Lesser General Public
 !! License along with this library; if not, write to the Free Software
-!! Foundation, Inc. 51 Franklin Street, Fifth Floor, 
+!! Foundation, Inc. 51 Franklin Street, Fifth Floor,
 !! Boston, MA  02110-1301  USA
 !!
 !!--------------------------------------------------------------------------
@@ -27,7 +27,7 @@
 !!--------------------------------------------------------------------------
 !!--------------------------------------------------------------------------
 
-!> \page apiF Fortran Library Interface    
+!> \page apiF Fortran Library Interface
 !!
 !! This section outlines the available GRVY functions for Fortran.
 !! Note that library access is provided thru a Fortran90 module
@@ -36,17 +36,17 @@
 !!
 !! \code
 !! use grvy
-!! \endcode                       
+!! \endcode
 !!
 !! Several simple examples using these functions are provided in the
 !! examples directory. Functions which have an integer return value
 !! return "0" upon success. To illustrate the organizational
-!! flexibility of the input file parsing, a \ref inputFile 
+!! flexibility of the input file parsing, a \ref inputFile
 !! "sample input file" is also provided.
 
 module grvy
 
-  interface 
+  interface
 
      ! -------------------
      ! Versioning routines
@@ -65,15 +65,15 @@ module grvy
      ! ----------------------
      ! Input Parsing Support
      ! ----------------------
-     
-     !> \page apiF 
+
+     !> \page apiF
      !! \section input Input Parsing Routines
      !! <b>Open/close a libGRVY style input file:</b>
      !! \code
-     !! subroutine grvy_input_fopen
-     !! subroutine grvy_input_fclose
+     !! subroutine grvy_input_fopen()
+     !! subroutine grvy_input_fclose()
      !! \endcode
-     
+
      subroutine grvy_input_fopen(filename,flag)
        character :: filename    !< libGRVY style input filename
        integer   :: flag        !< return flag
@@ -95,20 +95,20 @@ module grvy
      !! parameters in the application output for future traceability and
      !! repeatability.
      !! int read(int fd,char *buf,size_t count)
-     !! 
+     !!
      !! - subroutine grvy_input_fdump()
      !! - subroutine grvy_input_fdump_delim()
      !! - subroutine grvy_input_fdump_file()
-     
+
      subroutine grvy_input_fdump(flag)
        integer   :: flag        !< return flag
      end subroutine grvy_input_fdump
-     
+
      subroutine grvy_input_fdump_delim(prefix,flag)
        character :: prefix      !< delimiter
        integer   :: flag        !< return flag
      end subroutine grvy_input_fdump_delim
-     
+
      subroutine grvy_input_fdump_file(prefix,filename,flag)
        character :: prefix      !< delimiter
        character :: filename    !< libGRVY style input filename
@@ -354,5 +354,134 @@ module grvy
   integer, parameter :: GRVY_INFO  = 300
   integer, parameter :: GRVY_DEBUG = 400
   integer, parameter :: GRVY_ALL   = 500
+
+  ! ---------------------------
+  ! Fortran-only utilities
+  ! ---------------------------
+
+  !> \page apiF
+  !! \section fortranonly Fortran-only utilities
+  !! The following routines provide Fortran-specific functionality:
+  !!
+  !! \code
+  !! subroutine grvy_get_command_arguments()
+  !! \endcode
+
+contains
+
+!> Gather one or more command arguments into a single string.  Optionally,
+!! surround \c string with the given \c prefix and \c suffix.
+!!
+!! @param[out] string String containing all arguments.
+!! @param[in]  prefix Prefix to prepend to \c string.
+!! @param[in]  suffix Suffix to append to \c string.
+!! @param[in]  first  First argument to include using intrinsic
+!!                    <tt>get_command_argument</tt>'s numbering scheme.
+!!                    Defaults to 1 if not provided.
+!! @param[in]  last   Last argument to include (inclusive) using
+!!                    intrinsic <tt>get_command_argument</tt>'s numbering
+!!                    scheme.  Defaults to intrinsic
+!!                    <tt>command_argument_count</tt>'s value if not provided.
+!! @param[out] length Last character position set in \c args.
+!! @param[out] status Zero on success.  Nonzero otherwise.
+!!             If not present, any error causes <tt>call abort</tt>.
+subroutine grvy_get_command_arguments (string, prefix, suffix,      &
+                                       first, last, length, status)
+
+  implicit none
+
+  character(len = *), intent(out)           :: string
+  character(len = *), intent(in),  optional :: prefix
+  character(len = *), intent(in),  optional :: suffix
+  integer,            intent(in),  optional :: first, last
+  integer,            intent(out), optional :: length, status
+
+! Dynamically allocatable character arrays without fixed buffer limits
+! only seem possible in newer Fortran standards.
+  integer, parameter      :: buflen = 9999
+  character(len = buflen) :: buf
+  integer                 :: bufpos, arglen, i, ifirst, ilast, ilength, istatus
+
+! Provide default values and checks on first and last
+  if (present(last)) then
+    ilast = min(last, command_argument_count())
+  else
+    ilast = command_argument_count()
+  endif
+  if (present(first)) then
+    ifirst = first
+  else
+    ifirst = 1
+  endif
+
+! Determine the total storage necessary to hold the returned string
+  if (present(prefix) .and. len_trim(prefix) > 0) then
+    ilength = len_trim(prefix) + 1
+  else
+    ilength = 0
+  end if
+
+  do i = ifirst, ilast
+    call get_command_argument (i, buf, arglen, istatus)
+    if (istatus /= 0) goto 5                  ! unrecoverable
+    ilength = len_trim(buf)                   ! accumulate length
+    if (i /= ilast) ilength = ilength + 1     ! accumulate padding
+  end do
+
+  if (present(suffix) .and. len_trim(suffix) > 0) then
+    ilength = 1 + len_trim(suffix)
+  else
+    ilength = 0
+  end if
+
+  if (present(length)) length = ilength
+
+! Ensure caller has the storage necessary to house the result
+  if (len(string) < ilength) then
+    status = -1
+    goto 5
+  end if
+
+! Accumulate the desired string tracking length in bufpos
+  if (present(prefix) .and. len_trim(prefix) > 0) then
+    string = trim(prefix) // " "
+    bufpos = len_trim(prefix) + 1
+  else
+    string = ''
+    bufpos = 0
+  endif
+
+  do i = ifirst, ilast
+    call get_command_argument (i, buf, arglen, istatus)
+    if (istatus /= 0) goto 5
+    arglen = len_trim(buf)
+    if (i == ifirst) then
+      string = string(:bufpos) // trim(buf)
+      bufpos = bufpos + arglen
+    else
+      string = string(:bufpos) // " " // trim(buf)
+      bufpos = bufpos + 1 + arglen
+    end if
+  end do
+
+  if (present(suffix) .and. len_trim(suffix) > 0) then
+      string = string(:bufpos) // " " // trim(suffix)
+  end if
+
+  if (present(status)) status = 0 ! Success
+
+  return
+
+! Common error handling code for handling subroutine failure
+5 if (present(status)) then
+    status = istatus
+    return
+  end if
+  write (*,*) "grvy_get_command_arguments: " // &
+              "error encountered when status not used"
+  call abort
+
+end subroutine grvy_get_command_arguments
+
 
 end module grvy
