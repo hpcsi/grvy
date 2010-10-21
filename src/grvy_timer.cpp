@@ -42,6 +42,7 @@
 
 #include<sys/time.h>
 #include<stdarg.h>
+#include<stdio.h>
 #include<time.h>
 #include<stack>
 #include "grvy_classes.h"
