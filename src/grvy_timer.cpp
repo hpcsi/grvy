@@ -61,11 +61,11 @@ using namespace boost::accumulators;
 using namespace std;
 using namespace GRVY;
 
-// Historical logging packet table type for HDF
+//--------------------------------------------------------------------
+// Packet table data structures for historical HDF performance logging
+//--------------------------------------------------------------------
 
 #define PTABLE_VERSION     1	// default version beginning Oct. 2010
-
-// Packet table data structures for historical hdf logging
 
 #ifdef HAVE_HDF5
 
@@ -87,7 +87,9 @@ typedef struct TimerPTable_V1 {
 
 #endif
 
+//--------------------------------
 // Individual timer data structure
+//--------------------------------
 
 typedef struct GRVY_Timer_Data {
   double timings[2];
@@ -700,7 +702,9 @@ int GRVY_Timer_Class::SaveHistTiming(string comment, const char *filename )
   hid_t  tableId;
 
   if (h5.m_pimpl->PTableExists(hostlevel,tablename))
-    tableId = h5.m_pimpl->PTableOpen(hostlevel,tablename);
+    {
+      tableId = h5.m_pimpl->PTableOpen(hostlevel,tablename);
+    }
   else
     {
       if( (tableId = H5PTcreate_fl(h5.m_pimpl->groupIds[hostlevel],tablename.c_str(),
@@ -710,22 +714,16 @@ int GRVY_Timer_Class::SaveHistTiming(string comment, const char *filename )
 	  exit(1);
 	}
 
-      // Assign local packet table version as attribute in case we ever
-      // need to make a change in the future
+      // Save environment attributes and assign local packet table
+      // version in case we ever need to make a change in the future
 
-      hid_t dataspaceId  = H5Screate(H5S_SCALAR);
-      hid_t attrId       = H5Acreate(h5.m_pimpl->groupIds[hostlevel],"format_version",
-				     H5T_NATIVE_INT,dataspaceId,H5P_DEFAULT,H5P_DEFAULT);
       int format_version = PTABLE_VERSION;
-      
-      H5Awrite(attrId,H5T_NATIVE_INT,&format_version);
-      H5Aclose(attrId);
-      H5Sclose(dataspaceId);
 
-      h5.AttributeWrite(hostlevel,"os_sysname",myenv.os_sysname);
-      h5.AttributeWrite(hostlevel,"os_release",myenv.os_release);
-      h5.AttributeWrite(hostlevel,"os_version",myenv.os_version);
-      h5.AttributeWrite(hostlevel,"cputype",   myenv.cputype   );
+      h5.AttributeWrite(hostlevel,"format_version", format_version);
+      h5.AttributeWrite(hostlevel,"os_sysname",     myenv.os_sysname);
+      h5.AttributeWrite(hostlevel,"os_release",     myenv.os_release);
+      h5.AttributeWrite(hostlevel,"os_version",     myenv.os_version);
+      h5.AttributeWrite(hostlevel,"cputype",        myenv.cputype   );
       
     }
 

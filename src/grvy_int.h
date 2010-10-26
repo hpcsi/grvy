@@ -134,6 +134,23 @@ namespace GRVY {
     void  close_open_objects       ();
     bool  PTableExists             (std::string groupname, std::string tablename);
     hid_t PTableOpen               (std::string groupname, std::string tablename);
+
+    template <typename T> int AttributeWrite(std::string, std::string, T);
+    template <typename T> hid_t get_little_endian_type   (T value);
+
+    // HDF intrinsic data type support functions (little endian)
+
+    hid_t get_little_endian_type(short int         ) { return(H5T_STD_I16LE);  };
+    hid_t get_little_endian_type(int               ) { return(H5T_STD_I32LE);  };
+    hid_t get_little_endian_type(long              ) { return(H5T_STD_I64LE);  };
+									       
+    hid_t get_little_endian_type(unsigned short int) { return(H5T_STD_U16LE);  };
+    hid_t get_little_endian_type(unsigned int      ) { return(H5T_STD_U32LE);  };
+    hid_t get_little_endian_type(unsigned long     ) { return(H5T_STD_U64LE);  };
+
+    hid_t get_little_endian_type(float             ) { return(H5T_IEEE_F32LE); };
+    hid_t get_little_endian_type(double            ) { return(H5T_IEEE_F64LE); };
+
 #endif
   };
 

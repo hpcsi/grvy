@@ -89,7 +89,7 @@ int GRVY_HDF5_Class::Create(const char *filename,bool overwrite_existing)
 
   m_pimpl->restore_hdf_error_handler();  
   grvy_printf(GRVY_DEBUG,"%s: Successfully created new HDF file\n",filename);
-  return(0); 
+  return 0; 
 }
 
 bool GRVY_HDF5_Class::Exists(const char *filename)
@@ -142,7 +142,7 @@ int GRVY_HDF5_Class::Open(const char *filename,bool readonly)
     
   m_pimpl->restore_hdf_error_handler();  
   grvy_printf(GRVY_DEBUG,"%s: Successfully opened existing HDF file (%s)\n",__func__,filename);
-  return(0); 
+  return 0; 
 }
 
 int GRVY_HDF5_Class::GroupCreate(string descname)
@@ -200,13 +200,13 @@ bool GRVY_HDF5_Class::GroupExists(string groupname)
   if ( (groupId = H5Gopen(m_pimpl->fileId, groupname.c_str(),H5P_DEFAULT)) < 0)
     {
       m_pimpl->restore_hdf_error_handler();  
-      return(false);
+      return false;
     }
   else
     {
       H5Gclose(groupId);
       m_pimpl->restore_hdf_error_handler();  
-      return(true);
+      return true;
     }
 }
 
@@ -230,7 +230,7 @@ int GRVY_HDF5_Class::GroupOpen(string groupname)
   m_pimpl->restore_hdf_error_handler();  
 
   grvy_printf(GRVY_DEBUG,"%s: Successfully opened existing HDF group (%s)\n",__func__,groupname.c_str());
-  return(0); 
+  return 0; 
 }
 
 bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::is_group_open(string descname)
@@ -241,7 +241,79 @@ bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::is_group_open(string descname)
     return false;
 }
 
-// Attribute-related functions
+//--------------------------------------------------------------------------
+// Attribute-related public interface wrappers for templated implementation
+//--------------------------------------------------------------------------
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribute, short int value)
+{ 
+  return(m_pimpl->AttributeWrite(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribute, int value)
+{ 
+  return(m_pimpl->AttributeWrite(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribute, long value)
+{ 
+  return(m_pimpl->AttributeWrite(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribute, unsigned short int value)
+{ 
+  return(m_pimpl->AttributeWrite(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribute, unsigned int value)
+{ 
+  return(m_pimpl->AttributeWrite(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribute, unsigned long value)
+{ 
+  return(m_pimpl->AttributeWrite(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribute, float value)
+{ 
+  return(m_pimpl->AttributeWrite(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribute, double value)
+{ 
+  return(m_pimpl->AttributeWrite(name,attribute,value));
+}
+
+//--------------------------------------------------------------------------
+// Attribute-related private implementation functions
+//--------------------------------------------------------------------------
+
+namespace GRVY {
+  template <typename T> int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite(string groupname, 
+										string attribute, T value)
+{
+
+  hid_t attr_type_ondisk = get_little_endian_type(value);
+  hid_t dataspaceId      = H5Screate(H5S_SCALAR);
+  hid_t attrId           = H5Acreate(groupIds[groupname],attribute.c_str(),
+				     attr_type_ondisk,dataspaceId,H5P_DEFAULT,H5P_DEFAULT);
+
+  if(dataspaceId < 0 || attrId < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to create attribute\n",__func__);
+      exit(1);
+    }
+
+  H5Awrite(attrId,H5Tget_native_type(attr_type_ondisk,H5T_DIR_ASCEND),&value);
+
+  H5Aclose(attrId);
+  H5Sclose(dataspaceId);
+
+  return 0;
+}
+
+}
 
 int GRVY_HDF5_Class::AttributeWrite(string groupname, string attribute, string value)
 {
@@ -256,15 +328,24 @@ int GRVY_HDF5_Class::AttributeWrite(string groupname, string attribute, string v
   hid_t attrId       = H5Acreate(m_pimpl->groupIds[groupname],attribute.c_str(),
 				 strtype,dataspaceId,H5P_DEFAULT,H5P_DEFAULT);
 
+  if(dataspaceId < 0 || attrId < 0 || strtype < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to create attribute\n",__func__);
+      exit(1);
+    }
+
   H5Awrite(attrId,strtype,value.c_str());
   
   H5Aclose(attrId);
   H5Sclose(dataspaceId);
   H5Tclose(strtype);
-  
+
+  return 0;
 }
 
+//---------------------------------
 // Packet Table related functions
+//---------------------------------
 
 bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::PTableExists(string groupname,string tablename)
 {
@@ -368,6 +449,23 @@ void GRVY_HDF5_Class::GRVY_HDF5_ClassImp::close_open_objects()
   // TODO: continue to add here for any other hdf objects which get opened
 }
 
+// Supported Function Templates for intrinsic HDF types
+
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <short int> (string, string, short int);
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <int      > (string, string, int      );
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <long     > (string, string, long     );
+
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <float >    (string, string, float );
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <double>    (string, string, double);
+
+template 
+int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <unsigned short int> (string, string, unsigned short int);
+template
+int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <unsigned int      > (string, string, unsigned int      );
+template
+int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <unsigned long     > (string, string, unsigned long     );
+										       
+
 #else
 
 //----------------------------------------------------------
@@ -402,10 +500,10 @@ bool GRVY_HDF5_Class::Exists(const char *){return 0;}
 int  GRVY_HDF5_Class::GroupOpen   (std::string){return 0;}
 int  GRVY_HDF5_Class::GroupCreate (std::string){return 0;}
 bool GRVY_HDF5_Class::GroupExists (std::string){return 0;}
-#if 0
-int  GRVY_HDF5_Class::CreatePTable(const char *, const char *){return 0;};
-#endif
 
+#if 0
+int  GRVY_HDF5_Class::AttributeWrite(string,string,int){};
+#endif
 
 #endif
 
