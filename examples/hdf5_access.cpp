@@ -66,7 +66,7 @@ int main(int argc, char **argv)
   gt.Finalize();
   gt.Summarize();
 
-  gt.SaveHistTiming("Example Access Code","koomie2.h5");
+  gt.SaveHistTiming("Example1","",1,"koomie2.h5");
 
   return 0;
 }

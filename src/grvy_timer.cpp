@@ -78,8 +78,10 @@ typedef struct SubTimer_PTable_V1 {
 } SubTimer_PTable_V1;
 
 typedef struct TimerPTable_V1 {
-  const char *user_comment;
+  const char *experiment;
+  const char *user_comment;	       
   double total_time;	
+  int num_procs;
   int job_Id;
   int code_revision;
   hvl_t vl_subtimers;
@@ -116,7 +118,7 @@ public:
   double RawTimer      ();
 #ifdef HAVE_HDF5
   hid_t  CreateHistType (int version); 
-  int    AppendHistData (string comment, int version, hid_t tableId);
+  int    AppendHistData (string experiment, string comment, int num_procs, int version, hid_t tableId);
 #endif
 
   short int   initialized;            // initialized?
@@ -649,7 +651,7 @@ void GRVY_Timer_Class:: Summarize()
 // the global timer has been Finalized.
 //--------------------------------------------------------------------
 
-int GRVY_Timer_Class::SaveHistTiming(string comment, const char *filename )
+int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_procs, const char *filename )
 {
 
   GRVY_HDF5_Class h5;
@@ -730,7 +732,7 @@ int GRVY_Timer_Class::SaveHistTiming(string comment, const char *filename )
     
   // Pull grvy performance data and append results to hist HDF log
 
-  m_pimpl->AppendHistData(comment,PTABLE_VERSION,tableId);
+  m_pimpl->AppendHistData(experiment,comment,num_procs,PTABLE_VERSION,tableId);
   
   // Clean up shop
 
@@ -796,8 +798,10 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
 	exit(1);
       }
 
+      H5Tinsert(timers_type,"Experiment Name",HOFFSET(TimerPTable_V1,experiment),    strtype        );
       H5Tinsert(timers_type,"Comment",        HOFFSET(TimerPTable_V1,user_comment),  strtype        );
       H5Tinsert(timers_type,"Total Time",     HOFFSET(TimerPTable_V1,total_time),    H5T_IEEE_F64LE );
+      H5Tinsert(timers_type,"Num Processors", HOFFSET(TimerPTable_V1,num_procs),     H5T_STD_I32LE  );
       H5Tinsert(timers_type,"Job Id",         HOFFSET(TimerPTable_V1,job_Id),        H5T_STD_I32LE  );
       H5Tinsert(timers_type,"Code Revision"  ,HOFFSET(TimerPTable_V1,code_revision), H5T_STD_I32LE  );
       H5Tinsert(timers_type,"SubTimers",      HOFFSET(TimerPTable_V1,vl_subtimers),  subtimer_type  );
@@ -814,7 +818,8 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
   }
 }
 
-int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string comment, int version, hid_t tableId)
+  int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string experiment, string comment, int num_procs,
+							    int version, hid_t tableId)
 {
   grvy_printf(GRVY_DEBUG,"Appending historical timer data for PTable version %i\n",version);
 
@@ -829,8 +834,10 @@ int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string comment, int ve
 
     subtimers.reserve(num_subtimers);
 
+    header.experiment       = experiment.c_str();
     header.user_comment     = comment.c_str();
     header.total_time       = self->ElapsedSeconds(_GRVY_gtimer);
+    header.num_procs        = num_procs;
     header.job_Id           = -1;	            // TODO allow for setting me
     header.code_revision    = -1;	            // TODO allow for setting me
     header.vl_subtimers.p   = &subtimers[0];
