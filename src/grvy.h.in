@@ -503,7 +503,7 @@ class GRVY_Timer_Class {
 
   // Historical timing support
 
-  int  SaveHistTiming      (const char *filename);
+  int  SaveHistTiming      (std::string comment, const char *filename);
   int  SaveHistTiming      (const char *filename, const char *id, double timing);
   void SummarizeHistTiming (const char *filename);
 

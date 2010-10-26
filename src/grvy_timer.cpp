@@ -71,7 +71,9 @@ using namespace GRVY;
 #ifdef HAVE_HDF5
 
 typedef struct SubTimer_PTable_V1 {
-  char timer_name[MAX_TIMER_WIDTH_V1];
+  //  char timer_name[MAX_TIMER_WIDTH_V1];
+  //hvl_t vl_timer_name;
+  const char *timer_name;
   double measurement;
   double mean;
   double variance;
@@ -79,6 +81,7 @@ typedef struct SubTimer_PTable_V1 {
 } SubTimer_PTable_V1;
 
 typedef struct TimerPTable_V1 {
+  const char *user_comment;
   double total_time;	
   int job_Id;
   int code_revision;
@@ -114,7 +117,7 @@ public:
   double RawTimer      ();
 #ifdef HAVE_HDF5
   hid_t  CreateHistType (int version); 
-  int    AppendHistData (int version, hid_t tableId);
+  int    AppendHistData (string comment, int version, hid_t tableId);
 #endif
 
   short int   initialized;            // initialized?
@@ -647,7 +650,7 @@ void GRVY_Timer_Class:: Summarize()
 // the global timer has been Finalized.
 //--------------------------------------------------------------------
 
-int GRVY_Timer_Class::SaveHistTiming(const char *filename )
+int GRVY_Timer_Class::SaveHistTiming(string comment, const char *filename )
 {
 
   GRVY_HDF5_Class h5;
@@ -724,7 +727,7 @@ int GRVY_Timer_Class::SaveHistTiming(const char *filename )
     
   // Pull grvy performance data and append results to hist HDF log
 
-  m_pimpl->AppendHistData(PTABLE_VERSION,tableId);
+  m_pimpl->AppendHistData(comment,PTABLE_VERSION,tableId);
   
   // Clean up shop
 
@@ -753,13 +756,17 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
   case 1:
       hid_t ptable_type;
       hid_t strtype;
+      hid_t varlen_strtype;
       
       // Create our basic subtimer packet...
-      
+
       strtype = H5Tcopy(H5T_C_S1);
-      
-      H5Tset_size(strtype,(size_t)MAX_TIMER_WIDTH_V1);
       H5Tset_strpad(strtype,H5T_STR_NULLTERM);
+      H5Tset_size(strtype,H5T_VARIABLE);
+
+      //      varlen_strtype = H5Tvlen_create(strtype);
+      
+      //      H5Tset_size(strtype,(size_t)MAX_TIMER_WIDTH_V1);
       
       if( (ptable_type = H5Tcreate (H5T_COMPOUND, sizeof(SubTimer_PTable_V1))) < 0 )
 	{
@@ -767,13 +774,14 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
 	  exit(1);
 	}
 
-      // H5T_IEEE_F64LE
+      // We specify specific datatypes during the table creation to
+      // ensure that all tables are consistent across platforms.  
 
-      H5Tinsert(ptable_type, "timer name",  HOFFSET(SubTimer_PTable_V1, timer_name),  strtype);
-      H5Tinsert(ptable_type, "measurement", HOFFSET(SubTimer_PTable_V1, measurement), H5T_NATIVE_DOUBLE  );
-      H5Tinsert(ptable_type, "mean",        HOFFSET(SubTimer_PTable_V1, mean),        H5T_NATIVE_DOUBLE  );
-      H5Tinsert(ptable_type, "variance",    HOFFSET(SubTimer_PTable_V1, variance),    H5T_NATIVE_DOUBLE  );
-      H5Tinsert(ptable_type, "count",       HOFFSET(SubTimer_PTable_V1, count),       H5T_NATIVE_ULONG   );
+      H5Tinsert(ptable_type, "timer name",  HOFFSET(SubTimer_PTable_V1, timer_name),  strtype );
+      H5Tinsert(ptable_type, "measurement", HOFFSET(SubTimer_PTable_V1, measurement), H5T_IEEE_F64LE );
+      H5Tinsert(ptable_type, "mean",        HOFFSET(SubTimer_PTable_V1, mean),        H5T_IEEE_F64LE );
+      H5Tinsert(ptable_type, "variance",    HOFFSET(SubTimer_PTable_V1, variance),    H5T_IEEE_F64LE );
+      H5Tinsert(ptable_type, "count",       HOFFSET(SubTimer_PTable_V1, count),       H5T_STD_I64LE  );
       
       hid_t subtimer_type;
       
@@ -789,10 +797,11 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
 	exit(1);
       }
 
-      H5Tinsert(timers_type,"Total Time",     HOFFSET(TimerPTable_V1,total_time),    H5T_NATIVE_DOUBLE);
-      H5Tinsert(timers_type,"Job Id",         HOFFSET(TimerPTable_V1,job_Id),        H5T_NATIVE_INT   );
-      H5Tinsert(timers_type,"Code Revision"  ,HOFFSET(TimerPTable_V1,code_revision), H5T_NATIVE_INT   );
-      H5Tinsert(timers_type,"SubTimers",      HOFFSET(TimerPTable_V1,vl_subtimers),  subtimer_type    );
+      H5Tinsert(timers_type,"Comment",        HOFFSET(TimerPTable_V1,user_comment),  strtype        );
+      H5Tinsert(timers_type,"Total Time",     HOFFSET(TimerPTable_V1,total_time),    H5T_IEEE_F64LE );
+      H5Tinsert(timers_type,"Job Id",         HOFFSET(TimerPTable_V1,job_Id),        H5T_STD_I32LE  );
+      H5Tinsert(timers_type,"Code Revision"  ,HOFFSET(TimerPTable_V1,code_revision), H5T_STD_I32LE  );
+      H5Tinsert(timers_type,"SubTimers",      HOFFSET(TimerPTable_V1,vl_subtimers),  subtimer_type  );
 
       H5Tclose(strtype);
       H5Tclose(ptable_type);
@@ -806,7 +815,7 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
   }
 }
 
-int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(int version, hid_t tableId)
+int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string comment, int version, hid_t tableId)
 {
   grvy_printf(GRVY_DEBUG,"Appending historical timer data for PTable version %i\n",version);
 
@@ -821,6 +830,7 @@ int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(int version, hid_t tab
 
     subtimers.reserve(num_subtimers);
 
+    header.user_comment     = comment.c_str();
     header.total_time       = self->ElapsedSeconds(_GRVY_gtimer);
     header.job_Id           = -1;	            // TODO allow for setting me
     header.code_revision    = -1;	            // TODO allow for setting me
@@ -835,6 +845,7 @@ int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(int version, hid_t tab
       {
 	if(index->first != _GRVY_gtimer)
 	  {
+#if 0
 	    if(index->first.length() > 119)
 	      {
 		sprintf(data_tmp.timer_name,"%*s",MAX_TIMER_WIDTH_V1-1,index->first.c_str());
@@ -844,6 +855,11 @@ int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(int version, hid_t tab
 	      {
 		sprintf(data_tmp.timer_name,"%s",index->first.c_str());
 	      }
+#endif
+
+	    string timer_name = index->first;
+
+	    data_tmp.timer_name  = timer_name.c_str();
 
 	    data_tmp.measurement = self->ElapsedSeconds(index->first);
 	    data_tmp.mean        = self->StatsMean     (index->first);
