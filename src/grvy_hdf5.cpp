@@ -29,13 +29,12 @@
 
 #include<grvy_classes.h>
 #include<grvy_int.h>
+#include<grvy_env.h>
 #include<grvy.h>
 
 #ifdef HAVE_HDF5
 #include <H5PTpublic.h>
 #endif
-
-const int MAX_TIMER_WIDTH=120;	
 
 using namespace std;
 using namespace GRVY;
@@ -240,6 +239,29 @@ bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::is_group_open(string descname)
     return true;
   else
     return false;
+}
+
+// Attribute-related functions
+
+int GRVY_HDF5_Class::AttributeWrite(string groupname, string attribute, string value)
+{
+  hid_t strtype;
+
+  strtype = H5Tcopy(H5T_C_S1);
+
+  H5Tset_strpad(strtype,H5T_STR_NULLTERM);
+  H5Tset_size  (strtype,value.size()); 
+
+  hid_t dataspaceId  = H5Screate(H5S_SCALAR);
+  hid_t attrId       = H5Acreate(m_pimpl->groupIds[groupname],attribute.c_str(),
+				 strtype,dataspaceId,H5P_DEFAULT,H5P_DEFAULT);
+
+  H5Awrite(attrId,strtype,value.c_str());
+  
+  H5Aclose(attrId);
+  H5Sclose(dataspaceId);
+  H5Tclose(strtype);
+  
 }
 
 // Packet Table related functions

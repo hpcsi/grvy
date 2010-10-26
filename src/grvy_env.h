@@ -1,3 +1,4 @@
+// -*-c++-*-
 //-----------------------------------------------------------------------bl-
 //--------------------------------------------------------------------------
 // 
@@ -30,14 +31,18 @@
 #ifndef GRVY_ENV_H
 #define GRVY_ENV_H
 
+#include <grvy.h>
 #include <string>
 
-class GRVY_Hostenv_Class {
+class GRVY_Hostenv_Class 
+{
+  friend class GRVY::GRVY_Timer_Class;
+  
 public:
   GRVY_Hostenv_Class();
   void Print();
   std::string Hostname();
-
+  
 private:
   std::string hostname;
   std::string os_sysname;

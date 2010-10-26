@@ -541,6 +541,12 @@ private:
    int  GroupOpen   (std::string groupname);
    bool GroupExists (std::string groupname);
 
+   // Attribute-related functions
+
+   //   int AttributeCreate(std::string groupname, std::string attribute,     int    value);
+   //   int AttributeCreate(std::string groupname, std::string attribute,     double value);
+   int AttributeWrite(std::string groupname, std::string attribute,std::string value);
+
    // Dataset-related functions
 
    //   hid_t CreatePTable (const char *groupname, const char *tablename, hid_t datatype);

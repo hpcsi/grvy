@@ -45,10 +45,10 @@
 #include<stdio.h>
 #include<time.h>
 #include<stack>
-#include "grvy_classes.h"
-#include "grvy.h"
-#include "grvy_int.h"
-#include "grvy_env.h"
+#include<grvy_classes.h>
+#include<grvy_env.h>
+#include<grvy.h>
+#include<grvy_int.h>
 
 #include<boost/accumulators/accumulators.hpp>
 #include<boost/accumulators/statistics/mean.hpp>
@@ -63,7 +63,6 @@ using namespace GRVY;
 
 // Historical logging packet table type for HDF
 
-#define MAX_TIMER_WIDTH_V1 120
 #define PTABLE_VERSION     1	// default version beginning Oct. 2010
 
 // Packet table data structures for historical hdf logging
@@ -71,8 +70,6 @@ using namespace GRVY;
 #ifdef HAVE_HDF5
 
 typedef struct SubTimer_PTable_V1 {
-  //  char timer_name[MAX_TIMER_WIDTH_V1];
-  //hvl_t vl_timer_name;
   const char *timer_name;
   double measurement;
   double mean;
@@ -712,18 +709,26 @@ int GRVY_Timer_Class::SaveHistTiming(string comment, const char *filename )
 	  grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename.c_str());
 	  exit(1);
 	}
+
+      // Assign local packet table version as attribute in case we ever
+      // need to make a change in the future
+
+      hid_t dataspaceId  = H5Screate(H5S_SCALAR);
+      hid_t attrId       = H5Acreate(h5.m_pimpl->groupIds[hostlevel],"format_version",
+				     H5T_NATIVE_INT,dataspaceId,H5P_DEFAULT,H5P_DEFAULT);
+      int format_version = PTABLE_VERSION;
+      
+      H5Awrite(attrId,H5T_NATIVE_INT,&format_version);
+      H5Aclose(attrId);
+      H5Sclose(dataspaceId);
+
+      h5.AttributeWrite(hostlevel,"os_sysname",myenv.os_sysname);
+      h5.AttributeWrite(hostlevel,"os_release",myenv.os_release);
+      h5.AttributeWrite(hostlevel,"os_version",myenv.os_version);
+      h5.AttributeWrite(hostlevel,"cputype",   myenv.cputype   );
+      
     }
 
-  // Assign local packet table version as attribute in case we ever
-  // need to make a change in the future
-
-  hid_t dataspaceId  = H5Screate(H5S_SCALAR);
-  hid_t attrId       = H5Acreate(h5.m_pimpl->groupIds[hostlevel],"format_version",
-  				 H5T_NATIVE_INT,dataspaceId,H5P_DEFAULT,H5P_DEFAULT);
-  int format_version = PTABLE_VERSION;
-
-  H5Awrite(attrId,H5T_NATIVE_INT,&format_version);
-  H5Aclose(attrId);
     
   // Pull grvy performance data and append results to hist HDF log
 
@@ -764,10 +769,6 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
       H5Tset_strpad(strtype,H5T_STR_NULLTERM);
       H5Tset_size(strtype,H5T_VARIABLE);
 
-      //      varlen_strtype = H5Tvlen_create(strtype);
-      
-      //      H5Tset_size(strtype,(size_t)MAX_TIMER_WIDTH_V1);
-      
       if( (ptable_type = H5Tcreate (H5T_COMPOUND, sizeof(SubTimer_PTable_V1))) < 0 )
 	{
 	  grvy_printf(GRVY_FATAL,"%s: Unable to create compound HDF datatype\n",__func__);
@@ -845,17 +846,6 @@ int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string comment, int ve
       {
 	if(index->first != _GRVY_gtimer)
 	  {
-#if 0
-	    if(index->first.length() > 119)
-	      {
-		sprintf(data_tmp.timer_name,"%*s",MAX_TIMER_WIDTH_V1-1,index->first.c_str());
-		data_tmp.timer_name[MAX_TIMER_WIDTH_V1-1] = '\0';
-	      }
-	    else
-	      {
-		sprintf(data_tmp.timer_name,"%s",index->first.c_str());
-	      }
-#endif
 
 	    string timer_name = index->first;
 
