@@ -497,7 +497,7 @@ class GRVY_Timer_Class {
   void   Reset          ();	              // reset all timers
   void   Summarize      ();	              // pretty-print timing information
 
-  int    StatsCount     (std::string id);     // # of calls to timer (id)
+  size_t StatsCount     (std::string id);     // # of calls to timer (id)
   double StatsMean      (std::string id);     // mean time for timer (id)
   double StatsVariance  (std::string id);     //  variance for timer (id)
 

@@ -74,7 +74,7 @@ typedef struct SubTimer_PTable_V1 {
   double measurement;
   double mean;
   double variance;
-  int count;
+  size_t count;
 } SubTimer_PTable_V1;
 
 typedef struct TimerPTable_V1 {
@@ -396,7 +396,7 @@ double GRVY_Timer_Class:: ElapsedSeconds(string id)
   return elapsedseconds;
 }
 
-int GRVY_Timer_Class:: StatsCount(string id)
+size_t GRVY_Timer_Class:: StatsCount(string id)
 {
   _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
 
@@ -728,9 +728,8 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
       h5.AttributeWrite(hostlevel,"cputype",        myenv.cputype   );
       
     }
-
     
-  // Pull grvy performance data and append results to hist HDF log
+  // Pull grvy performance data and append results HDF log
 
   m_pimpl->AppendHistData(experiment,comment,num_procs,PTABLE_VERSION,tableId);
   
@@ -775,14 +774,14 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
 	  exit(1);
 	}
 
-      // We specify specific datatypes during the table creation to
+      // We provide specific datatypes during the table creation to
       // ensure that all tables are consistent across platforms.  
 
       H5Tinsert(ptable_type, "timer name",  HOFFSET(SubTimer_PTable_V1, timer_name),  strtype );
       H5Tinsert(ptable_type, "measurement", HOFFSET(SubTimer_PTable_V1, measurement), H5T_IEEE_F64LE );
       H5Tinsert(ptable_type, "mean",        HOFFSET(SubTimer_PTable_V1, mean),        H5T_IEEE_F64LE );
       H5Tinsert(ptable_type, "variance",    HOFFSET(SubTimer_PTable_V1, variance),    H5T_IEEE_F64LE );
-      H5Tinsert(ptable_type, "count",       HOFFSET(SubTimer_PTable_V1, count),       H5T_STD_I64LE  );
+      H5Tinsert(ptable_type, "count",       HOFFSET(SubTimer_PTable_V1, count),       H5T_STD_U64LE  );
       
       hid_t subtimer_type;
       
@@ -859,6 +858,7 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
 	    data_tmp.measurement = self->ElapsedSeconds(index->first);
 	    data_tmp.mean        = self->StatsMean     (index->first);
 	    data_tmp.variance    = self->StatsVariance (index->first);
+
 	    data_tmp.count       = self->StatsCount    (index->first);
 	    
 	    subtimers.push_back(data_tmp);
