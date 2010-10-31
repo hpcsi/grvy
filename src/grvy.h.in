@@ -370,6 +370,7 @@ extern "C" {
 // C++ GRVY Interfaces
 //--------------------------
 
+#include<vector>
 #include<map>
 #include<string>
 #include<memory>
@@ -473,8 +474,6 @@ class GRVY_Input_Class {
   template <typename T> T Get_Default   (T);
 };
 
-  //  class GRVY_HDF5_ClassImp;	               // forward declaration of HDF5 implementation
-
 //--------------------------
 // Performance Timing Class
 //--------------------------
@@ -504,8 +503,7 @@ class GRVY_Timer_Class {
   // Historical timing support
 
   int  SaveHistTiming      (std::string experiment, std::string comment, int num_procs, const char *filename);
-  int  SaveHistTiming      (const char *filename, const char *id, double timing);
-  void SummarizeHistTiming (const char *filename);
+  void SummarizeHistTiming (std::string filename);
 
 private:
   class GRVY_Timer_ClassImp;	              // forware declaration to Timer implementation
@@ -530,9 +528,9 @@ private:
 
    // File-related functions
    
-   int  Create  (const char *filename, bool overwrite_existing);
-   int  Open    (const char *filename, bool read_only         );
-   bool Exists  (const char *filename);
+   int  Create  (std::string filename, bool overwrite_existing);
+   int  Open    (std::string filename, bool read_only         );
+   bool Exists  (std::string filename);
    int  Close   ();
 
    // Group-related functions
@@ -540,6 +538,8 @@ private:
    int  GroupCreate (std::string groupname);
    int  GroupOpen   (std::string groupname);
    bool GroupExists (std::string groupname);
+
+   std::vector<std::string> ListSubGroups(std::string groupname);
 
    // Attribute-related functions
 
@@ -555,7 +555,6 @@ private:
    int AttributeWrite(std::string groupname, std::string attribute,             double value);
 
    int AttributeWrite(std::string groupname, std::string attribute,        std::string value);
-
 
    // Dataset-related functions
 

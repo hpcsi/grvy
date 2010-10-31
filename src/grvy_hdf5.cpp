@@ -54,32 +54,33 @@ GRVY_HDF5_Class::~GRVY_HDF5_Class()
   // delete m_pimpl;
 }
 
-int GRVY_HDF5_Class::Create(const char *filename,bool overwrite_existing)
+int GRVY_HDF5_Class::Create(string filename,bool overwrite_existing)
 {
   unsigned int flags;
 
   if(overwrite_existing)
     {
       flags = H5F_ACC_TRUNC;
-      grvy_printf(GRVY_DEBUG,"%s: Creating new hdf file %s (overwrite=true)\n",__func__,filename);
+      grvy_printf(GRVY_DEBUG,"%s: Creating new hdf file %s (overwrite=true)\n",__func__,filename.c_str());
     }
   else
     {
       flags = H5F_ACC_EXCL;
-      grvy_printf(GRVY_DEBUG,"%s: Creating new hdf file %s (overwrite=false)\n",__func__,filename);
+      grvy_printf(GRVY_DEBUG,"%s: Creating new hdf file %s (overwrite=false)\n",__func__,filename.c_str());
     }
 
   if(m_pimpl->fileId >= 0)
     {
-      grvy_printf(GRVY_FATAL,"%s: current state has actively opened file - please close first\n",__func__,filename);
+      grvy_printf(GRVY_FATAL,"%s: current state has actively opened file - please close first\n",__func__,
+		  filename.c_str());
       exit(1);
     }
 
   m_pimpl->silence_hdf_error_handler();
 
-  if ( (m_pimpl->fileId = H5Fcreate(filename, flags, H5P_DEFAULT, H5P_DEFAULT)) < 0)
+  if ( (m_pimpl->fileId = H5Fcreate(filename.c_str(), flags, H5P_DEFAULT, H5P_DEFAULT)) < 0)
     {
-      grvy_printf(GRVY_FATAL,"%s: Unable to create *new* HDF file (%s)\n",__func__,filename);
+      grvy_printf(GRVY_FATAL,"%s: Unable to create *new* HDF file (%s)\n",__func__,filename.c_str());
       if(!overwrite_existing)
 	{
 	  grvy_printf(GRVY_FATAL,"%s: Note that the file must not exist when overwrite_existing=false\n",__func__);
@@ -88,17 +89,17 @@ int GRVY_HDF5_Class::Create(const char *filename,bool overwrite_existing)
     }
 
   m_pimpl->restore_hdf_error_handler();  
-  grvy_printf(GRVY_DEBUG,"%s: Successfully created new HDF file\n",filename);
+  grvy_printf(GRVY_DEBUG,"%s: Successfully created new HDF file\n",filename.c_str());
   return 0; 
 }
 
-bool GRVY_HDF5_Class::Exists(const char *filename)
+bool GRVY_HDF5_Class::Exists(string filename)
 {
   hid_t fileId;
 
   m_pimpl->silence_hdf_error_handler();
 
-  if ( (fileId = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT)) < 0)
+  if ( (fileId = H5Fopen(filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT)) < 0)
     {
       m_pimpl->restore_hdf_error_handler();  
       return(false);
@@ -111,37 +112,38 @@ bool GRVY_HDF5_Class::Exists(const char *filename)
     }
 }
 
-int GRVY_HDF5_Class::Open(const char *filename,bool readonly)
+int GRVY_HDF5_Class::Open(string filename,bool readonly)
 {
   unsigned int flags;
 
   if(readonly)
     {
       flags = H5F_ACC_RDONLY;
-      grvy_printf(GRVY_DEBUG,"%s: Opening existing hdf file %s (readonly=true)\n",__func__,filename);
+      grvy_printf(GRVY_DEBUG,"%s: Opening existing hdf file %s (readonly=true)\n",__func__,filename.c_str());
     }
   else
     {
       flags = H5F_ACC_RDWR;
-      grvy_printf(GRVY_DEBUG,"%s: Opening existing hdf file %s (readonly=false)\n",__func__,filename);
+      grvy_printf(GRVY_DEBUG,"%s: Opening existing hdf file %s (readonly=false)\n",__func__,filename.c_str());
     }
 
   if(m_pimpl->fileId >= 0)
     {
-      grvy_printf(GRVY_FATAL,"hdf5_open: current state has actively opened file - please close first\n",filename);
+      grvy_printf(GRVY_FATAL,"hdf5_open: current state has actively opened file - please close first\n",
+		  filename.c_str());
       exit(1);
     }
 
   m_pimpl->silence_hdf_error_handler();
 
-  if ( (m_pimpl->fileId = H5Fopen(filename, flags, H5P_DEFAULT)) < 0)
+  if ( (m_pimpl->fileId = H5Fopen(filename.c_str(), flags, H5P_DEFAULT)) < 0)
     {
-      grvy_printf(GRVY_FATAL,"%s: Unable to open *existing* HDF file (%s)\n",__func__,filename);
+      grvy_printf(GRVY_FATAL,"%s: Unable to open *existing* HDF file (%s)\n",__func__,filename.c_str());
       exit(1);
     }
     
   m_pimpl->restore_hdf_error_handler();  
-  grvy_printf(GRVY_DEBUG,"%s: Successfully opened existing HDF file (%s)\n",__func__,filename);
+  grvy_printf(GRVY_DEBUG,"%s: Successfully opened existing HDF file (%s)\n",__func__,filename.c_str());
   return 0; 
 }
 
@@ -219,6 +221,18 @@ int GRVY_HDF5_Class::GroupOpen(string groupname)
       exit(1);
     }
 
+  // is group already open?
+
+  map<std::string,hid_t>::iterator it = m_pimpl->groupIds.find(groupname);
+
+  if( it != m_pimpl->groupIds.end() )
+    {
+      grvy_printf(GRVY_DEBUG,"%s: group %s already opened\n",__func__,groupname.c_str());
+      return 0;
+    }
+
+  // open desired group and save hdf identifier
+
   m_pimpl->silence_hdf_error_handler();
 
   if ( (m_pimpl->groupIds[groupname] = H5Gopen(m_pimpl->fileId, groupname.c_str(),H5P_DEFAULT)) < 0)
@@ -231,6 +245,48 @@ int GRVY_HDF5_Class::GroupOpen(string groupname)
 
   grvy_printf(GRVY_DEBUG,"%s: Successfully opened existing HDF group (%s)\n",__func__,groupname.c_str());
   return 0; 
+}
+
+// Prototype for H5Literate callback function used in ListSubGroups
+
+herr_t op_callback (hid_t loc_id, const char *name, const H5L_info_t *info, void *data);
+
+//----------------------------------------------------------------
+// ListSubGroups: builds a vector list of all HDF subgroups found
+// within a given groupname
+//----------------------------------------------------------------
+
+vector<string> GRVY_HDF5_Class::ListSubGroups(string groupname)
+{
+
+  GroupOpen(groupname);
+
+  vector<std::string> subgroups;
+
+  H5Literate(m_pimpl->groupIds[groupname],H5_INDEX_NAME,H5_ITER_NATIVE,NULL,
+  	     op_callback,(void *) &subgroups);
+
+  for(int i=0;i<subgroups.size();i++)
+    cout << "subgroup = " << subgroups[i] << endl;
+
+  return(subgroups);
+
+}
+
+herr_t op_callback(hid_t loc_id, const char *name, const H5L_info_t *info, void *data)
+{
+  H5O_info_t infobuf;
+
+  herr_t status = H5Oget_info_by_name(loc_id,name,&infobuf,H5P_DEFAULT);
+  switch(infobuf.type) 
+    {
+    case H5O_TYPE_GROUP:
+      static_cast<vector<string>*>(data)->push_back(name);
+      break;
+    default:
+      printf("Other type %s found\n",name);
+    }
+  return 0;
 }
 
 bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::is_group_open(string descname)

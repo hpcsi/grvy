@@ -744,6 +744,93 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
 #endif
 }
 
+void GRVY_Timer_Class::SummarizeHistTiming(string filename)
+{
+
+  GRVY_HDF5_Class h5;
+
+#ifndef HAVE_HDF5
+  return 1;  // above h5 ctor will error if HDF5 is not available
+#else
+
+  // Open existing file
+
+  h5.Open(filename,false);
+
+  // Open GRVY timer group
+
+  string toplevel("GRVY/Performance_timings/");
+  h5.GroupOpen(toplevel);
+
+  // Scan for available machine timings
+
+  printf("about to call subgroups\n");
+  vector<string> machines = h5.ListSubGroups(toplevel);
+
+  // Open/create group for this host/machine
+
+
+#if 0
+  string hostlevel = toplevel+myenv.Hostname();
+
+  if (h5.GroupExists(hostlevel))
+    h5.GroupOpen(hostlevel);
+  else
+    h5.GroupCreate(hostlevel);
+
+  // Setup packet table datatype for storing timer information
+
+  hid_t timers_type = m_pimpl->CreateHistType(PTABLE_VERSION);
+
+  // Open/create packet table for this host/machine using variable
+  // length packets
+
+  string tablename("PTable");
+  hid_t  tableId;
+
+  if (h5.m_pimpl->PTableExists(hostlevel,tablename))
+    {
+      tableId = h5.m_pimpl->PTableOpen(hostlevel,tablename);
+    }
+  else
+    {
+      if( (tableId = H5PTcreate_fl(h5.m_pimpl->groupIds[hostlevel],tablename.c_str(),
+				   timers_type,(hsize_t)256,-1)) == H5I_BADID)
+	{
+	  grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename.c_str());
+	  exit(1);
+	}
+
+      // Save environment attributes and assign local packet table
+      // version in case we ever need to make a change in the future
+
+      int format_version = PTABLE_VERSION;
+
+      h5.AttributeWrite(hostlevel,"format_version", format_version);
+      h5.AttributeWrite(hostlevel,"os_sysname",     myenv.os_sysname);
+      h5.AttributeWrite(hostlevel,"os_release",     myenv.os_release);
+      h5.AttributeWrite(hostlevel,"os_version",     myenv.os_version);
+      h5.AttributeWrite(hostlevel,"cputype",        myenv.cputype   );
+      
+    }
+    
+  // Pull grvy performance data and append results HDF log
+
+  m_pimpl->AppendHistData(experiment,comment,num_procs,PTABLE_VERSION,tableId);
+  
+  // Clean up shop
+
+  H5Tclose(timers_type);
+  H5PTclose(tableId);
+
+#endif
+
+  h5.Close();
+
+  return;
+#endif
+}
+
 //--------------------------------------------------------------------
 // CreateHistType(): create a compound HDF datatype as the basis
 // for storing historical performance data in a packet table.
@@ -882,14 +969,4 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
 }
 #endif
 
-int GRVY_Timer_Class::SaveHistTiming(const char *filename, const char *id, double timing)
-{
-  return 0;
-}
-
-void GRVY_Timer_Class::SummarizeHistTiming(const char *filename)
-{
-  return;
-}
-  
 }

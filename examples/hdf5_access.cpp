@@ -44,7 +44,7 @@ int main(int argc, char **argv)
   gt.BeginTimer("Main Program");
   
   grvy_log_setlevel(GRVY_INFO);
-  //  grvy_log_setlevel(GRVY_DEBUG);
+  grvy_log_setlevel(GRVY_DEBUG);
 
   // Create a new hdf file
 
@@ -67,6 +67,10 @@ int main(int argc, char **argv)
   gt.Summarize();
 
   gt.SaveHistTiming("Example1","",1,"koomie2.h5");
+
+  // Query the historical performance logs
+
+  gt.SummarizeHistTiming("koomie2.h5");
 
   return 0;
 }
