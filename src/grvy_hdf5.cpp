@@ -548,10 +548,10 @@ GRVY_HDF5_Class::~GRVY_HDF5_Class()
   exit(1);
 }
 
-int  GRVY_HDF5_Class::Create(const char *, bool) { return 0; }
-int  GRVY_HDF5_Class::Open  (const char *, bool) { return 0; }
-int  GRVY_HDF5_Class::Close ()                   { return 0; }
-bool GRVY_HDF5_Class::Exists(const char *)       { return 0; }
+int  GRVY_HDF5_Class::Create(string filename, bool) { return 0; }
+int  GRVY_HDF5_Class::Open  (string filename, bool) { return 0; }
+int  GRVY_HDF5_Class::Close ()                      { return 0; }
+bool GRVY_HDF5_Class::Exists(string filename)       { return 0; }
 						   	     
 int  GRVY_HDF5_Class::GroupOpen   (string)       { return 0; }
 int  GRVY_HDF5_Class::GroupCreate (string)       { return 0; }
