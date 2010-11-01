@@ -767,11 +767,20 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 
   vector<string> machines = h5.ListSubGroups(toplevel);
 
-  // Summarize resulre for each host/machine
+  // Summarize results for each host/machine
+
+  int Ptable_Version;
+
+  h5.AttributeRead(toplevel+machines[0],"format_version",&Ptable_Version);
+
+  printf("ptable_version = %i\n",Ptable_Version);
+
+  //  hid_t timers_type = m_pimpl->CreateHistType(PTABLE_
 
 #if 0
   for(int i=0;i<machines.size();i++)
     {
+      
       SummarizeHost(machines[i]);
     }
 #endif
@@ -837,6 +846,13 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
   return;
 #endif
 }
+
+#if 0
+void GRVY_Timer_Class::SummarizeHost(string filename)
+{
+
+}
+#endif
 
 //--------------------------------------------------------------------
 // CreateHistType(): create a compound HDF datatype as the basis

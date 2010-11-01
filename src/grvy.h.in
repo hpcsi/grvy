@@ -546,15 +546,22 @@ private:
    int AttributeWrite(std::string groupname, std::string attribute,          short int value);
    int AttributeWrite(std::string groupname, std::string attribute,                int value);
    int AttributeWrite(std::string groupname, std::string attribute,               long value);
-
    int AttributeWrite(std::string groupname, std::string attribute, unsigned short int value);
    int AttributeWrite(std::string groupname, std::string attribute,       unsigned int value);
    int AttributeWrite(std::string groupname, std::string attribute,      unsigned long value);
-
    int AttributeWrite(std::string groupname, std::string attribute,              float value);
    int AttributeWrite(std::string groupname, std::string attribute,             double value);
-
    int AttributeWrite(std::string groupname, std::string attribute,        std::string value);
+
+   int AttributeRead (std::string groupname, std::string attribute,          short int *value);
+   int AttributeRead (std::string groupname, std::string attribute,                int *value);
+   int AttributeRead (std::string groupname, std::string attribute,               long *value);
+   int AttributeRead (std::string groupname, std::string attribute, unsigned short int *value);
+   int AttributeRead (std::string groupname, std::string attribute,       unsigned int *value);
+   int AttributeRead (std::string groupname, std::string attribute,      unsigned long *value);
+   int AttributeRead (std::string groupname, std::string attribute,              float *value);
+   int AttributeRead (std::string groupname, std::string attribute,             double *value);
+   //   int AttributeRead (std::string groupname, std::string attribute,        std::string *value);
 
    // Dataset-related functions
 

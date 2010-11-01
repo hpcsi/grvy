@@ -136,6 +136,8 @@ namespace GRVY {
     hid_t PTableOpen               (std::string groupname, std::string tablename);
 
     template <typename T> int AttributeWrite(std::string, std::string, T);
+    template <typename T> int AttributeRead (std::string, std::string, T*);
+
     template <typename T> hid_t get_little_endian_type   (T value);
 
     // HDF intrinsic data type support functions (little endian)
@@ -150,6 +152,8 @@ namespace GRVY {
 
     hid_t get_little_endian_type(float             ) { return(H5T_IEEE_F32LE); };
     hid_t get_little_endian_type(double            ) { return(H5T_IEEE_F64LE); };
+
+    GRVY_HDF5_Class *self;	// back pointer to public class
 
 #endif
   };

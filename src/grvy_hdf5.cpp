@@ -46,6 +46,7 @@ using namespace GRVY;
 GRVY_HDF5_Class::GRVY_HDF5_Class() :m_pimpl(new GRVY_HDF5_ClassImp() )
 {
   m_pimpl->fileId = -1;
+  m_pimpl->self   = this;
 }
 
 GRVY_HDF5_Class::~GRVY_HDF5_Class() 
@@ -341,13 +342,61 @@ int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribu
   return(m_pimpl->AttributeWrite(name,attribute,value));
 }
 
+// Reads
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribute, short int *value)
+{ 
+  return(m_pimpl->AttributeRead(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribute, int *value)
+{ 
+  return(m_pimpl->AttributeRead(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribute, long *value)
+{ 
+  return(m_pimpl->AttributeRead(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribute, unsigned short int *value)
+{ 
+  return(m_pimpl->AttributeRead(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribute, unsigned int *value)
+{ 
+  return(m_pimpl->AttributeRead(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribute, unsigned long *value)
+{ 
+  return(m_pimpl->AttributeRead(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribute, float *value)
+{ 
+  return(m_pimpl->AttributeRead(name,attribute,value));
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribute, double *value)
+{ 
+  return(m_pimpl->AttributeRead(name,attribute,value));
+}
+
+#if 0
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribute, string *value)
+{ 
+  return(m_pimpl->AttributeRead(name,attribute,value));
+}
+#endif
+
 //--------------------------------------------------------------------------
 // Attribute-related private implementation functions
 //--------------------------------------------------------------------------
 
-namespace GRVY {
-  template <typename T> int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite(string groupname, 
-										string attribute, T value)
+template <typename T> int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite(string groupname, 
+									      string attribute, T value)
 {
 
   hid_t attr_type_ondisk = get_little_endian_type(value);
@@ -367,8 +416,6 @@ namespace GRVY {
   H5Sclose(dataspaceId);
 
   return 0;
-}
-
 }
 
 int GRVY_HDF5_Class::AttributeWrite(string groupname, string attribute, string value)
@@ -397,6 +444,44 @@ int GRVY_HDF5_Class::AttributeWrite(string groupname, string attribute, string v
   H5Tclose(strtype);
 
   return 0;
+}
+
+template <typename T> int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeRead(string groupname, 
+									     string attribute, T *value)
+{
+
+  hid_t attr_type_ondisk = get_little_endian_type(*value); 
+
+  // verify that desired group is open
+
+  self->GroupOpen(groupname);	
+
+  // open attribute
+
+  hid_t attrId = H5Aopen(groupIds[groupname],attribute.c_str(), H5P_DEFAULT);
+
+  if(attrId < 0)
+    {
+      grvy_printf(GRVY_ERROR,"%s: Unable to open attribute\n",__func__);
+      return(-1);
+    }
+
+  // read raw attribute data
+
+  silence_hdf_error_handler();
+
+  if(H5Aread(attrId,H5Tget_native_type(attr_type_ondisk,H5T_DIR_ASCEND),value) < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to read attribute -> %s/%s\n",__func__,groupname.c_str(),attribute.c_str());
+      restore_hdf_error_handler();  
+      return(-1);
+    }
+
+  restore_hdf_error_handler();
+
+  H5Aclose(attrId);
+
+  return(0);
 }
 
 //---------------------------------
@@ -436,6 +521,7 @@ hid_t GRVY_HDF5_Class::GRVY_HDF5_ClassImp::PTableOpen(string groupname,string ta
     }
   else
     {
+      restore_hdf_error_handler();  
       return(tableId);
     }
 }
@@ -514,12 +600,26 @@ template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <long     > (st
 template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <float >    (string, string, float );
 template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <double>    (string, string, double);
 
-template 
-int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <unsigned short int> (string, string, unsigned short int);
-template
-int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <unsigned int      > (string, string, unsigned int      );
-template
-int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <unsigned long     > (string, string, unsigned long     );
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <unsigned short int> (string, string, 
+										       unsigned short int);
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <unsigned int      > (string, string, 
+										       unsigned int);
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite <unsigned long     > (string, string, 
+										       unsigned long);
+
+// Reads
+
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeRead <short int> (string, string, short int*);
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeRead <int      > (string, string, int*      );
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeRead <long     > (string, string, long*     );
+
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeRead <float >    (string, string, float* );
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeRead <double>    (string, string, double*);
+
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeRead <unsigned short int> (string, string, 
+										      unsigned short int*);
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeRead <unsigned int > (string, string, unsigned int* );
+template int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeRead <unsigned long> (string, string, unsigned long*);
 										       
 
 #else
