@@ -119,6 +119,7 @@ public:
 #ifdef HAVE_HDF5
   hid_t  CreateHistType (int version); 
   int    AppendHistData (string experiment, string comment, int num_procs, int version, hid_t tableId);
+  void   SummarizeHost  (string host);
 #endif
 
   short int   initialized;            // initialized?
@@ -402,8 +403,8 @@ size_t GRVY_Timer_Class:: StatsCount(string id)
 
   if ( index == m_pimpl->TimerMap.end() )
     {
-      _GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id.c_str());
-      return(-1);
+      _GRVY_message(GRVY_WARN,__func__,"No stats data available for",id.c_str());
+      return(0);
     }
   else
     {
@@ -750,7 +751,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
   GRVY_HDF5_Class h5;
 
 #ifndef HAVE_HDF5
-  return 1;  // above h5 ctor will error if HDF5 is not available
+  return;  // above h5 ctor will error if HDF5 is not available
 #else
 
   // Open existing file
@@ -764,10 +765,16 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 
   // Scan for available machine timings
 
-  printf("about to call subgroups\n");
   vector<string> machines = h5.ListSubGroups(toplevel);
 
-  // Open/create group for this host/machine
+  // Summarize resulre for each host/machine
+
+#if 0
+  for(int i=0;i<machines.size();i++)
+    {
+      SummarizeHost(machines[i]);
+    }
+#endif
 
 
 #if 0
