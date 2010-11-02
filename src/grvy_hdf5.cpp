@@ -234,7 +234,7 @@ int GRVY_HDF5_Class::GroupOpen(string groupname)
 
   // open desired group and save hdf identifier
 
-  //  m_pimpl->silence_hdf_error_handler();
+  m_pimpl->silence_hdf_error_handler();
 
   if ( (m_pimpl->groupIds[groupname] = H5Gopen(m_pimpl->fileId, groupname.c_str(),H5P_DEFAULT)) < 0)
     {
