@@ -823,6 +823,8 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 // TODO: if/when we need a new ptable version, this can be templated
 // based on the ptable version
 
+#ifdef HAVE_HDF5
+
 int GRVY_Timer_Class::GRVY_Timer_ClassImp::ReadAllHostData(GRVY_HDF5_Class *h5, 
 							   hid_t tableId, vector <TimerPTable_V1> *data)
 {
@@ -863,7 +865,7 @@ int GRVY_Timer_Class::GRVY_Timer_ClassImp::ReadAllHostData(GRVY_HDF5_Class *h5,
 // for storing historical performance data in a packet table.
 //--------------------------------------------------------------------
 
-#ifdef HAVE_HDF5
+
 hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
 {
 
