@@ -234,7 +234,7 @@ int GRVY_HDF5_Class::GroupOpen(string groupname)
 
   // open desired group and save hdf identifier
 
-  m_pimpl->silence_hdf_error_handler();
+  //  m_pimpl->silence_hdf_error_handler();
 
   if ( (m_pimpl->groupIds[groupname] = H5Gopen(m_pimpl->fileId, groupname.c_str(),H5P_DEFAULT)) < 0)
     {
@@ -513,6 +513,8 @@ hid_t GRVY_HDF5_Class::GRVY_HDF5_ClassImp::PTableOpen(string groupname,string ta
 
   silence_hdf_error_handler();
 
+  self->GroupOpen(groupname);
+
   if ( (tableId = H5PTopen(groupIds[groupname],tablename.c_str())) == H5I_BADID )
     {
       grvy_printf(GRVY_FATAL,"%s: Unable to open *existing* HDF PTable (%s)\n",__func__,tablename.c_str());
@@ -524,6 +526,32 @@ hid_t GRVY_HDF5_Class::GRVY_HDF5_ClassImp::PTableOpen(string groupname,string ta
       restore_hdf_error_handler();  
       return(tableId);
     }
+}
+
+int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::PTableClose(hid_t tableId)
+{
+  if ( H5PTclose(tableId) < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to close HDF PTable\n",__func__);
+      exit(1);
+    }
+  else
+    {
+      return(0);
+    }
+}
+
+hsize_t GRVY_HDF5_Class::GRVY_HDF5_ClassImp::PTableNumPackets(hid_t tableId)
+{
+  hsize_t nrecords;
+
+  if ( H5PTget_num_packets(tableId,&nrecords) < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: unable to query packet count for table\n",__func__);
+      exit(1);
+    }
+
+  return(nrecords);
 }
     
 int GRVY_HDF5_Class::Close()

@@ -79,6 +79,7 @@ typedef struct SubTimer_PTable_V1 {
 
 typedef struct TimerPTable_V1 {
   const char *experiment;
+  const char *timestamp;
   const char *user_comment;	       
   double total_time;	
   int num_procs;
@@ -113,12 +114,15 @@ public:
  ~GRVY_Timer_ClassImp  () {}
 		       
   void   VerifyInit    ();
-  void   BeginTimer    (const char *,bool); 
-  void   EndTimer      (const char *,bool);
+  void   BeginTimer    (const char *, bool); 
+  void   EndTimer      (const char *, bool);
   double RawTimer      ();
+
 #ifdef HAVE_HDF5
   hid_t  CreateHistType (int version); 
   int    AppendHistData (string experiment, string comment, int num_procs, int version, hid_t tableId);
+  int    ReadAllHostData(GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
+  int    ReadPTable     (string host);
   void   SummarizeHost  (string host);
 #endif
 
@@ -624,9 +628,9 @@ void GRVY_Timer_Class:: Summarize()
 
       if( fabs(total_percentage - 100.0) > _GRVY_PERC_TOL )
 	{
-	  printf("\n%s: Profile percentages do not sum to 100 %%.\n",_GRVY_wmask);
-	  printf("This likely means that you defined timer keys which are\n");
-	  printf("not mutually exclusive.\n");
+	  grvy_printf(GRVY_WARN,"\n[*] Warning: Profile percentages do not sum to 100 %%.\n");
+	  grvy_printf(GRVY_WARN,"This likely means that you defined timer keys which are\n");
+	  grvy_printf(GRVY_WARN,"not mutually exclusive.\n");
 	}
       
       // Restore the global key timing to store inclusive cumulative time 
@@ -737,7 +741,7 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
   // Clean up shop
 
   H5Tclose(timers_type);
-  H5PTclose(tableId);
+  h5.m_pimpl->PTableClose(tableId);
 
   h5.Close();
 
@@ -763,7 +767,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
   string toplevel("GRVY/Performance_timings/");
   h5.GroupOpen(toplevel);
 
-  // Scan for available machine timings
+  // Scan for all available host timings
 
   vector<string> machines = h5.ListSubGroups(toplevel);
 
@@ -771,75 +775,43 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 
   int Ptable_Version;
 
-  h5.AttributeRead(toplevel+machines[0],"format_version",&Ptable_Version);
-
-  printf("ptable_version = %i\n",Ptable_Version);
-
-  //  hid_t timers_type = m_pimpl->CreateHistType(PTABLE_
-
-#if 0
   for(int i=0;i<machines.size();i++)
     {
-      
-      SummarizeHost(machines[i]);
-    }
-#endif
 
+      h5.AttributeRead(toplevel+machines[i],"format_version",&Ptable_Version);
 
-#if 0
-  string hostlevel = toplevel+myenv.Hostname();
+      hid_t timers_type = m_pimpl->CreateHistType(Ptable_Version);
+      hid_t     tableId = h5.m_pimpl->PTableOpen(toplevel+machines[i],"PTable");
 
-  if (h5.GroupExists(hostlevel))
-    h5.GroupOpen(hostlevel);
-  else
-    h5.GroupCreate(hostlevel);
+      // Read performance data in specified version
 
-  // Setup packet table datatype for storing timer information
+      switch(Ptable_Version) {
 
-  hid_t timers_type = m_pimpl->CreateHistType(PTABLE_VERSION);
-
-  // Open/create packet table for this host/machine using variable
-  // length packets
-
-  string tablename("PTable");
-  hid_t  tableId;
-
-  if (h5.m_pimpl->PTableExists(hostlevel,tablename))
-    {
-      tableId = h5.m_pimpl->PTableOpen(hostlevel,tablename);
-    }
-  else
-    {
-      if( (tableId = H5PTcreate_fl(h5.m_pimpl->groupIds[hostlevel],tablename.c_str(),
-				   timers_type,(hsize_t)256,-1)) == H5I_BADID)
+      case 1:
 	{
-	  grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename.c_str());
-	  exit(1);
+
+	vector<TimerPTable_V1> data;
+	m_pimpl->ReadAllHostData(&h5,tableId,&data);
+
+	grvy_printf(GRVY_DEBUG,"%s: Number of experiments = %i\n",__func__,data.size());
+
+	for(int i=0;i<data.size();i++)
+	  {
+	    grvy_printf(GRVY_INFO,"%s %s %.8e %i %i %i\n",data[i].experiment,data[i].timestamp,data[i].total_time,
+			data[i].num_procs,data[i].job_Id,data[i].code_revision);
+	  }
+	
+	break;
 	}
+      default:
+	grvy_printf(GRVY_FATAL,"%s: Unknown timer packet version read (%i)\n",__func__,Ptable_Version);
+	exit(1);
+      }
 
-      // Save environment attributes and assign local packet table
-      // version in case we ever need to make a change in the future
+      h5.m_pimpl->PTableClose(tableId);
 
-      int format_version = PTABLE_VERSION;
-
-      h5.AttributeWrite(hostlevel,"format_version", format_version);
-      h5.AttributeWrite(hostlevel,"os_sysname",     myenv.os_sysname);
-      h5.AttributeWrite(hostlevel,"os_release",     myenv.os_release);
-      h5.AttributeWrite(hostlevel,"os_version",     myenv.os_version);
-      h5.AttributeWrite(hostlevel,"cputype",        myenv.cputype   );
-      
     }
-    
-  // Pull grvy performance data and append results HDF log
 
-  m_pimpl->AppendHistData(experiment,comment,num_procs,PTABLE_VERSION,tableId);
-  
-  // Clean up shop
-
-  H5Tclose(timers_type);
-  H5PTclose(tableId);
-
-#endif
 
   h5.Close();
 
@@ -847,12 +819,44 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 #endif
 }
 
-#if 0
-void GRVY_Timer_Class::SummarizeHost(string filename)
+
+// TODO: if/when we need a new ptable version, this can be templated
+// based on the ptable version
+
+int GRVY_Timer_Class::GRVY_Timer_ClassImp::ReadAllHostData(GRVY_HDF5_Class *h5, 
+							   hid_t tableId, vector <TimerPTable_V1> *data)
 {
 
+  grvy_printf(GRVY_DEBUG,"%s: Reading performance data (format = V1)\n",__func__);
+
+  hsize_t nrecords = h5->m_pimpl->PTableNumPackets(tableId);
+
+  grvy_printf(GRVY_DEBUG,"%s: %i packets are available for reading \n",__func__,nrecords);
+
+  data->reserve(nrecords);
+
+  // Loop over all packet entries and stash results in (data)
+
+  Timer_PTable_V1 packet_data;
+
+  for(int i=0;i<nrecords;i++)
+    {
+      if (H5PTget_next(tableId,1,&packet_data) < 0)
+	{
+	  grvy_printf(GRVY_FATAL,"%s: Unable to read %i packet (%i)\n",__func__,i);
+	  exit(1);
+	}
+      else
+	{
+	  data->push_back(packet_data);
+	}
+    }
+
+  grvy_printf(GRVY_DEBUG,"%s: Finished reading performance data (format = V1)\n",__func__);
+
+  return(0);
 }
-#endif
+
 
 //--------------------------------------------------------------------
 // CreateHistType(): create a compound HDF datatype as the basis
@@ -908,6 +912,7 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
       }
 
       H5Tinsert(timers_type,"Experiment Name",HOFFSET(TimerPTable_V1,experiment),    strtype        );
+      H5Tinsert(timers_type,"Timestamp      ",HOFFSET(TimerPTable_V1,timestamp) ,    strtype        );
       H5Tinsert(timers_type,"Comment",        HOFFSET(TimerPTable_V1,user_comment),  strtype        );
       H5Tinsert(timers_type,"Total Time",     HOFFSET(TimerPTable_V1,total_time),    H5T_IEEE_F64LE );
       H5Tinsert(timers_type,"Num Processors", HOFFSET(TimerPTable_V1,num_procs),     H5T_STD_I32LE  );
@@ -927,30 +932,45 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
   }
 }
 
-  int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string experiment, string comment, int num_procs,
-							    int version, hid_t tableId)
+//--------------------------------------------------------------------
+// AppendHistData(): append performance timings to HdF packet table
+//--------------------------------------------------------------------
+
+int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string experiment, string comment, int num_procs,
+							  int version, hid_t tableId)
 {
   grvy_printf(GRVY_DEBUG,"Appending historical timer data for PTable version %i\n",version);
 
   int num_subtimers = TimerMap.size() - 1;  // -1 since global timer goes in header
 
+  // timestamp the data
+
+  time_t t=time(NULL);
+  struct tm *timeinfo = localtime(&t);
+  
+  char mytimestamp[25];
+
+  sprintf(mytimestamp,"%04i-%02i-%02i %02i:%02i:%02i %3s",timeinfo->tm_year+1900,timeinfo->tm_mon+1,
+	  timeinfo->tm_mday,timeinfo->tm_hour,timeinfo->tm_min,timeinfo->tm_sec,timeinfo->tm_zone);
+
   switch(version) {
   
   case 1:
     {
-    Timer_PTable_V1            header;
-    vector<SubTimer_PTable_V1> subtimers;
+      Timer_PTable_V1            header;
+      vector<SubTimer_PTable_V1> subtimers;
 
-    subtimers.reserve(num_subtimers);
-
-    header.experiment       = experiment.c_str();
-    header.user_comment     = comment.c_str();
-    header.total_time       = self->ElapsedSeconds(_GRVY_gtimer);
-    header.num_procs        = num_procs;
-    header.job_Id           = -1;	            // TODO allow for setting me
-    header.code_revision    = -1;	            // TODO allow for setting me
-    header.vl_subtimers.p   = &subtimers[0];
-    header.vl_subtimers.len = num_subtimers;
+      subtimers.reserve(num_subtimers);
+      
+      header.experiment       = experiment.c_str();
+      header.timestamp        = mytimestamp;
+      header.user_comment     = comment.c_str();
+      header.total_time       = self->ElapsedSeconds(_GRVY_gtimer);
+      header.num_procs        = num_procs;
+      header.job_Id           = -1;	            // TODO allow for setting me
+      header.code_revision    = -1;	            // TODO allow for setting me
+      header.vl_subtimers.p   = &subtimers[0];
+      header.vl_subtimers.len = num_subtimers;
 
     _GRVY_Type_TimerMap2 :: iterator index;
 
@@ -990,6 +1010,7 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
 
   return 0;
 }
+
 #endif
 
 }

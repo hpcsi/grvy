@@ -66,22 +66,16 @@ namespace GRVY {
 #ifdef _GRVY_GLOBAL_DEF
 
   GRVY_Log_Class    _GRVY_Log;                           // Log mechanism
-  GLOBAL const char *_GRVY_emask   = "[*] Error";        // default error mask
-  GLOBAL const char *_GRVY_wmask   = "[*] Warning";      // default warning mask
-  GLOBAL const char *_GRVY_imask   = "[*] Info";         // default info mask
   GLOBAL const char *_GRVY_gtimer  = "GRVY_Unassigned";  // default global timer key
 
-  GRVY_Timer_Class *_GRVY_Timers               =  NULL;   // performance timer 
+  GRVY_Timer_Class *_GRVY_Timers   =  NULL;              // performance timer 
 
-  GLOBAL double _GRVY_TIMER_THRESH       = 9.0e-8;  // low water mark for expected timer usage deltas        
-  GLOBAL double _GRVY_PERC_TOL           = 1e-3;    // tolerance for defining acceptable global percentages
+  GLOBAL double _GRVY_TIMER_THRESH       = 9.0e-8;      // low water mark for expected timer usage deltas        
+  GLOBAL double _GRVY_PERC_TOL           = 1e-3;        // tolerance for defining acceptable global percentages
 
 #else
 
   GLOBAL GRVY_Log_Class _GRVY_Log;
-  GLOBAL const char *_GRVY_emask;
-  GLOBAL const char *_GRVY_wmask;
-  GLOBAL const char *_GRVY_imask;
   GLOBAL const char *_GRVY_gtimer;
 
   GLOBAL GRVY_Timer_Class *_GRVY_Timers;
@@ -134,6 +128,8 @@ namespace GRVY {
     void  close_open_objects       ();
     bool  PTableExists             (std::string groupname, std::string tablename);
     hid_t PTableOpen               (std::string groupname, std::string tablename);
+    int   PTableClose              (hid_t tableId);
+    hsize_t PTableNumPackets       (hid_t tableId);
 
     template <typename T> int AttributeWrite(std::string, std::string, T);
     template <typename T> int AttributeRead (std::string, std::string, T*);

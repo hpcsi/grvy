@@ -667,7 +667,8 @@ namespace GRVY {
     LogMask[GRVY_FATAL] = "[*] Fatal: ";
     LogMask[GRVY_ERROR] = "[*] Error: ";
     LogMask[GRVY_WARN ] = "[*]  Warn: ";
-    LogMask[GRVY_INFO ] = "[*]  Info: ";
+    //LogMask[GRVY_INFO ] = "[*]  Info: ";
+    LogMask[GRVY_INFO ] = "";
     LogMask[GRVY_DEBUG] = "[*] Debug: ";
 
     return;
