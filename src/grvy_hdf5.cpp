@@ -267,9 +267,6 @@ vector<string> GRVY_HDF5_Class::ListSubGroups(string groupname)
   H5Literate(m_pimpl->groupIds[groupname],H5_INDEX_NAME,H5_ITER_NATIVE,NULL,
   	     op_callback,(void *) &subgroups);
 
-  for(int i=0;i<subgroups.size();i++)
-    cout << "subgroup = " << subgroups[i] << endl;
-
   return(subgroups);
 
 }

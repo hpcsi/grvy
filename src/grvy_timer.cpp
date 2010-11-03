@@ -54,6 +54,8 @@
 #include<boost/accumulators/statistics/mean.hpp>
 #include<boost/accumulators/statistics/stats.hpp>
 #include<boost/accumulators/statistics/count.hpp>
+#include<boost/accumulators/statistics/max.hpp>
+#include<boost/accumulators/statistics/min.hpp>
 #include<boost/accumulators/statistics/variance.hpp>
 #include<boost/math/special_functions.hpp>
 
@@ -98,6 +100,11 @@ typedef struct GRVY_Timer_Data {
   double timings[2];
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats;
 } tTimer_Data;
+
+typedef struct minmax {
+  double value;
+  size_t index;
+} minmax;
 
 typedef std::map <std::string, GRVY_Timer_Data > _GRVY_Type_TimerMap2;
 
@@ -771,37 +778,90 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 
   vector<string> machines = h5.ListSubGroups(toplevel);
 
-  // Summarize results for each host/machine
+  // Summarize results/stats for each host/machine; note that we
+  // compute statistics on a per-experiment basis.
 
   int Ptable_Version;
 
-  for(int i=0;i<machines.size();i++)
-    {
+  typedef accumulator_set <double,features<tag::mean,tag::variance,tag::count> > perf_stats;
 
-      h5.AttributeRead(toplevel+machines[i],"format_version",&Ptable_Version);
+  for(int imach=0;imach<machines.size();imach++)
+    {
+      map <string,perf_stats> statistics;
+
+      h5.AttributeRead(toplevel+machines[imach],"format_version",&Ptable_Version);
 
       hid_t timers_type = m_pimpl->CreateHistType(Ptable_Version);
-      hid_t     tableId = h5.m_pimpl->PTableOpen(toplevel+machines[i],"PTable");
+      hid_t     tableId = h5.m_pimpl->PTableOpen(toplevel+machines[imach],"PTable");
 
-      // Read performance data in specified version
+      map<string,minmax> max_vals;
+      map<string,minmax> min_vals;
+
+      // -------------------------------------------------
+      // Read performance data in specified version format
+      // -------------------------------------------------
 
       switch(Ptable_Version) {
 
       case 1:
 	{
+	  vector<TimerPTable_V1> data;
+	  m_pimpl->ReadAllHostData(&h5,tableId,&data);
 
-	vector<TimerPTable_V1> data;
-	m_pimpl->ReadAllHostData(&h5,tableId,&data);
+	  grvy_printf(GRVY_DEBUG,"%s: Number of experiments = %i\n",__func__,data.size());	  
 
-	grvy_printf(GRVY_DEBUG,"%s: Number of experiments = %i\n",__func__,data.size());
+	  for(int i=0;i<data.size();i++)
+	    {
 
-	for(int i=0;i<data.size();i++)
-	  {
-	    grvy_printf(GRVY_INFO,"%s %s %.8e %i %i %i\n",data[i].experiment,data[i].timestamp,data[i].total_time,
-			data[i].num_procs,data[i].job_Id,data[i].code_revision);
-	  }
-	
-	break;
+	      // accumulate basic statistics
+
+	      double runtime    = data[i].total_time;
+	      string experiment = data[i].experiment;
+
+	      statistics[experiment](runtime);
+
+	      if(max_vals.find(experiment) == max_vals.end())
+		{
+		  max_vals[experiment].value = -HUGE_VAL;
+		  min_vals[experiment].value =  HUGE_VAL;
+		}
+
+	      if(runtime < min_vals[experiment].value) // min check
+		{
+		  min_vals[experiment].value = runtime;
+		  min_vals[experiment].index = i;
+		}
+
+	      if(runtime > max_vals[experiment].value) // max check
+		{
+		  max_vals[experiment].value = runtime;
+		  max_vals[experiment].index = i;
+		}
+
+	      // Echo raw data
+	      
+	      grvy_printf(GRVY_INFO,"%s %s %.8e %i %i %i\n",data[i].experiment,data[i].timestamp,data[i].total_time,
+			  data[i].num_procs,data[i].job_Id,data[i].code_revision);
+
+	    }
+
+	  // Echo final statistics
+	  
+	  grvy_printf(GRVY_INFO,"\nPerformance Statistics for: %s\n",machines[imach].c_str());
+	  
+	  for(map <string,perf_stats>::iterator ii=statistics.begin();ii != statistics.end(); ++ii)
+	    {
+	      grvy_printf(GRVY_INFO,"  --> Experiment: %s (%i total samples)\n",(ii->first).c_str(),
+			  boost::accumulators::count(ii->second));
+	      grvy_printf(GRVY_INFO,"      --> Mean time = %.8e (secs)\n",mean(ii->second));
+	      grvy_printf(GRVY_INFO,"      --> Variance  = %.8e\n",variance(ii->second));
+	      grvy_printf(GRVY_INFO,"      --> Min  time = %.8e on %s\n",
+			  min_vals[ii->first].value,data[min_vals[ii->first].index].timestamp);
+	      grvy_printf(GRVY_INFO,"      --> Max  time = %.8e on %s\n",
+			  max_vals[ii->first].value,data[max_vals[ii->first].index].timestamp);
+	    }
+	  
+	  break;
 	}
       default:
 	grvy_printf(GRVY_FATAL,"%s: Unknown timer packet version read (%i)\n",__func__,Ptable_Version);
@@ -811,7 +871,6 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
       h5.m_pimpl->PTableClose(tableId);
 
     }
-
 
   h5.Close();
 

@@ -44,7 +44,7 @@ int main(int argc, char **argv)
   gt.BeginTimer("Main Program");
   
   grvy_log_setlevel(GRVY_INFO);
-  grvy_log_setlevel(GRVY_DEBUG);
+  //  grvy_log_setlevel(GRVY_DEBUG);
 
   // Create a new hdf file
 
