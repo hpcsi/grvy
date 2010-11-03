@@ -33,7 +33,49 @@ program F_log
 
   write(*,'(a)')''
   write(*,'(a)')'Priority = ALL'
-!  call flush(6)
+  call grvy_log_setlevel(GRVY_ALL);
+  call post_log_messages();
+
+  write(*,'(a)')''
+  write(*,'(a)')'Priority = DEBUG'
+  call grvy_log_setlevel(GRVY_DEBUG);
+  call post_log_messages();
+
+  write(*,'(a)')''
+  write(*,'(a)')'Priority = INFO'
+  call grvy_log_setlevel(GRVY_INFO);
+  call post_log_messages();
+
+  write(*,'(a)')''
+  write(*,'(a)')'Priority = WARN'
+  call grvy_log_setlevel(GRVY_WARN);
+  call post_log_messages();
+
+  write(*,'(a)')''
+  write(*,'(a)')'Priority = ERROR'
+  call grvy_log_setlevel(GRVY_ERROR);
+  call post_log_messages();
+
+  write(*,'(a)')''
+  write(*,'(a)')'Priority = FATAL'
+  call grvy_log_setlevel(GRVY_FATAL);
+  call post_log_messages();
+
+  write(*,'(a)')''
+  write(*,'(a)')'Priority = NOLOG'
+  call grvy_log_setlevel(GRVY_NOLOG);
+  call post_log_messages();
+
+  ! Repeat with non-default logmask
+
+  call grvy_log_setmask(GRVY_FATAL,"[*] Fatal: ");
+  call grvy_log_setmask(GRVY_ERROR,"[*] Error: ");
+  call grvy_log_setmask(GRVY_WARN, "[*]  Warn: ");
+  call grvy_log_setmask(GRVY_INFO, "[*]  Info: ");
+  call grvy_log_setmask(GRVY_DEBUG,"[*] Debug: ");
+
+  write(*,'(a)')''
+  write(*,'(a)')'Priority = ALL'
   call grvy_log_setlevel(GRVY_ALL);
   call post_log_messages();
 

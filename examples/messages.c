@@ -30,55 +30,55 @@
 #include<grvy.h>
 #include<stdio.h>
 
+void post_log_messages()
+{
+  grvy_log(GRVY_FATAL,"This is a fatal message");
+  grvy_log(GRVY_ERROR,"This is an error message");
+  grvy_log(GRVY_WARN, "This is a warning message");
+  grvy_log(GRVY_INFO, "This is an informational message");
+  grvy_log(GRVY_DEBUG,"This is a debug message");
+}
+
 int main()
 {
-  char *mask = "mymodel";	/* mask to include in message output */
-  int std  = 0;			/* standard message (always include) */
-  int info = 1;			/* info message                      */
-  int dbg  = 2;			/* debug message                     */
 
-  printf("\nMessages with default setting\n");
-
-  grvy_log(GRVY_FATAL,"This is a fatal message from mymodel");
-  grvy_log(GRVY_ERROR,"This is an error message from mymodel");
-  grvy_log(GRVY_WARN, "This is an warning message from mymodel");
-  grvy_log(GRVY_INFO, "This is an informational message from mymodel");
-  grvy_log(GRVY_DEBUG,"This is a debug message from mymodel");
+  printf("\nMessages with default setting\n\n");
+  post_log_messages();
 
   /* above will not include debug messages by default; now increasing
    * to debug mode to get all messages. */
 
-  printf("\nMessages with debug output setting\n");
+  printf("\nMessages with debug output setting\n\n");
 
   grvy_log_setlevel(GRVY_DEBUG);
-
-  grvy_log(GRVY_FATAL,"This is a fatal message from mymodel");
-  grvy_log(GRVY_ERROR,"This is an error message from mymodel");
-  grvy_log(GRVY_WARN, "This is an warning message from mymodel");
-  grvy_log(GRVY_INFO, "This is an informational message from mymodel");
-  grvy_log(GRVY_DEBUG,"This is a debug message from mymodel");
-
+  post_log_messages();
 
   /* above will not include debug messages by default; now increasing
    * to debug mode to get all messages. */
 
-  printf("\nMessages with warn output setting\n");
-
+  printf("\nMessages with warn output setting\n\n");
   grvy_log_setlevel(GRVY_WARN);
+  post_log_messages();
 
-  grvy_log(GRVY_FATAL,"This is a fatal message from mymodel");
-  grvy_log(GRVY_ERROR,"This is an error message from mymodel");
-  grvy_log(GRVY_WARN, "This is an warning message from mymodel");
-  grvy_log(GRVY_INFO, "This is an informational message from mymodel");
-  grvy_log(GRVY_DEBUG,"This is a debug message from mymodel");
+  // Provide application specific message delimiters
 
-  /* Exmample of printf style messages */
+  printf("\nMessages with custom delimiters\n\n");
 
-  grvy_log_setlevel(GRVY_INFO);
+  grvy_log_setlevel(GRVY_ALL);
 
-  printf("\nprintf style messages\n");
+  grvy_log_setmask(GRVY_FATAL,"[*] Fatal: ");
+  grvy_log_setmask(GRVY_ERROR,"[*] Error: ");
+  grvy_log_setmask(GRVY_WARN, "[*]  Warn: ");
+  grvy_log_setmask(GRVY_INFO, "[*]  Info: ");
+  grvy_log_setmask(GRVY_DEBUG,"[*] Debug: ");
 
-  grvy_printf(GRVY_INFO,"An informational message, result = %i\n",42);
+  post_log_messages();
+
+  // Exmample of printf style messages 
+
+  printf("\nC printf-style messages\n\n");
+
+  grvy_printf(GRVY_INFO,"An informational message, the answer is %i\n",42);
 
   return 0;
 }

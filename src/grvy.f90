@@ -101,39 +101,46 @@ module grvy
      !! - subroutine grvy_input_fdump_file()
 
      subroutine grvy_input_fdump(flag)
+       implicit none
        integer   :: flag        !< return flag
      end subroutine grvy_input_fdump
 
      subroutine grvy_input_fdump_delim(prefix,flag)
+       implicit none
        character :: prefix      !< delimiter
        integer   :: flag        !< return flag
      end subroutine grvy_input_fdump_delim
 
      subroutine grvy_input_fdump_file(prefix,filename,flag)
+       implicit none
        character :: prefix      !< delimiter
        character :: filename    !< libGRVY style input filename
        integer   :: flag        !< return flag
      end subroutine grvy_input_fdump_file
 
      subroutine grvy_input_fread_real(var,value,flag)
+       implicit none
        character :: var
        real      :: value
        integer   :: flag        !< libGRVY return flag
      end subroutine grvy_input_fread_real
 
      subroutine grvy_input_fread_double(var,value,flag)
+       implicit none
        character :: var
        real*8    :: value
        integer   :: flag
      end subroutine grvy_input_fread_double
 
      subroutine grvy_input_fread_int(var,value,flag)
+       implicit none
        character :: var
        integer   :: value
        integer   :: flag
      end subroutine grvy_input_fread_int
 
      subroutine grvy_input_fread_int_vec(var,value,nelems,flag)
+       implicit none
        character :: var
        integer   :: value(*)
        integer   :: nelems
@@ -141,6 +148,7 @@ module grvy
      end subroutine grvy_input_fread_int_vec
 
      subroutine grvy_input_fread_int_ivec(var,value,elem,flag)
+       implicit none
        character :: var
        integer   :: value
        integer   :: elem
@@ -148,6 +156,7 @@ module grvy
      end subroutine grvy_input_fread_int_ivec
 
      subroutine grvy_input_fread_real_vec(var,value,nelems,flag)
+       implicit none
        character :: var
        real      :: value(*)
        integer   :: nelems
@@ -155,6 +164,7 @@ module grvy
      end subroutine grvy_input_fread_real_vec
 
      subroutine grvy_input_fread_real_ivec(var,value,elem,flag)
+       implicit none
        character :: var
        real      :: value
        integer   :: elem
@@ -162,6 +172,7 @@ module grvy
      end subroutine grvy_input_fread_real_ivec
 
      subroutine grvy_input_fread_double_vec(var,value,nelems,flag)
+       implicit none
        character :: var
        real*8    :: value(*)
        integer   :: nelems
@@ -169,6 +180,7 @@ module grvy
      end subroutine grvy_input_fread_double_vec
 
      subroutine grvy_input_fread_double_ivec(var,value,elem,flag)
+       implicit none
        character :: var
        real*8    :: value
        integer   :: elem
@@ -176,12 +188,14 @@ module grvy
      end subroutine grvy_input_fread_double_ivec
 
      subroutine grvy_input_fread_char(var,value,flag)
+       implicit none
        character :: var
        character :: value
        integer   :: flag
      end subroutine grvy_input_fread_char
 
      subroutine grvy_input_fread_char_ivec(var,value,elem,flag)
+       implicit none
        character :: var
        character :: value
        integer   :: elem
@@ -189,6 +203,7 @@ module grvy
      end subroutine grvy_input_fread_char_ivec
 
      subroutine grvy_input_toggle_messages(flag)
+       implicit none
        integer   :: flag
      end subroutine grvy_input_toggle_messages
 
@@ -197,48 +212,56 @@ module grvy
      ! ---------------------------------
 
      subroutine grvy_input_register_int(var,value,flag)
+       implicit none
        character :: var
        integer   :: value
        integer   :: flag
      end subroutine grvy_input_register_int
 
      subroutine grvy_input_register_get_int(var,value,flag)
+       implicit none
        character :: var
        integer   :: value
        integer   :: flag
      end subroutine grvy_input_register_get_int
 
      subroutine grvy_input_register_float(var,value,flag)
+       implicit none
        character :: var
        real      :: value
        integer   :: flag
      end subroutine grvy_input_register_float
 
      subroutine grvy_input_register_get_float(var,value,flag)
+       implicit none
        character :: var
        real      :: value
        integer   :: flag
      end subroutine grvy_input_register_get_float
 
      subroutine grvy_input_register_double(var,value,flag)
+       implicit none
        character :: var
        real*8    :: value
        integer   :: flag
      end subroutine grvy_input_register_double
 
      subroutine grvy_input_register_get_double(var,value,flag)
+       implicit none
        character :: var
        real*8    :: value
        integer   :: flag
      end subroutine grvy_input_register_get_double
 
      subroutine grvy_input_register_char(var,value,flag)
+       implicit none
        character :: var
        character :: value
        integer   :: flag
      end subroutine grvy_input_register_char
 
      subroutine grvy_input_register_get_char(var,value,flag)
+       implicit none
        character :: var
        character :: value
        integer   :: flag
@@ -249,10 +272,12 @@ module grvy
      ! ---------------
 
      subroutine grvy_asci_time(timestring)
+       implicit none
        character :: timestring
      end subroutine grvy_asci_time
 
      subroutine grvy_timer_init(id)
+       implicit none
        character :: id
      end subroutine grvy_timer_init
 
@@ -266,34 +291,42 @@ module grvy
      end subroutine grvy_timer_summarize
 
      subroutine grvy_timer_begin(id)
+       implicit none
        character :: id
      end subroutine grvy_timer_begin
 
      subroutine grvy_timer_end(id)
+       implicit none
        character :: id
      end subroutine grvy_timer_end
 
      subroutine grvy_timer(value)
+       implicit none
        real*8 :: value
      end subroutine grvy_timer
 
      subroutine grvy_timer_elapsed_global(value)
+       implicit none
        real*8 :: value
      end subroutine grvy_timer_elapsed_global
 
      real*8 function grvy_timer_elapsedseconds(id)
+       implicit none
        character :: id
      end function grvy_timer_elapsedseconds
 
      integer function grvy_timer_stats_count(id)
+       implicit none
        character :: id
      end function grvy_timer_stats_count
 
      real*8 function grvy_timer_stats_mean(id)
+       implicit none
        character :: id
      end function grvy_timer_stats_mean
 
      real*8 function grvy_timer_stats_variance(id)
+       implicit none
        character :: id
      end function grvy_timer_stats_variance
 
@@ -302,10 +335,12 @@ module grvy
      ! ---------------
 
      integer function grvy_double_isnan(value)
+       implicit none
        real*8 :: value
      end function grvy_double_isnan
 
      integer function grvy_double_isinf(value)
+       implicit none
        real*8 :: value
      end function grvy_double_isinf
 
@@ -314,10 +349,18 @@ module grvy
      ! ---------------
 
      subroutine grvy_log_setlevel(priority)
+       implicit none
        integer :: priority
      end subroutine grvy_log_setlevel
 
+     subroutine grvy_log_setmask(loglevel,mesg)
+       implicit none
+       integer   :: loglevel
+       character :: mesg
+     end subroutine grvy_log_setmask
+
      subroutine grvy_log(loglevel,mesg)
+       implicit none
        integer   :: loglevel
        character :: mesg
      end subroutine grvy_log
@@ -327,16 +370,19 @@ module grvy
      ! ---------------
 
      subroutine grvy_check_file_path(pathname,flag)
+       implicit none
        character :: pathname
        integer   :: flag
      end subroutine grvy_check_file_path
 
      subroutine grvy_create_unique_dir(name_template,flag)
+       implicit none
        character :: name_template
        integer   :: flag
      end subroutine grvy_create_unique_dir
 
      subroutine grvy_create_scratch_dir(name_template,flag)
+       implicit none
        character :: name_template
        integer   :: flag
      end subroutine grvy_create_scratch_dir

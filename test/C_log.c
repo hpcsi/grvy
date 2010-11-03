@@ -37,7 +37,44 @@ void post_log_messages();
 
 int main(int argc, char **argv)
 {
+
   int flag = 1;
+
+  printf("\nPriority = ALL\n");
+  grvy_log_setlevel(GRVY_ALL);
+  post_log_messages();
+
+  printf("\nPriority = DEBUG\n");
+  grvy_log_setlevel(GRVY_DEBUG);
+  post_log_messages();
+
+  printf("\nPriority = INFO\n");
+  grvy_log_setlevel(GRVY_INFO);
+  post_log_messages();
+
+  printf("\nPriority = WARN\n");
+  grvy_log_setlevel(GRVY_WARN);
+  post_log_messages();
+
+  printf("\nPriority = ERROR\n");
+  grvy_log_setlevel(GRVY_ERROR);
+  post_log_messages();
+
+  printf("\nPriority = FATAL\n");
+  grvy_log_setlevel(GRVY_FATAL);
+  post_log_messages();
+
+  printf("\nPriority = NOLOG\n");
+  grvy_log_setlevel(GRVY_NOLOG);
+  post_log_messages();
+
+  // Repeat with non-default logmask
+
+  grvy_log_setmask(GRVY_FATAL,"[*] Fatal: ");
+  grvy_log_setmask(GRVY_ERROR,"[*] Error: ");
+  grvy_log_setmask(GRVY_WARN, "[*]  Warn: ");
+  grvy_log_setmask(GRVY_INFO, "[*]  Info: ");
+  grvy_log_setmask(GRVY_DEBUG,"[*] Debug: ");
 
   printf("\nPriority = ALL\n");
   grvy_log_setlevel(GRVY_ALL);

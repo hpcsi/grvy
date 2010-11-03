@@ -39,6 +39,12 @@ int main(int argc, char **argv)
 {
   int flag = 1;
 
+  grvy_log_setmask(GRVY_FATAL,"[*] Fatal: ");
+  grvy_log_setmask(GRVY_ERROR,"[*] Error: ");
+  grvy_log_setmask(GRVY_WARN, "[*]  Warn: ");
+  grvy_log_setmask(GRVY_INFO, "[*]  Info: ");
+  grvy_log_setmask(GRVY_DEBUG,"[*] Debug: ");
+
   printf("\nPriority = ALL\n");
   grvy_log_setlevel(GRVY_ALL);
   post_log_messages();

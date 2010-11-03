@@ -44,6 +44,12 @@ void grvy_log_setlevel(int priority)
   return;
 }
 
+void grvy_log_setmask(int loglevel,const char *delimiter)
+{
+  _GRVY_Log.change_mask(loglevel,delimiter);
+  return;
+}
+
 void grvy_log(int loglevel, const char *mesg)
 {
   _GRVY_Log.msg(loglevel,mesg);
@@ -100,6 +106,13 @@ void grvy_log_char(int loglevel, const char *func, const char *mesg, const char 
 
 extern "C" void grvy_log_setlevel_(int *priority) {
   grvy_log_setlevel(*priority);
+}
+
+extern "C" void grvy_log_setmask_(int *loglevel, char *mesg, int _namelen)
+{
+  char *message = grvy_f2c_char(mesg,_namelen);
+  grvy_log_setmask(*loglevel,message);
+  delete[] message;
 }
 
 extern "C" void grvy_log_(int *loglevel, char *mesg, int _namelen)

@@ -123,6 +123,7 @@ class GRVY_Math_Class {
     GRVY_Log_Class();		
     bool isLog(int priority) {return(priority <= log_level);}       // log priority test
     void change_priority(int priority);                             // change current log level priority
+    void change_mask(int loglevel,std::string delimiter);           // change default log delimiter
 
     // C++ ostream style logging (<<)
 

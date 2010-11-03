@@ -664,12 +664,19 @@ namespace GRVY {
 
     // set default log masks for each priority level
 
+#if 0
     LogMask[GRVY_FATAL] = "[*] Fatal: ";
     LogMask[GRVY_ERROR] = "[*] Error: ";
     LogMask[GRVY_WARN ] = "[*]  Warn: ";
-    //LogMask[GRVY_INFO ] = "[*]  Info: ";
-    LogMask[GRVY_INFO ] = "";
+    LogMask[GRVY_INFO ] = "[*]  Info: ";
     LogMask[GRVY_DEBUG] = "[*] Debug: ";
+#else
+    LogMask[GRVY_FATAL] = "";
+    LogMask[GRVY_ERROR] = "";
+    LogMask[GRVY_WARN ] = "";
+    LogMask[GRVY_INFO ] = "";
+    LogMask[GRVY_DEBUG] = "";
+#endif
 
     return;
   }
@@ -677,6 +684,12 @@ namespace GRVY {
   void GRVY_Log_Class::change_priority(int priority)
   {
     log_level = priority;
+    return;
+  }
+
+  void GRVY_Log_Class::change_mask(int priority, const std::string delimiter)
+  {
+    LogMask[priority] = delimiter;
     return;
   }
 

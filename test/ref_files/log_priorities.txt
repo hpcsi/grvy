@@ -1,5 +1,39 @@
 
 Priority = ALL
+a fine fatal message
+an astute error message
+a fabulous warn message
+a useful info message
+a clever debug message
+
+Priority = DEBUG
+a fine fatal message
+an astute error message
+a fabulous warn message
+a useful info message
+a clever debug message
+
+Priority = INFO
+a fine fatal message
+an astute error message
+a fabulous warn message
+a useful info message
+
+Priority = WARN
+a fine fatal message
+an astute error message
+a fabulous warn message
+
+Priority = ERROR
+a fine fatal message
+an astute error message
+
+Priority = FATAL
+a fine fatal message
+
+Priority = NOLOG
+
+Priority = ALL
 [*] Fatal: a fine fatal message
 [*] Error: an astute error message
 [*]  Warn: a fabulous warn message
