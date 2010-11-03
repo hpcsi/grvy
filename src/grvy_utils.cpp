@@ -366,6 +366,39 @@ extern "C" void grvy_create_scratch_dir_(char *name_template,int _namelen,int *f
     return(output);
   }
 
+  char *grvy_f2c_char_no_spaces(char*input,int len)
+  {
+    char* output = new char[len+1];
+    strncpy(output,input,len);
+    output[len]='\0';
+
+    output = trimwhitespace(output);
+
+    return(output);
+  }
+
+  // C style whitespace trimmer - straight from Stack Overflow
+
+  char *trimwhitespace(char *str)
+  {
+    char *end;
+
+    // Trim leading space
+    while(isspace(*str)) str++;
+
+    if(*str == 0)  // All spaces?
+      return str;
+
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while(end > str && isspace(*end)) end--;
+
+    // Write new null terminator
+    *(end+1) = 0;
+
+    return str;
+  }
+
   
   // verify_string_ends_with_6_Xs(): 
   //

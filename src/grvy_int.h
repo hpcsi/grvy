@@ -55,10 +55,12 @@ namespace GRVY {
   extern int  _GRVY_CheckDir      (const char *dirname);
 
   extern void _GRVY_create_scratch_dir_atexit_handler();
-  extern int  _GRVY_RemoveAll            (const char *path);
-  extern int  _GRVY_RemoveAll_nftw_helper(const char *path, const struct stat * st, int flag, struct FTW *f);
+  extern int  _GRVY_RemoveAll             (const char *path);
+  extern int  _GRVY_RemoveAll_nftw_helper (const char *path, const struct stat * st, int flag, struct FTW *f);
 
-  extern char *grvy_f2c_char(char*input,int len);
+  extern char *grvy_f2c_char              (char*input,int len);
+  extern char *grvy_f2c_char_no_spaces    (char*input,int len);
+  extern char *trimwhitespace             (char *);
   extern int  verify_string_ends_with_6_Xs(char *name_template);
 
   // Evil Globals Vars

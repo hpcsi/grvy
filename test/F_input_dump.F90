@@ -42,7 +42,9 @@ program main
 
   error=1 ! start with no error condition
 
-  call grvy_input_fopen("./input-example.txt",flag)
+  ! include space in filename to test trimming of filename
+
+  call grvy_input_fopen("./input-example.txt      ",flag)
   error=error*flag
 
   ! Define registered variable which may not be present in input file 

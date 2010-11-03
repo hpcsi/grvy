@@ -201,7 +201,11 @@ extern "C" void grvy_input_fopen_(char *filename,int *flag,int _namelen)
 extern "C" void grvy_input_fopen_(char *filename,int _namelen,int *flag)
 #endif
 {
-  char *name = grvy_f2c_char(filename,_namelen);
+
+  // For Fortran convenience, strip spaces from end of string.
+
+  char *name = grvy_f2c_char_no_spaces(filename,_namelen);
+  //char *name = grvy_f2c_char(filename,_namelen);
   *flag = grvy_input_fopen(name);
 
   delete[] name;

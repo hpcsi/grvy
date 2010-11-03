@@ -41,7 +41,7 @@ program main
 
   ! Initialize/read the file
 
-  call grvy_input_fopen("./pecos-input.txt",flag);
+  call grvy_input_fopen("./pecos-input.txt     ",flag);
 
   ! Dump the whole file to stdout
 
