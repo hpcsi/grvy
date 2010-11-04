@@ -372,31 +372,33 @@ extern "C" void grvy_create_scratch_dir_(char *name_template,int _namelen,int *f
     strncpy(output,input,len);
     output[len]='\0';
 
-    output = trimwhitespace(output);
+    output = grvy_trim_whitespace(output);
 
     return(output);
   }
 
-  // C style whitespace trimmer - straight from Stack Overflow
+  // C style whitespace trimmer - mod'd example from Stack Overflow
+  // primarily used to trim Fortran provided strings (you said trim...)
 
-  char *trimwhitespace(char *str)
+  char *grvy_trim_whitespace(char *str)
   {
     char *end;
 
-    // Trim leading space
-    while(isspace(*str)) str++;
+    // let's punt if we start with a space...
 
-    if(*str == 0)  // All spaces?
+    if(isspace(*str))
       return str;
 
-    // Trim trailing space
+    // trim trailing space
+
     end = str + strlen(str) - 1;
     while(end > str && isspace(*end)) end--;
 
-    // Write new null terminator
-    *(end+1) = 0;
+    // write new null terminator
 
-    return str;
+    *(end+1) = '\0';
+
+    return(str);
   }
 
   

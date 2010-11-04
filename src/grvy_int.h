@@ -60,7 +60,7 @@ namespace GRVY {
 
   extern char *grvy_f2c_char              (char*input,int len);
   extern char *grvy_f2c_char_no_spaces    (char*input,int len);
-  extern char *trimwhitespace             (char *);
+  extern char *grvy_trim_whitespace       (char *);
   extern int  verify_string_ends_with_6_Xs(char *name_template);
 
   // Evil Globals Vars
