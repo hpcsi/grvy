@@ -810,56 +810,65 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 
 	  grvy_printf(GRVY_DEBUG,"%s: Number of experiments = %i\n",__func__,data.size());	  
 
+	  //------------------------------------------
+	  // accumulate basic statistics for the host
+	  // -----------------------------------------
+
 	  for(int i=0;i<data.size();i++)
 	    {
-
-	      // accumulate basic statistics
-
+	      
 	      double runtime    = data[i].total_time;
 	      string experiment = data[i].experiment;
-
+	  
 	      statistics[experiment](runtime);
-
-	      if(max_vals.find(experiment) == max_vals.end())
+	  
+	      if(max_vals.find(experiment) == max_vals.end()) 
 		{
 		  max_vals[experiment].value = -HUGE_VAL;
 		  min_vals[experiment].value =  HUGE_VAL;
 		}
-
+	      
 	      if(runtime < min_vals[experiment].value) // min check
 		{
 		  min_vals[experiment].value = runtime;
 		  min_vals[experiment].index = i;
 		}
-
+	      
 	      if(runtime > max_vals[experiment].value) // max check
 		{
 		  max_vals[experiment].value = runtime;
 		  max_vals[experiment].index = i;
 		}
 
-	      // Echo raw data
-	      
-	      grvy_printf(GRVY_INFO,"%s %s %.8e %i %i %i\n",data[i].experiment,data[i].timestamp,data[i].total_time,
-			  data[i].num_procs,data[i].job_Id,data[i].code_revision);
-
 	    }
 
-	  // Echo final statistics
-	  
-	  grvy_printf(GRVY_INFO,"\nPerformance Statistics for: %s\n",machines[imach].c_str());
-	  
+	  //------------------------
+	  // Echo global statistics
+	  //------------------------
+
+	  grvy_printf(GRVY_INFO,"\n[Begin] Performance Statistics for: %s\n\n",machines[imach].c_str());
+	      
 	  for(map <string,perf_stats>::iterator ii=statistics.begin();ii != statistics.end(); ++ii)
 	    {
-	      grvy_printf(GRVY_INFO,"  --> Experiment: %s (%i total samples)\n",(ii->first).c_str(),
+	      grvy_printf(GRVY_INFO," Experiment: %s (%i total samples)\n",(ii->first).c_str(),
 			  boost::accumulators::count(ii->second));
-	      grvy_printf(GRVY_INFO,"      --> Mean time = %.8e (secs)\n",mean(ii->second));
-	      grvy_printf(GRVY_INFO,"      --> Variance  = %.8e\n",variance(ii->second));
-	      grvy_printf(GRVY_INFO,"      --> Min  time = %.8e on %s\n",
+	      grvy_printf(GRVY_INFO,"  --> Mean time = %.8e (secs)\n",mean(ii->second));
+	      grvy_printf(GRVY_INFO,"  --> Variance  = %.8e\n",variance(ii->second));
+	      grvy_printf(GRVY_INFO,"  --> Min  time = %.8e on %s\n",
 			  min_vals[ii->first].value,data[min_vals[ii->first].index].timestamp);
-	      grvy_printf(GRVY_INFO,"      --> Max  time = %.8e on %s\n",
+	      grvy_printf(GRVY_INFO,"  --> Max  time = %.8e on %s\n\n",
 			  max_vals[ii->first].value,data[max_vals[ii->first].index].timestamp);
 	    }
+
+	  // Echo raw data
+
+	  for(int i=0;i<data.size();i++)
+	    {
+	      grvy_printf(GRVY_INFO,"  %s %s %.8e %i %i %i\n",data[i].experiment,data[i].timestamp,
+			  data[i].total_time,data[i].num_procs,data[i].job_Id,data[i].code_revision);
+	    }
+
+	  grvy_printf(GRVY_INFO,"\n[End]   Performance Statistics for: %s\n",machines[imach].c_str());
 	  
 	  break;
 	}
@@ -868,8 +877,10 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 	exit(1);
       }
 
-      h5.m_pimpl->PTableClose(tableId);
 
+      
+      h5.m_pimpl->PTableClose(tableId);
+      
     }
 
   h5.Close();
