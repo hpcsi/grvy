@@ -26,7 +26,7 @@ echo C++ compiler flags............ : $CXXFLAGS
 echo Fortran compiler ............. : $FC
 echo Fortran compiler flags........ : $FCFLAGS
 echo Install dir................... : $prefix 
-echo Boost dir..................... : $BOOST_DIR
+echo Boost dir..................... : $BOOST_ROOT
 echo Boost regex lib............... : $BOOST_REGEX_LDFLAGS $BOOST_REGEX_LIBS
 echo Build user.................... : $USER
 echo Build host.................... : $BUILD_HOST
