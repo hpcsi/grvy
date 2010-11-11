@@ -62,9 +62,9 @@ hostinfo_DEPENDENCIES     = libgrvy.la
 	$(top_srcdir)/src/common/lic_utils/update_license.pl $(top_srcdir)/LICENSE $(cc_sources) $(h_sources)
 	echo 'updated source license headers' >$@
 
-#------------------------                                                                                          
-# Install Forran modules                                                                                          
-#------------------------                                                                                          
+#-------------------------
+# Install Fortran modules
+#-------------------------
 
 install-data-local: libgrvyf.la
 	mkdir -p $(DESTDIR)$(libdir)
