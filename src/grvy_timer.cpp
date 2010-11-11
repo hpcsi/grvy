@@ -103,11 +103,12 @@ public:
   double RawTimer      ();
 
 #ifdef HAVE_HDF5
-  hid_t  CreateHistType (int version); 
-  int    AppendHistData (string experiment, string comment, int num_procs, int version, hid_t tableId);
-  int    ReadAllHostData(GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
-  int    ReadPTable     (string host);
-  void   SummarizeHost  (string host);
+  hid_t  CreateHistType  (int version); 
+  int    AppendHistData  (string experiment, string comment, int num_procs, int version, hid_t tableId);
+  int    ReadAllHostData (GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
+  int    ReadPTable      (string host);
+  void   SummarizeHost   (string host);
+  //  int    DumpDatatoFiles (string topdir);
 #endif
 
   short int   initialized;            // initialized?
@@ -117,6 +118,8 @@ public:
   std::stack <std::string> callgraph; // callgraph to support embedded timers
   bool        beginTrigger;           // a trigger used for embedded timers
   _GRVY_Type_TimerMap2     TimerMap;  // map used to store performance timers for each defined key
+  bool output_totaltimer_raw;	      // output flag for raw total timer data
+  bool output_subtimer_raw;	      // output flag for raw subtimer data 
   GRVY_Timer_Class *self;	      // back pointer to public class
 
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
@@ -130,11 +133,13 @@ int show_statistics = 1;
 
 GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
 {
-  m_pimpl->initialized    = 1;
-  m_pimpl->timer_finalize = -1;
-  m_pimpl->num_begins     = 0;	
-  m_pimpl->beginTrigger   = false;
-  m_pimpl->self           = this;
+  m_pimpl->initialized           = 1;
+  m_pimpl->timer_finalize        = -1;
+  m_pimpl->num_begins            = 0;	
+  m_pimpl->beginTrigger          = false;
+  m_pimpl->output_totaltimer_raw = false;
+  m_pimpl->output_subtimer_raw   = false;
+  m_pimpl->self                  = this;
 }
 
 GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -839,12 +844,37 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 
 	  // Echo raw data
 
-	  for(int i=0;i<data.size();i++)
+	  if(m_pimpl->output_totaltimer_raw)
 	    {
-	      grvy_printf(GRVY_INFO,"  %s %s %.8e %i %i %i\n",data[i].experiment,data[i].timestamp,
-			  data[i].total_time,data[i].num_procs,data[i].job_Id,data[i].code_revision);
+	      for(int i=0;i<data.size();i++)
+		{
+		  grvy_printf(GRVY_INFO,"  %s (%s): %.8e (secs): procs=%i, jobId=%i, revision=%i\n",
+			      data[i].experiment,data[i].timestamp,data[i].total_time,
+			      data[i].num_procs,data[i].job_Id,data[i].code_revision);
+
+		  if(m_pimpl->output_subtimer_raw)
+		    {
+		      hvl_t subtimers = data[i].vl_subtimers;
+		      SubTimer_PTable_V1 *subtimer2 = (SubTimer_PTable_V1*)subtimers.p;
+		  
+		      for(int j=0;j<subtimers.len;j++)
+			{
+			  grvy_printf(GRVY_INFO,"    --> %-*s %.8e (secs):  (mean, var) = (%.8e, %.8e), count = %i\n",
+				      20,subtimer2[j].timer_name,subtimer2[j].measurement,
+				      subtimer2[j].mean,subtimer2[j].variance,subtimer2[j].count);
+			}
+
+		      grvy_printf(GRVY_INFO,"\n");
+		    }
+		}
 	    }
 
+
+	  // Save data to file
+
+	  //	  DumpDatatoFiles("./");
+
+	  
 	  grvy_printf(GRVY_INFO,"\n[End]   Performance Statistics for: %s\n",machines[imach].c_str());
 	  
 	  break;
@@ -854,8 +884,6 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 	exit(1);
       }
 
-
-      
       h5.m_pimpl->PTableClose(tableId);
       
     }
@@ -865,6 +893,10 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
   return;
 #endif
 }
+
+#if 0
+void GRVY_Timer_Class::DumpDatatoFiles(string topdir)
+#endif
 
 
 // TODO: if/when we need a new ptable version, this can be templated

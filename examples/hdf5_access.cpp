@@ -28,6 +28,7 @@
 //--------------------------------------------------------------------------
 
 #include<cstdio>
+#include<cmath>
 #include<cstdlib>
 #include<iostream>
 #include<grvy.h>
@@ -59,6 +60,19 @@ int main(int argc, char **argv)
 
   // Close the file
   h5.Close();
+
+  // do some busy work
+
+  double foo = 0;
+
+  gt.BeginTimer("Work");
+
+  for(int i=0;i<1000000;i++)
+    foo = foo + i*foo*3.1415*sqrt(foo)*exp(foo)/foo;
+
+  grvy_printf(GRVY_DEBUG,"foo is %f\n",foo);
+
+  gt.EndTimer("Work");
 
   // Finalize the performance timer
 

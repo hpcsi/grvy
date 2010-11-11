@@ -1,10 +1,10 @@
-include $(top_srcdir)/doxygen/aminclude.am
-
 AUTOMAKE_OPTIONS = foreign
-ACLOCAL_AMFLAGS  = -I m4
+ACLOCAL_AMFLAGS = -I m4 -I m4/common
 SUBDIRS          = src examples test doxygen
 DISTDIRS         = src examples
 EXTRA_DIST       = CHANGES AUTHORS COPYING LICENSE dist_version 
+
+include $(top_srcdir)/doxygen/aminclude.am
 
 # Tools in the auxiliary directory
 

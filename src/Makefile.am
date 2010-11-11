@@ -9,7 +9,7 @@ INCLUDES                  = -I$(top_builddir)/src/common/getpot
 AM_FCFLAGS                = $(INCLUDES)
 AM_CFLAGS                 = $(INCLUDES)
 AM_CPPFLAGS               = $(INCLUDES) $(BOOST_CPPFLAGS)
-LIBS                      = $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS)
+LIBS                      = $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS)
 BUILT_SOURCES             = .license.stamp
 
 bin_PROGRAMS              = # Appended below
@@ -45,7 +45,7 @@ libgrvyf_la_LIBADD        = libgrvy.la
 #-----------------------
 
 bin_PROGRAMS             += version
-version_SOURCES           = version.cpp grvy.h libgrvy.la
+version_SOURCES           = version.cpp grvy.h
 version_LDADD             = -L$(top_builddir)/src -lgrvy
 version_DEPENDENCIES      = libgrvy.la
 
@@ -54,12 +54,19 @@ hostinfo_SOURCES          = hostinfo.cpp
 hostinfo_LDADD            = -L$(top_builddir)/src -lgrvy
 hostinfo_DEPENDENCIES     = libgrvy.la
 
+bin_PROGRAMS             += gdump
+gdump_SOURCES             = gdump.cpp
+gdump_LDADD               = -L$(top_builddir)/src -lgrvy
+gdump_DEPENDENCIES        = libgrvy.la
+
+
 #---------------------------------
 # Embedded license header support
 #---------------------------------
 
 .license.stamp: $(top_srcdir)/LICENSE
-	$(top_srcdir)/src/common/lic_utils/update_license.pl $(top_srcdir)/LICENSE $(cc_sources) $(h_sources)
+	$(top_srcdir)/src/common/lic_utils/update_license.pl $(top_srcdir)/LICENSE $(cc_sources) $(h_sources) \
+	$(version_SOURCES) $(hostinfo_SOURCES) $(gdump_SOURCES)
 	echo 'updated source license headers' >$@
 
 #-------------------------
