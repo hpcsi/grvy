@@ -63,33 +63,10 @@ using namespace boost::accumulators;
 using namespace std;
 using namespace GRVY;
 
-//--------------------------------------------------------------------
-// Packet table data structures for historical HDF performance logging
-//--------------------------------------------------------------------
-
 #define PTABLE_VERSION     1	// default version beginning Oct. 2010
 
 #ifdef HAVE_HDF5
-
-typedef struct SubTimer_PTable_V1 {
-  const char *timer_name;
-  double measurement;
-  double mean;
-  double variance;
-  size_t count;
-} SubTimer_PTable_V1;
-
-typedef struct TimerPTable_V1 {
-  const char *experiment;
-  const char *timestamp;
-  const char *user_comment;	       
-  double total_time;	
-  int num_procs;
-  int job_Id;
-  int code_revision;
-  hvl_t vl_subtimers;
-} Timer_PTable_V1;
-
+#include "grvy_ptable_version1.h"
 #endif
 
 //--------------------------------
