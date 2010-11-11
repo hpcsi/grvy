@@ -66,7 +66,7 @@ using namespace GRVY;
 #define PTABLE_VERSION     1	// default version beginning Oct. 2010
 
 #ifdef HAVE_HDF5
-#include "grvy_ptable_version1.h"
+#include "grvy_ptable.h"
 #endif
 
 //--------------------------------
