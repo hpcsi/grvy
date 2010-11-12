@@ -28,6 +28,9 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
+#ifndef GRVY_PTABLE_H_
+#define GRVY_PTABLE_H_
+
 //--------------------------------------------------------------------
 // Packet table data structures for historical HDF performance logging
 //--------------------------------------------------------------------
@@ -50,3 +53,5 @@ typedef struct TimerPTable_V1 {
   int code_revision;		// specific code revision (e.g. svn revision)
   hvl_t vl_subtimers;		// inclusion of a variable number of subtimers
 } Timer_PTable_V1;
+
+#endif

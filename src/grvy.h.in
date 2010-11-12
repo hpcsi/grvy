@@ -506,6 +506,10 @@ class GRVY_Timer_Class {
   int  SaveHistTiming      (std::string experiment, std::string comment, int num_procs, const char *filename);
   void SummarizeHistTiming (std::string filename);
 
+  // Class options 
+
+  int  SetOption           (std::string option, bool flag);
+
 private:
   class GRVY_Timer_ClassImp;	              // forware declaration to Timer implementation
   std::auto_ptr<GRVY_Timer_ClassImp> m_pimpl; // pointer to implementation

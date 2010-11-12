@@ -63,7 +63,7 @@ using namespace boost::accumulators;
 using namespace std;
 using namespace GRVY;
 
-#define PTABLE_VERSION     1	// default version beginning Oct. 2010
+#define PTABLE_VERSION 1	// default version beginning Oct. 2010
 
 #ifdef HAVE_HDF5
 #include "grvy_ptable.h"
@@ -118,8 +118,11 @@ public:
   std::stack <std::string> callgraph; // callgraph to support embedded timers
   bool        beginTrigger;           // a trigger used for embedded timers
   _GRVY_Type_TimerMap2     TimerMap;  // map used to store performance timers for each defined key
-  bool output_totaltimer_raw;	      // output flag for raw total timer data
-  bool output_subtimer_raw;	      // output flag for raw subtimer data 
+
+  std::map<std::string,bool> options; // timer options
+  bool output_totaltimer_raw;	      // output option flag for raw total timer data
+  bool output_subtimer_raw;	      // output option flag for raw subtimer data 
+
   GRVY_Timer_Class *self;	      // back pointer to public class
 
   accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
@@ -137,9 +140,13 @@ GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
   m_pimpl->timer_finalize        = -1;
   m_pimpl->num_begins            = 0;	
   m_pimpl->beginTrigger          = false;
-  m_pimpl->output_totaltimer_raw = false;
-  m_pimpl->output_subtimer_raw   = false;
   m_pimpl->self                  = this;
+
+  // set default options
+
+  m_pimpl->options["output_totaltimer_raw"] = false;
+  m_pimpl->options["output_subtimer_raw"  ] = false;
+
 }
 
 GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -832,7 +839,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 	      
 	  for(map <string,perf_stats>::iterator ii=statistics.begin();ii != statistics.end(); ++ii)
 	    {
-	      grvy_printf(GRVY_INFO," Experiment: %s (%i total samples)\n",(ii->first).c_str(),
+	      grvy_printf(GRVY_INFO," Experiment: %s (%i total samples)\n\n",(ii->first).c_str(),
 			  boost::accumulators::count(ii->second));
 	      grvy_printf(GRVY_INFO,"  --> Mean time = %.8e (secs)\n",mean(ii->second));
 	      grvy_printf(GRVY_INFO,"  --> Variance  = %.8e\n",variance(ii->second));
@@ -844,7 +851,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 
 	  // Echo raw data
 
-	  if(m_pimpl->output_totaltimer_raw)
+	  if(m_pimpl->options["output_totaltimer_raw"])
 	    {
 	      for(int i=0;i<data.size();i++)
 		{
@@ -852,7 +859,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 			      data[i].experiment,data[i].timestamp,data[i].total_time,
 			      data[i].num_procs,data[i].job_Id,data[i].code_revision);
 
-		  if(m_pimpl->output_subtimer_raw)
+		  if(m_pimpl->options["output_subtimer_raw"])
 		    {
 		      hvl_t subtimers = data[i].vl_subtimers;
 		      SubTimer_PTable_V1 *subtimer2 = (SubTimer_PTable_V1*)subtimers.p;
@@ -892,6 +899,26 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 
   return;
 #endif
+}
+
+int GRVY_Timer_Class::SetOption(string option, bool flag)
+{
+  map<string,bool> :: iterator index;
+
+  index = m_pimpl->options.find(option);
+
+  if(index == m_pimpl->options.end() )
+    {
+      grvy_printf(GRVY_WARN,"%s: unknown option provided (%s) -> ignoring set request\n",__func__,option.c_str());
+      return 0;
+    }
+  else
+    {
+      index->second = flag;
+      grvy_printf(GRVY_DEBUG,"%s: option %s -> %i\n",__func__,option.c_str(),flag);
+    }
+
+  return 0;
 }
 
 #if 0

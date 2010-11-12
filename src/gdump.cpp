@@ -29,55 +29,131 @@
 //--------------------------------------------------------------------------
 
 #include <iostream>
+#include <vector>
 #include <boost/program_options.hpp>
+#include <boost/program_options/parsers.hpp>
 #include "grvy.h"
+
+using namespace std;
+namespace bo = boost::program_options;
 
 namespace GRVY_gdump
 {
   void summarize_usage()
   {
-    grvy_printf(GRVY_INFO,"\ngdump: a utility for querying historical performance history data\n\n");
-    grvy_printf(GRVY_INFO,"Usage: %s [OPTIONS] file\n\n","gdump");
-    grvy_printf(GRVY_INFO,"where \"file\" is the path to a libGRVY style performance database.\n\n");
+    //grvy_printf(GRVY_INFO,"\ngdump: a utility for querying historical performance data\n\n");
+    grvy_printf(GRVY_INFO,"\nUsage: %s [OPTIONS] file\n\n","gdump");
+    grvy_printf(GRVY_INFO,"where \"file\" is the path to a libGRVY style historical performance database.\n\n");
     grvy_printf(GRVY_INFO,"OPTIONS:\n");
+    return;
   }
 
+  void parse_supported_options(int argc, char *argv[],  GRVY::GRVY_Timer_Class *gt)
+  {
+
+    // define supported options
+
+    string input_file;
+
+    bo::options_description visible;
+    bo::options_description hidden;
+    bo::options_description desc;
+    bo::variables_map vmap;
+    bo::positional_options_description p;
+
+    visible.add_options()
+      ("help",            "generate help message and exit")
+      ("version",         "output libGRVY version information and exit")
+      ("enable-global",   "include global timers per host in output")
+      ("enable-subtimers","include individual subtimer(s) in output");
+      ;
+
+    hidden.add_options()
+      ("input-file",bo::value< string >(),"input file");
+
+    desc.add(hidden).add(visible); // combined option set
+    p.add("input-file",1);	   // required input-file name
+
+    // parse command line
+
+    bo::parsed_options parsed = 
+      bo::command_line_parser(argc,argv).options(desc).positional(p).allow_unregistered().run();
+
+    bo::store(parsed,vmap);
+    bo::notify(vmap);
+
+    if(vmap.count("help")  || !vmap.count("input-file") || (argc == 1) ) 
+      {
+	GRVY_gdump::summarize_usage();
+	cout << visible << "\n";
+	return;
+      }
+
+    if(vmap.count("version"))
+      {
+	grvy_version_stdout();
+	return;
+      }
+
+    if(vmap.count("enable-global"))
+      {
+	gt->SetOption("output_totaltimer_raw",true);
+      }
+
+    if(vmap.count("enable-subtimers"))
+      {
+	gt->SetOption("output_subtimer_raw",true);
+      }
+
+    if(vmap.count("input-file"))
+      {
+	input_file = vmap["input-file"].as<string>();
+	grvy_printf(GRVY_DEBUG,"User provided input file = %s\n",input_file.c_str());
+      }
+
+    // Erorr on unsupported options
+
+    vector<string> unknown = bo::collect_unrecognized(parsed.options,bo::exclude_positional);
+
+    if(unknown.size() > 0)
+      {
+	grvy_printf(GRVY_ERROR,"\n");
+
+	for(int i=0;i<unknown.size();i++)
+	  {
+	    grvy_printf(GRVY_ERROR,"%s: Unsupported command-line argument detected (%s)\n","[*] Error:",
+			unknown[i].c_str());
+	  }
+
+	GRVY_gdump::summarize_usage();
+	cout << visible << "\n";
+	exit(1);
+      }
+
+    // If we have the pleasure of making it this far, then we have the
+    // minimum required to query some performance data; fire in the hole...
+
+    gt->SummarizeHistTiming(input_file);
+
+    return;
 }
+
+} // end namespace GRVY_gdump
+
+//---------------------------------------------------------------------------
+// Main
+//---------------------------------------------------------------------------
 
 int main(int argc, char* argv[])
 {
+  GRVY::GRVY_Timer_Class gt;  // a GRVY performance timer
 
-  using namespace std;
-  namespace bo = boost::program_options;
+  GRVY_gdump::parse_supported_options(argc,argv,&gt);
 
-  bo::options_description desc;
-
-  desc.add_options()
-    ("help","generate help message and exit")
-    ("version", "output libGRVY version information and exit")
-    ("summarize,s","summarize available performance data per host (default)")
-    //    ("summarize,s","summarize available performance data per host (default)")
-    ;
-
-  bo::variables_map vmap;
-  bo::store(bo::parse_command_line(argc,argv,desc),vmap);
-  bo::notify(vmap);
-
-  if(vmap.count("help")) 
-    {
-      GRVY_gdump::summarize_usage();
-      cout << desc << "\n";
-      return 0;
-    }
-
-  if(vmap.count("version"))
-    {
-      grvy_version_stdout();
-      return 0;
-    }
-    
   return 0;
 }
+
+
 
 
 
