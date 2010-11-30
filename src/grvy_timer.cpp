@@ -745,7 +745,7 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
 #endif
 }
 
-void GRVY_Timer_Class::SummarizeHistTiming(string filename)
+void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
 {
 
   GRVY_HDF5_Class h5;
@@ -756,7 +756,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename)
 
   // Open existing file
 
-  h5.Open(filename,false);
+  h5.Open(filename,true);
 
   // Open GRVY timer group
 

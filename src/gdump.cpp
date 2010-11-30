@@ -54,6 +54,8 @@ namespace GRVY_gdump
     // define supported options
 
     string input_file;
+    string output_dir;
+      //    string output_dir("./gdump_data");
 
     bo::options_description visible;
     bo::options_description hidden;
@@ -62,14 +64,19 @@ namespace GRVY_gdump
     bo::positional_options_description p;
 
     visible.add_options()
-      ("help",            "generate help message and exit")
-      ("version",         "output libGRVY version information and exit")
-      ("enable-global",   "include global timers per host in output")
-      ("enable-subtimers","include individual subtimer(s) in output");
+      ("help",              "generate help message and exit")
+      ("version",           "output libGRVY version information and exit")
+      ("enable-global,G",   "include global timers per host in output")
+      ("enable-subtimers,A","include all individual subtimer(s) in output "
+       "(automatically enables -G)")
+      ("output-dir,O",bo::value<string>()->implicit_value("./gdump_data"),"enable raw data dump to files in "
+      "output directory");
       ;
 
     hidden.add_options()
-      ("input-file",bo::value< string >(),"input file");
+      ("input-file",bo::value< string >(),"input file")
+      ("debug","verbose debugging output")
+      ;
 
     desc.add(hidden).add(visible); // combined option set
     p.add("input-file",1);	   // required input-file name
@@ -89,6 +96,11 @@ namespace GRVY_gdump
 	return;
       }
 
+    if(vmap.count("debug"))
+      {
+	grvy_log_setlevel(GRVY_DEBUG);
+      }
+
     if(vmap.count("version"))
       {
 	grvy_version_stdout();
@@ -102,7 +114,14 @@ namespace GRVY_gdump
 
     if(vmap.count("enable-subtimers"))
       {
-	gt->SetOption("output_subtimer_raw",true);
+	gt->SetOption("output_subtimer_raw",  true);
+	gt->SetOption("output_totaltimer_raw",true);
+      }
+
+    if(vmap.count("output-dir"))
+      {
+	output_dir = vmap["output-dir"].as<string>();
+	grvy_printf(GRVY_DEBUG,"User provided output dir = %s\n",output_dir.c_str());
       }
 
     if(vmap.count("input-file"))
@@ -133,7 +152,7 @@ namespace GRVY_gdump
     // If we have the pleasure of making it this far, then we have the
     // minimum required to query some performance data; fire in the hole...
 
-    gt->SummarizeHistTiming(input_file);
+    gt->SummarizeHistTiming(input_file,output_dir);
 
     return;
 }
