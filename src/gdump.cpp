@@ -41,7 +41,6 @@ namespace GRVY_gdump
 {
   void summarize_usage()
   {
-    //grvy_printf(GRVY_INFO,"\ngdump: a utility for querying historical performance data\n\n");
     grvy_printf(GRVY_INFO,"\nUsage: %s [OPTIONS] file\n\n","gdump");
     grvy_printf(GRVY_INFO,"where \"file\" is the path to a libGRVY style historical performance database.\n\n");
     grvy_printf(GRVY_INFO,"OPTIONS:\n");
@@ -55,7 +54,6 @@ namespace GRVY_gdump
 
     string input_file;
     string output_dir;
-      //    string output_dir("./gdump_data");
 
     bo::options_description visible;
     bo::options_description hidden;
@@ -69,8 +67,8 @@ namespace GRVY_gdump
       ("enable-global,G",   "include global timers per host in output")
       ("enable-subtimers,A","include all individual subtimer(s) in output "
        "(automatically enables -G)")
-      ("output-dir,O",bo::value<string>()->implicit_value("./gdump_data"),"enable raw data dump to files in "
-      "output directory");
+      ("dump-files,D",      "dump output to individual ascii files")
+      ("output-dir,O",bo::value<string>()->default_value("./gdata"),"specify output file dump directory");
       ;
 
     hidden.add_options()
