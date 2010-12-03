@@ -790,8 +790,17 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
   for(int imach=0;imach<machines.size();imach++) 
     {
       map <string,perf_stats> statistics;
+      string machine = toplevel+machines[imach];
 
-      h5.AttributeRead(toplevel+machines[imach],"format_version",&Ptable_Version);
+      // read machine attributes
+
+      string os_sysname, os_release, os_version, cputype;
+      
+      h5.AttributeRead(machine,"format_version",Ptable_Version);
+      h5.AttributeRead(machine,"os_sysname",    os_sysname);
+      h5.AttributeRead(machine,"os_release",    os_release);
+      h5.AttributeRead(machine,"os_version",    os_version);
+      h5.AttributeRead(machine,"cputype",       cputype);
 
       hid_t timers_type = m_pimpl->CreateHistType(Ptable_Version);
       hid_t     tableId = h5.m_pimpl->PTableOpen(toplevel+machines[imach],"PTable");
@@ -899,12 +908,16 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
 		  FILE *fp_mach = fp_experiments[ename];
 
 		  fprintf(fp_mach,"%s --\n",cdelim.c_str());
-		  fprintf(fp_mach,"%s Host = %s\n",cdelim.c_str(),machines[imach].c_str());
-		  fprintf(fp_mach,"%s\n",cdelim.c_str());
 		  fprintf(fp_mach,"%s Historical Performance Timing Records\n",cdelim.c_str());
 		  fprintf(fp_mach,"%s libGRVY Library: Version = %s",cdelim.c_str(),GRVY_LIB_VERSION); 
 		  fprintf(fp_mach," (%i)\n",GRVY_get_numeric_version());
+		  fprintf(fp_mach,"%s\n",cdelim.c_str());
 
+		  fprintf(fp_mach,"%s Host = %s\n",cdelim.c_str(),machines[imach].c_str());
+		  fprintf(fp_mach,"%s Sysname  = %s\n",cdelim.c_str(), os_sysname.c_str());
+		  fprintf(fp_mach,"%s Release  = %s\n",cdelim.c_str(), os_release.c_str());
+		  fprintf(fp_mach,"%s Version  = %s\n",cdelim.c_str(), os_version.c_str());
+		  fprintf(fp_mach,"%s CPU Type = %s\n",cdelim.c_str(), cputype.c_str()   );
 		  fprintf(fp_mach,"%s --\n",cdelim.c_str());
 
 		  fprintf(fp_mach,"%s Experiment: %s (%i total samples)\n",cdelim.c_str(),

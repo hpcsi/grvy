@@ -134,7 +134,9 @@ namespace GRVY {
     hsize_t PTableNumPackets       (hid_t tableId);
 
     template <typename T> int AttributeWrite(std::string, std::string, T);
-    template <typename T> int AttributeRead (std::string, std::string, T*);
+    template <typename T> int AttributeRead (std::string, std::string, T&);
+    
+    //int AttributeRead (std::string, std::string, std::string&);
 
     template <typename T> hid_t get_little_endian_type   (T value);
 
