@@ -160,11 +160,12 @@ namespace GRVY {
   // Additional convenience functions
   // --------------------------------
 
-  // set_map_constant_value(): Sets all values of an STL map to be the same
+  // set_map_constant_value(): Sets all elements of an STL map to have the same value
 
-  template <typename Tkey, typename Tvalue> void set_map_constant_value(std::map<Tkey,Tvalue> &amap,const Tvalue newval)
+  template <typename Tkey, typename Tvalue> 
+  void set_map_constant_value(std::map<Tkey,Tvalue> &amap,const Tvalue newval)
   {
-    for(std::map<Tkey,Tvalue>::iterator it=amap.begin();it != amap.end(); ++it)
+    for(typename std::map<Tkey,Tvalue>::iterator it=amap.begin();it != amap.end(); ++it)
       {
 	it->second = newval;
       }
