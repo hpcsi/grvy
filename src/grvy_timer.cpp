@@ -786,7 +786,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 
   if(dump_stdout)
     {
-      Ginfo("\nDumping historical performance data to ascii file(s)\n\n");
+      grvy_printf(GRVY_INFO,"\nDumping historical performance data to ascii file(s)\n\n");
     }
 
   for(int imach=0;imach<machines.size();imach++) 
@@ -899,22 +899,22 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 	      
 	      if(dump_stdout)
 		{
-		  Ginfo("--> File path: %s/%s/%s  (%i total samples)\n",
+		  grvy_printf(GRVY_INFO,"--> File path: %s/%s/%s  (%i total samples)\n",
 			outdir.c_str(),machines[imach].c_str(),ename.c_str(),boost::accumulators::count(ii->second));
-		  Ginfo("\n");
-		  Ginfo("    --> Mean time = %.8e (secs), Variance = %.8e\n",
+		  grvy_printf(GRVY_INFO,"\n");
+		  grvy_printf(GRVY_INFO,"    --> Mean time = %.8e (secs), Variance = %.8e\n",
 			mean(ii->second),variance(ii->second));
-		  Ginfo("    --> Min  time = %.8e on %s\n",
+		  grvy_printf(GRVY_INFO,"    --> Min  time = %.8e on %s\n",
 			min_vals[ename].value,data[min_vals[ename].index].timestamp);
-		  Ginfo("    --> Max  time = %.8e on %s\n\n",
+		  grvy_printf(GRVY_INFO,"    --> Max  time = %.8e on %s\n\n",
 			max_vals[ename].value,data[max_vals[ename].index].timestamp);
 		  
 #if 0
-		  Ginfo("  --> Mean time = %.8e (secs)\n",mean(ii->second));
-		  Ginfo("  --> Variance  = %.8e\n",variance(ii->second));
+		  grvy_printf(GRVY_INFO,"  --> Mean time = %.8e (secs)\n",mean(ii->second));
+		  grvy_printf(GRVY_INFO,"  --> Variance  = %.8e\n",variance(ii->second));
 		  gry_printf(GRVY_INFO,"  --> Min  time = %.8e on %s\n",
 			     min_vals[ename].value,data[min_vals[ename].index].timestamp);
-		  Ginfo("  --> Max  time = %.8e on %s\n\n",
+		  grvy_printf(GRVY_INFO,"  --> Max  time = %.8e on %s\n\n",
 			      max_vals[ename].value,data[max_vals[ename].index].timestamp);
 #endif
 		}
@@ -1065,7 +1065,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 	      
 	    }
 
-	  //Ginfo("\n[End]   Performance Statistics for: %s\n",machines[imach].c_str());
+	  //grvy_printf(GRVY_INFO,"\n[End]   Performance Statistics for: %s\n",machines[imach].c_str());
 	  
 	  break;
 	}

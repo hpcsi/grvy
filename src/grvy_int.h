@@ -163,12 +163,16 @@ namespace GRVY {
   // -----------------------------------------------------
 
   // common logging functions
+  // 
+  // Note: Intel 11.1 doesn't support variadic templates, commenting out for the time being
 
+#if 0
   template<typename... Args> inline int Gdebug(const Args&... args) { return(grvy_printf(GRVY_DEBUG,args...));}
   template<typename... Args> inline int Ginfo (const Args&... args) { return(grvy_printf(GRVY_INFO, args...));}
   template<typename... Args> inline int Gwarn (const Args&... args) { return(grvy_printf(GRVY_WARN, args...));}
   template<typename... Args> inline int Gerror(const Args&... args) { return(grvy_printf(GRVY_ERROR,args...));}
   template<typename... Args> inline int GFATAL(const Args&... args) { return(grvy_printf(GRVY_FATAL,args...));}
+#endif
 
   // commonly used STL typedefs
 
