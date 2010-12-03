@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 
   // Query the historical performance logs
 
-  gt.SummarizeHistTiming("koomie2.h5","ghist");
+  gt.SummarizeHistTiming("koomie2.h5","#","ghist");
 
   return 0;
 }
