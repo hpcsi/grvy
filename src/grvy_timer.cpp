@@ -86,7 +86,6 @@ typedef struct minmax {
 
 typedef std::map <std::string, GRVY_Timer_Data > _GRVY_Type_TimerMap2;
 typedef accumulator_set <double,features<tag::mean,tag::variance,tag::count> > perf_stats;
-typedef map<string,perf_stats>::iterator iter_perf_stats;
 
 //-------------------------------------------------------
 // private implementation class definition for GRVY_Timer
