@@ -433,27 +433,4 @@ extern "C" void grvy_create_scratch_dir_(char *name_template,int _namelen,int *f
     return 0;
   }
 
-  // set_map_constant_value():
-  // 
-  // Sets all values of an STL map to be the same
-
-#if 0
-  template <typename Tkey, typename Tvalue> void set_map_constant_value(std::map<Tkey,Tvalue> &amap,const Tvalue newval)
-  {
-
-    typename std::map<Tkey,Tvalue>::iterator it;
-
-#if 0
-    for(it=amap->begin();it != amap->end(); ++ it)
-      {
-	it->second = newval;
-      }
-#endif
-
-    return;
-  }
-
-#endif
-
-
 } // end namespace GRVY
