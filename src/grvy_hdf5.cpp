@@ -299,6 +299,14 @@ bool GRVY_HDF5_Class::GRVY_HDF5_ClassImp::is_group_open(string descname)
 // Attribute-related public interface wrappers for templated implementation
 //--------------------------------------------------------------------------
 
+#if 0
+template <typename T> 
+int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribute, T value)
+{
+  return(m_pimpl->AttributeWrite(name,attribute,value));
+}
+#endif
+
 int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeWrite(string name, string attribute, short int value)
 { 
   return(m_pimpl->AttributeWrite(name,attribute,value));

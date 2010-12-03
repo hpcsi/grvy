@@ -125,7 +125,6 @@ public:
   bool output_totaltimer_raw;	      // output option flag for raw total timer data
   bool output_subtimer_raw;	      // output option flag for raw subtimer data 
   bool dump_files;		      // option flag to dump output to files
-  string comment;		      // comment delimiter for ascii file output
 
   GRVY_Timer_Class *self;	      // back pointer to public class
 
@@ -144,7 +143,6 @@ GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
   m_pimpl->timer_finalize        = -1;
   m_pimpl->num_begins            = 0;	
   m_pimpl->beginTrigger          = false;
-  m_pimpl->comment               = "#";
   m_pimpl->self                  = this;
 
   // set default options
@@ -750,7 +748,7 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
 #endif
 }
 
-void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
+void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, string outdir)
 {
 
   GRVY_HDF5_Class h5;
@@ -859,7 +857,8 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
 	  // ------------------------------
 
 	  map<string,FILE *> fp_experiments;
-	  string cdelim = m_pimpl->comment;
+
+	  const char *cdelim = delimiter.c_str(); // desired comment delimiter
 
 	  if(dump_files)	
 	    {
@@ -907,35 +906,35 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
 		{
 		  FILE *fp_mach = fp_experiments[ename];
 
-		  fprintf(fp_mach,"%s --\n",cdelim.c_str());
-		  fprintf(fp_mach,"%s Historical Performance Timing Records\n",cdelim.c_str());
-		  fprintf(fp_mach,"%s libGRVY Library: Version = %s",cdelim.c_str(),GRVY_LIB_VERSION); 
+		  fprintf(fp_mach,"%s --\n",cdelim);
+		  fprintf(fp_mach,"%s Historical Performance Timing Records\n",cdelim);
+		  fprintf(fp_mach,"%s libGRVY Library: Version = %s",cdelim,GRVY_LIB_VERSION); 
 		  fprintf(fp_mach," (%i)\n",GRVY_get_numeric_version());
-		  fprintf(fp_mach,"%s\n",cdelim.c_str());
+		  fprintf(fp_mach,"%s\n",cdelim);
 
-		  fprintf(fp_mach,"%s Host = %s\n",cdelim.c_str(),machines[imach].c_str());
-		  fprintf(fp_mach,"%s Sysname  = %s\n",cdelim.c_str(), os_sysname.c_str());
-		  fprintf(fp_mach,"%s Release  = %s\n",cdelim.c_str(), os_release.c_str());
-		  fprintf(fp_mach,"%s Version  = %s\n",cdelim.c_str(), os_version.c_str());
-		  fprintf(fp_mach,"%s CPU Type = %s\n",cdelim.c_str(), cputype.c_str()   );
-		  fprintf(fp_mach,"%s --\n",cdelim.c_str());
+		  fprintf(fp_mach,"%s Host = %s\n",cdelim,machines[imach].c_str());
+		  fprintf(fp_mach,"%s Sysname  = %s\n",cdelim, os_sysname.c_str());
+		  fprintf(fp_mach,"%s Release  = %s\n",cdelim, os_release.c_str());
+		  fprintf(fp_mach,"%s Version  = %s\n",cdelim, os_version.c_str());
+		  fprintf(fp_mach,"%s CPU Type = %s\n",cdelim, cputype.c_str()   );
+		  fprintf(fp_mach,"%s --\n",cdelim);
 
-		  fprintf(fp_mach,"%s Experiment: %s (%i total samples)\n",cdelim.c_str(),
+		  fprintf(fp_mach,"%s Experiment: %s (%i total samples)\n",cdelim,
 			  ename.c_str(),boost::accumulators::count(ii->second));
-		  fprintf(fp_mach,"%s\n",cdelim.c_str());
-		  fprintf(fp_mach,"%s  --> Mean time = %.8e (secs)\n",cdelim.c_str(),mean(ii->second));
-		  fprintf(fp_mach,"%s  --> Variance  = %.8e\n",cdelim.c_str(),variance(ii->second));
-		  fprintf(fp_mach,"%s  --> Min  time = %.8e on %s\n",cdelim.c_str(),
+		  fprintf(fp_mach,"%s\n",cdelim);
+		  fprintf(fp_mach,"%s  --> Mean time = %.8e (secs)\n",cdelim,mean(ii->second));
+		  fprintf(fp_mach,"%s  --> Variance  = %.8e\n",cdelim,variance(ii->second));
+		  fprintf(fp_mach,"%s  --> Min  time = %.8e on %s\n",cdelim,
 			      min_vals[ename].value,data[min_vals[ename].index].timestamp);
-		  fprintf(fp_mach,"%s  --> Max  time = %.8e on %s\n",cdelim.c_str(),
+		  fprintf(fp_mach,"%s  --> Max  time = %.8e on %s\n",cdelim,
 			      max_vals[ename].value,data[max_vals[ename].index].timestamp);
-		  fprintf(fp_mach,"%s\n",cdelim.c_str());
-		  fprintf(fp_mach,"%s --\n",cdelim.c_str());
+		  fprintf(fp_mach,"%s\n",cdelim);
+		  fprintf(fp_mach,"%s --\n",cdelim);
 
 		  // header for global output
 
 		  fprintf(fp_mach,"%s  Experiment-Date      Total Time(sec)    # Procs      JobId    Version ",
-			  cdelim.c_str());
+			  cdelim);
 
 		  // header for subtimer(s)
 
@@ -987,7 +986,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
 
 		    }
 
-		  fprintf(fp_mach,"%s --\n",cdelim.c_str());
+		  fprintf(fp_mach,"%s --\n",cdelim);
 		} 
 
 	    } // end loop over statistics for defined experiments - completes the header for this host
@@ -999,9 +998,6 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
 
 	  if(output_totaltimers && dump_files)
 	    {
-	      //	      map<string,double>::iterator it_sub;
-
-
 	      for(int i=0;i<data.size();i++)
 		{
 

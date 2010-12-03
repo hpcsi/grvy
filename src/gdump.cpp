@@ -157,7 +157,7 @@ namespace GRVY_gdump
     // If we have the pleasure of making it this far, then we have the
     // minimum required to query some performance data; fire in the hole...
 
-    gt->SummarizeHistTiming(input_file,output_dir);
+    gt->SummarizeHistTiming(input_file,"#",output_dir);
 
     return;
 }
