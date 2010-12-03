@@ -114,12 +114,19 @@ namespace GRVY_gdump
       {
 	gt->SetOption("output_subtimer_raw",  true);
 	gt->SetOption("output_totaltimer_raw",true);
+	grvy_printf(GRVY_DEBUG,"User requested --enable-subtimer option\n");
       }
 
     if(vmap.count("output-dir"))
       {
 	output_dir = vmap["output-dir"].as<string>();
 	grvy_printf(GRVY_DEBUG,"User provided output dir = %s\n",output_dir.c_str());
+      }
+
+    if(vmap.count("dump-files"))
+      {
+	gt->SetOption("dump_files",true);
+	grvy_printf(GRVY_DEBUG,"User requested --dump-file option\n");
       }
 
     if(vmap.count("input-file"))

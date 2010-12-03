@@ -156,9 +156,13 @@ namespace GRVY {
 #endif
   };
 
-  // --------------------------------
-  // Additional convenience functions
-  // --------------------------------
+  // ---------------------------------------------
+  // Additional convenience functions and typdefs
+  // ---------------------------------------------
+
+  // commonly used STL typedefs
+
+  typedef std::map<std::string,double> MAP_string_to_double;
 
   // set_map_constant_value(): Sets all elements of an STL map to have the same value
 

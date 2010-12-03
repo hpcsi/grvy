@@ -43,6 +43,7 @@
 #include<sys/time.h>
 #include<stdarg.h>
 #include<stdio.h>
+#include<algorithm>
 #include<time.h>
 #include<stack>
 #include<grvy_classes.h>
@@ -84,6 +85,8 @@ typedef struct minmax {
 } minmax;
 
 typedef std::map <std::string, GRVY_Timer_Data > _GRVY_Type_TimerMap2;
+typedef accumulator_set <double,features<tag::mean,tag::variance,tag::count> > perf_stats;
+typedef map<string,perf_stats>::iterator iter_perf_stats;
 
 //-------------------------------------------------------
 // private implementation class definition for GRVY_Timer
@@ -94,13 +97,13 @@ namespace GRVY {
 class GRVY_Timer_Class::GRVY_Timer_ClassImp
 {
 public:
-  GRVY_Timer_ClassImp  () {}
- ~GRVY_Timer_ClassImp  () {}
-		       
-  void   VerifyInit    ();
-  void   BeginTimer    (const char *, bool); 
-  void   EndTimer      (const char *, bool);
-  double RawTimer      ();
+  GRVY_Timer_ClassImp    () {}
+ ~GRVY_Timer_ClassImp    () {}
+		         
+  void   VerifyInit      ();
+  void   BeginTimer      (const char *, bool); 
+  void   EndTimer        (const char *, bool);
+  double RawTimer        ();
 
 #ifdef HAVE_HDF5
   hid_t  CreateHistType  (int version); 
@@ -108,7 +111,7 @@ public:
   int    ReadAllHostData (GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
   int    ReadPTable      (string host);
   void   SummarizeHost   (string host);
-  //  int    DumpDatatoFiles (string topdir);
+  void   WriteHeaderInfo (FILE *fp, const char *delim);
 #endif
 
   short int   initialized;            // initialized?
@@ -122,6 +125,8 @@ public:
   std::map<std::string,bool> options; // timer options
   bool output_totaltimer_raw;	      // output option flag for raw total timer data
   bool output_subtimer_raw;	      // output option flag for raw subtimer data 
+  bool dump_files;		      // option flag to dump output to files
+  string comment;		      // comment delimiter for ascii file output
 
   GRVY_Timer_Class *self;	      // back pointer to public class
 
@@ -140,13 +145,14 @@ GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
   m_pimpl->timer_finalize        = -1;
   m_pimpl->num_begins            = 0;	
   m_pimpl->beginTrigger          = false;
+  m_pimpl->comment               = "#";
   m_pimpl->self                  = this;
 
   // set default options
 
   m_pimpl->options["output_totaltimer_raw"] = false;
   m_pimpl->options["output_subtimer_raw"  ] = false;
-
+  m_pimpl->options["dump_files"           ] = false;
 }
 
 GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -754,6 +760,12 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
   return;  // above h5 ctor will error if HDF5 is not available
 #else
 
+  // Cache user options
+
+  bool dump_files         = m_pimpl->options["dump_files"];
+  bool output_totaltimers = m_pimpl->options["output_totaltimer_raw"];
+  bool output_subtimers   = m_pimpl->options["output_subtimer_raw"];
+
   // Open existing file
 
   h5.Open(filename,true);
@@ -772,9 +784,11 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
 
   int Ptable_Version;
 
-  typedef accumulator_set <double,features<tag::mean,tag::variance,tag::count> > perf_stats;
+  // ------------------------------------------
+  // Main loop over all available host timings
+  // ------------------------------------------
 
-  for(int imach=0;imach<machines.size();imach++)
+  for(int imach=0;imach<machines.size();imach++) 
     {
       map <string,perf_stats> statistics;
 
@@ -796,6 +810,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
 	{
 	  vector<TimerPTable_V1> data;
 	  m_pimpl->ReadAllHostData(&h5,tableId,&data);
+	  h5.m_pimpl->PTableClose(tableId);
 
 	  grvy_printf(GRVY_DEBUG,"%s: Number of experiments = %i\n",__func__,data.size());	  
 
@@ -831,69 +846,214 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string outdir)
 
 	    }
 
+	  // ------------------------------
+	  // Prep output dirs/ for results
+	  // ------------------------------
+
+	  map<string,FILE *> fp_experiments;
+	  string cdelim = m_pimpl->comment;
+
+	  if(dump_files)	
+	    {
+	      for(map <string,perf_stats>::iterator ii=statistics.begin();ii != statistics.end(); ++ii)
+		{
+		  string exp_name = (ii->first);
+		  string outfile = outdir + "/" + machines[imach] + "/" + exp_name.c_str();
+
+		  grvy_printf(GRVY_DEBUG,"%s: Verifying existence of path for file %s\n",__func__,outfile.c_str());
+		  grvy_check_file_path(outfile.c_str());
+
+		  fp_experiments[exp_name] = fopen(outfile.c_str(),"w");
+		  
+		  if(fp_experiments[exp_name] == NULL)
+		    {
+		      grvy_printf(GRVY_ERROR,"%s: Unable to open file for writing (%s)\n",__func__,outfile.c_str());
+		      exit(1);
+		    }
+		}
+	    }
+	  
 	  //------------------------
-	  // Echo global statistics
+	  // Dump statistics summary
 	  //------------------------
+
+	  map<string,MAP_string_to_double> aggregate_subtimers;
 
 	  grvy_printf(GRVY_INFO,"\n[Begin] Performance Statistics for: %s\n\n",machines[imach].c_str());
 	      
 	  for(map <string,perf_stats>::iterator ii=statistics.begin();ii != statistics.end(); ++ii)
 	    {
-	      grvy_printf(GRVY_INFO," Experiment: %s (%i total samples)\n\n",(ii->first).c_str(),
+
+	      string ename = (ii->first); // current experiment name
+
+	      grvy_printf(GRVY_INFO," Experiment: %s (%i total samples)\n\n",ename.c_str(),
 			  boost::accumulators::count(ii->second));
 	      grvy_printf(GRVY_INFO,"  --> Mean time = %.8e (secs)\n",mean(ii->second));
 	      grvy_printf(GRVY_INFO,"  --> Variance  = %.8e\n",variance(ii->second));
 	      grvy_printf(GRVY_INFO,"  --> Min  time = %.8e on %s\n",
-			  min_vals[ii->first].value,data[min_vals[ii->first].index].timestamp);
+			  min_vals[ename].value,data[min_vals[ename].index].timestamp);
 	      grvy_printf(GRVY_INFO,"  --> Max  time = %.8e on %s\n\n",
-			  max_vals[ii->first].value,data[max_vals[ii->first].index].timestamp);
-	    }
+			  max_vals[ename].value,data[max_vals[ename].index].timestamp);
 
-	  // Echo raw data
-
-	  if(m_pimpl->options["output_totaltimer_raw"])
-	    {
-	      for(int i=0;i<data.size();i++)
+	      if(dump_files)
 		{
-		  grvy_printf(GRVY_INFO,"  %s (%s): %.8e (secs): procs=%i, jobId=%i, revision=%i\n",
-			      data[i].experiment,data[i].timestamp,data[i].total_time,
-			      data[i].num_procs,data[i].job_Id,data[i].code_revision);
+		  FILE *fp_mach = fp_experiments[ename];
 
-		  if(m_pimpl->options["output_subtimer_raw"])
+		  fprintf(fp_mach,"%s --\n",cdelim.c_str());
+		  fprintf(fp_mach,"%s Host = %s\n",cdelim.c_str(),machines[imach].c_str());
+		  fprintf(fp_mach,"%s\n",cdelim.c_str());
+		  fprintf(fp_mach,"%s Historical Performance Timing Records\n",cdelim.c_str());
+		  fprintf(fp_mach,"%s libGRVY Library: Version = %s",cdelim.c_str(),GRVY_LIB_VERSION); 
+		  fprintf(fp_mach," (%i)\n",GRVY_get_numeric_version());
+
+		  fprintf(fp_mach,"%s --\n",cdelim.c_str());
+
+		  fprintf(fp_mach,"%s Experiment: %s (%i total samples)\n",cdelim.c_str(),
+			  ename.c_str(),boost::accumulators::count(ii->second));
+		  fprintf(fp_mach,"%s\n",cdelim.c_str());
+		  fprintf(fp_mach,"%s  --> Mean time = %.8e (secs)\n",cdelim.c_str(),mean(ii->second));
+		  fprintf(fp_mach,"%s  --> Variance  = %.8e\n",cdelim.c_str(),variance(ii->second));
+		  fprintf(fp_mach,"%s  --> Min  time = %.8e on %s\n",cdelim.c_str(),
+			      min_vals[ename].value,data[min_vals[ename].index].timestamp);
+		  fprintf(fp_mach,"%s  --> Max  time = %.8e on %s\n",cdelim.c_str(),
+			      max_vals[ename].value,data[max_vals[ename].index].timestamp);
+		  fprintf(fp_mach,"%s\n",cdelim.c_str());
+		  fprintf(fp_mach,"%s --\n",cdelim.c_str());
+
+		  // header for global output
+
+		  fprintf(fp_mach,"%s  Experiment-Date      Total Time(sec)    # Procs      JobId    Version ",
+			  cdelim.c_str());
+
+		  // header for subtimer(s)
+
+		  if(output_subtimers)
 		    {
-		      hvl_t subtimers = data[i].vl_subtimers;
-		      SubTimer_PTable_V1 *subtimer2 = (SubTimer_PTable_V1*)subtimers.p;
-		  
-		      for(int j=0;j<subtimers.len;j++)
+
+		      fprintf(fp_mach," |  ");
+
+		      // first, we generate a list of all possible
+		      // subtimer names (stored on a per experiment
+		      // name basis); note that there is no guarantee
+		      // that the same set of subtimers are defined
+		      // for each experiment sample and consequently,
+		      // we use this aggregate map as a means to
+		      // provide standardized output
+
+		      for(int i=0;i<data.size();i++)
 			{
-			  grvy_printf(GRVY_INFO,"    --> %-*s %.8e (secs):  (mean, var) = (%.8e, %.8e), count = %i\n",
-				      20,subtimer2[j].timer_name,subtimer2[j].measurement,
-				      subtimer2[j].mean,subtimer2[j].variance,subtimer2[j].count);
+			  hvl_t subtimers = data[i].vl_subtimers;
+			  SubTimer_PTable_V1 *subtimer2 = (SubTimer_PTable_V1*)subtimers.p;
+			  
+			  for(int j=0;j<subtimers.len;j++)
+			    {
+			      if(aggregate_subtimers[ename].find(subtimer2[j].timer_name) == 
+				 aggregate_subtimers[ename].end() )
+				{
+				  aggregate_subtimers[ename][subtimer2[j].timer_name] = 0.0;
+				}
+			    }
+
 			}
 
-		      grvy_printf(GRVY_INFO,"\n");
+		      grvy_printf(GRVY_DEBUG,"%s total number of defined subtimers = %i\n",__func__,
+				  aggregate_subtimers[ename].size());
+
+		      // now, we can list all the possible subtimer(s) in the header
+
+		      for(MAP_string_to_double::iterator it_sub=aggregate_subtimers[ename].begin(); 
+			  it_sub != aggregate_subtimers[ename].end(); ++it_sub)
+			{
+			  int width = std::max(14,(int)strlen( (it_sub->first).c_str()));
+			  int padL  = (width-strlen( (it_sub->first).c_str()))/2;
+			  int padR  = (width-strlen( (it_sub->first).c_str()))-padL;
+			  
+			  fprintf(fp_mach,"%*s%s%*s ",padL,"",(it_sub->first).c_str(),padR,"");
+			}
+
+		      fprintf(fp_mach,"\n");
+
 		    }
+
+		  fprintf(fp_mach,"%s --\n",cdelim.c_str());
+		} 
+
+	    } // end loop over statistics for defined experiments - completes the header for this host
+
+
+	  //----------------------
+	  // Dump raw sample data
+	  //----------------------
+
+	  if(output_totaltimers && dump_files)
+	    {
+	      //	      map<string,double>::iterator it_sub;
+
+
+	      for(int i=0;i<data.size();i++)
+		{
+
+		  string ename  = data[i].experiment;     // experiment name for current data sample
+		  FILE *fp_mach = fp_experiments[ename];  // corresponding open file pointer for the host
+
+		  fprintf(fp_mach,"%s  %.8e %10i %10i %10i ",
+			  data[i].timestamp,data[i].total_time,
+			  data[i].num_procs,data[i].job_Id,data[i].code_revision);
+		  
+		  if(output_subtimers)
+		    {
+
+		      fprintf(fp_mach,"    ");
+
+		      hvl_t subtimers = data[i].vl_subtimers;
+		      SubTimer_PTable_V1 *subtimer2 = (SubTimer_PTable_V1*)subtimers.p;
+
+		      set_map_constant_value(aggregate_subtimers[ename],0.0);
+
+		      // cache subtimers for this measurement in aggregate order 
+
+		      for(int j=0;j<subtimers.len;j++)
+			aggregate_subtimers[ename][subtimer2[j].timer_name] = subtimer2[j].measurement;
+
+		      for(MAP_string_to_double::iterator it_sub=aggregate_subtimers[ename].begin();
+			  it_sub != aggregate_subtimers[ename].end(); ++it_sub)
+			{
+			  int width = std::max(14,(int)strlen( (it_sub->first).c_str()));
+			  fprintf(fp_mach,"%*-.8e ",width,(it_sub)->second);
+			}
+
+		    }
+
+		  fprintf(fp_mach,"\n");
+
+		} // end loop over data samples for the host
+
+	      
+	      // Close open files for this host
+
+	      for(map<string,FILE *> ::iterator ii=fp_experiments.begin();ii != fp_experiments.end(); ++ii)
+		{
+		  grvy_printf(GRVY_DEBUG,"%s Closing open file for host:%s -> experiment:%s\n",__func__,
+			      machines[imach].c_str(),(ii->first).c_str());
+		  fclose((ii->second));
 		}
+	      
 	    }
 
-
-	  // Save data to file
-
-	  //	  DumpDatatoFiles("./");
-
-	  
 	  grvy_printf(GRVY_INFO,"\n[End]   Performance Statistics for: %s\n",machines[imach].c_str());
 	  
 	  break;
 	}
       default:
+
+	// TODO: leaving this for now, but will likely want to alter logic if there a change in 
+	// the packet table version is required
+
 	grvy_printf(GRVY_FATAL,"%s: Unknown timer packet version read (%i)\n",__func__,Ptable_Version);
 	exit(1);
       }
 
-      h5.m_pimpl->PTableClose(tableId);
-      
-    }
+    } // end loop over machines
 
   h5.Close();
 
@@ -920,11 +1080,6 @@ int GRVY_Timer_Class::SetOption(string option, bool flag)
 
   return 0;
 }
-
-#if 0
-void GRVY_Timer_Class::DumpDatatoFiles(string topdir)
-#endif
-
 
 // TODO: if/when we need a new ptable version, this can be templated
 // based on the ptable version
@@ -1038,6 +1193,39 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
     grvy_printf(GRVY_FATAL,"%s: Unknown timer packet version requested (%i)\n",__func__,version);
     exit(1);
   }
+}
+
+//--------------------------------------------------------------------
+// WriteHeaderInfo(): write common header info for ascii output
+//--------------------------------------------------------------------
+
+void GRVY_Timer_Class::GRVY_Timer_ClassImp::WriteHeaderInfo(FILE *fp, const char *delim)
+{
+
+  fprintf(fp,"%s Historical Performance Timing History\n",delim);
+  fprintf(fp,"%s libGRVY: Version = %s",delim,GRVY_LIB_VERSION); 
+  fprintf(fp," (%i)\n",GRVY_get_numeric_version());
+  fprintf(fp,"%s\n",delim);
+  fprintf(fp,"%s -----------------------------------------------------------------------------\n",delim);
+
+#if 0
+  fprintf(fp,"%s Experiment: %s (%i total samples)\n",delim,
+	  (ii->first).c_str(),boost::accumulators::count(ii->second));
+  fprintf(fp,"%s\n",delim);
+  fprintf(fp,"%s  --> Mean time = %.8e (secs)\n",delim,mean(ii->second));
+  fprintf(fp,"%s  --> Variance  = %.8e\n",delim,variance(ii->second));
+  fprintf(fp,"%s  --> Min  time = %.8e on %s\n",delim,
+	  min_vals[ii->first].value,data[min_vals[ii->first].index].timestamp);
+  fprintf(fp,"%s  --> Max  time = %.8e on %s\n",delim,
+	  max_vals[ii->first].value,data[max_vals[ii->first].index].timestamp);
+  fprintf(fp,"%s\n",delim);
+  fprintf(fp,"%s -----------------------------------------------------------------------------\n",delim);
+  fprintf(fp,"%s  Experiment-Date        Runtime(secs)    # Procs      JobId     SW Revision\n",delim);
+  fprintf(fp,"%s -----------------------------------------------------------------------------\n",delim);
+#endif
+
+  return;
+
 }
 
 //--------------------------------------------------------------------
