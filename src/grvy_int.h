@@ -158,9 +158,17 @@ namespace GRVY {
 #endif
   };
 
-  // ---------------------------------------------
-  // Additional convenience functions and typdefs
-  // ---------------------------------------------
+  // -----------------------------------------------------
+  // Additional convenience functions, typdefs, and macros
+  // -----------------------------------------------------
+
+  // common logging functions
+
+  template<typename... Args> inline int Gdebug(const Args&... args) { return(grvy_printf(GRVY_DEBUG,args...));}
+  template<typename... Args> inline int Ginfo (const Args&... args) { return(grvy_printf(GRVY_INFO, args...));}
+  template<typename... Args> inline int Gwarn (const Args&... args) { return(grvy_printf(GRVY_WARN, args...));}
+  template<typename... Args> inline int Gerror(const Args&... args) { return(grvy_printf(GRVY_ERROR,args...));}
+  template<typename... Args> inline int GFATAL(const Args&... args) { return(grvy_printf(GRVY_FATAL,args...));}
 
   // commonly used STL typedefs
 

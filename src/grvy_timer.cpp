@@ -121,10 +121,7 @@ public:
   bool        beginTrigger;           // a trigger used for embedded timers
   _GRVY_Type_TimerMap2     TimerMap;  // map used to store performance timers for each defined key
 
-  std::map<std::string,bool> options; // timer options
-  bool output_totaltimer_raw;	      // output option flag for raw total timer data
-  bool output_subtimer_raw;	      // output option flag for raw subtimer data 
-  bool dump_files;		      // option flag to dump output to files
+  std::map<std::string,bool> options; // runtime options
 
   GRVY_Timer_Class *self;	      // back pointer to public class
 
@@ -147,6 +144,7 @@ GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
 
   // set default options
 
+  m_pimpl->options["output_stdout"        ] = true;
   m_pimpl->options["output_totaltimer_raw"] = false;
   m_pimpl->options["output_subtimer_raw"  ] = false;
   m_pimpl->options["dump_files"           ] = false;
@@ -223,14 +221,14 @@ void GRVY_Timer_Class::GRVY_Timer_ClassImp::BeginTimer (const char *id, bool emb
 
       if(num_begins > 2)
 	{
-	  //grvy_printf(GRVY_INFO,"begin: ending previous timer %s (newtimer = %s)\n",callgraph.top().c_str(),id);
+	  //Ginfo("begin: ending previous timer %s (newtimer = %s)\n",callgraph.top().c_str(),id);
 	  EndTimer(callgraph.top().c_str(),true);
 	}
 	
       if(num_begins > callgraph.size())
 	{
 	  callgraph.push(id);
-	  //grvy_printf(GRVY_INFO,"begin: num_begins = %i (%s)\n",num_begins,id);
+	  //Ginfo("begin: num_begins = %i (%s)\n",num_begins,id);
 	}
     }
 
@@ -312,8 +310,8 @@ void GRVY_Timer_Class::GRVY_Timer_ClassImp::EndTimer (const char *id, bool embed
       if(!embeddedFlag)
 	{
 
-	  //grvy_printf(GRVY_INFO,"end: popping id %s (size = %i)\n",callgraph.top().c_str(),callgraph.size());
-	  //grvy_printf(GRVY_INFO,"end: num_begins = %i\n",num_begins);
+	  //Ginfo("end: popping id %s (size = %i)\n",callgraph.top().c_str(),callgraph.size());
+	  //Ginfo("end: num_begins = %i\n",num_begins);
 
 	  if(callgraph.size() >= 1)
 	    callgraph.pop();
@@ -324,7 +322,7 @@ void GRVY_Timer_Class::GRVY_Timer_ClassImp::EndTimer (const char *id, bool embed
 	    {
 	      BeginTimer(callgraph.top().c_str(),true);
 	      beginTrigger = true;
-	      //grvy_printf(GRVY_INFO,"end: re-beginning timer for %s\n",callgraph.top().c_str());
+	      //Ginfo("end: re-beginning timer for %s\n",callgraph.top().c_str());
 	    }
 
 	  num_begins--;
@@ -759,6 +757,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 
   // Cache user options
 
+  bool dump_stdout        = m_pimpl->options["output_stdout"];
   bool dump_files         = m_pimpl->options["dump_files"];
   bool output_totaltimers = m_pimpl->options["output_totaltimer_raw"];
   bool output_subtimers   = m_pimpl->options["output_subtimer_raw"];
@@ -784,6 +783,11 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
   // ------------------------------------------
   // Main loop over all available host timings
   // ------------------------------------------
+
+  if(dump_stdout)
+    {
+      Ginfo("\nDumping historical performance data to ascii file(s)\n\n");
+    }
 
   for(int imach=0;imach<machines.size();imach++) 
     {
@@ -886,22 +890,35 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 
 	  map<string,MAP_string_to_double> aggregate_subtimers;
 
-	  grvy_printf(GRVY_INFO,"\n[Begin] Performance Statistics for: %s\n\n",machines[imach].c_str());
+
 	      
 	  for(map <string,perf_stats>::iterator ii=statistics.begin();ii != statistics.end(); ++ii)
 	    {
-
+		  
 	      string ename = (ii->first); // current experiment name
-
-	      grvy_printf(GRVY_INFO," Experiment: %s (%i total samples)\n\n",ename.c_str(),
-			  boost::accumulators::count(ii->second));
-	      grvy_printf(GRVY_INFO,"  --> Mean time = %.8e (secs)\n",mean(ii->second));
-	      grvy_printf(GRVY_INFO,"  --> Variance  = %.8e\n",variance(ii->second));
-	      grvy_printf(GRVY_INFO,"  --> Min  time = %.8e on %s\n",
-			  min_vals[ename].value,data[min_vals[ename].index].timestamp);
-	      grvy_printf(GRVY_INFO,"  --> Max  time = %.8e on %s\n\n",
-			  max_vals[ename].value,data[max_vals[ename].index].timestamp);
-
+	      
+	      if(dump_stdout)
+		{
+		  Ginfo("--> File path: %s/%s/%s  (%i total samples)\n",
+			outdir.c_str(),machines[imach].c_str(),ename.c_str(),boost::accumulators::count(ii->second));
+		  Ginfo("\n");
+		  Ginfo("    --> Mean time = %.8e (secs), Variance = %.8e\n",
+			mean(ii->second),variance(ii->second));
+		  Ginfo("    --> Min  time = %.8e on %s\n",
+			min_vals[ename].value,data[min_vals[ename].index].timestamp);
+		  Ginfo("    --> Max  time = %.8e on %s\n\n",
+			max_vals[ename].value,data[max_vals[ename].index].timestamp);
+		  
+#if 0
+		  Ginfo("  --> Mean time = %.8e (secs)\n",mean(ii->second));
+		  Ginfo("  --> Variance  = %.8e\n",variance(ii->second));
+		  gry_printf(GRVY_INFO,"  --> Min  time = %.8e on %s\n",
+			     min_vals[ename].value,data[min_vals[ename].index].timestamp);
+		  Ginfo("  --> Max  time = %.8e on %s\n\n",
+			      max_vals[ename].value,data[max_vals[ename].index].timestamp);
+#endif
+		}
+		  
 	      if(dump_files)
 		{
 		  FILE *fp_mach = fp_experiments[ename];
@@ -1048,7 +1065,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 	      
 	    }
 
-	  grvy_printf(GRVY_INFO,"\n[End]   Performance Statistics for: %s\n",machines[imach].c_str());
+	  //Ginfo("\n[End]   Performance Statistics for: %s\n",machines[imach].c_str());
 	  
 	  break;
 	}
