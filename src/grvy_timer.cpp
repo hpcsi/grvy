@@ -145,9 +145,9 @@ GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
   // set default options
 
   m_pimpl->options["output_stdout"        ] = true;
-  m_pimpl->options["output_totaltimer_raw"] = false;
+  m_pimpl->options["output_totaltimer_raw"] = true;
   m_pimpl->options["output_subtimer_raw"  ] = false;
-  m_pimpl->options["dump_files"           ] = false;
+  m_pimpl->options["dump_files"           ] = true;
 }
 
 GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -784,9 +784,16 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
   // Main loop over all available host timings
   // ------------------------------------------
 
-  if(dump_stdout)
+  if(dump_stdout) 
     {
-      grvy_printf(GRVY_INFO,"\nDumping historical performance data to ascii file(s)\n\n");
+      if(dump_files)
+	{
+	  grvy_printf(GRVY_INFO,"\nDumping historical performance data to ascii file(s)\n\n");
+	}
+      else
+	{
+	  grvy_printf(GRVY_INFO,"\nSummaring available historical performance:\n\n");
+	}
     }
 
   for(int imach=0;imach<machines.size();imach++) 
@@ -899,8 +906,17 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 	      
 	      if(dump_stdout)
 		{
-		  grvy_printf(GRVY_INFO,"--> File path: %s/%s/%s  (%i total samples)\n",
-			outdir.c_str(),machines[imach].c_str(),ename.c_str(),boost::accumulators::count(ii->second));
+		  if(dump_files)
+		    {
+		      grvy_printf(GRVY_INFO,"--> File path: %s/%s/%s  ",outdir.c_str(),
+				  machines[imach].c_str(),ename.c_str());
+		    }
+		  else 
+		    {
+		      grvy_printf(GRVY_INFO,"--> Host=%s, Experiment = %s  ",machines[imach].c_str(),ename.c_str());
+		    }
+
+		  grvy_printf(GRVY_INFO,"(%i total samples)\n",boost::accumulators::count(ii->second));
 		  grvy_printf(GRVY_INFO,"\n");
 		  grvy_printf(GRVY_INFO,"    --> Mean time = %.8e (secs), Variance = %.8e\n",
 			mean(ii->second),variance(ii->second));
@@ -998,11 +1014,9 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 			  
 			  fprintf(fp_mach,"%*s%s%*s ",padL,"",(it_sub->first).c_str(),padR,"");
 			}
-
-		      fprintf(fp_mach,"\n");
-
 		    }
 
+		  fprintf(fp_mach,"\n");
 		  fprintf(fp_mach,"%s --\n",cdelim);
 		} 
 

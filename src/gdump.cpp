@@ -50,10 +50,10 @@ namespace GRVY_gdump
   void parse_supported_options(int argc, char *argv[],  GRVY::GRVY_Timer_Class *gt)
   {
 
-    // define supported options
-
     string input_file;
-    string output_dir;
+    string output_dir("./gdata");
+
+    // define supported options
 
     bo::options_description visible;
     bo::options_description hidden;
@@ -62,24 +62,29 @@ namespace GRVY_gdump
     bo::positional_options_description p;
 
     visible.add_options()
-      ("help",              "generate help message and exit")
-      ("version",           "output libGRVY version information and exit")
-      ("enable-global,G",   "include global timers per host in output")
-      ("enable-subtimers,A","include all individual subtimer(s) in output "
-       "(automatically enables -G)")
-      ("dump-files,D",      "dump output to individual ascii files")
-      ("output-dir,O",bo::value<string>()->default_value("./gdata"),"specify output file dump directory");
+      ("help",                            "generate help message and exit")
+      ("version",                         "output version information and exit")
+      ("quiet,q",                         "suppress normal stdout messages")
+      ("enable-subtimers,A",              "include all individual subtimer(s) in output ")
+      ("summarize-only,S",                "summarize timer statistics but do not dump files")
+      ("output-dir,O",bo::value<string>(),"override default dump directory (default=./gdata)");
+
+      //("dump-files,D",      "dump output to individual ascii files")
+      //("output-dir,O",bo::value<string>()->default_value("./gdata"),"specify output file dump directory");
+      //("enable-global,G",   "include global timers per host in output")
       ;
 
     hidden.add_options()
       ("input-file",bo::value< string >(),"input file")
-      ("debug","verbose debugging output")
+      ("debug",                           "verbose debugging output")
       ;
 
     desc.add(hidden).add(visible); // combined option set
     p.add("input-file",1);	   // required input-file name
 
+    //-------------------
     // parse command line
+    //-------------------
 
     bo::parsed_options parsed = 
       bo::command_line_parser(argc,argv).options(desc).positional(p).allow_unregistered().run();
@@ -105,9 +110,16 @@ namespace GRVY_gdump
 	return;
       }
 
-    if(vmap.count("enable-global"))
+    if(vmap.count("quiet"))
       {
-	gt->SetOption("output_totaltimer_raw",true);
+	gt->SetOption("output_stdout",false);
+	grvy_printf(GRVY_DEBUG,"User requested --quiet option\n");
+      }
+
+    if(vmap.count("summarize-only"))
+      {
+	gt->SetOption("dump_files",false);
+	grvy_printf(GRVY_DEBUG,"User requested --sumarize-only option\n");
       }
 
     if(vmap.count("enable-subtimers"))
@@ -121,12 +133,6 @@ namespace GRVY_gdump
       {
 	output_dir = vmap["output-dir"].as<string>();
 	grvy_printf(GRVY_DEBUG,"User provided output dir = %s\n",output_dir.c_str());
-      }
-
-    if(vmap.count("dump-files"))
-      {
-	gt->SetOption("dump_files",true);
-	grvy_printf(GRVY_DEBUG,"User requested --dump-file option\n");
       }
 
     if(vmap.count("input-file"))
