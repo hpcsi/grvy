@@ -51,6 +51,7 @@ namespace GRVY_gdump
   {
 
     string input_file;
+    string delimiter ("#");
     string output_dir("./gdata");
 
     // define supported options
@@ -67,6 +68,7 @@ namespace GRVY_gdump
       ("quiet,q",                         "suppress normal stdout messages")
       ("enable-subtimers,A",              "include all individual subtimer(s) in output ")
       ("summarize-only,S",                "summarize timer statistics but do not dump files")
+      ("delimiter,D",bo::value<string>(), "override default comment delimiter (default=#)")
       ("output-dir,O",bo::value<string>(),"override default dump directory (default=./gdata)");
 
       //("dump-files,D",      "dump output to individual ascii files")
@@ -129,6 +131,12 @@ namespace GRVY_gdump
 	grvy_printf(GRVY_DEBUG,"User requested --enable-subtimer option\n");
       }
 
+    if(vmap.count("delimiter"))
+      {
+	delimiter = vmap["delimiter"].as<string>();
+	grvy_printf(GRVY_DEBUG,"User provided delimiter = %s\n",delimiter.c_str());
+      }
+
     if(vmap.count("output-dir"))
       {
 	output_dir = vmap["output-dir"].as<string>();
@@ -163,7 +171,7 @@ namespace GRVY_gdump
     // If we have the pleasure of making it this far, then we have the
     // minimum required to query some performance data; fire in the hole...
 
-    gt->SummarizeHistTiming(input_file,"#",output_dir);
+    gt->SummarizeHistTiming(input_file,delimiter,output_dir);
 
     return;
 }
