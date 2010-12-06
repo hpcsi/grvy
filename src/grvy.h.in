@@ -265,6 +265,8 @@ extern "C" {
    * Basic API Definition for Math Utilities
    */
 
+  /** \name Math Utilities */
+
   extern int grvy_double_isnan            (double *val);
   extern int grvy_double_isinf            (double *val);
 
@@ -278,6 +280,8 @@ extern "C" {
   /* Available logging priorities; roughly mimics syslog priority levels but with
    * fewer options. Also provides a NOLOG option to disable all log messages. 
    */
+
+  /** \cond */
   
   typedef enum {GRVY_NOLOG  =  -1,
 		GRVY_FATAL  =   0,
@@ -288,6 +292,10 @@ extern "C" {
 		GRVY_ALL    = 500
   } PriorityLevel;
 
+  /** \endcond */
+
+  /** \name Logging Utilities */
+
   extern void grvy_log_setlevel           (int priority);
   extern void grvy_log_setmask            (int loglevel, const char *delimiter);
   extern void grvy_log                    (int loglevel, const char *mesg);
@@ -297,8 +305,8 @@ extern "C" {
   extern void grvy_log_double             (int loglevel, const char *func, const char *mesg, double var);
   extern void grvy_log_char               (int loglevel, const char *func, const char *mesg, const char *char_item);
 
-  /*
-   * Miscellaneous Utilities
+  /**
+   * \name Miscellaneous File Path Utilities
    */
 
   extern int  grvy_check_file_path        (const char *pathname);
