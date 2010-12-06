@@ -31,11 +31,26 @@
 #ifndef GRVY_H_
 #define GRVY_H_
 
+/** \file 
+ *
+ * This section outlines the available GRVY functions for C/C++.  To
+ * use, make sure to \#include <grvy.h> within your source code
+ * files. Several simple examples using these functions are provided
+ * in the examples section.  Functions which have an integer return
+ * value return "0" upon success. To illustrate the organizational
+ * flexibility of the input file parsing, a
+ * \ref inputFile "sample input file" is also provided.
+ * <hr>
+ *
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// Library version/build info
+/** \cond */
+
+/* Library version/build information */
 
 #define GRVY_MAJOR_VERSION  @GENERIC_MAJOR_VERSION@
 #define GRVY_MINOR_VERSION  @GENERIC_MINOR_VERSION@
@@ -56,8 +71,32 @@ extern "C" {
 #define GRVY_FC             "@FC@"
 #define GRVY_FCFLAGS        "@FCFLAGS@"
 
+/** \endcond */
+
+  /** \name Versioning: 
+   *
+   * Obtain libGRVY runtime versioning information.
+   * @{
+   */
+
+  /* \addtogroup versioning Versioning Routines 
+   *
+   * @{
+   */
+
+  /**
+   *  Echo library versioning information to stdout
+   */
+
   extern void grvy_version_stdout           ();
+
+  /** Obtain numeric library version
+   * \return running version
+   */
+
   extern int grvy_get_numeric_version       ();
+
+  /** @} */  
 
   /*! \page apiC C/C++ Library Interface
    *
@@ -77,34 +116,119 @@ extern "C" {
 
   /* C Interface */
 
+  /** 
+   * \name Input Parsing (Open/close): 
+   *
+   * Used to open/close a libGRVY style input file. Note that an input
+   * file must be open prior to reading any keyword/value pairs or
+   * performing input file dump operations.
+   *
+   * @{
+   */
+
+  /* \addtogroup input_parsing Input Parsing Routines
+   * @{
+   */
+
+  /** Open a libGRVY style input file
+   * \param filename desired input filename
+   */
+
   extern int grvy_input_fopen               (const char *filename);
+
+  /** Close the currently open  libGRVY style input file */
+
   extern int grvy_input_fclose              ();
 
-  extern int grvy_input_fread_char          (const char* var, char **value);
-  extern int grvy_input_fread_char_ivec     (const char* var, char **value,  int elem);
-
-  extern int grvy_input_fread_int           (const char* var, int *value);
-  extern int grvy_input_fread_int_vec       (const char* var, int *value,    int nelems);
-  extern int grvy_input_fread_int_ivec      (const char* var, int *value,    int elem);
-
-  extern int grvy_input_fread_float         (const char* var, float *value);
-  extern int grvy_input_fread_float_vec     (const char* var, float *value,  int nelems);
-  extern int grvy_input_fread_float_ivec    (const char *var, float *value,  int elem);
-
-  extern int grvy_input_fread_double        (const char* var, double *value);
-  extern int grvy_input_fread_double_vec    (const char* var, double *value, int nelems);
-  extern int grvy_input_fread_double_ivec   (const char* var, double *value, int elem);
+  /** \name Input Parsing (Dump input file contents): 
+   * 
+   * The following routines can be used to dump the entire contents of
+   * a parsed libGRVY style input file to stdout or to an ASCII file
+   * (note that all comments within the original input file are
+   * stripped). The prefix variable can be used to include an
+   * additional delimiter which prepends each line of the
+   * output. These routines are normally used to save all relevant
+   * input parameters in the application output for future
+   * traceability and repeatability.
+   *
+   * @{
+   */
 
   extern int grvy_input_fdump               ();
   extern int grvy_input_fdump_delim         (const char* prefix);
   extern int grvy_input_fdump_file          (const char* prefix, const char *filename);
 
-  /* \subpage input_register Default Value Registration Functions */
+  /** @} */
+
+  /** \name Input Parsing (Read scalar values):
+   *
+   * The following routines are used to read individual input values
+   * for common intrinsic datatypes given a desired keyword character
+   * string (keyword).  All grvy_input_fread_() routines return 1 on sucess and 0
+   * on failure.  This return behavior is intended as a convenience
+   * for applications to check input file parsing errors over consecutive reads
+   * via multiplicative operations. 
+   * 
+   * @{
+   */
+
+  extern int grvy_input_fread_int           (const char* keyword, int *value);
+  extern int grvy_input_fread_float         (const char* keyword, float *value);
+  extern int grvy_input_fread_double        (const char* keyword, double *value);
+  extern int grvy_input_fread_char          (const char* keyword, char **value);
+
+  /** @} */  
+
+  /** \name Input Parsing (Read vector values):
+   *
+   * The following routines are used to read vector valued input values
+   * for common intrinsic datatypes given a desired keyword character
+   * string (keyword).  
+   * @{
+   */
+
+  extern int grvy_input_fread_int_vec       (const char* keyword, int *value,    int nelems);
+  extern int grvy_input_fread_float_vec     (const char* keyword, float *value,  int nelems);
+  extern int grvy_input_fread_double_vec    (const char* keyword, double *value, int nelems);
+  extern int grvy_input_fread_char_ivec     (const char* keyword, char **value,  int elem);
+
+  /** @} */  
+
+  /** \name Input Parsing (Read ith vector values):
+   *
+   * The following routines are used to read the ith entry (entry) of
+   * vector valued input values for common intrinsic datatypes given a
+   * desired keyword character string (keyword).  
+   * @{
+   */
+
+  extern int grvy_input_fread_int_ivec      (const char* keyword, int *value,    int elem);
+  extern int grvy_input_fread_float_ivec    (const char* keyword, float *value,  int elem);
+  extern int grvy_input_fread_double_ivec   (const char* keyword, double *value, int elem);
+
+  /** @} */  
+
+  /** \name Default Value Registration Functions: 
+   * 
+   * The following routines provide a mechanism to register a default
+   * value with the input parsing mechanism. If a particular keyword
+   * (var) has a registered default value and is subsequently queried
+   * with an input file which does not contain the keyword, the
+   * registered default value will be returned instead. A convenient
+   * use for these registration functions is to provide sensible
+   * defaults to newly added input keywords which are not present in
+   * older input file revisions.
+   */
 
   /* Input variable registration functions (to provide default input
      values and backwards compatibility support) */
 
+  /** Register default integer value */
+
   extern int grvy_input_register_int        (const char *var,     int value);
+
+  /** Register default float value */
+
   extern int grvy_input_register_float      (const char *var,   float value);
   extern int grvy_input_register_double     (const char *var,  double value);
   extern int grvy_input_register_char       (const char *var,   char *value);
@@ -116,6 +240,12 @@ extern "C" {
 
   /*
    * Basic API Definition for Performance Timers
+   */
+
+  /** \name Performance Timer Functions */
+
+  /** Basic wallclock timer
+   * \return time since epoch in seconds
    */
 
   extern double grvy_timer                ();
