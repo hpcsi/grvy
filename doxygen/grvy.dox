@@ -505,7 +505,7 @@ FILE_VERSION_FILTER    =
 # file name after the option, if omitted DoxygenLayout.xml will be used as the name 
 # of the layout file.
 
-LAYOUT_FILE            = 
+LAYOUT_FILE            = doxygen/docs.layout
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -626,7 +626,6 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-#EXAMPLE_PATH           = /Users/karl/projects/pecos/hpct/trunk/examples
 EXAMPLE_PATH           = examples doxygen/fig_common doxygen/txt_common
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
