@@ -136,6 +136,16 @@ double grvy_timer_stats_variance(const char *id)
   return(_GRVY_Timers->StatsVariance(id));
 }
 
+int grvy_timer_save_hist(const char*experiment, const char *comment, 
+			  int num_procs, int jobId, int code_revision, 
+			  const char *filename)
+{
+  GRVY_Timer_Class gt;
+  return(_GRVY_Timers->SaveHistTiming(experiment,comment,num_procs,jobId,code_revision,filename));
+  //gt.SaveHistTiming(experiment,comment,num_procs,jobId,code_revision,filename);
+  //  return;
+}
+
 //-----------------------------------------------------------------
 //                     Fortran Interfaces
 //-----------------------------------------------------------------
@@ -249,3 +259,5 @@ extern "C" double grvy_timer_stats_variance_(char *id, int _namelen)
   delete[] name;
   return(result);
 }
+
+

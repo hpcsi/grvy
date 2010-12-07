@@ -106,7 +106,8 @@ public:
 
 #ifdef HAVE_HDF5
   hid_t  CreateHistType  (int version); 
-  int    AppendHistData  (string experiment, string comment, int num_procs, int version, hid_t tableId);
+  int    AppendHistData  (string experiment, string comment, int num_procs, 
+			  int jobId, int code_revision, int version, hid_t tableId);
   int    ReadAllHostData (GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
   int    ReadPTable      (string host);
   void   SummarizeHost   (string host);
@@ -653,7 +654,8 @@ void GRVY_Timer_Class:: Summarize()
 // the global timer has been Finalized.
 //--------------------------------------------------------------------
 
-int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_procs, const char *filename )
+int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_procs, 
+				     int jobId, int code_revision, const char *filename )
 {
 
   GRVY_HDF5_Class h5;
@@ -733,7 +735,7 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
     
   // Pull grvy performance data and append results HDF log
 
-  m_pimpl->AppendHistData(experiment,comment,num_procs,PTABLE_VERSION,tableId);
+  m_pimpl->AppendHistData(experiment,comment,num_procs,jobId,code_revision,PTABLE_VERSION,tableId);
   
   // Clean up shop
 
@@ -1271,7 +1273,8 @@ void GRVY_Timer_Class::GRVY_Timer_ClassImp::WriteHeaderInfo(FILE *fp, const char
 // AppendHistData(): append performance timings to HdF packet table
 //--------------------------------------------------------------------
 
-int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string experiment, string comment, int num_procs,
+int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string experiment, string comment, 
+							  int num_procs,int jobId, int code_revision,
 							  int version, hid_t tableId)
 {
   grvy_printf(GRVY_DEBUG,"Appending historical timer data for PTable version %i\n",version);
@@ -1302,8 +1305,8 @@ int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string experiment, str
       header.user_comment     = comment.c_str();
       header.total_time       = self->ElapsedSeconds(_GRVY_gtimer);
       header.num_procs        = num_procs;
-      header.job_Id           = -1;	            // TODO allow for setting me
-      header.code_revision    = -1;	            // TODO allow for setting me
+      header.job_Id           = jobId;	      
+      header.code_revision    = code_revision;
       header.vl_subtimers.p   = &subtimers[0];
       header.vl_subtimers.len = num_subtimers;
 
