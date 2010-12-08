@@ -89,6 +89,13 @@ int main()
       printf("\tbar (   count): %i\n",grvy_timer_stats_count   ("bar"));
       printf("\tbar (    mean): %e\n",grvy_timer_stats_mean    ("bar"));
       printf("\tbar (variance): %e\n",grvy_timer_stats_variance("bar"));
+
+      /* save timing to historical performance DB */
+
+      grvy_timer_save_hist("Example1", const char *comment,
+			   int num_procs, int jobId, int code_revision,
+			   const char *filename)
+
     }
 
   return 0;
