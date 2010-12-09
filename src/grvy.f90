@@ -330,6 +330,20 @@ module grvy
        character :: id
      end function grvy_timer_stats_variance
 
+     subroutine  grvy_timer_save_hist_passthrough(experiment,comment,num_procs, &
+                                                  jobId,code_revision,filename) bind (C,name='grvy_timer_save_hist')
+       use iso_c_binding
+       implicit none
+
+       character(C_char),intent(in)         :: experiment(*)
+       character(C_char),intent(in)         :: comment(*)
+       integer  (C_int), intent(in), value  :: num_procs
+       integer  (C_int), intent(in), value  :: jobId
+       integer  (C_int), intent(in), value  :: code_revision
+       character(C_char),intent(in)         :: filename(*)
+
+     end subroutine grvy_timer_save_hist_passthrough
+
      ! ---------------
      ! Math
      ! ---------------
@@ -529,5 +543,31 @@ subroutine grvy_get_command_arguments (string, prefix, suffix,      &
 
 end subroutine grvy_get_command_arguments
 
+! --------------------------------------------------------------------
+! Wrapper routines for functions which include character
+! strings; the wrappers insert necessary null terminators for 
+! subsequent use with C/C++
+! 
+! It is an extra jump, but it's significantly less painful than dealing
+! with all the various name mangling permutations and hidden argument
+! order betwixt C/Fortran. Kudos to the iso_c_binding folks
+! -------------------------------------------------------------------
+
+ subroutine grvy_timer_save_hist(experiment,comment,num_procs,jobId,code_revision,filename)
+    use iso_c_binding
+    implicit none
+
+    character(len=*),intent(in)         :: experiment
+    character(len=*),intent(in)         :: comment
+    integer  (C_int),intent(in), value  :: num_procs
+    integer  (C_int),intent(in), value  :: jobId
+    integer  (C_int),intent(in), value  :: code_revision
+    character(len=*),intent(in)         :: filename
+
+    call grvy_timer_save_hist_passthrough(experiment//C_NULL_CHAR,comment//C_NULL_CHAR, &
+         num_procs,jobId,code_revision,filename//C_NULL_CHAR)
+
+    return
+  end subroutine grvy_timer_save_hist
 
 end module grvy

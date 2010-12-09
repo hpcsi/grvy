@@ -97,6 +97,10 @@ program main
   write(*,'(1x,"foo-mean:     ",es12.5)') grvy_timer_stats_mean     ("foo")
   write(*,'(1x,"foo-variance: ",es12.5)') grvy_timer_stats_variance ("foo")
 
+  ! dump current results to a historical performance logfile
+
+  call grvy_timer_save_hist("F90-Example1","",1,-1,-1,"hist.h5")
+
   stop
 end program main
 
