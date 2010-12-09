@@ -260,6 +260,9 @@ extern "C" {
   extern double grvy_timer_stats_mean     (const char *id);
   extern double grvy_timer_stats_variance (const char *id);
   extern   void grvy_timer_summarize      ();
+  extern    int grvy_timer_save_hist      (const char*experiment, const char *comment, 
+					   int num_procs, int jobId, int code_revision, 
+					   const char *filename);
 
   /*
    * Basic API Definition for Math Utilities

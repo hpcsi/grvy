@@ -92,9 +92,7 @@ int main()
 
       /* save timing to historical performance DB */
 
-      grvy_timer_save_hist("Example1", const char *comment,
-			   int num_procs, int jobId, int code_revision,
-			   const char *filename)
+      grvy_timer_save_hist("C-Example1","",1,-1,-1,"hist.h5");
 
     }
 
