@@ -344,6 +344,9 @@ void GRVY_Timer_Class:: Reset()
 {
   _GRVY_Type_TimerMap2 :: iterator index;
 
+  if(_GRVY_Timers == NULL)
+    return;
+
   if(!m_pimpl->initialized)
     return;
 
