@@ -105,10 +105,10 @@ module grvy
      !! - subroutine grvy_input_fdump_delim()
      !! - subroutine grvy_input_fdump_file()
 
-     subroutine grvy_input_fdump(flag)
+     integer (C_int) function grvy_input_fdump_passthrough() bind (C,name='grvy_input_fdump')
+       use iso_c_binding
        implicit none
-       integer   :: flag        !< return flag
-     end subroutine grvy_input_fdump
+     end function grvy_input_fdump_passthrough
 
      subroutine grvy_input_fdump_delim(prefix,flag)
        implicit none
@@ -569,6 +569,14 @@ end subroutine grvy_get_command_arguments
 
     return
   end subroutine grvy_input_fopen
+
+  subroutine grvy_input_fdump(return_flag)
+    use iso_c_binding
+    implicit none
+    integer  (C_int),intent(inout)      :: return_flag
+
+    return_flag = grvy_input_fdump_passthrough()
+  end subroutine grvy_input_fdump
 
  subroutine grvy_timer_save_hist(experiment,comment,num_procs,jobId,code_revision,filename)
     use iso_c_binding
