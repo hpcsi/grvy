@@ -74,12 +74,17 @@ module grvy
      !! subroutine grvy_input_fclose()
      !! \endcode
 
-     subroutine grvy_input_fopen(filename,flag)
-       character :: filename    !< libGRVY style input filename
-       integer   :: flag        !< return flag
-     end subroutine grvy_input_fopen
+     integer (C_int) function grvy_input_fopen_passthrough(filename) bind (C,name='grvy_input_fopen')
+       use iso_c_binding
+       implicit none
 
-     subroutine grvy_input_fclose()
+       character (C_char),intent(in) :: filename(*) !< libGRVY style input filename
+
+     end function grvy_input_fopen_passthrough
+
+     subroutine grvy_input_fclose() bind (C)
+       use iso_c_binding
+       implicit none
      end subroutine grvy_input_fclose
 
      !> \page apiF
@@ -544,14 +549,26 @@ subroutine grvy_get_command_arguments (string, prefix, suffix,      &
 end subroutine grvy_get_command_arguments
 
 ! --------------------------------------------------------------------
-! Wrapper routines for functions which include character
-! strings; the wrappers insert necessary null terminators for 
-! subsequent use with C/C++
+! Wrapper routines for functions which include character strings (or
+! require extra return flag arguments); the string wrappers insert
+! necessary null terminators for subsequent use with C/C++.
 ! 
 ! It is an extra jump, but it's significantly less painful than dealing
 ! with all the various name mangling permutations and hidden argument
 ! order betwixt C/Fortran. Kudos to the iso_c_binding folks
 ! -------------------------------------------------------------------
+
+ subroutine grvy_input_fopen(filename,return_flag)
+   use iso_c_binding
+    implicit none
+
+    character(len=*),intent(in)         :: filename
+    integer  (C_int),intent(inout)      :: return_flag
+
+    return_flag = grvy_input_fopen_passthrough(filename//C_NULL_CHAR)
+
+    return
+  end subroutine grvy_input_fopen
 
  subroutine grvy_timer_save_hist(experiment,comment,num_procs,jobId,code_revision,filename)
     use iso_c_binding

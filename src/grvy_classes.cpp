@@ -148,7 +148,8 @@ namespace GRVY {
   {
     if(initialized)
       {
-	_GRVY_message(GRVY_ERROR,__func__,"close previous input file first prior to opening new input file -> ",filename);
+	_GRVY_message(GRVY_ERROR,__func__,"close previous input file first prior to opening new input file -> ",
+		      filename);
 	return 0;
       }
 

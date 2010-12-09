@@ -37,6 +37,8 @@
 #include<grvy.h>
 #include"fortran_string_order.h"
 
+#include <boost/algorithm/string.hpp>
+
 using namespace std;
 using namespace GRVY;
 
@@ -56,7 +58,17 @@ static GRVY_Input_Class _GRVY_Input;     // input class
 
 extern "C" int grvy_input_fopen(const char *filename)
 {
-  return( _GRVY_Input.Open(filename) );
+
+  // with the switch over to adopt iso_c_bindings for our Fortran
+  // interface, it's possible that Fortran is calling this routine
+  // directly; consequently, we perform a little extra whitspace
+  // trimming here to show some love...
+
+  std::string file_new = filename;
+
+  boost::trim(file_new);
+
+  return( _GRVY_Input.Open(file_new.c_str()) );
 }
 
 extern "C" int grvy_input_fdump()
@@ -193,7 +205,12 @@ extern "C" int grvy_input_register_get_char   (const char *var,char **value)
 
 //-----------------------------------------------------------------
 //                     Fortran Interfaces
+// 
+// update: 12/2010 - deprecating these versions in favor of 
+// using iso_c_binding....
 //-----------------------------------------------------------------
+
+#if 0
 
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void grvy_input_fopen_(char *filename,int *flag,int _namelen)
@@ -205,6 +222,14 @@ extern "C" void grvy_input_fopen_(char *filename,int _namelen,int *flag)
   // For Fortran convenience, strip spaces from end of string.
 
   char *name = grvy_f2c_char_no_spaces(filename,_namelen);
+
+
+extern "C" void grvy_input_fclose_()
+{
+  grvy_input_fclose();
+  return;
+}
+
   //char *name = grvy_f2c_char(filename,_namelen);
   *flag = grvy_input_fopen(name);
 
@@ -212,11 +237,7 @@ extern "C" void grvy_input_fopen_(char *filename,int _namelen,int *flag)
   return;
 }
 
-extern "C" void grvy_input_fclose_()
-{
-  grvy_input_fclose();
-  return;
-}
+#endif
 
 extern "C" void grvy_input_fdump_(int *flag)
 {

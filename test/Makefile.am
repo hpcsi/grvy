@@ -162,7 +162,7 @@ F_log_LDADD     = ../src/libgrvyf.la
 TESTS                          += F_input_read_variables
 check_PROGRAMS                 += F_input_read_variables
 F_input_read_variables_SOURCES  = F_input_read_variables.f90
-F_input_read_variables_LDADD    = ../src/libgrvyf.la
+F_input_read_variables_LDADD    =  ../src/libgrvy.la ../src/libgrvyf.la 
 
 TESTS                            += F_input_nofile_available
 check_PROGRAMS                   += F_input_nofile_available

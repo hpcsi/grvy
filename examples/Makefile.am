@@ -19,6 +19,7 @@ hdf5_access_SOURCES     = hdf5_access.cpp
 
 inputf_SOURCES          = inputf.f90
 inputf_LIBTOOLFLAGS     = --tag=FC
+inputf_LDADD            = ../src/libgrvyf.la
 
 timer_sum_SOURCES       = timer_sum.c
 timer_SOURCES           = timer.c
@@ -26,7 +27,7 @@ cpp_timer_SOURCES       = cpp-timer.cpp
 
 timer_sumf_SOURCES      = timer_sumf.f90
 timer_sumf_LIBTOOLFLAGS = --tag=FC
-timer_sumf_LDADD        = ..//src/libgrvyf.la
+timer_sumf_LDADD        = ../src/libgrvyf.la
 
 check_dir_SOURCES       = check_dir.c
 message_SOURCES         = messages.c
