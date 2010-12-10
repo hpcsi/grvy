@@ -1,12 +1,15 @@
 Version 0.30.0 (In Progress)
 
   * addition of historical performance logging capability using HDF
-  * addition of optional HDF5 class for I/O related operations
+  * initial addition of HDF5 convenience class for I/O related operations
+  * additional of optional HDF5 library linkage
+  * migrate portions of Fortran interface to use iso_c_bindings 
   * updated Fortran interface to trim trailing white space for input parsing filename
+  * updated Fortran library linkage (use -lgrvy and -lfgrvy)
   * addition of grvy_log_setmask() function to override default log mask
   * deprecated hpct-based api, all library access should use grvy semantics
   * performance timer class public interface included in grvy.h
-  * build system fix parallel build failure
+  * build system fix for parallel build failure
 
 Version 0.29.1 (26 September 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.29.1

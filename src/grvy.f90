@@ -144,53 +144,67 @@ module grvy
        integer   (C_int), intent(out)   :: value
      end function grvy_input_fread_int_passthrough
 
-     subroutine grvy_input_fread_int_vec(var,value,nelems,flag)
-       implicit none
-       character :: var
-       integer   :: value(*)
-       integer   :: nelems
-       integer   :: flag
-     end subroutine grvy_input_fread_int_vec
+     ! ----------------------------
+     ! vec bindings to C routines
+     ! ----------------------------
 
-     subroutine grvy_input_fread_int_ivec(var,value,elem,flag)
+     integer (C_int) function grvy_input_fread_int_vec_passthrough(var,value,nelems)  &
+          bind (C,name='grvy_input_fread_int_vec')
+       use iso_c_binding
        implicit none
-       character :: var
-       integer   :: value
-       integer   :: elem
-       integer   :: flag
-     end subroutine grvy_input_fread_int_ivec
+       character (C_char),       intent(in)  :: var(*)
+       integer   (C_int),        intent(out) :: value(*)
+       integer   (C_int), value, intent(in)  :: nelems
+     end function grvy_input_fread_int_vec_passthrough
 
-     subroutine grvy_input_fread_real_vec(var,value,nelems,flag)
+     integer (C_int) function grvy_input_fread_real_vec_passthrough(var,value,nelems)  &
+          bind (C,name='grvy_input_fread_float_vec')
+       use iso_c_binding
        implicit none
-       character :: var
-       real      :: value(*)
-       integer   :: nelems
-       integer   :: flag
-     end subroutine grvy_input_fread_real_vec
+       character (C_char),       intent(in)  :: var(*)
+       real      (C_float),      intent(out) :: value(*)
+       integer   (C_int), value, intent(in)  :: nelems
+     end function grvy_input_fread_real_vec_passthrough
 
-     subroutine grvy_input_fread_real_ivec(var,value,elem,flag)
+     integer (C_int) function grvy_input_fread_double_vec_passthrough(var,value,nelems)  &
+          bind (C,name='grvy_input_fread_double_vec')
+       use iso_c_binding
        implicit none
-       character :: var
-       real      :: value
-       integer   :: elem
-       integer   :: flag
-     end subroutine grvy_input_fread_real_ivec
+       character (C_char),       intent(in)  :: var(*)
+       real      (C_double),     intent(out) :: value(*)
+       integer   (C_int), value, intent(in)  :: nelems
+     end function grvy_input_fread_double_vec_passthrough
 
-     subroutine grvy_input_fread_double_vec(var,value,nelems,flag)
-       implicit none
-       character :: var
-       real*8    :: value(*)
-       integer   :: nelems
-       integer   :: flag
-     end subroutine grvy_input_fread_double_vec
+     ! ----------------------------
+     ! ivec bindings to C routines
+     ! ----------------------------
 
-     subroutine grvy_input_fread_double_ivec(var,value,elem,flag)
+     integer (C_int) function grvy_input_fread_int_ivec_passthrough(var,value,elem)  &
+          bind (C,name='grvy_input_fread_int_ivec')
+       use iso_c_binding
        implicit none
-       character :: var
-       real*8    :: value
-       integer   :: elem
-       integer   :: flag
-     end subroutine grvy_input_fread_double_ivec
+       character (C_char),       intent(in)  :: var(*)
+       integer   (C_int),        intent(out) :: value
+       integer   (C_int), value, intent(in)  :: elem
+     end function grvy_input_fread_int_ivec_passthrough
+
+     integer (C_int) function grvy_input_fread_real_ivec_passthrough(var,value,elem)  &
+          bind (C,name='grvy_input_fread_float_ivec')
+       use iso_c_binding
+       implicit none
+       character (C_char),       intent(in)  :: var(*)
+       real      (C_float),      intent(out) :: value
+       integer   (C_int), value, intent(in)  :: elem
+     end function grvy_input_fread_real_ivec_passthrough
+
+     integer (C_int) function grvy_input_fread_double_ivec_passthrough(var,value,elem)  &
+          bind (C,name='grvy_input_fread_double_ivec')
+       use iso_c_binding
+       implicit none
+       character (C_char),       intent(in)  :: var(*)
+       real      (C_double),     intent(out) :: value
+       integer   (C_int), value, intent(in)  :: elem
+     end function grvy_input_fread_double_ivec_passthrough
 
      subroutine grvy_input_fread_char(var,value,flag)
        implicit none
@@ -206,11 +220,6 @@ module grvy
        integer   :: elem
        integer   :: flag
      end subroutine grvy_input_fread_char_ivec
-
-     subroutine grvy_input_toggle_messages(flag)
-       implicit none
-       integer   :: flag
-     end subroutine grvy_input_toggle_messages
 
      ! ---------------------------------
      ! Default Input Value Registrations
@@ -625,14 +634,112 @@ end subroutine grvy_get_command_arguments
    use iso_c_binding
     implicit none
     character(len=*),   intent(in)      :: var         !< variable keyword
-    integer  (C_int),   intent(out)     :: value       !< keyword value from input value
+    integer  (C_int),   intent(out)     :: value       !< keyword value from input
     integer  (C_int),   intent(out)     :: return_flag !< error return flag
 
     return_flag = grvy_input_fread_int_passthrough(var//C_NULL_CHAR,value)
     return
   end subroutine grvy_input_fread_int
 
- subroutine grvy_timer_save_hist(experiment,comment,num_procs,jobId,code_revision,filename)
+  ! ----------------
+  ! vec wrappers
+  ! ----------------
+
+  subroutine grvy_input_fread_int_vec(var,value,nelems,return_flag)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: var         !< variable keyword
+    integer  (C_int),   intent(out)     :: value(*)    !< keyword vector values from input
+    integer  (C_int),   intent(in)      :: nelems      !< size of vector to read 
+    integer  (C_int),   intent(out)     :: return_flag !< error return flag
+
+    return_flag = grvy_input_fread_int_vec_passthrough(var//C_NULL_CHAR,value,nelems)
+    return
+  end subroutine grvy_input_fread_int_vec
+
+  subroutine grvy_input_fread_real_vec(var,value,nelems,return_flag)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: var         !< variable keyword
+    real     (C_float), intent(out)     :: value(*)    !< keyword vector values from input
+    integer  (C_int),   intent(in)      :: nelems      !< size of vector to read 
+    integer  (C_int),   intent(out)     :: return_flag !< error return flag
+
+    return_flag = grvy_input_fread_real_vec_passthrough(var//C_NULL_CHAR,value,nelems)
+    return
+  end subroutine grvy_input_fread_real_vec
+
+  subroutine grvy_input_fread_double_vec(var,value,nelems,return_flag)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: var         !< variable keyword
+    real     (C_double),intent(out)     :: value(*)    !< keyword vector values from input
+    integer  (C_int),   intent(in)      :: nelems      !< size of vector to read 
+    integer  (C_int),   intent(out)     :: return_flag !< error return flag
+
+    return_flag = grvy_input_fread_double_vec_passthrough(var//C_NULL_CHAR,value,nelems)
+    return
+  end subroutine grvy_input_fread_double_vec
+
+  ! ----------------
+  ! ivec wrappers
+  ! ----------------
+
+  subroutine grvy_input_fread_int_ivec(var,value,elem,return_flag)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: var         !< variable keyword
+    integer  (C_int),   intent(out)     :: value       !< ith (elem) vector value from input
+    integer  (C_int),   intent(in)      :: elem        !< size of vector to read 
+    integer  (C_int),   intent(out)     :: return_flag !< error return flag
+
+    integer :: c_index
+
+    ! Convert from Fortran to C style indexing
+
+    c_index = elem - 1
+
+    return_flag = grvy_input_fread_int_ivec_passthrough(var//C_NULL_CHAR,value,c_index)
+    return
+  end subroutine grvy_input_fread_int_ivec
+
+  subroutine grvy_input_fread_real_ivec(var,value,elem,return_flag)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: var         !< variable keyword
+    real     (C_float), intent(out)     :: value       !< ith (elem) vector value from input
+    integer  (C_int),   intent(in)      :: elem        !< size of vector to read 
+    integer  (C_int),   intent(out)     :: return_flag !< error return flag
+
+    integer :: c_index
+
+    ! Convert from Fortran to C style indexing
+
+    c_index = elem - 1
+
+    return_flag = grvy_input_fread_real_ivec_passthrough(var//C_NULL_CHAR,value,c_index)
+    return
+  end subroutine grvy_input_fread_real_ivec
+
+  subroutine grvy_input_fread_double_ivec(var,value,elem,return_flag)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: var         !< variable keyword
+    real     (C_double),intent(out)     :: value       !< ith (elem) vector value from input
+    integer  (C_int),   intent(in)      :: elem        !< size of vector to read 
+    integer  (C_int),   intent(out)     :: return_flag !< error return flag
+
+    integer :: c_index
+
+    ! Convert from Fortran to C style indexing
+
+    c_index = elem - 1
+
+    return_flag = grvy_input_fread_double_ivec_passthrough(var//C_NULL_CHAR,value,c_index)
+    return
+  end subroutine grvy_input_fread_double_ivec
+
+  subroutine grvy_timer_save_hist(experiment,comment,num_procs,jobId,code_revision,filename)
     use iso_c_binding
     implicit none
     character(len=*),intent(in)         :: experiment
@@ -641,10 +748,10 @@ end subroutine grvy_get_command_arguments
     integer  (C_int),intent(in), value  :: jobId
     integer  (C_int),intent(in), value  :: code_revision
     character(len=*),intent(in)         :: filename
-
+    
     call grvy_timer_save_hist_passthrough(experiment//C_NULL_CHAR,comment//C_NULL_CHAR, &
          num_procs,jobId,code_revision,filename//C_NULL_CHAR)
     return
   end subroutine grvy_timer_save_hist
-
+  
 end module grvy
