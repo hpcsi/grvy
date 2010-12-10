@@ -230,14 +230,13 @@ extern "C" void grvy_input_fclose_()
   return;
 }
 
-  //char *name = grvy_f2c_char(filename,_namelen);
   *flag = grvy_input_fopen(name);
 
   delete[] name;
   return;
 }
 
-#endif
+
 
 extern "C" void grvy_input_fdump_(int *flag)
 {
@@ -245,6 +244,8 @@ extern "C" void grvy_input_fdump_(int *flag)
   *flag = grvy_input_fdump();
   return;
 }
+
+
 
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void grvy_input_fdump_delim_(char *prefix, int *flag, int _namelen )
@@ -256,6 +257,8 @@ extern "C" void grvy_input_fdump_delim_(char *prefix, int _namelen, int *flag)
   *flag = grvy_input_fdump_delim(name);
   return;
 }
+
+
 
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void grvy_input_fdump_file_(char *prefix, char *filename, int *flag, int _namelen, int _filelen )
@@ -284,6 +287,8 @@ extern "C" void grvy_input_fread_real_(char *var,int _namelen,float *value,int *
   return;
 }
 
+
+
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void grvy_input_fread_double_(char *var,double *value,int *flag,int _namelen)
 #else
@@ -298,6 +303,7 @@ extern "C" void grvy_input_fread_double_(char *var,int _namelen,double *value,in
   return;
 }
 
+#endif
 
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void grvy_input_fread_int_(char *var,int *value,int *flag,int _namelen)

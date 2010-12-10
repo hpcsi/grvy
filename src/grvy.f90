@@ -110,39 +110,39 @@ module grvy
        implicit none
      end function grvy_input_fdump_passthrough
 
-     subroutine grvy_input_fdump_delim(prefix,flag)
+     integer (C_int) function grvy_input_fdump_delim_passthrough(prefix) bind (C,name='grvy_input_fdump_delim')
+       use iso_c_binding
        implicit none
-       character :: prefix      !< delimiter
-       integer   :: flag        !< return flag
-     end subroutine grvy_input_fdump_delim
+       character (C_char),intent(in) :: prefix(*)     
+     end function grvy_input_fdump_delim_passthrough
 
-     subroutine grvy_input_fdump_file(prefix,filename,flag)
+     integer (C_int) function grvy_input_fdump_file_passthrough(prefix,filename) bind (C,name='grvy_input_fdump_file')
+       use iso_c_binding
        implicit none
-       character :: prefix      !< delimiter
-       character :: filename    !< libGRVY style input filename
-       integer   :: flag        !< return flag
-     end subroutine grvy_input_fdump_file
+       character (C_char),intent(in) :: prefix(*)    
+       character (C_char),intent(in) :: filename(*)  
+     end function grvy_input_fdump_file_passthrough
 
-     subroutine grvy_input_fread_real(var,value,flag)
+     integer (C_int) function grvy_input_fread_real_passthrough(var,value) bind (C,name='grvy_input_fread_float')
+       use iso_c_binding
        implicit none
-       character :: var
-       real      :: value
-       integer   :: flag        !< libGRVY return flag
-     end subroutine grvy_input_fread_real
+       character (C_char), intent(in)   :: var(*)
+       real      (C_float),intent(out)  :: value
+     end function grvy_input_fread_real_passthrough
 
-     subroutine grvy_input_fread_double(var,value,flag)
+     integer (C_int) function grvy_input_fread_double_passthrough(var,value) bind (C,name='grvy_input_fread_double')
+       use iso_c_binding
        implicit none
-       character :: var
-       real*8    :: value
-       integer   :: flag
-     end subroutine grvy_input_fread_double
+       character (C_char),  intent(in)  :: var(*)
+       real      (C_double),intent(out) :: value
+     end function grvy_input_fread_double_passthrough
 
-     subroutine grvy_input_fread_int(var,value,flag)
+     integer (C_int) function grvy_input_fread_int_passthrough(var,value) bind (C,name='grvy_input_fread_int')
+       use iso_c_binding
        implicit none
-       character :: var
-       integer   :: value
-       integer   :: flag
-     end subroutine grvy_input_fread_int
+       character (C_char),intent(in)    :: var(*)
+       integer   (C_int), intent(out)   :: value
+     end function grvy_input_fread_int_passthrough
 
      subroutine grvy_input_fread_int_vec(var,value,nelems,flag)
        implicit none
@@ -339,14 +339,12 @@ module grvy
                                                   jobId,code_revision,filename) bind (C,name='grvy_timer_save_hist')
        use iso_c_binding
        implicit none
-
        character(C_char),intent(in)         :: experiment(*)
        character(C_char),intent(in)         :: comment(*)
        integer  (C_int), intent(in), value  :: num_procs
        integer  (C_int), intent(in), value  :: jobId
        integer  (C_int), intent(in), value  :: code_revision
        character(C_char),intent(in)         :: filename(*)
-
      end subroutine grvy_timer_save_hist_passthrough
 
      ! ---------------
@@ -452,22 +450,22 @@ contains
 !!             If not present, any error causes <tt>call abort</tt>.
 subroutine grvy_get_command_arguments (string, prefix, suffix,      &
                                        first, last, length, status)
-
   implicit none
-
   character(len = *), intent(out)           :: string
   character(len = *), intent(in),  optional :: prefix
   character(len = *), intent(in),  optional :: suffix
   integer,            intent(in),  optional :: first, last
   integer,            intent(out), optional :: length, status
 
-! Dynamically allocatable character arrays without fixed buffer limits
-! only seem possible in newer Fortran standards.
+  ! Dynamically allocatable character arrays without fixed buffer limits
+  ! only seem possible in newer Fortran standards.
+
   integer, parameter      :: buflen = 9999
   character(len = buflen) :: buf
   integer                 :: bufpos, arglen, i, ifirst, ilast, ilength, istatus
+  
+  ! Provide default values and checks on first and last
 
-! Provide default values and checks on first and last
   if (present(last)) then
     ilast = min(last, command_argument_count())
   else
@@ -479,7 +477,8 @@ subroutine grvy_get_command_arguments (string, prefix, suffix,      &
     ifirst = 1
   endif
 
-! Determine the total storage necessary to hold the returned string
+  ! Determine the total storage necessary to hold the returned string
+
   if (present(prefix) .and. len_trim(prefix) > 0) then
     ilength = len_trim(prefix) + 1
   else
@@ -501,13 +500,15 @@ subroutine grvy_get_command_arguments (string, prefix, suffix,      &
 
   if (present(length)) length = ilength
 
-! Ensure caller has the storage necessary to house the result
+  ! Ensure caller has the storage necessary to house the result
+
   if (len(string) < ilength) then
     status = -1
     goto 5
   end if
 
-! Accumulate the desired string tracking length in bufpos
+  ! Accumulate the desired string tracking length in bufpos
+
   if (present(prefix) .and. len_trim(prefix) > 0) then
     string = trim(prefix) // " "
     bufpos = len_trim(prefix) + 1
@@ -537,15 +538,16 @@ subroutine grvy_get_command_arguments (string, prefix, suffix,      &
 
   return
 
-! Common error handling code for handling subroutine failure
+  ! Common error handling code for handling subroutine failure
+
 5 if (present(status)) then
-    status = istatus
-    return
+     status = istatus
+     return
   end if
   write (*,*) "grvy_get_command_arguments: " // &
-              "error encountered when status not used"
+       "error encountered when status not used"
   call abort
-
+  
 end subroutine grvy_get_command_arguments
 
 ! --------------------------------------------------------------------
@@ -561,12 +563,10 @@ end subroutine grvy_get_command_arguments
  subroutine grvy_input_fopen(filename,return_flag)
    use iso_c_binding
     implicit none
-
     character(len=*),intent(in)         :: filename
     integer  (C_int),intent(inout)      :: return_flag
 
     return_flag = grvy_input_fopen_passthrough(filename//C_NULL_CHAR)
-
     return
   end subroutine grvy_input_fopen
 
@@ -578,10 +578,63 @@ end subroutine grvy_get_command_arguments
     return_flag = grvy_input_fdump_passthrough()
   end subroutine grvy_input_fdump
 
+ subroutine grvy_input_fdump_delim(prefix,return_flag)
+   use iso_c_binding
+    implicit none
+    character(len=*),intent(in)         :: prefix
+    integer  (C_int),intent(inout)      :: return_flag
+
+    return_flag = grvy_input_fdump_delim_passthrough(prefix//C_NULL_CHAR)
+    return
+  end subroutine grvy_input_fdump_delim
+
+  subroutine grvy_input_fdump_file(prefix,filename,return_flag)
+   use iso_c_binding
+    implicit none
+    character(len=*),intent(in)         :: prefix      !< delimiter
+    character(len=*),intent(in)         :: filename    !< input filename
+    integer  (C_int),intent(inout)      :: return_flag !< error return flag
+
+    return_flag = grvy_input_fdump_file_passthrough(prefix//C_NULL_CHAR,filename//C_NULL_CHAR)
+    return
+  end subroutine grvy_input_fdump_file
+
+  subroutine grvy_input_fread_real(var,value,return_flag)
+   use iso_c_binding
+    implicit none
+    character(len=*),  intent(in)       :: var         !< variable keyword
+    real     (C_float),intent(out)      :: value       !< keyword value from input value
+    integer  (C_int),  intent(out)      :: return_flag !< error return flag
+
+    return_flag = grvy_input_fread_real_passthrough(var//C_NULL_CHAR,value)
+    return
+  end subroutine grvy_input_fread_real
+
+  subroutine grvy_input_fread_double(var,value,return_flag)
+   use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: var         !< variable keyword
+    real     (C_double),intent(out)     :: value       !< keyword value from input value
+    integer  (C_int),   intent(out)     :: return_flag !< error return flag
+
+    return_flag = grvy_input_fread_double_passthrough(var//C_NULL_CHAR,value)
+    return
+  end subroutine grvy_input_fread_double
+
+  subroutine grvy_input_fread_int(var,value,return_flag)
+   use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: var         !< variable keyword
+    integer  (C_int),   intent(out)     :: value       !< keyword value from input value
+    integer  (C_int),   intent(out)     :: return_flag !< error return flag
+
+    return_flag = grvy_input_fread_int_passthrough(var//C_NULL_CHAR,value)
+    return
+  end subroutine grvy_input_fread_int
+
  subroutine grvy_timer_save_hist(experiment,comment,num_procs,jobId,code_revision,filename)
     use iso_c_binding
     implicit none
-
     character(len=*),intent(in)         :: experiment
     character(len=*),intent(in)         :: comment
     integer  (C_int),intent(in), value  :: num_procs
@@ -591,7 +644,6 @@ end subroutine grvy_get_command_arguments
 
     call grvy_timer_save_hist_passthrough(experiment//C_NULL_CHAR,comment//C_NULL_CHAR, &
          num_procs,jobId,code_revision,filename//C_NULL_CHAR)
-
     return
   end subroutine grvy_timer_save_hist
 
