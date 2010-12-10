@@ -107,7 +107,7 @@ public:
 #ifdef HAVE_HDF5
   hid_t  CreateHistType  (int version); 
   int    AppendHistData  (string experiment, string comment, int num_procs, 
-			  int jobId, int code_revision, int version, hid_t tableId);
+			  int jobId, int code_revision, double flops, int version, hid_t tableId);
   int    ReadAllHostData (GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
   int    ReadPTable      (string host);
   void   SummarizeHost   (string host);
@@ -658,7 +658,7 @@ void GRVY_Timer_Class:: Summarize()
 //--------------------------------------------------------------------
 
 int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_procs, 
-				     int jobId, int code_revision, const char *filename )
+				     int jobId, int code_revision, double flops, const char *filename )
 {
 
   GRVY_HDF5_Class h5;
@@ -738,7 +738,7 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
     
   // Pull grvy performance data and append results HDF log
 
-  m_pimpl->AppendHistData(experiment,comment,num_procs,jobId,code_revision,PTABLE_VERSION,tableId);
+  m_pimpl->AppendHistData(experiment,comment,num_procs,jobId,code_revision,flops,PTABLE_VERSION,tableId);
   
   // Clean up shop
 
@@ -971,7 +971,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 
 		  // header for global output
 
-		  fprintf(fp_mach,"%s  Experiment-Date      Total Time(sec)    # Procs      JobId    Version ",
+		  fprintf(fp_mach,"%s  Experiment-Date      Total Time(sec)    # Procs      JobId    Version       Flops",
 			  cdelim);
 
 		  // header for subtimer(s)
@@ -1040,9 +1040,9 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 		  string ename  = data[i].experiment;     // experiment name for current data sample
 		  FILE *fp_mach = fp_experiments[ename];  // corresponding open file pointer for the host
 
-		  fprintf(fp_mach,"%s  %.8e %10i %10i %10i ",
+		  fprintf(fp_mach,"%s  %.8e %10i %10i %10i %.4e",
 			  data[i].timestamp,data[i].total_time,
-			  data[i].num_procs,data[i].job_Id,data[i].code_revision);
+			  data[i].num_procs,data[i].job_Id,data[i].code_revision,data[i].flops);
 		  
 		  if(output_subtimers)
 		    {
@@ -1224,6 +1224,7 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
       H5Tinsert(timers_type,"Total Time",     HOFFSET(TimerPTable_V1,total_time),    H5T_IEEE_F64LE );
       H5Tinsert(timers_type,"Num Processors", HOFFSET(TimerPTable_V1,num_procs),     H5T_STD_I32LE  );
       H5Tinsert(timers_type,"Job Id",         HOFFSET(TimerPTable_V1,job_Id),        H5T_STD_I32LE  );
+      H5Tinsert(timers_type,"Flops",          HOFFSET(TimerPTable_V1,flops),         H5T_IEEE_F64LE );
       H5Tinsert(timers_type,"Code Revision"  ,HOFFSET(TimerPTable_V1,code_revision), H5T_STD_I32LE  );
       H5Tinsert(timers_type,"SubTimers",      HOFFSET(TimerPTable_V1,vl_subtimers),  subtimer_type  );
 
@@ -1263,9 +1264,9 @@ void GRVY_Timer_Class::GRVY_Timer_ClassImp::WriteHeaderInfo(FILE *fp, const char
   fprintf(fp,"%s  --> Max  time = %.8e on %s\n",delim,
 	  max_vals[ii->first].value,data[max_vals[ii->first].index].timestamp);
   fprintf(fp,"%s\n",delim);
-  fprintf(fp,"%s -----------------------------------------------------------------------------\n",delim);
-  fprintf(fp,"%s  Experiment-Date        Runtime(secs)    # Procs      JobId     SW Revision\n",delim);
-  fprintf(fp,"%s -----------------------------------------------------------------------------\n",delim);
+  fprintf(fp,"%s ----------------------------------------------------------------------------------\n",delim);
+  fprintf(fp,"%s  Experiment-Date        Runtime(secs)    # Procs      JobId     SW Revision  Flops\n",delim);
+  fprintf(fp,"%s ----------------------------------------------------------------------------------\n",delim);
 #endif
 
   return;
@@ -1277,7 +1278,7 @@ void GRVY_Timer_Class::GRVY_Timer_ClassImp::WriteHeaderInfo(FILE *fp, const char
 //--------------------------------------------------------------------
 
 int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string experiment, string comment, 
-							  int num_procs,int jobId, int code_revision,
+							  int num_procs,int jobId, int code_revision, double flops,
 							  int version, hid_t tableId)
 {
   grvy_printf(GRVY_DEBUG,"Appending historical timer data for PTable version %i\n",version);
@@ -1309,6 +1310,7 @@ int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string experiment, str
       header.total_time       = self->ElapsedSeconds(_GRVY_gtimer);
       header.num_procs        = num_procs;
       header.job_Id           = jobId;	      
+      header.flops            = flops;
       header.code_revision    = code_revision;
       header.vl_subtimers.p   = &subtimers[0];
       header.vl_subtimers.len = num_subtimers;

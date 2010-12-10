@@ -261,7 +261,7 @@ extern "C" {
   extern double grvy_timer_stats_variance (const char *id);
   extern   void grvy_timer_summarize      ();
   extern    int grvy_timer_save_hist      (const char*experiment, const char *comment, 
-					   int num_procs, int jobId, int code_revision, 
+					   int num_procs, int jobId, int code_revision, double flops,
 					   const char *filename);
 
   /*
@@ -645,7 +645,7 @@ class GRVY_Timer_Class {
   // Historical timing support
 
   int  SaveHistTiming      (std::string experiment, std::string comment, int num_procs, 
-			    int jobId, int code_revision, const char *filename);
+			    int jobId, int code_revision, double flops, const char *filename);
   void SummarizeHistTiming (std::string filename,   std::string delimiter, std::string outdir);
 
   // Class options 

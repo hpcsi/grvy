@@ -51,6 +51,7 @@ typedef struct TimerPTable_V1 {
   int num_procs;		// number of processors
   int job_Id;			// batch scheduler jobID
   int code_revision;		// specific code revision (e.g. svn revision)
+  double flops;			// total application FLOPS
   hvl_t vl_subtimers;		// inclusion of a variable number of subtimers
 } Timer_PTable_V1;
 
