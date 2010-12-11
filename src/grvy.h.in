@@ -34,7 +34,7 @@
 /** \file 
  *
  * This section outlines the available GRVY functions for C/C++.  To
- * use, make sure to \#include <grvy.h> within your source code
+ * access, make sure to \#include <grvy.h> within your source code
  * files. Several simple examples using these functions are provided
  * in the examples section.  Functions which have an integer return
  * value return "0" upon success. To illustrate the organizational
@@ -73,18 +73,40 @@ extern "C" {
 
 /** \endcond */
 
-  /** \name Versioning: 
+  /** \page apiC C/C++ Library Interface
    *
+   * This section outlines the available GRVY functions for C/C++.  To
+   * use, make sure to \#include <grvy.h> within your source code
+   * files. Several simple examples using these functions are provided
+   * in the examples section.  Unless specified otherwise, functions
+   * which have an integer return value return "0" upon success (and
+   * the primary excepton to this rule is with a subset of the Input
+   * Parsing routines).
+   * 
+   * To illustrate the organizational flexibility
+   * of the input file parsing, a \ref inputFile "sample input file"
+   * is also provided.  <hr>
+   * 
+   * \section version Versioning Routines
+   */
+
+  /**
+   * 
+   * \name Versioning:  
+   * 
    * Obtain libGRVY runtime versioning information.
    * @{
    */
 
-  /* \addtogroup versioning Versioning Routines 
-   *
-   * @{
+  /** 
+   * \page apiC
+   * \code
+   * void grvy_version_stdout           ();
+   *  int grvy_get_numeric_version      ();
+   * \endcode
    */
 
-  /**
+  /** 
    *  Echo library versioning information to stdout
    */
 
@@ -98,35 +120,20 @@ extern "C" {
 
   /** @} */  
 
-  /*! \page apiC C/C++ Library Interface
-   *
-   * This section outlines the available GRVY functions for C/C++.  To
-   * use, make sure to \#include <grvy.h> within your source code
-   * files. Several simple examples using these functions are provided
-   * in the examples section.  Functions which have an integer return
-   * value return "0" upon success. To illustrate the organizational
-   * flexibility of the input file parsing, a
-   * \ref inputFile "sample input file" is also provided.
-   * <hr>
+  /**
+   * \page apiC
+   * \section input Input Parsing
+   * 
+   * These routines are used to parse input values keyword/value pairs 
    */
 
-  /*
-   * Basic API Definition for ASCII input file parsing
-   */
-
-  /* C Interface */
-
-  /** 
+  /* 
    * \name Input Parsing (Open/close): 
    *
    * Used to open/close a libGRVY style input file. Note that an input
    * file must be open prior to reading any keyword/value pairs or
    * performing input file dump operations.
    *
-   * @{
-   */
-
-  /* \addtogroup input_parsing Input Parsing Routines
    * @{
    */
 
