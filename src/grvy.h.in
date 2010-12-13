@@ -649,11 +649,38 @@ class GRVY_Timer_Class {
   double StatsMean      (std::string id);     // mean time for timer (id)
   double StatsVariance  (std::string id);     //  variance for timer (id)
 
-  // Historical timing support
+  // ------------------------------------------------------------------------
+  // Historical timing support - note there are two primary modes for
+  // saving performance data: 
+  // 
+  // Mode 1: you are using the GRVY_Timer_Class to define individual
+  //         sections to monitor and want to save the global runtime
+  //         measurement and all individual subtimers
+  // 
+  // Mode 2: you are using other means to profile the application code
+  //          and want to save a single global timing value
+  // 
+  // In both modes, multiple functions are provided to allow for more
+  // exhaustive runtime documentation (e.g. to include flops, code
+  // revision, etc).
+
+  // Mode 1: Save internal GRVY timer values to historical repository
 
   int  SaveHistTiming      (std::string experiment, std::string comment, int num_procs, 
 			    int jobId, int code_revision, double flops, const char *filename);
+
+  // Mode 2: Save provided global timing to historical repository
+
+#if 0
+  int  SaveHistTiming      (std::string machinename, double timing, std::string experiment, 
+			    std::string comment, int num_procs, int jobId, int code_revision, 
+			    double flops, std::string filename);
+#endif
+
+  // Query Functions
+
   void SummarizeHistTiming (std::string filename,   std::string delimiter, std::string outdir);
+
 
   // Class options 
 

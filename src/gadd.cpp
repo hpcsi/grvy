@@ -29,21 +29,26 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
-#include <iostream>
-#include <vector>
-#include <boost/program_options.hpp>
-#include <boost/program_options/parsers.hpp>
-#include "grvy.h"
+#include<iostream>
+#include<vector>
+#include<boost/program_options.hpp>
+#include<boost/program_options/parsers.hpp>
+#include<grvy_classes.h>
+#include<grvy_env.h>
+#include<grvy.h>
+#include<grvy_int.h>
 
 using namespace std;
-namespace bo = boost::program_options;
+
 
 namespace GRVY_gadd
 {
   void summarize_usage()
   {
-    grvy_printf(GRVY_INFO,"\nUsage: %s [OPTIONS] file\n\n","gadd");
-    grvy_printf(GRVY_INFO,"where \"file\" is the path to a libGRVY style historical performance database.\n");
+    grvy_printf(GRVY_INFO,"\nUsage: %s [OPTIONS] <time> <name> <file>\n\n","gadd");
+    grvy_printf(GRVY_INFO,"where \"time\" is the performancing timing in seconds, \"name\" is the\n"
+		"experiment identifier, and \"file\" is the path to a libGRVY style historical\n"
+		"performance database.\n");
     grvy_printf(GRVY_INFO,"\nThis utility is used to store application runtime measurements from various\n"
 		"compute resources to provide historical monitoring during application development,\n"
 		"perform system benchmarking, identify performance outliers, and facilitate\n"
@@ -55,37 +60,55 @@ namespace GRVY_gadd
   void parse_supported_options(int argc, char *argv[],  GRVY::GRVY_Timer_Class *gt)
   {
 
-    string input_file;
-    string delimiter ("#");
-    string output_dir("./gdata");
+    // Required inputs
 
-    // define supported options
-
-    bo::options_description visible;
-    bo::options_description hidden;
-    bo::options_description desc;
-    bo::variables_map vmap;
+    double timing;		// user provided performance timing (secs)
+    string name; 		// user provided experiment name
+    string input_file;		// path to desired HDF5 storage file
+    
+    // Optional inputs
+    
+    string machine;		// machine name (defaults to local hostname)
+    string comment;		// additional comment (defaults to empty string)
+    int    jobId    =  -1;	// default jobId
+    int    numprocs =   1;	// default processor count
+    string revision =  "-r0";	// default processor count
+    double flops    = 0.0;	// default FLOPs
+    
+    // Define supported options for Boost
+    
+    namespace bo = boost::program_options;
+    
+    bo::options_description            visible;
+    bo::options_description            hidden;
+    bo::options_description            desc;
+    bo::variables_map                  vmap;
     bo::positional_options_description p;
-
+    
     visible.add_options()
       ("help",                            "generate help message and exit")
       ("version",                         "output version information and exit")
       ("quiet,q",                         "suppress normal stdout messages")
-      ("machine,m",                       "machine name")
-      ("name,n",	                  "experiment name")	
-      ("jobid,j",                         "batch job identifier")
-      ("numprocs,p",                      "number of processors")
-      ("revision,r",                      "application/code revision")
-      ("flops,f",                         "measured FLOPs")
+      ("comment,c", bo::value<string>(),  "additional comment string for the measurement")
+      ("machine,m", bo::value<string>(),  "machine name (default=local hostname)")
+      ("jobid,j",   bo::value<int>(),     "batch job identifier (default = -1)")
+      ("numprocs,p",bo::value<int>(),     "number of processors (default = 1)")
+      ("revision,r",bo::value<string>(),  "application/code revision (default = -r0)")
+      ("flops,f",   bo::value<double>(),  "measured FLOPs (default = 0.0)")
       ;
 
     hidden.add_options()
-      ("input-file",bo::value< string >(),"input file")
+      ("timing"    ,bo::value<double>(),  "timing")
+      ("name"      ,bo::value<string>(),  "name")
+      ("input-file",bo::value<string>(),  "input file")
       ("debug",                           "verbose debugging output")
       ;
 
     desc.add(hidden).add(visible); // combined option set
-    p.add("input-file",1);	   // required input-file name
+
+    p.add("timing"    , 1);	   // required measurement timing (secs)
+    p.add("name"      , 1);	   // required measurement name
+    p.add("input-file", 1);	   // required path to hdf5 storage file
 
     //-------------------
     // parse command line
@@ -97,16 +120,11 @@ namespace GRVY_gadd
     bo::store(parsed,vmap);
     bo::notify(vmap);
 
-    if(vmap.count("help")  || !vmap.count("input-file") || (argc == 1) ) 
+    if(vmap.count("help")  || !vmap.count("input-file") || !vmap.count("timing") || !vmap.count("name") )
       {
 	GRVY_gadd::summarize_usage();
 	cout << visible << "\n";
 	return;
-      }
-
-    if(vmap.count("debug"))
-      {
-	grvy_log_setlevel(GRVY_DEBUG);
       }
 
     if(vmap.count("version"))
@@ -115,12 +133,40 @@ namespace GRVY_gadd
 	return;
       }
 
+    if(vmap.count("debug"))
+      {
+	grvy_log_setlevel(GRVY_DEBUG);
+      }
+
     if(vmap.count("quiet"))
       {
 	gt->SetOption("output_stdout",false);
 	grvy_printf(GRVY_DEBUG,"User requested --quiet option\n");
       }
 
+    // Parse optional arguments
+
+    grvy_printf(GRVY_DEBUG,"\n%s: Parsing optional arguments:\n\n",__func__);
+
+    GRVY_Hostenv_Class myenv;
+
+    machine  = GRVY::read_boost_option(vmap,"machine", myenv.Hostname());
+    comment  = GRVY::read_boost_option(vmap,"comment", comment);
+    jobId    = GRVY::read_boost_option(vmap,"jobid",   jobId);
+    numprocs = GRVY::read_boost_option(vmap,"numprocs",numprocs);
+    revision = GRVY::read_boost_option(vmap,"revision",revision);
+    flops    = GRVY::read_boost_option(vmap,"flops",   flops);
+    timing   = GRVY::read_boost_option(vmap,"timing",  timing);
+
+    // Parse required arguments
+
+    grvy_printf(GRVY_DEBUG,"\n%s: Parsing required arguments:\n\n",__func__);
+
+    if(vmap.count("timing"))
+      {
+	timing = vmap["timing"].as<double>();
+	grvy_printf(GRVY_DEBUG,"User provided timing value = %.6e (secs)\n",timing);
+      }
 
     if(vmap.count("input-file"))
       {
@@ -148,9 +194,11 @@ namespace GRVY_gadd
       }
 
     // If we have the pleasure of making it this far, then we have the
-    // minimum required to query some performance data; fire in the hole...
+    // minimum required to save some performance data; fire in the hole...
 
-    gt->SummarizeHistTiming(input_file,delimiter,output_dir);
+    //    gt->SaveHistTiming(timing,machine,name,comment,numprocs,jobId,-1,flops,input_file);
+
+
 
     return;
 }

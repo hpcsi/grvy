@@ -36,6 +36,8 @@
 #include<string>
 #include<grvy.h>
 
+#include <boost/program_options.hpp>
+
 namespace GRVY {
 
 #ifdef _GRVY_GLOBAL_DEF
@@ -191,6 +193,29 @@ namespace GRVY {
     return;
   }
 
-}
+  // read_boost_option(): Reads defined option from boost::program_options variable map
+
+  template <typename T> T read_boost_option(boost::program_options::variables_map &vmap,
+					    std::string varname, T default_value)
+  {
+    if(vmap.count(varname))
+      {
+	T value = vmap[varname].as<T>();
+    
+	if(_GRVY_Log.isLog(GRVY_DEBUG))
+	  std::cout << __func__ << ": User provided " << varname << " = " << value << std::endl;
+
+	return(value);
+      }
+    else
+      {
+      	if(_GRVY_Log.isLog(GRVY_DEBUG))
+	  std::cout << __func__ << ": Using default " << varname << " = " << default_value << std::endl;
+	return(default_value);
+      }
+  }
+
+
+} // end namespace GRVY
 
 #endif

@@ -114,7 +114,7 @@ public:
   void   WriteHeaderInfo (FILE *fp, const char *delim);
 #endif
 
-  short int   initialized;            // initialized?
+  bool        initialized;            // initialized?
   double      timer_finalize;         // raw timer value at time of finalize()
   std::string timer_name;             // user name supplied for the timer
   int         num_begins;	      // number of active begin timers (used for callgraph determination)
@@ -137,7 +137,7 @@ int show_statistics = 1;
 
 GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
 {
-  m_pimpl->initialized           = 1;
+  m_pimpl->initialized           = false;
   m_pimpl->timer_finalize        = -1;
   m_pimpl->num_begins            = 0;	
   m_pimpl->beginTrigger          = false;
@@ -158,6 +158,7 @@ GRVY_Timer_Class::~GRVY_Timer_Class()
 
 void GRVY_Timer_Class::Init(string name)
 {
+  m_pimpl->initialized = true;
   m_pimpl->timer_name = name;
   BeginTimer(_GRVY_gtimer);
   return;
@@ -667,7 +668,14 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
   return 1;  // above h5 ctor will error if HDF5 is not available
 #else
 
-  m_pimpl->VerifyInit();
+  // this function assumes that the user wants to dump data from a
+  // GRVY timer, let's first make sure we have some timer data to save
+
+  if(!m_pimpl->initialized)
+    {
+      grvy_printf(GRVY_ERROR,"\n**Error (%s): Performance timer not initialized - unable to save timing\n",__func__);
+      exit(1);
+    }
 
   // Open existing file or create new one if not present
 
