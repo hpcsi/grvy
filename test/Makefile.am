@@ -130,10 +130,13 @@ check_PROGRAMS                                  += CXX_input_dump
 CXX_input_dump_SOURCES                           = C++_input_dump.cpp C_examplefile.c examplefile.h
 CXX_input_dump_LDADD                             = ../src/libgrvy.la
 
+
+if HDF5_ENABLED
 TESTS                                           += CXX_hdf_hist_timing
 check_PROGRAMS                                  += CXX_hdf_hist_timing
 CXX_hdf_hist_timing_SOURCES                      = C++_hdf_hist_timing.cpp 
 CXX_hdf_hist_timing_LDADD                        = ../src/libgrvy.la
+endif
 
 #-----------------
 # F90 Tests

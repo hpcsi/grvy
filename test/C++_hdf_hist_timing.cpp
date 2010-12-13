@@ -61,7 +61,6 @@ int main(int argc, char **argv)
 
   gt.EndTimer("Main Program");
   gt.Finalize();
-  gt.Summarize();
 
   gt.SaveHistTiming("Example1","",1,1,-1,-1,"test.h5");
 
