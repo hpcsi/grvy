@@ -54,10 +54,15 @@ hostinfo_SOURCES          = hostinfo.cpp
 hostinfo_LDADD            = -L$(top_builddir)/src -lgrvy
 hostinfo_DEPENDENCIES     = libgrvy.la
 
-bin_PROGRAMS             += gdump
+bin_PROGRAMS             += gdump 
 gdump_SOURCES             = gdump.cpp
 gdump_LDADD               = -L$(top_builddir)/src -lgrvy
 gdump_DEPENDENCIES        = libgrvy.la
+
+bin_PROGRAMS             += gadd
+gadd_SOURCES              = gadd.cpp
+gadd_LDADD                = -L$(top_builddir)/src -lgrvy
+gadd_DEPENDENCIES         = libgrvy.la
 
 
 #---------------------------------
