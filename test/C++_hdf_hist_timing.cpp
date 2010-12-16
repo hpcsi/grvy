@@ -62,7 +62,7 @@ int main(int argc, char **argv)
   gt.EndTimer("Main Program");
   gt.Finalize();
 
-  gt.SaveHistTiming("Example1","",1,1,-1,-1,"test.h5");
+  gt.SaveHistTiming("Example1","",1,-1,"r"GRVY_BUILD_VERSION,0,"test.h5");
 
   // Query the historical performance logs
 
