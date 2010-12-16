@@ -137,10 +137,9 @@ double grvy_timer_stats_variance(const char *id)
 }
 
 int grvy_timer_save_hist(const char*experiment, const char *comment, 
-			 int num_procs, int jobId, int code_revision, double flops,
+			 int num_procs, int jobId, const char *code_revision, double flops,
 			 const char *filename)
 {
-  //  GRVY_Timer_Class gt;
   return(_GRVY_Timers->SaveHistTiming(experiment,comment,num_procs,jobId,code_revision,flops,filename));
 }
 

@@ -268,7 +268,7 @@ extern "C" {
   extern double grvy_timer_stats_variance (const char *id);
   extern   void grvy_timer_summarize      ();
   extern    int grvy_timer_save_hist      (const char*experiment, const char *comment, 
-					   int num_procs, int jobId, int code_revision, double flops,
+					   int num_procs, int jobId, const char *code_revision, double flops,
 					   const char *filename);
 
   /*
@@ -650,7 +650,7 @@ class GRVY_Timer_Class {
   double StatsVariance  (std::string id);     //  variance for timer (id)
 
   // ------------------------------------------------------------------------
-  // Historical timing support - note there are two primary modes for
+  // Historical timing support - note there are two primary mechanisms for
   // saving performance data: 
   // 
   // Mode 1: you are using the GRVY_Timer_Class to define individual
@@ -658,26 +658,34 @@ class GRVY_Timer_Class {
   //         measurement and all individual subtimers
   // 
   // Mode 2: you are using other means to profile the application code
-  //          and want to save a single global timing value
+  //         and want to save a single global timing value. Routines
+  //         for this mode are distinguished by the presence of an
+  //         extra "timing" argument in the calling sequence.
   // 
-  // In both modes, multiple functions are provided to allow for more
-  // exhaustive runtime documentation (e.g. to include flops, code
-  // revision, etc).
+  // In both modes, "short" and "long" calling sequences are supported
+  // with the long version allowing additional runtime documentation
+  // (e.g. flops, code revision) to be provided. 
 
-  // Mode 1: Save internal GRVY timer values to historical repository
+  // Mode 1: Saving internal GRVY timer values to historical repository
 
   int  SaveHistTiming      (std::string experiment, std::string comment, int num_procs, 
-			    int jobId, int code_revision, double flops, const char *filename);
+			    std::string filename);
 
-  // Mode 2: Save provided global timing to historical repository
+  int  SaveHistTiming      (std::string experiment, std::string comment, int num_procs, 
+			    int jobId, std::string code_revision, double flops, std::string filename);
 
-#if 0
-  int  SaveHistTiming      (std::string machinename, double timing, std::string experiment, 
-			    std::string comment, int num_procs, int jobId, int code_revision, 
+  // Mode 2: Saving user- provided global timing to historical repository
+
+  int  SaveHistTiming      (double timing, std::string machinename, std::string experiment, 
+			    std::string comment, std::string filename);
+
+  int  SaveHistTiming      (double timing, std::string machinename, std::string experiment, 
+			    std::string comment, int num_procs, int jobId, std::string code_revision, 
 			    double flops, std::string filename);
-#endif
 
+  // ---------------
   // Query Functions
+  // ---------------
 
   void SummarizeHistTiming (std::string filename,   std::string delimiter, std::string outdir);
 

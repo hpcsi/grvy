@@ -88,6 +88,13 @@ namespace GRVY {
 
 #endif
 
+  // Macro Defaults
+
+  //#define GRVY_HIST_TIMING_DEFAULT_JOBID       -1
+  //#define GRVY_HIST_TIMING_DEFAULT_NUMPROCS     1
+  //#define GRVY_HIST_TIMING_DEFAULT_REVISION "-r0"
+  //#define GRVY_HIST_TIMING_DEFAULT_FLOPS      0.0
+
   // Classes/Typedefs
 
   class TimerCmpHighLow {

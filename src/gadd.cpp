@@ -40,7 +40,6 @@
 
 using namespace std;
 
-
 namespace GRVY_gadd
 {
   void summarize_usage()
@@ -62,18 +61,18 @@ namespace GRVY_gadd
 
     // Required inputs
 
-    double timing;		// user provided performance timing (secs)
-    string name; 		// user provided experiment name
-    string input_file;		// path to desired HDF5 storage file
+    double timing=0;		 // user provided performance timing (secs)
+    string name; 		 // user provided experiment name
+    string input_file;		 // path to desired HDF5 storage file
     
     // Optional inputs
     
-    string machine;		// machine name (defaults to local hostname)
-    string comment;		// additional comment (defaults to empty string)
-    int    jobId    =  -1;	// default jobId
-    int    numprocs =   1;	// default processor count
-    string revision =  "-r0";	// default processor count
-    double flops    = 0.0;	// default FLOPs
+    string machine;		 // machine name (defaults to local hostname)
+    string comment;		 // additional comment (defaults to empty string)
+    int    jobId    =  -1;	 // default jobId
+    int    numprocs =   1;	 // default processor count
+    string revision = "unknown"; // default processor count
+    double flops    = 0.0;	 // default FLOPs
     
     // Define supported options for Boost
     
@@ -93,7 +92,7 @@ namespace GRVY_gadd
       ("machine,m", bo::value<string>(),  "machine name (default=local hostname)")
       ("jobid,j",   bo::value<int>(),     "batch job identifier (default = -1)")
       ("numprocs,p",bo::value<int>(),     "number of processors (default = 1)")
-      ("revision,r",bo::value<string>(),  "application/code revision (default = -r0)")
+      ("revision,r",bo::value<string>(),  "application/code revision (default = unknown)")
       ("flops,f",   bo::value<double>(),  "measured FLOPs (default = 0.0)")
       ;
 
@@ -120,16 +119,16 @@ namespace GRVY_gadd
     bo::store(parsed,vmap);
     bo::notify(vmap);
 
+    if(vmap.count("version"))
+      {
+	grvy_version_stdout();
+	return;
+      }
+
     if(vmap.count("help")  || !vmap.count("input-file") || !vmap.count("timing") || !vmap.count("name") )
       {
 	GRVY_gadd::summarize_usage();
 	cout << visible << "\n";
-	return;
-      }
-
-    if(vmap.count("version"))
-      {
-	grvy_version_stdout();
 	return;
       }
 
@@ -144,35 +143,27 @@ namespace GRVY_gadd
 	grvy_printf(GRVY_DEBUG,"User requested --quiet option\n");
       }
 
-    // Parse optional arguments
+    // Optional arguments
 
     grvy_printf(GRVY_DEBUG,"\n%s: Parsing optional arguments:\n\n",__func__);
 
     GRVY_Hostenv_Class myenv;
 
-    machine  = GRVY::read_boost_option(vmap,"machine", myenv.Hostname());
-    comment  = GRVY::read_boost_option(vmap,"comment", comment);
-    jobId    = GRVY::read_boost_option(vmap,"jobid",   jobId);
-    numprocs = GRVY::read_boost_option(vmap,"numprocs",numprocs);
-    revision = GRVY::read_boost_option(vmap,"revision",revision);
-    flops    = GRVY::read_boost_option(vmap,"flops",   flops);
-    timing   = GRVY::read_boost_option(vmap,"timing",  timing);
+    machine    = GRVY::read_boost_option(vmap,"machine",   myenv.Hostname());
+    comment    = GRVY::read_boost_option(vmap,"comment",   comment);
+    jobId      = GRVY::read_boost_option(vmap,"jobid",     jobId);
+    numprocs   = GRVY::read_boost_option(vmap,"numprocs",  numprocs);
+    revision   = GRVY::read_boost_option(vmap,"revision",  revision);
+    flops      = GRVY::read_boost_option(vmap,"flops",     flops);
+    timing     = GRVY::read_boost_option(vmap,"timing",    timing);
 
-    // Parse required arguments
+    // Required arguments 
 
     grvy_printf(GRVY_DEBUG,"\n%s: Parsing required arguments:\n\n",__func__);
 
-    if(vmap.count("timing"))
-      {
-	timing = vmap["timing"].as<double>();
-	grvy_printf(GRVY_DEBUG,"User provided timing value = %.6e (secs)\n",timing);
-      }
-
-    if(vmap.count("input-file"))
-      {
-	input_file = vmap["input-file"].as<string>();
-	grvy_printf(GRVY_DEBUG,"User provided input file = %s\n",input_file.c_str());
-      }
+    name       = GRVY::read_boost_option(vmap,"name",      name);
+    timing     = GRVY::read_boost_option(vmap,"timing",    timing);
+    input_file = GRVY::read_boost_option(vmap,"input-file",input_file);
 
     // Erorr on unsupported options
 
@@ -196,18 +187,19 @@ namespace GRVY_gadd
     // If we have the pleasure of making it this far, then we have the
     // minimum required to save some performance data; fire in the hole...
 
-    //    gt->SaveHistTiming(timing,machine,name,comment,numprocs,jobId,-1,flops,input_file);
-
-
+    if(gt->SaveHistTiming(timing,machine,name,comment,numprocs,jobId,revision,flops,input_file) == 0)
+      grvy_printf(GRVY_INFO,"\nSuccessfully stored timing information to file %s.\n\n",input_file.c_str());
+    else
+      grvy_printf(GRVY_ERROR,"\n[ERROR]: Unable to store timing information to file %s.\n\n",input_file.c_str());
 
     return;
 }
 
 } // end namespace GRVY_gadd
 
-//---------------------------------------------------------------------------
+//------
 // Main
-//---------------------------------------------------------------------------
+//------
 
 int main(int argc, char* argv[])
 {

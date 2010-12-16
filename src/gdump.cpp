@@ -28,11 +28,13 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
-#include <iostream>
-#include <vector>
-#include <boost/program_options.hpp>
-#include <boost/program_options/parsers.hpp>
-#include "grvy.h"
+#include<iostream>
+#include<vector>
+#include<boost/program_options.hpp>
+#include<boost/program_options/parsers.hpp>
+#include<grvy_classes.h>
+#include<grvy.h>
+#include<grvy_int.h>
 
 using namespace std;
 namespace bo = boost::program_options;
@@ -94,6 +96,12 @@ namespace GRVY_gdump
     bo::store(parsed,vmap);
     bo::notify(vmap);
 
+    if(vmap.count("version"))
+      {
+	grvy_version_stdout();
+	return;
+      }
+
     if(vmap.count("help")  || !vmap.count("input-file") || (argc == 1) ) 
       {
 	GRVY_gdump::summarize_usage();
@@ -104,12 +112,6 @@ namespace GRVY_gdump
     if(vmap.count("debug"))
       {
 	grvy_log_setlevel(GRVY_DEBUG);
-      }
-
-    if(vmap.count("version"))
-      {
-	grvy_version_stdout();
-	return;
       }
 
     if(vmap.count("quiet"))
@@ -131,6 +133,11 @@ namespace GRVY_gdump
 	grvy_printf(GRVY_DEBUG,"User requested --enable-subtimer option\n");
       }
 
+    delimiter  = GRVY::read_boost_option(vmap,"delimiter",  delimiter);
+    output_dir = GRVY::read_boost_option(vmap,"output-dir", output_dir);
+    input_file = GRVY::read_boost_option(vmap,"input-file", input_file);
+
+#if 0
     if(vmap.count("delimiter"))
       {
 	delimiter = vmap["delimiter"].as<string>();
@@ -148,6 +155,8 @@ namespace GRVY_gdump
 	input_file = vmap["input-file"].as<string>();
 	grvy_printf(GRVY_DEBUG,"User provided input file = %s\n",input_file.c_str());
       }
+
+#endif
 
     // Erorr on unsupported options
 

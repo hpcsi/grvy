@@ -106,12 +106,14 @@ public:
 
 #ifdef HAVE_HDF5
   hid_t  CreateHistType  (int version); 
-  int    AppendHistData  (string experiment, string comment, int num_procs, 
-			  int jobId, int code_revision, double flops, int version, hid_t tableId);
+  int    AppendHistData  (double timing, string experiment, string comment, int num_procs, int jobId,
+			  string code_revision, double flops, int version, hid_t tableId, bool save_internal_timer);
   int    ReadAllHostData (GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
   int    ReadPTable      (string host);
   void   SummarizeHost   (string host);
   void   WriteHeaderInfo (FILE *fp, const char *delim);
+  int    SaveHistTiming  (double timiing, string machinename, string experiment, string comment, int num_procs, 
+			  int jobId, string code_revision, double flops, string filename, bool save_internal_timer );
 #endif
 
   bool        initialized;            // initialized?
@@ -123,6 +125,11 @@ public:
   _GRVY_Type_TimerMap2     TimerMap;  // map used to store performance timers for each defined key
 
   std::map<std::string,bool> options; // runtime options
+
+  int    default_jobId;
+  double default_flops;
+  //int default_revision;
+  string default_revision;
 
   GRVY_Timer_Class *self;	      // back pointer to public class
 
@@ -143,7 +150,14 @@ GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
   m_pimpl->beginTrigger          = false;
   m_pimpl->self                  = this;
 
-  // set default options
+  // default historical timing values
+
+  m_pimpl->default_jobId         = -1;
+  m_pimpl->default_flops         = 0.0;   
+  m_pimpl->default_revision      = "unknown";
+  //m_pimpl->default_revision      = -1;
+
+  // set default options for gdump
 
   m_pimpl->options["output_stdout"        ] = true;
   m_pimpl->options["output_totaltimer_raw"] = true;
@@ -658,8 +672,47 @@ void GRVY_Timer_Class:: Summarize()
 // the global timer has been Finalized.
 //--------------------------------------------------------------------
 
+// SaveHistTiming wrapper -> save_internal_timer
+
+int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_procs, string filename)
+{
+  GRVY_Hostenv_Class myenv;
+  bool save_internal_timer = true;
+  double timing = 0.0;
+
+  return(m_pimpl->SaveHistTiming(timing,myenv.Hostname(),experiment,comment,num_procs,
+				 m_pimpl->default_jobId,m_pimpl->default_revision,m_pimpl->default_flops,filename,
+				 save_internal_timer));
+}
+
+// SaveHistTiming wrapper -> save_internal_timer
+
 int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_procs, 
-				     int jobId, int code_revision, double flops, const char *filename )
+				     int jobId, string code_revision, double flops, string filename )
+{
+  GRVY_Hostenv_Class myenv;
+  bool save_internal_timer = true;
+  double timing = 0.0;
+
+  return(m_pimpl->SaveHistTiming(timing,myenv.Hostname(),experiment,comment,num_procs,
+				 jobId,code_revision,flops,filename,save_internal_timer));
+}
+
+// SaveHistTiming wrapper -> save external timing
+
+int GRVY_Timer_Class::SaveHistTiming(double timing, string machine, string experiment, string comment, int num_procs, 
+				     int jobId, string code_revision, double flops, string filename )
+{
+  bool save_internal_timer = false;
+
+  return(m_pimpl->SaveHistTiming(timing,machine,experiment,comment,num_procs,
+				 jobId,code_revision,flops,filename,save_internal_timer));
+}
+
+int GRVY_Timer_Class::GRVY_Timer_ClassImp::SaveHistTiming(double timing, string machinename, string experiment, 
+							  string comment, int num_procs, int jobId,
+							  string code_revision, double flops, string filename,
+							  bool save_internal_timer )
 {
 
   GRVY_HDF5_Class h5;
@@ -668,10 +721,10 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
   return 1;  // above h5 ctor will error if HDF5 is not available
 #else
 
-  // this function assumes that the user wants to dump data from a
-  // GRVY timer, let's first make sure we have some timer data to save
+  // Make sure we have timer data to save when we are in the mode of
+  // saving internal timer data 
 
-  if(!m_pimpl->initialized)
+  if(save_internal_timer && !initialized)
     {
       grvy_printf(GRVY_ERROR,"\n**Error (%s): Performance timer not initialized - unable to save timing\n",__func__);
       exit(1);
@@ -684,7 +737,7 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
   else
     h5.Create(filename,false);
 
-  grvy_printf(GRVY_DEBUG,"%s: hdf5 file opened/created for %s\n",__func__,filename);
+  grvy_printf(GRVY_DEBUG,"%s: hdf5 file opened/created for %s\n",__func__,filename.c_str());
 
   // Open/create GRVY timer group
 
@@ -695,13 +748,12 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
   else
     h5.GroupCreate(toplevel);
 
-  // Query runtime host environment
 
-  GRVY_Hostenv_Class myenv;
 
   // Open/create group for this host/machine
 
-  string hostlevel = toplevel+myenv.Hostname();
+  //  string hostlevel = toplevel+myenv.Hostname();
+  string hostlevel = toplevel + machinename;
 
   if (h5.GroupExists(hostlevel))
     h5.GroupOpen(hostlevel);
@@ -710,7 +762,7 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
 
   // Setup packet table datatype for storing timer information
 
-  hid_t timers_type = m_pimpl->CreateHistType(PTABLE_VERSION);
+  hid_t timers_type = CreateHistType(PTABLE_VERSION);
 
   // Open/create packet table for this host/machine using variable
   // length packets
@@ -731,6 +783,10 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
 	  exit(1);
 	}
 
+      // Query runtime host environment
+
+      GRVY_Hostenv_Class myenv;
+
       // Save environment attributes and assign local packet table
       // version in case we ever need to make a change in the future
 
@@ -744,9 +800,10 @@ int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_
       
     }
     
-  // Pull grvy performance data and append results HDF log
+  // Append performance data to HDF packat table
 
-  m_pimpl->AppendHistData(experiment,comment,num_procs,jobId,code_revision,flops,PTABLE_VERSION,tableId);
+  AppendHistData(timing,experiment,comment,num_procs,jobId,code_revision,flops,
+		 PTABLE_VERSION,tableId,save_internal_timer);
   
   // Clean up shop
 
@@ -829,6 +886,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 
       map<string,minmax> max_vals;
       map<string,minmax> min_vals;
+      int max_revision_width = 0;
 
       // -------------------------------------------------
       // Read performance data in specified version format
@@ -873,6 +931,11 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 		  max_vals[experiment].value = runtime;
 		  max_vals[experiment].index = i;
 		}
+
+	      // cache max revision width
+
+	      if(strlen(data[i].code_revision) > max_revision_width)
+		max_revision_width = strlen(data[i].code_revision);
 
 	    }
 
@@ -954,7 +1017,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 
 		  fprintf(fp_mach,"%s --\n",cdelim);
 		  fprintf(fp_mach,"%s Historical Performance Timing Records\n",cdelim);
-		  fprintf(fp_mach,"%s libGRVY Library: Version = %s",cdelim,GRVY_LIB_VERSION); 
+		  fprintf(fp_mach,"%s libGRVY: Version = %s",cdelim,GRVY_LIB_VERSION); 
 		  fprintf(fp_mach," (%i)\n",GRVY_get_numeric_version());
 		  fprintf(fp_mach,"%s\n",cdelim);
 
@@ -979,8 +1042,11 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 
 		  // header for global output
 
-		  fprintf(fp_mach,"%s  Experiment-Date      Total Time(sec)    # Procs      JobId    Version       Flops",
-			  cdelim);
+		  if(max_revision_width < 8)
+		    max_revision_width = 8;
+
+		  fprintf(fp_mach,"%s  Experiment-Date      Total Time(sec)    # Procs      JobId %*s Flops",
+			  cdelim,max_revision_width,"Revision");
 
 		  // header for subtimer(s)
 
@@ -1048,9 +1114,9 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 		  string ename  = data[i].experiment;     // experiment name for current data sample
 		  FILE *fp_mach = fp_experiments[ename];  // corresponding open file pointer for the host
 
-		  fprintf(fp_mach,"%s  %.8e %10i %10i %10i %.4e",
+		  fprintf(fp_mach,"%s  %.8e %10i %10i %*s %.4e",
 			  data[i].timestamp,data[i].total_time,
-			  data[i].num_procs,data[i].job_Id,data[i].code_revision,data[i].flops);
+			  data[i].num_procs,data[i].job_Id,max_revision_width,data[i].code_revision,data[i].flops);
 		  
 		  if(output_subtimers)
 		    {
@@ -1233,7 +1299,7 @@ hid_t GRVY_Timer_Class::GRVY_Timer_ClassImp::CreateHistType(int version)
       H5Tinsert(timers_type,"Num Processors", HOFFSET(TimerPTable_V1,num_procs),     H5T_STD_I32LE  );
       H5Tinsert(timers_type,"Job Id",         HOFFSET(TimerPTable_V1,job_Id),        H5T_STD_I32LE  );
       H5Tinsert(timers_type,"Flops",          HOFFSET(TimerPTable_V1,flops),         H5T_IEEE_F64LE );
-      H5Tinsert(timers_type,"Code Revision"  ,HOFFSET(TimerPTable_V1,code_revision), H5T_STD_I32LE  );
+      H5Tinsert(timers_type,"Code Revision"  ,HOFFSET(TimerPTable_V1,code_revision), strtype        );
       H5Tinsert(timers_type,"SubTimers",      HOFFSET(TimerPTable_V1,vl_subtimers),  subtimer_type  );
 
       H5Tclose(strtype);
@@ -1282,16 +1348,22 @@ void GRVY_Timer_Class::GRVY_Timer_ClassImp::WriteHeaderInfo(FILE *fp, const char
 }
 
 //--------------------------------------------------------------------
-// AppendHistData(): append performance timings to HdF packet table
+// AppendHistData(): append performance timings to HDF packet table
 //--------------------------------------------------------------------
 
-int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string experiment, string comment, 
-							  int num_procs,int jobId, int code_revision, double flops,
-							  int version, hid_t tableId)
+int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(double timing, string experiment, string comment, 
+							  int num_procs,int jobId, string code_revision, double flops,
+							  int version, hid_t tableId, bool save_internal_timers)
 {
   grvy_printf(GRVY_DEBUG,"Appending historical timer data for PTable version %i\n",version);
+  grvy_printf(GRVY_DEBUG,"--> save_internal_timer = %i\n",save_internal_timers);
 
-  int num_subtimers = TimerMap.size() - 1;  // -1 since global timer goes in header
+  int num_subtimers;		// total number of defined subtimers
+
+  if(save_internal_timers)
+    num_subtimers = TimerMap.size() - 1;  // -1 since global timer goes in header
+  else
+    num_subtimers = 0;		         // no subtimers if user is providing a global timing
 
   // timestamp the data
 
@@ -1315,11 +1387,16 @@ int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(string experiment, str
       header.experiment       = experiment.c_str();
       header.timestamp        = mytimestamp;
       header.user_comment     = comment.c_str();
-      header.total_time       = self->ElapsedSeconds(_GRVY_gtimer);
+
+      if(save_internal_timers)
+	header.total_time      = self->ElapsedSeconds(_GRVY_gtimer);
+      else
+	header.total_time     = timing;
+
       header.num_procs        = num_procs;
       header.job_Id           = jobId;	      
       header.flops            = flops;
-      header.code_revision    = code_revision;
+      header.code_revision    = code_revision.c_str();
       header.vl_subtimers.p   = &subtimers[0];
       header.vl_subtimers.len = num_subtimers;
 
