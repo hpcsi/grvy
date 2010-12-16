@@ -1045,7 +1045,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 		  if(max_revision_width < 8)
 		    max_revision_width = 8;
 
-		  fprintf(fp_mach,"%s  Experiment-Date      Total Time(sec)    # Procs      JobId %*s Flops",
+		  fprintf(fp_mach,"%s    Index     Experiment-Date     Total Time(sec)    # Procs      JobId %*s      Flops",
 			  cdelim,max_revision_width,"Revision");
 
 		  // header for subtimer(s)
@@ -1114,7 +1114,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
 		  string ename  = data[i].experiment;     // experiment name for current data sample
 		  FILE *fp_mach = fp_experiments[ename];  // corresponding open file pointer for the host
 
-		  fprintf(fp_mach,"%s  %.8e %10i %10i %*s %.4e",
+		  fprintf(fp_mach,"%10i %s  %.8e %10i %10i %*s %.4e",i+1,
 			  data[i].timestamp,data[i].total_time,
 			  data[i].num_procs,data[i].job_Id,max_revision_width,data[i].code_revision,data[i].flops);
 		  
