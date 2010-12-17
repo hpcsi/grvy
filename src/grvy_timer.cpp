@@ -112,9 +112,10 @@ public:
   int    ReadPTable      (string host);
   void   SummarizeHost   (string host);
   void   WriteHeaderInfo (FILE *fp, const char *delim);
+#endif
   int    SaveHistTiming  (double timiing, string machinename, string experiment, string comment, int num_procs, 
 			  int jobId, string code_revision, double flops, string filename, bool save_internal_timer );
-#endif
+
 
   bool        initialized;            // initialized?
   double      timer_finalize;         // raw timer value at time of finalize()
