@@ -56,7 +56,7 @@ namespace GRVY_gadd
     return;
   }
 
-  void parse_supported_options(int argc, char *argv[],  GRVY::GRVY_Timer_Class *gt)
+  void parse_supported_options(int argc, char *argv[], char *env[], GRVY::GRVY_Timer_Class *gt)
   {
 
     // Required inputs
@@ -73,6 +73,7 @@ namespace GRVY_gadd
     int    numprocs =   1;	 // default processor count
     string revision = "unknown"; // default processor count
     double flops    = 0.0;	 // default FLOPs
+    vector<string> AllEnv;	 // list of all runtime environment variables
     
     // Define supported options for Boost
     
@@ -88,6 +89,7 @@ namespace GRVY_gadd
       ("help",                            "generate help message and exit")
       ("version",                         "output version information and exit")
       ("quiet,q",                         "suppress normal stdout messages")
+      ("env,e",                           "store runtime environment with timing")
       ("comment,c", bo::value<string>(),  "additional comment string for the measurement")
       ("machine,m", bo::value<string>(),  "machine name (default=local hostname)")
       ("jobid,j",   bo::value<int>(),     "batch job identifier (default = -1)")
@@ -140,14 +142,21 @@ namespace GRVY_gadd
     if(vmap.count("quiet"))
       {
 	gt->SetOption("output_stdout",false);
+	
 	grvy_printf(GRVY_DEBUG,"User requested --quiet option\n");
+      }
+
+    GRVY_Hostenv_Class myenv;
+
+    if(vmap.count("env"))
+      {
+	gt->SetOption("output_printenv",true);
+	grvy_printf(GRVY_DEBUG,"User requested --printenv option\n");
       }
 
     // Optional arguments
 
     grvy_printf(GRVY_DEBUG,"\n%s: Parsing optional arguments:\n\n",__func__);
-
-    GRVY_Hostenv_Class myenv;
 
     machine    = GRVY::read_boost_option(vmap,"machine",   myenv.Hostname());
     comment    = GRVY::read_boost_option(vmap,"comment",   comment);
@@ -201,11 +210,21 @@ namespace GRVY_gadd
 // Main
 //------
 
-int main(int argc, char* argv[])
+int main(int argc, char* argv[], char *env[])
 {
   GRVY::GRVY_Timer_Class gt;  // a GRVY performance timer
 
-  GRVY_gadd::parse_supported_options(argc,argv,&gt);
+  //  GRVY_Hostenv_Class myenv;
+  //  vector<string> AllEnv = myenv.Getenv(env);
+
+  //  vector<string>::iterator it;
+
+  //  for(it=AllEnv.begin();it<AllEnv.end(); it++)
+  //    {
+  //      cout << *it << endl;
+  //    }    
+
+  GRVY_gadd::parse_supported_options(argc,argv,env,&gt);
 
   return 0;
 }

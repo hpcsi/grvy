@@ -164,6 +164,7 @@ GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
   m_pimpl->options["output_totaltimer_raw"] = true;
   m_pimpl->options["output_subtimer_raw"  ] = false;
   m_pimpl->options["dump_files"           ] = true;
+  m_pimpl->options["output_printenv"      ] = false;
 }
 
 GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -832,6 +833,7 @@ void GRVY_Timer_Class::SummarizeHistTiming(string filename,string delimiter, str
   bool dump_files         = m_pimpl->options["dump_files"];
   bool output_totaltimers = m_pimpl->options["output_totaltimer_raw"];
   bool output_subtimers   = m_pimpl->options["output_subtimer_raw"];
+  bool output_printenv    = m_pimpl->options["output_printenv"];
 
   // Open existing file
 

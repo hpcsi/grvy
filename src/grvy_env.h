@@ -33,6 +33,7 @@
 
 #include <grvy.h>
 #include <string>
+#include<vector>
 
 class GRVY_Hostenv_Class 
 {
@@ -41,6 +42,7 @@ class GRVY_Hostenv_Class
 public:
   GRVY_Hostenv_Class();
   void Print();
+  std::vector<std::string> Getenv(char *envp[]);
   std::string Hostname();
   
 private:
