@@ -663,8 +663,9 @@ class GRVY_Timer_Class {
   //         extra "timing" argument in the calling sequence.
   // 
   // In both modes, "short" and "long" calling sequences are supported
-  // with the long version allowing additional runtime documentation
-  // (e.g. flops, code revision) to be provided. 
+  // with the long version allowing additional optional runtime
+  // documentation (e.g. flops, code revision) to be provided.
+  // ------------------------------------------------------------------------
 
   // Mode 1: Saving internal GRVY timer values to historical repository
 

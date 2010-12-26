@@ -89,7 +89,7 @@ namespace GRVY_gadd
       ("help",                            "generate help message and exit")
       ("version",                         "output version information and exit")
       ("quiet,q",                         "suppress normal stdout messages")
-      ("env,e",                           "store runtime environment with timing")
+      //      ("env,e",                           "store runtime environment with timing")
       ("comment,c", bo::value<string>(),  "additional comment string for the measurement")
       ("machine,m", bo::value<string>(),  "machine name (default=local hostname)")
       ("jobid,j",   bo::value<int>(),     "batch job identifier (default = -1)")
@@ -146,11 +146,13 @@ namespace GRVY_gadd
 	grvy_printf(GRVY_DEBUG,"User requested --quiet option\n");
       }
 
+#if 0
     if(vmap.count("env"))
       {
 	gt->SetOption("output_printenv",true);
 	grvy_printf(GRVY_DEBUG,"User requested --printenv option\n");
       }
+#endif
 
     // Optional arguments
 

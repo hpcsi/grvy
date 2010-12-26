@@ -156,7 +156,6 @@ namespace GRVY {
     m_pimpl->default_jobId         = -1;
     m_pimpl->default_flops         = 0.0;   
     m_pimpl->default_revision      = "unknown";
-    //m_pimpl->default_revision      = -1;
 
     // set default options for gdump
 
@@ -164,7 +163,7 @@ namespace GRVY {
     m_pimpl->options["output_totaltimer_raw"] = true;
     m_pimpl->options["output_subtimer_raw"  ] = false;
     m_pimpl->options["dump_files"           ] = true;
-    m_pimpl->options["output_printenv"      ] = false;
+    //    m_pimpl->options["output_printenv"      ] = false;
   }
 
   GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -1422,7 +1421,7 @@ namespace GRVY {
 	GRVY_Hostenv_Class myenv;
 	vector<string> runtimeEnv;
 
-	if(options["output_printenv"])
+	//	if(options["output_printenv"])
 	  {
 	    Env_PTable_V1 env_tmp;
 
@@ -1436,11 +1435,13 @@ namespace GRVY {
 	    header.vl_env_variables.len = runtimeEnv.size();
 	    header.vl_env_variables.p   = &env_variables[0];
 	  }
+#if 0
 	else
 	  {
 	    header.vl_env_variables.p = NULL;
 	    header.vl_env_variables.len = 0;
 	  }
+#endif
 
 	_GRVY_Type_TimerMap2 :: iterator index;
 
