@@ -146,8 +146,6 @@ namespace GRVY_gadd
 	grvy_printf(GRVY_DEBUG,"User requested --quiet option\n");
       }
 
-    GRVY_Hostenv_Class myenv;
-
     if(vmap.count("env"))
       {
 	gt->SetOption("output_printenv",true);
@@ -157,6 +155,7 @@ namespace GRVY_gadd
     // Optional arguments
 
     grvy_printf(GRVY_DEBUG,"\n%s: Parsing optional arguments:\n\n",__func__);
+    GRVY_Hostenv_Class myenv;
 
     machine    = GRVY::read_boost_option(vmap,"machine",   myenv.Hostname());
     comment    = GRVY::read_boost_option(vmap,"comment",   comment);
@@ -213,16 +212,6 @@ namespace GRVY_gadd
 int main(int argc, char* argv[], char *env[])
 {
   GRVY::GRVY_Timer_Class gt;  // a GRVY performance timer
-
-  //  GRVY_Hostenv_Class myenv;
-  //  vector<string> AllEnv = myenv.Getenv(env);
-
-  //  vector<string>::iterator it;
-
-  //  for(it=AllEnv.begin();it<AllEnv.end(); it++)
-  //    {
-  //      cout << *it << endl;
-  //    }    
 
   GRVY_gadd::parse_supported_options(argc,argv,env,&gt);
 

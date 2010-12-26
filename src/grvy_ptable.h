@@ -35,6 +35,10 @@
 // Packet table data structures for historical HDF performance logging
 //--------------------------------------------------------------------
 
+typedef struct Env_PTable_V1 {
+  const char *env_string;	// environment variable setting
+} Env_PTable_V1;
+
 typedef struct SubTimer_PTable_V1 {
   const char *timer_name;	// subtimer name
   double measurement;		// subtimer wallclock time (secs)
@@ -52,6 +56,7 @@ typedef struct TimerPTable_V1 {
   int job_Id;			// batch scheduler jobID
   const char *code_revision;	// specific code revision (e.g. svn revision)
   double flops;			// total application FLOPS
+  hvl_t vl_env_variables;	// variable number of runtime environment variables
   hvl_t vl_subtimers;		// inclusion of a variable number of subtimers
 } Timer_PTable_V1;
 

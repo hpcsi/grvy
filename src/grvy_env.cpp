@@ -76,22 +76,17 @@ void GRVY_Hostenv_Class::Print()
   return;
 }
 
-std::vector<std::string> GRVY_Hostenv_Class::Getenv(char *envp[])
+std::vector<std::string> GRVY_Hostenv_Class::Getenv()
 {
 
   extern char **environ;
 
-  //char **env;
   std::vector<std::string> AllEnv;
-
-    //  for(env=envp;*env!=NULL;env++)
 
   for(int i=0; environ[i] != NULL; i++)
     {
-      //      char *thisEnv = *env;
-      //      char *thisEnv = environ[i];
       AllEnv.push_back(environ[i]);
-      grvy_printf(GRVY_INFO,"User environ: %s\n",environ[i]);
+      grvy_printf(GRVY_DEBUG,"User environ: %s\n",environ[i]);
     }
 
   return(AllEnv);
