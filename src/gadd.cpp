@@ -44,7 +44,7 @@ namespace GRVY_gadd
 {
   void summarize_usage()
   {
-    grvy_printf(GRVY_INFO,"\nUsage: %s [OPTIONS] <time> <name> <file>\n\n","gadd");
+    grvy_printf(GRVY_INFO,"\nUsage: %s [OPTIONS] time name file\n\n","gadd");
     grvy_printf(GRVY_INFO,"where \"time\" is the performancing timing in seconds, \"name\" is the\n"
 		"experiment identifier, and \"file\" is the path to a libGRVY style historical\n"
 		"performance database.\n");
