@@ -71,11 +71,12 @@ namespace GRVY_gdump
       ("enable-subtimers,A",              "include all individual subtimer(s) in output ")
       ("summarize-only,S",                "summarize timer statistics but do not dump files")
       ("delimiter,D",bo::value<string>(), "override default comment delimiter (default=#)")
-      ("output-dir,O",bo::value<string>(),"override default dump directory (default=./gdata)");
+      ("output-dir,O",bo::value<string>(),"override default dump directory (default=./gdata)")
+      ("with-comment,C",                  "include user comment string in output")
+      ("with-env,E",                      "include runtime environment variables in output");
 
       //("dump-files,D",      "dump output to individual ascii files")
       //("output-dir,O",bo::value<string>()->default_value("./gdata"),"specify output file dump directory");
-      //("enable-global,G",   "include global timers per host in output")
       ;
 
     hidden.add_options()
@@ -126,6 +127,18 @@ namespace GRVY_gdump
 	grvy_printf(GRVY_DEBUG,"User requested --sumarize-only option\n");
       }
 
+    if(vmap.count("with-comment"))
+      {
+	gt->SetOption("output_comments",true);
+	grvy_printf(GRVY_DEBUG,"User requested --with-comment option\n");
+      }
+
+    if(vmap.count("with-env"))
+      {
+	gt->SetOption("output_env",true);
+	grvy_printf(GRVY_DEBUG,"User requested --with-env option\n");
+      }
+
     if(vmap.count("enable-subtimers"))
       {
 	gt->SetOption("output_subtimer_raw",  true);
@@ -137,28 +150,7 @@ namespace GRVY_gdump
     output_dir = GRVY::read_boost_option(vmap,"output-dir", output_dir);
     input_file = GRVY::read_boost_option(vmap,"input-file", input_file);
 
-#if 0
-    if(vmap.count("delimiter"))
-      {
-	delimiter = vmap["delimiter"].as<string>();
-	grvy_printf(GRVY_DEBUG,"User provided delimiter = %s\n",delimiter.c_str());
-      }
-
-    if(vmap.count("output-dir"))
-      {
-	output_dir = vmap["output-dir"].as<string>();
-	grvy_printf(GRVY_DEBUG,"User provided output dir = %s\n",output_dir.c_str());
-      }
-
-    if(vmap.count("input-file"))
-      {
-	input_file = vmap["input-file"].as<string>();
-	grvy_printf(GRVY_DEBUG,"User provided input file = %s\n",input_file.c_str());
-      }
-
-#endif
-
-    // Erorr on unsupported options
+    // Error on unsupported options
 
     vector<string> unknown = bo::collect_unrecognized(parsed.options,bo::exclude_positional);
 

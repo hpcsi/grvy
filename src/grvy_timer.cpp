@@ -163,7 +163,9 @@ namespace GRVY {
     m_pimpl->options["output_totaltimer_raw"] = true;
     m_pimpl->options["output_subtimer_raw"  ] = false;
     m_pimpl->options["dump_files"           ] = true;
-    //    m_pimpl->options["output_printenv"      ] = false;
+    m_pimpl->options["output_comments"      ] = false;
+    m_pimpl->options["output_env"           ] = false;
+
   }
 
   GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -831,6 +833,8 @@ namespace GRVY {
     bool dump_files         = m_pimpl->options["dump_files"];
     bool output_totaltimers = m_pimpl->options["output_totaltimer_raw"];
     bool output_subtimers   = m_pimpl->options["output_subtimer_raw"];
+    bool output_comments    = m_pimpl->options["output_comments"];
+    bool output_env         = m_pimpl->options["output_env"];
 
     // Open existing file
 
@@ -886,7 +890,11 @@ namespace GRVY {
 
 	map<string,minmax> max_vals;
 	map<string,minmax> min_vals;
-	int max_revision_width = 0;
+
+	int max_revision_width = 0; 	// column width variables for pretty-printing
+	int max_index_width    = 0;
+	int max_comment_width  = 0;
+	int max_env_width      = 0;
 
 	// -------------------------------------------------
 	// Read performance data in specified version format
@@ -932,12 +940,32 @@ namespace GRVY {
 		    max_vals[experiment].index = i;
 		  }
 
-		// cache max revision width
+		// cache max revision and comment column widths for pretty print
 
-		if(strlen(data[i].code_revision) > max_revision_width)
-		  max_revision_width = strlen(data[i].code_revision);
+		max_revision_width = std::max((int)strlen(data[i].code_revision),max_revision_width);
+
+		if(output_comments)
+		  {
+		    max_comment_width = std::max((int)strlen(data[i].user_comment),max_comment_width);
+		    max_comment_width +=2; // include quotes around comment
+		  }
+
+#if 0
+		if(output_env)
+		  {
+		    Env_PTable_V1 *env_variables = (Env_PTable_V1*)data[i].vl_env_variables.p;
+
+		    for(int j=0;j<data[i].vl_env_variables.len;j++)
+		      max_env_width = std::max((int)strlen(env_variables[j].env_string),max_env_width);
+		  }
+#endif
 
 	      }
+
+	    grvy_printf(GRVY_DEBUG,"%s: max revision width = %i\n",__func__,max_revision_width);
+
+	    if(output_comments)
+	      grvy_printf(GRVY_DEBUG,"%s: max comment width  = %i\n",__func__,max_comment_width);
 
 	    // ------------------------------
 	    // Prep output dirs/ for results
@@ -973,8 +1001,6 @@ namespace GRVY {
 
 	    map<string,MAP_string_to_double> aggregate_subtimers;
 
-
-	      
 	    for(map <string,perf_stats>::iterator ii=statistics.begin();ii != statistics.end(); ++ii)
 	      {
 		  
@@ -1021,7 +1047,7 @@ namespace GRVY {
 		    fprintf(fp_mach," (%i)\n",GRVY_get_numeric_version());
 		    fprintf(fp_mach,"%s\n",cdelim);
 
-		    fprintf(fp_mach,"%s Host = %s\n",cdelim,machines[imach].c_str());
+		    fprintf(fp_mach,"%s Host     = %s\n",cdelim,machines[imach].c_str());
 		    fprintf(fp_mach,"%s Sysname  = %s\n",cdelim, os_sysname.c_str());
 		    fprintf(fp_mach,"%s Release  = %s\n",cdelim, os_release.c_str());
 		    fprintf(fp_mach,"%s Version  = %s\n",cdelim, os_version.c_str());
@@ -1045,23 +1071,28 @@ namespace GRVY {
 		    if(max_revision_width < 8)
 		      max_revision_width = 8;
 
-		    fprintf(fp_mach,"%s    Index     Experiment-Date     Total Time(sec)    # Procs      "
-			    "JobId %*s      Flops", cdelim,max_revision_width,"Revision");
+		    max_index_width = numDigits_positive(data.size());
+		    if(max_index_width < 5)
+		      max_index_width = 5;
+
+		    fprintf(fp_mach,"%s %*s     Experiment-Date     Total Time(sec)    # Procs      "
+			    "JobId %*s      Flops", cdelim,max_index_width,"Index",max_revision_width,"Revision");
 
 		    // header for subtimer(s)
 
 		    if(output_subtimers)
 		      {
 
-			fprintf(fp_mach," |  ");
+			//fprintf(fp_mach," | ");
+			fprintf(fp_mach," ");
 
 			// first, we generate a list of all possible
 			// subtimer names (stored on a per experiment
-			// name basis); note that there is no guarantee
-			// that the same set of subtimers are defined
-			// for each experiment sample and consequently,
-			// we use this aggregate map as a means to
-			// provide standardized output
+			// name basis); note that there is no
+			// guarantee that the same set of subtimers
+			// are defined for each experiment sample and
+			// consequently, we use this aggregate map as
+			// a means to provide standardized output
 
 			for(int i=0;i<data.size();i++)
 			  {
@@ -1093,7 +1124,16 @@ namespace GRVY {
 			  
 			    fprintf(fp_mach,"%*s%s%*s ",padL,"",(it_sub->first).c_str(),padR,"");
 			  }
+		      }	// end if(output_subtimers)
+
+		    if(output_comments)
+		      {
+			max_comment_width = std::max(7,max_comment_width);
+			fprintf(fp_mach," %*s ",max_comment_width,"Comment");
 		      }
+
+		    if(output_env)
+		      fprintf(fp_mach," Environment Variables");
 
 		    fprintf(fp_mach,"\n");
 		    fprintf(fp_mach,"%s --\n",cdelim);
@@ -1114,14 +1154,15 @@ namespace GRVY {
 		    string ename  = data[i].experiment;     // experiment name for current data sample
 		    FILE *fp_mach = fp_experiments[ename];  // corresponding open file pointer for the host
 
-		    fprintf(fp_mach,"%10i %s  %.8e %10i %10i %*s %.4e",i+1,
+		    fprintf(fp_mach,"  %*i %s  %.8e %10i %10i %*s %.4e",max_index_width,i+1,
 			    data[i].timestamp,data[i].total_time,
 			    data[i].num_procs,data[i].job_Id,max_revision_width,data[i].code_revision,data[i].flops);
 		  
 		    if(output_subtimers)
 		      {
 
-			fprintf(fp_mach,"    ");
+			//			fprintf(fp_mach,"    ");
+			fprintf(fp_mach," ");
 
 			hvl_t subtimers = data[i].vl_subtimers;
 			SubTimer_PTable_V1 *subtimer2 = (SubTimer_PTable_V1*)subtimers.p;
@@ -1140,6 +1181,24 @@ namespace GRVY {
 			    fprintf(fp_mach,"%*-.8e ",width,(it_sub)->second);
 			  }
 
+		      }	// end if(output_subtimers)
+
+		    if(output_comments)
+		      {
+			if(strlen(data[i].user_comment) > 0)
+			  fprintf(fp_mach," %*s%s\"",max_comment_width-strlen(data[i].user_comment)-1,
+				  "\"",data[i].user_comment);
+			else
+			  fprintf(fp_mach," %*sN/A\"",max_comment_width-strlen("N/A")-1,"\"");
+		      }
+
+		    if(output_env)
+		      {
+			Env_PTable_V1 *env_variables = (Env_PTable_V1*)data[i].vl_env_variables.p;
+			for(int j=0;j<data[i].vl_env_variables.len;j++)
+			  {
+			    fprintf(fp_mach," %s",env_variables[j].env_string);
+			  }
 		      }
 
 		    fprintf(fp_mach,"\n");

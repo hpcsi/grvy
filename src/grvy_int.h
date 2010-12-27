@@ -222,6 +222,20 @@ namespace GRVY {
       }
   }
 
+  // numDigits_positive(): Counts number of digits for positive number
+
+  template <class T> int numDigits_positive(T number)
+  {
+    int digits = 0;
+    
+    if(number < 0) return 0;
+    
+    while (number) {
+      number /= 10;
+      digits++;
+    }
+    return digits;
+  }
 
 } // end namespace GRVY
 
