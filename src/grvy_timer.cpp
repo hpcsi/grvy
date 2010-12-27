@@ -782,8 +782,10 @@ namespace GRVY {
       }
     else
       {
+	int compression_level = 3; // value between 0 and 9 (or -1 for no compression)
+
 	if( (tableId = H5PTcreate_fl(h5.m_pimpl->groupIds[hostlevel],tablename.c_str(),
-				     timers_type,(hsize_t)256,-1)) == H5I_BADID)
+				     timers_type,(hsize_t)256,compression_level)) == H5I_BADID)
 	  {
 	    grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename.c_str());
 	    exit(1);
