@@ -73,7 +73,7 @@ namespace GRVY_gadd
     int    numprocs =   1;	 // default processor count
     string revision = "unknown"; // default processor count
     double flops    = 0.0;	 // default FLOPs
-    vector<string> AllEnv;	 // list of all runtime environment variables
+    //    vector<string> AllEnv;	 // list of all runtime environment variables
     
     // Define supported options for Boost
     
@@ -89,7 +89,7 @@ namespace GRVY_gadd
       ("help",                            "generate help message and exit")
       ("version",                         "output version information and exit")
       ("quiet,q",                         "suppress normal stdout messages")
-      //      ("env,e",                           "store runtime environment with timing")
+      ("env,e",                           "store runtime environment with timing")
       ("comment,c", bo::value<string>(),  "additional comment string for the measurement")
       ("machine,m", bo::value<string>(),  "machine name (default=local hostname)")
       ("jobid,j",   bo::value<int>(),     "batch job identifier (default = -1)")
@@ -146,11 +146,11 @@ namespace GRVY_gadd
 	grvy_printf(GRVY_DEBUG,"User requested --quiet option\n");
       }
 
-#if 0
+#if 1
     if(vmap.count("env"))
       {
-	gt->SetOption("output_printenv",true);
-	grvy_printf(GRVY_DEBUG,"User requested --printenv option\n");
+	gt->SetOption("output_env",true);
+	grvy_printf(GRVY_DEBUG,"User requested --env option\n");
       }
 #endif
 

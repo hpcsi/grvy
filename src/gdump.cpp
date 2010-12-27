@@ -68,12 +68,12 @@ namespace GRVY_gdump
       ("help",                            "generate help message and exit")
       ("version",                         "output version information and exit")
       ("quiet,q",                         "suppress normal stdout messages")
-      ("enable-subtimers,A",              "include all individual subtimer(s) in output ")
-      ("summarize-only,S",                "summarize timer statistics but do not dump files")
-      ("delimiter,D",bo::value<string>(), "override default comment delimiter (default=#)")
-      ("output-dir,O",bo::value<string>(),"override default dump directory (default=./gdata)")
-      ("with-comment,C",                  "include user comment string in output")
-      ("with-env,E",                      "include runtime environment variables in output");
+      ("enable-subtimers,a",              "include all individual subtimer(s) in output ")
+      ("summarize-only,s",                "summarize timer statistics but do not dump files")
+      ("delimiter,d",bo::value<string>(), "override default comment delimiter (default=#)")
+      ("output-dir,o",bo::value<string>(),"override default dump directory (default=./gdata)")
+      ("with-comment,c",                  "include user comment string in output")
+      ("with-env,e",                      "include runtime environment variables in output");
 
       //("dump-files,D",      "dump output to individual ascii files")
       //("output-dir,O",bo::value<string>()->default_value("./gdata"),"specify output file dump directory");

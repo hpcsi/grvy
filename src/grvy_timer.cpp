@@ -751,8 +751,6 @@ namespace GRVY {
     else
       h5.GroupCreate(toplevel);
 
-
-
     // Open/create group for this host/machine
 
     string hostlevel = toplevel + machinename;
@@ -782,7 +780,7 @@ namespace GRVY {
       }
     else
       {
-	int compression_level = 3; // value between 0 and 9 (or -1 for no compression)
+	int compression_level = 5; // value between 0 and 9 (or -1 for no compression)
 
 	if( (tableId = H5PTcreate_fl(h5.m_pimpl->groupIds[hostlevel],tablename.c_str(),
 				     timers_type,(hsize_t)256,compression_level)) == H5I_BADID)
@@ -1482,7 +1480,7 @@ namespace GRVY {
 	GRVY_Hostenv_Class myenv;
 	vector<string> runtimeEnv;
 
-	//	if(options["output_printenv"])
+	if(options["output_printenv"])
 	  {
 	    Env_PTable_V1 env_tmp;
 
@@ -1496,7 +1494,7 @@ namespace GRVY {
 	    header.vl_env_variables.len = runtimeEnv.size();
 	    header.vl_env_variables.p   = &env_variables[0];
 	  }
-#if 0
+#if 1
 	else
 	  {
 	    header.vl_env_variables.p = NULL;
