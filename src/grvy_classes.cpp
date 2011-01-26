@@ -153,6 +153,39 @@ namespace GRVY {
 	return 0;
       }
 
+    // --------------------------------------------------------------
+    // DOS newline check - GetPot can't handle; warn the user to use
+    // dos2unix
+    // --------------------------------------------------------------
+
+    FILE *fp = fopen(filename,"r");
+
+    if(fp == NULL )
+      {
+      	_GRVY_message(GRVY_ERROR,__func__,"unable to open input file -> ",filename);
+	return 0;
+      }
+    else
+      {
+
+	int tmpchar;
+	
+	while((tmpchar = getc(fp)) != EOF) {
+	  if(tmpchar == '\x0d') {
+
+	    grvy_printf(GRVY_ERROR,"\nDOS newline detected - unable to parse file (%s)\n",filename);
+	    grvy_printf(GRVY_ERROR,"Consider running dos2unix on the file to remove existing DOS newlines.\n\n");
+
+	    fclose(fp);
+	    return 0;
+	  } 
+	}
+
+	fclose(fp);
+      }
+
+    fclose(fp);
+
     ifile = new GETPOT_NAMESPACE::GetPot(filename,comment_start,comment_end);
 
     if(ifile->size() <= 1)
@@ -163,6 +196,7 @@ namespace GRVY {
     else
       {
 	initialized=1;
+
 	return 1;
       }
   }

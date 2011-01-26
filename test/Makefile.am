@@ -51,6 +51,11 @@ check_PROGRAMS                                 += C_input_register_read_missing_
 C_input_register_read_missing_variable_SOURCES  = C_input-reg-missing-var.c
 C_input_register_read_missing_variable_LDADD    = ../src/libgrvy.la
 
+TESTS                                          += C_input_dos_newlines
+check_PROGRAMS                                 += C_input_dos_newlines
+C_input_dos_newlines_SOURCES                    = C_input-dos-newlines.c
+C_input_dos_newlines_LDADD                      = ../src/libgrvy.la
+
 TESTS                                          += C_timer_sum
 check_PROGRAMS                                 += C_timer_sum
 C_timer_sum_SOURCES                             = C_timer.c

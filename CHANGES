@@ -1,5 +1,6 @@
 Version 0.30.0 (In Progress)
 
+  * add defensive warning against dos newlines for input parsing
   * addition of historical performance logging capability using HDF
   * initial addition of HDF5 convenience class for I/O related operations
   * additional of optional HDF5 library linkage
