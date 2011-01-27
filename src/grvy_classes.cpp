@@ -184,8 +184,6 @@ namespace GRVY {
 	fclose(fp);
       }
 
-    fclose(fp);
-
     ifile = new GETPOT_NAMESPACE::GetPot(filename,comment_start,comment_end);
 
     if(ifile->size() <= 1)
