@@ -281,9 +281,9 @@ namespace GRVY {
     index  = TimerMap.find(id);
 
     if ( index == TimerMap.end() )
-      _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",id);
+      _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",id.c_str());
     else if(index->first[1] < 0)
-      _GRVY_message(GRVY_ERROR,__func__,"No matching begin timer call for",id);
+      _GRVY_message(GRVY_ERROR,__func__,"No matching begin timer call for",id.c_str());
     else
       {
 	// update map with latest increment info
