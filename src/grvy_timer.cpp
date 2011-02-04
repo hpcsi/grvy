@@ -97,20 +97,20 @@ namespace GRVY {
   {
   public:
     GRVY_Timer_ClassImp    () {}
-    ~GRVY_Timer_ClassImp    () {}
+   ~GRVY_Timer_ClassImp    () {}
 		         
     void   VerifyInit      ();
-    void   BeginTimer      (const char *, bool); 
-    void   EndTimer        (const char *, bool);
+    void   BeginTimer      (std::string, bool); 
+    void   EndTimer        (std::string, bool);
     double RawTimer        ();
 
 #ifdef HAVE_HDF5
     hid_t  CreateHistType  (int version); 
-    int   AppendHistData  (double timing, string experiment, string comment, int num_procs, int jobId,
-			   string code_revision, double flops, int version, hid_t tableId, 
-			   bool save_internal_timer);
-    int   ReadAllHostData (GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
-    int   ReadPTable      (string host);
+    int    AppendHistData  (double timing, string experiment, string comment, int num_procs, int jobId,
+			    string code_revision, double flops, int version, hid_t tableId, 
+			    bool save_internal_timer);
+    int   ReadAllHostData  (GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
+    int   ReadPTable       (string host);
     void   SummarizeHost   (string host);
     void   WriteHeaderInfo (FILE *fp, const char *delim);
 #endif
@@ -120,7 +120,7 @@ namespace GRVY {
     bool        initialized;            // initialized?
     double      timer_finalize;         // raw timer value at time of finalize()
     std::string timer_name;             // user name supplied for the timer
-    int         num_begins;	      // number of active begin timers (used for callgraph determination)
+    int         num_begins;	        // number of active begin timers (used for callgraph determination)
     std::stack <std::string> callgraph; // callgraph to support embedded timers
     bool        beginTrigger;           // a trigger used for embedded timers
     _GRVY_Type_TimerMap2     TimerMap;  // map used to store performance timers for each defined key
@@ -129,10 +129,10 @@ namespace GRVY {
 
     int    default_jobId;
     double default_flops;
-    //int default_revision;
     string default_revision;
+    size_t max_stdout_width;	       // max output width for timer information
 
-    GRVY_Timer_Class *self;	      // back pointer to public class
+    GRVY_Timer_Class *self;	       // back pointer to public class
 
     accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
   };
@@ -156,6 +156,7 @@ namespace GRVY {
     m_pimpl->default_jobId         = -1;
     m_pimpl->default_flops         = 0.0;   
     m_pimpl->default_revision      = "unknown";
+    m_pimpl->max_stdout_width      = 120;
 
     // set default options for gdump
 
@@ -196,17 +197,17 @@ namespace GRVY {
       }
   }
 
-  void GRVY_Timer_Class::BeginTimer (const char *id)
+  void GRVY_Timer_Class::BeginTimer (std::string id)
   {
     return(m_pimpl->BeginTimer(id,false));
   }
 
-  void GRVY_Timer_Class::EndTimer (const char *id)
+  void GRVY_Timer_Class::EndTimer (std::string id)
   {
     return(m_pimpl->EndTimer(id,false));
   }
 
-  void GRVY_Timer_Class::GRVY_Timer_ClassImp::BeginTimer (const char *id, bool embeddedFlag)
+  void GRVY_Timer_Class::GRVY_Timer_ClassImp::BeginTimer (std::string id, bool embeddedFlag)
   {
     double mytime;
     _GRVY_Type_TimerMap2 :: iterator index;
@@ -257,7 +258,7 @@ namespace GRVY {
 
     if ( index == TimerMap.end() )
       {
-	Data.timings[0] = 0.0;	                      // stores accumulated time
+	Data.timings[0] = 0.0;	                        // stores accumulated time
 	Data.timings[1] = mytime;                       // stores latest timestamp
 
 	TimerMap[id] = Data;
@@ -269,11 +270,10 @@ namespace GRVY {
   
   }
 
-  void GRVY_Timer_Class::GRVY_Timer_ClassImp::EndTimer (const char *id, bool embeddedFlag)
+  void GRVY_Timer_Class::GRVY_Timer_ClassImp::EndTimer (string id, bool embeddedFlag)
   {
     double      mytime, increment;
     tTimer_Data Data;
-    char temp_string[120];
 
     _GRVY_Type_TimerMap2 :: iterator index;
 
@@ -297,7 +297,7 @@ namespace GRVY {
 	    if( increment <= _GRVY_TIMER_THRESH )
 	      {
 		grvy_printf(GRVY_WARN,"Timer acuracy may be insufficient (%.30s) -> measured %le secs\n",
-			    id,increment);
+			    id.c_str(),increment);
 	      }
 	  }
 	else
@@ -335,7 +335,7 @@ namespace GRVY {
 	    if(callgraph.size() >= 1)
 	      callgraph.pop();
 	    else
-	      grvy_printf(GRVY_ERROR,"GRVY (%s): no callgraph left for %s\n",__func__,id);
+	      grvy_printf(GRVY_ERROR,"GRVY (%s): no callgraph left for %s\n",__func__,id.c_str());
 
 	    if(num_begins > 2)
 	      {
@@ -352,7 +352,7 @@ namespace GRVY {
     // to allow users to query the global elapsed time after 
     // grvy_timer_finalize()
 
-    if ( strcmp(id,_GRVY_gtimer) == 0 )
+    if ( id == _GRVY_gtimer )
       timer_finalize = RawTimer();
 
     return;
@@ -503,7 +503,6 @@ namespace GRVY {
     int    max_timer_name_width;
     size_t display_id_width = 20;
     size_t timer_name_width;
-    const size_t max_stdout_width = 120;
 
     _GRVY_Type_TimerMapSortLH _GRVY_TimerMapSortLH;
     _GRVY_Type_TimerMapSortHL _GRVY_TimerMapSortHL;
@@ -555,7 +554,7 @@ namespace GRVY {
 	    // Update display width if this identifier is longer than default
 
 	    display_id_width = std::max(display_id_width, index->first.length()+1);
-	    display_id_width = std::min(display_id_width, max_stdout_width - 35);
+	    display_id_width = std::min(display_id_width, m_pimpl->max_stdout_width - 35);
 	  }
       }
 

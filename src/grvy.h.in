@@ -634,8 +634,8 @@ class GRVY_Timer_Class {
  ~GRVY_Timer_Class      ();
 
   void   Init           (std::string name);    // intialize global timing process
-  void   BeginTimer     (const char *name);    // start local timer
-  void   EndTimer       (const char *name);    //   end local timer
+  void   BeginTimer     (std::string name);    // start local timer
+  void   EndTimer       (std::string name);    //   end local timer
   void   Finalize       ();                    //  end global timer
   
   double ElapsedSeconds (std::string id);
