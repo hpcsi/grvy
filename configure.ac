@@ -65,7 +65,6 @@ AX_PATH_HDF5_NEW(1.8.0,no)
 AC_C_CONST
 AC_HEADER_STDBOOL
 AX_TLS
-AC_FUNC_MALLOC
 
 #----------------
 # Check for boost
