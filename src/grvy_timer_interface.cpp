@@ -115,6 +115,13 @@ void grvy_timer_summarize()
   return;
 }
 
+// grvy_timer_summarize(): Print a summary of all current timers
+
+int grvy_timer_set_summarize_width(const int maxwidth)
+{
+  return(_GRVY_Timers->SetSummarizeWidth(maxwidth));
+}
+
 // grvy_timer_stat_count(): provides number of calls to a timer
 
 int grvy_timer_stats_count(const char *id)

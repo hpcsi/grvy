@@ -255,21 +255,22 @@ extern "C" {
    * \return time since epoch in seconds
    */
 
-  extern double grvy_timer                ();
-  extern   void grvy_timer_init           (const char *id);
-  extern   void grvy_timer_reset          ();
-  extern   void grvy_timer_finalize       ();
-  extern   void grvy_timer_begin          (const char *id);
-  extern   void grvy_timer_end            (const char *id);
-  extern double grvy_timer_elapsedseconds (const char *id);
-  extern double grvy_timer_elapsed_global ();
-  extern    int grvy_timer_stats_count    (const char *id);
-  extern double grvy_timer_stats_mean     (const char *id);
-  extern double grvy_timer_stats_variance (const char *id);
-  extern   void grvy_timer_summarize      ();
-  extern    int grvy_timer_save_hist      (const char*experiment, const char *comment, 
-					   int num_procs, int jobId, const char *code_revision, double flops,
-					   const char *filename);
+  extern double grvy_timer                     ();
+  extern   void grvy_timer_init                (const char *id);
+  extern   void grvy_timer_reset               ();
+  extern   void grvy_timer_finalize            ();
+  extern   void grvy_timer_begin               (const char *id);
+  extern   void grvy_timer_end                 (const char *id);
+  extern double grvy_timer_elapsedseconds      (const char *id);
+  extern double grvy_timer_elapsed_global      ();
+  extern    int grvy_timer_stats_count         (const char *id);
+  extern double grvy_timer_stats_mean          (const char *id);
+  extern double grvy_timer_stats_variance      (const char *id);
+  extern   void grvy_timer_summarize           ();
+  extern   int  grvy_timer_set_summarize_width (const int maxwidth);
+  extern    int grvy_timer_save_hist           (const char*experiment, const char *comment, 
+						int num_procs, int jobId, const char *code_revision, double flops,
+						const char *filename);
 
   /*
    * Basic API Definition for Math Utilities
@@ -630,24 +631,25 @@ class GRVY_Input_Class {
 class GRVY_Timer_Class {
 
  public:
-  GRVY_Timer_Class      (); 
- ~GRVY_Timer_Class      ();
+  GRVY_Timer_Class        (); 
+ ~GRVY_Timer_Class        ();
 
-  void   Init           (std::string name);    // intialize global timing process
-  void   BeginTimer     (std::string name);    // start local timer
-  void   EndTimer       (std::string name);    //   end local timer
-  void   Finalize       ();                    //  end global timer
+  void   Init             (std::string name); // intialize global timing process
+  void   BeginTimer       (std::string id);   // starts local timer
+  void   EndTimer         (std::string id);   // ends local timer
+  void   Finalize         ();                 // ends global timer
   
-  double ElapsedSeconds (std::string id);
-  double ElapsedGlobal  ();
-  double RawTimer       ();
+  double ElapsedSeconds   (std::string id);   // return elapsed time for specifc timer id
+  double ElapsedGlobal    ();		      // return elapsed time since Init()
+  double RawTimer         ();		      // raw timer
 
-  void   Reset          ();	              // reset all timers
-  void   Summarize      ();	              // pretty-print timing information
+  void   Reset            ();	              // reset all timers
+  void   Summarize        ();	              // pretty-print timing information
+  int    SetSummarizeWidth(const int width);  // set max output width for summarize stdout
 
-  size_t StatsCount     (std::string id);     // # of calls to timer (id)
-  double StatsMean      (std::string id);     // mean time for timer (id)
-  double StatsVariance  (std::string id);     //  variance for timer (id)
+  size_t StatsCount       (std::string id);   // # of calls to timer (id)
+  double StatsMean        (std::string id);   // mean time for timer (id)
+  double StatsVariance    (std::string id);   //  variance for timer (id)
 
   // ------------------------------------------------------------------------
   // Historical timing support - note there are two primary mechanisms for

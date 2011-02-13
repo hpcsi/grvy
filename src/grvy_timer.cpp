@@ -104,13 +104,15 @@ namespace GRVY {
     void   EndTimer        (std::string, bool);
     double RawTimer        ();
 
+    void   AddEllipsis     (std::string &);
+
 #ifdef HAVE_HDF5
     hid_t  CreateHistType  (int version); 
     int    AppendHistData  (double timing, string experiment, string comment, int num_procs, int jobId,
 			    string code_revision, double flops, int version, hid_t tableId, 
 			    bool save_internal_timer);
-    int   ReadAllHostData  (GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
-    int   ReadPTable       (string host);
+    int    ReadAllHostData (GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
+    int    ReadPTable      (string host);
     void   SummarizeHost   (string host);
     void   WriteHeaderInfo (FILE *fp, const char *delim);
 #endif
@@ -494,7 +496,22 @@ namespace GRVY {
     return elapsedseconds;
   }
 
-  void GRVY_Timer_Class:: Summarize()
+  int GRVY_Timer_Class::SetSummarizeWidth(const int width)
+  {
+    const int min_width = 120;
+
+    if(width <= min_width )
+      {
+	grvy_printf(GRVY_ERROR,"\n**Error (%s): stdout minimum width is %i characters \n",min_width,__func__);
+	return(1);
+      }
+
+    m_pimpl->max_stdout_width = width;
+
+    return 0;
+  }
+
+  void GRVY_Timer_Class::Summarize()
   {
     std::vector <double> timings(2);
     double totaltime,subtime;
@@ -554,19 +571,32 @@ namespace GRVY {
 	    // Update display width if this identifier is longer than default
 
 	    display_id_width = std::max(display_id_width, index->first.length()+1);
-	    display_id_width = std::min(display_id_width, m_pimpl->max_stdout_width - 35);
+	    display_id_width = std::min(display_id_width, m_pimpl->max_stdout_width - 35 - 40);
 	  }
       }
 
+    // check to see if user Init() string is longer than any of the
+    // timer IDs and adjust widths accordingly
+
+    if( (m_pimpl->timer_name.length() + 23) > (display_id_width + 35) )
+      {
+	int local_width = std::min(m_pimpl->max_stdout_width-40,
+				   m_pimpl->timer_name.length()+23);
+
+	display_id_width = local_width - 35;
+      }
+
+    // display header
+
     total_percentage = 0.0;
 
-    printf("\n");
+    grvy_printf(GRVY_INFO,"\n");
     for(int i=0;i<display_id_width+35;i++)
-      printf("-");
+      grvy_printf(GRVY_INFO,"-");
 
     if(show_statistics)
       for(int i=0;i<40;i++)
-	printf("-");
+	grvy_printf(GRVY_INFO,"-");
 
     printf("\n");
 
@@ -574,12 +604,19 @@ namespace GRVY {
 
     std::string varstring = m_pimpl->timer_name.substr(0,max_timer_name_width-1);
 
-    printf("%s - %-*s ",varstring.c_str(),(int)(display_id_width+32-varstring.length()),"Performance Timings:");
+    // add ellipsis if string is shortened to help alert the user that we 
+    // shortened on purpose.
+
+    if(m_pimpl->timer_name.length() > max_timer_name_width)
+      m_pimpl->AddEllipsis(varstring);
+    
+    grvy_printf(GRVY_INFO,"%s - %-*s ",varstring.c_str(),(int)(display_id_width+32-varstring.length()),
+		"Performance Timings:");
 
     if(show_statistics)
-      printf("|      Mean      Variance       Count");
+      grvy_printf(GRVY_INFO,"|      Mean      Variance       Count");
 
-    printf("\n");
+    grvy_printf(GRVY_INFO,"\n");
 
     // Print results for all user-defined timer keys
 
@@ -587,13 +624,20 @@ namespace GRVY {
       {
 
 	std::string varstring = indexHL->second.substr(0,display_id_width-1);
-	printf("--> %-*s: %10.5e secs",(int)display_id_width,varstring.c_str(),indexHL->first[0]);
+
+	// add ellipsis if string is shortened to help alert the user that we 
+	// shortened on purpose.
+
+	if(indexHL->second.length() > max_timer_name_width)
+	  m_pimpl->AddEllipsis(varstring);
+
+	grvy_printf(GRVY_INFO,"--> %-*s: %10.5e secs",(int)display_id_width,varstring.c_str(),indexHL->first[0]);
 
 	if(global_time_defined)
 	  {
 	    local_percentage  = 100.*indexHL->first[0]/(totaltime);
 	    total_percentage += local_percentage;
-	    printf(" (%8.4f %%)",local_percentage);
+	    grvy_printf(GRVY_INFO," (%8.4f %%)",local_percentage);
 	  }
       
 	if(show_statistics)
@@ -603,21 +647,21 @@ namespace GRVY {
 		gindex = m_pimpl->TimerMap.find(indexHL->second);
 		if(boost::accumulators::count((gindex->second).stats) > 0)
 		  {
-		    printf(" | [%10.5e  %10.5e  %9zi]",
+		    grvy_printf(GRVY_INFO," | [%10.5e  %10.5e  %9zi]",
 			   boost::accumulators::mean    ((gindex->second).stats),
 			   boost::accumulators::variance((gindex->second).stats),
 			   boost::accumulators::count   ((gindex->second).stats));
 		  }
 		else
 		  {
-		    printf(" | [%10s  %10.5e  %9zi]","   N/A   ",
+		    grvy_printf(GRVY_INFO," | [%10s  %10.5e  %9zi]","   N/A   ",
 			   boost::accumulators::variance((gindex->second).stats),
 			   boost::accumulators::count   ((gindex->second).stats));
 		  }
 	      }
 	  }
       
-	printf("\n");
+	grvy_printf(GRVY_INFO,"\n");
       
       }
 
@@ -625,23 +669,23 @@ namespace GRVY {
 
     gindex = m_pimpl->TimerMap.find(_GRVY_gtimer);
 
-    printf("--> %-*s: %10.5e secs",(int)display_id_width,_GRVY_gtimer,
+    grvy_printf(GRVY_INFO,"--> %-*s: %10.5e secs",(int)display_id_width,_GRVY_gtimer,
 	   (gindex->second).timings[0]);
 
     if(global_time_defined)
       {
 	local_percentage  = 100.*(gindex->second).timings[0]/(totaltime);
 	total_percentage += local_percentage;
-	printf(" (%8.4f %%)",local_percentage);
+	grvy_printf(GRVY_INFO," (%8.4f %%)",local_percentage);
       }
 
-    printf("\n");
+    grvy_printf(GRVY_INFO,"\n");
 
     // A little sanity checking on the results
       
     if(global_time_defined)
       {
-	printf("\n %*s = %10.5e secs (%8.4f %%)\n",(int)display_id_width+2,"Total Measured Time",
+	grvy_printf(GRVY_INFO,"\n %*s = %10.5e secs (%8.4f %%)\n",(int)display_id_width+2,"Total Measured Time",
 	       totaltime,total_percentage);
 
 	if( fabs(total_percentage - 100.0) > _GRVY_PERC_TOL )
@@ -658,14 +702,14 @@ namespace GRVY {
       }
 
     for(int i=0;i<display_id_width+35;i++)
-      printf("-");
+      grvy_printf(GRVY_INFO,"-");
 
     if(show_statistics)
 
       for(int i=0;i<40;i++)
-	printf("-");
+	grvy_printf(GRVY_INFO,"-");
 
-    printf("\n\n");
+    grvy_printf(GRVY_INFO,"\n\n");
   }
 
   //--------------------------------------------------------------------
@@ -1539,6 +1583,23 @@ namespace GRVY {
     return 0;
   }
 
+
+  
 #endif
+
+
+// AddEllipsis() - replace last 3 characters in a string with "..." to signify
+// that a string has been shortened on output
+
+void GRVY_Timer_Class::GRVY_Timer_ClassImp::AddEllipsis(std::string &name)
+{
+  int length = name.length();
+
+  name[length-1] = '.';
+  name[length-2] = '.';
+  name[length-3] = '.';
+
+  return;
+}
 
 }
