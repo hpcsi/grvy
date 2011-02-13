@@ -285,6 +285,16 @@ module grvy
      ! Timing Routines
      ! ---------------
 
+     subroutine grvy_timer_finalize() bind (C)
+       use iso_c_binding
+       implicit none
+     end subroutine grvy_timer_finalize
+
+     subroutine grvy_timer_reset() bind (C)
+       use iso_c_binding
+       implicit none
+     end subroutine grvy_timer_reset
+
      subroutine grvy_timer_summarize() bind (C)
        use iso_c_binding
        implicit none
@@ -301,19 +311,15 @@ module grvy
        character :: timestring
      end subroutine grvy_asci_time
 
+     subroutine grvy_timer(value)
+       implicit none
+       real*8 :: value
+     end subroutine grvy_timer
+
      subroutine grvy_timer_init(id)
        implicit none
        character :: id
      end subroutine grvy_timer_init
-
-     subroutine grvy_timer_reset()
-     end subroutine grvy_timer_reset
-
-     subroutine grvy_timer_finalize()
-     end subroutine grvy_timer_finalize
-
-!     subroutine grvy_timer_summarize()
-!     end subroutine grvy_timer_summarize
 
      subroutine grvy_timer_begin(id)
        implicit none
@@ -325,10 +331,7 @@ module grvy
        character :: id
      end subroutine grvy_timer_end
 
-     subroutine grvy_timer(value)
-       implicit none
-       real*8 :: value
-     end subroutine grvy_timer
+
 
      subroutine grvy_timer_elapsed_global(value)
        implicit none

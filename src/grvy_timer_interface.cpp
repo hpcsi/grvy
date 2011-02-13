@@ -176,15 +176,6 @@ extern "C" void grvy_timer_init_(char *id,int _namelen) {
   delete[] name;
 }
 
-extern "C" void grvy_timer_reset_() {
-  grvy_timer_reset();
-}
-
-extern "C" void grvy_timer_finalize_() {
-  grvy_timer_finalize();
-}
-
-
 extern "C" void grvy_timer_begin_(char *id,int _namelen)
 {
   char *name = grvy_f2c_char(id,_namelen);
@@ -208,7 +199,6 @@ extern "C" void grvy_timer_(double *value)
   *value = grvy_timer();
   return;
 }
-
 
 extern "C" void grvy_timer_elapsed_global_(double *value)
 {
