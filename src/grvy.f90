@@ -285,6 +285,17 @@ module grvy
      ! Timing Routines
      ! ---------------
 
+     subroutine grvy_timer_summarize() bind (C)
+       use iso_c_binding
+       implicit none
+     end subroutine grvy_timer_summarize
+
+     integer (C_int) function grvy_timer_set_summarize_width(value) bind(C)
+       use iso_c_binding
+       implicit none
+       integer   (C_int), value, intent(in)  :: value
+     end function grvy_timer_set_summarize_width
+
      subroutine grvy_asci_time(timestring)
        implicit none
        character :: timestring
@@ -301,8 +312,8 @@ module grvy
      subroutine grvy_timer_finalize()
      end subroutine grvy_timer_finalize
 
-     subroutine grvy_timer_summarize()
-     end subroutine grvy_timer_summarize
+!     subroutine grvy_timer_summarize()
+!     end subroutine grvy_timer_summarize
 
      subroutine grvy_timer_begin(id)
        implicit none

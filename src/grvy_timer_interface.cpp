@@ -4,7 +4,7 @@
 // 
 // libGRVY - a utility library for scientific computing.
 //
-// Copyright (C) 2008,2009,2010 The PECOS Development Team
+// Copyright (C) 2008,2009,2010,2011 The PECOS Development Team
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the Version 2.1 GNU Lesser General
@@ -182,10 +182,6 @@ extern "C" void grvy_timer_reset_() {
 
 extern "C" void grvy_timer_finalize_() {
   grvy_timer_finalize();
-}
-
-extern "C" void grvy_timer_summarize_() {
-  grvy_timer_summarize();
 }
 
 
