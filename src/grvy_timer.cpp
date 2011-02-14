@@ -502,13 +502,13 @@ namespace GRVY {
 
     if(width <= min_width )
       {
-	grvy_printf(GRVY_ERROR,"\n**Error (%s): stdout minimum width is %i characters \n",min_width,__func__);
+	grvy_printf(GRVY_ERROR,"\n** Error (%s): stdout minimum width is %i characters \n",__func__,min_width);
 	return(1);
       }
 
     m_pimpl->max_stdout_width = width;
 
-    return 0;
+    return(0);
   }
 
   void GRVY_Timer_Class::Summarize()

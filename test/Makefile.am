@@ -61,6 +61,16 @@ check_PROGRAMS                                 += C_timer_sum
 C_timer_sum_SOURCES                             = C_timer.c
 C_timer_sum_LDADD                               = ../src/libgrvy.la
 
+TESTS                                          += C_timer_std_width.sh
+check_PROGRAMS                                 += C_timer_std_width
+C_timer_std_width_SOURCES                       = C_timer_std_width.c
+C_timer_std_width_LDADD                         = ../src/libgrvy.la
+
+TESTS                                          += C_timer_expanded_width.sh
+check_PROGRAMS                                 += C_timer_expanded_width
+C_timer_expanded_width_SOURCES                  = C_timer_expanded_width.c
+C_timer_expanded_width_LDADD                    = ../src/libgrvy.la
+
 TESTS                                           += C_timer_stats
 check_PROGRAMS                                  += C_timer_stats
 C_timer_stats_SOURCES                            = C_timer_stats.c
@@ -135,6 +145,16 @@ check_PROGRAMS                                  += CXX_input_dump
 CXX_input_dump_SOURCES                           = C++_input_dump.cpp C_examplefile.c examplefile.h
 CXX_input_dump_LDADD                             = ../src/libgrvy.la
 
+TESTS                                           += CXX_timer_std_width.sh
+check_PROGRAMS                                  += CXX_timer_std_width
+CXX_timer_std_width_SOURCES                      = C++_timer_std_width.cpp
+CXX_timer_std_width_LDADD                        = ../src/libgrvy.la
+
+TESTS                                           += CXX_timer_expanded_width.sh
+check_PROGRAMS                                  += CXX_timer_expanded_width
+CXX_timer_expanded_width_SOURCES                 = C++_timer_expanded_width.cpp
+CXX_timer_expanded_width_LDADD                   = ../src/libgrvy.la
+
 
 if HDF5_ENABLED
 TESTS                                           += CXX_hdf_hist_timing
@@ -162,60 +182,70 @@ check_PROGRAMS                                   += F_math
 F_math_SOURCES                                    = F_math.f90
 F_math_LDADD                                      = ../src/libgrvyf.la
 
-TESTS                     += F_wrapper_check_file_path.sh
-check_PROGRAMS            += F_check_file_path
-F_check_file_path_SOURCES  = F_check_file_path.f90
-F_check_file_path_LDADD    = ../src/libgrvyf.la
+TESTS                                            += F_wrapper_check_file_path.sh
+check_PROGRAMS                                   += F_check_file_path
+F_check_file_path_SOURCES                         = F_check_file_path.f90
+F_check_file_path_LDADD                           = ../src/libgrvyf.la
 
-TESTS          += F_wrapper_log.sh
-check_PROGRAMS += F_log
-F_log_SOURCES   = F_log.f90
-F_log_LDADD     = ../src/libgrvyf.la
+TESTS                                            += F_wrapper_log.sh
+check_PROGRAMS                                   += F_log
+F_log_SOURCES                                     = F_log.f90
+F_log_LDADD                                       = ../src/libgrvyf.la
 
-TESTS                          += F_input_read_variables
-check_PROGRAMS                 += F_input_read_variables
-F_input_read_variables_SOURCES  = F_input_read_variables.f90
-F_input_read_variables_LDADD    =  ../src/libgrvy.la ../src/libgrvyf.la 
+TESTS                                            += F_input_read_variables
+check_PROGRAMS                                   += F_input_read_variables
+F_input_read_variables_SOURCES                    = F_input_read_variables.f90
+F_input_read_variables_LDADD                      =  ../src/libgrvy.la ../src/libgrvyf.la 
 
-TESTS                            += F_input_nofile_available
-check_PROGRAMS                   += F_input_nofile_available
-F_input_nofile_available_SOURCES  = F_input-nofile.f90
-F_input_nofile_available_LDADD    = ../src/libgrvyf.la
+TESTS                                            += F_input_nofile_available
+check_PROGRAMS                                   += F_input_nofile_available
+F_input_nofile_available_SOURCES                  = F_input-nofile.f90
+F_input_nofile_available_LDADD                    = ../src/libgrvyf.la
 
-TESTS                                 += F_input_read_missing_variable
-check_PROGRAMS                        += F_input_read_missing_variable
-F_input_read_missing_variable_SOURCES  = F_input-missing-var.f90
-F_input_read_missing_variable_LDADD    = ../src/libgrvyf.la
+TESTS                                            += F_input_read_missing_variable
+check_PROGRAMS                                   += F_input_read_missing_variable
+F_input_read_missing_variable_SOURCES             = F_input-missing-var.f90
+F_input_read_missing_variable_LDADD               = ../src/libgrvyf.la
 
-TESTS                              += F_input_register_variables
-check_PROGRAMS                     += F_input_register_variables
-F_input_register_variables_SOURCES  = F_input-register.f90
-F_input_register_variables_LDADD    = ../src/libgrvyf.la
+TESTS                                            += F_input_register_variables
+check_PROGRAMS                                   += F_input_register_variables
+F_input_register_variables_SOURCES                = F_input-register.f90
+F_input_register_variables_LDADD                  = ../src/libgrvyf.la
 
-TESTS                          += F_input_read_bigstring
-check_PROGRAMS                 += F_input_read_bigstring
-F_input_read_bigstring_SOURCES  = F_input_read_bigstring.f90
-F_input_read_bigstring_LDADD    = ../src/libgrvyf.la
+TESTS                                            += F_input_read_bigstring
+check_PROGRAMS                                   += F_input_read_bigstring
+F_input_read_bigstring_SOURCES                    = F_input_read_bigstring.f90
+F_input_read_bigstring_LDADD                      = ../src/libgrvyf.la
 
-TESTS                += F_input_dump
-check_PROGRAMS       += F_input_dump
-F_input_dump_SOURCES  = F_input_dump.F90
-F_input_dump_LDADD    = ../src/libgrvyf.la
+TESTS                                            += F_input_dump
+check_PROGRAMS                                   += F_input_dump
+F_input_dump_SOURCES                              = F_input_dump.F90
+F_input_dump_LDADD                                = ../src/libgrvyf.la
 
-TESTS           += F_timer.sh
-check_PROGRAMS  += F_timer
-F_timer_SOURCES  = F_timer.f90
-F_timer_LDADD    = ../src/libgrvyf.la
+TESTS                                            += F_timer.sh
+check_PROGRAMS                                   += F_timer
+F_timer_SOURCES                                   = F_timer.f90
+F_timer_LDADD                                     = ../src/libgrvyf.la
 
-TESTS             += F_version
-check_PROGRAMS    += F_version
-F_version_SOURCES  = F_version.F90
-F_version_LDADD    = ../src/libgrvyf.la
+TESTS                                            += F_timer_std_width.sh
+check_PROGRAMS                                   += F_timer_std_width
+F_timer_std_width_SOURCES                         = F_timer_std_width.f90
+F_timer_std_width_LDADD                           = ../src/libgrvyf.la
 
-TESTS                           += F_get_command_arguments.sh
-check_PROGRAMS                  += F_get_command_arguments
-F_get_command_arguments_SOURCES  = F_get_command_arguments.f90
-F_get_command_arguments_LDADD    = ../src/libgrvyf.la
+TESTS                                            += F_timer_expanded_width.sh
+check_PROGRAMS                                   += F_timer_expanded_width
+F_timer_expanded_width_SOURCES                    = F_timer_expanded_width.f90
+F_timer_expanded_width_LDADD                      = ../src/libgrvyf.la
+
+TESTS                                            += F_version
+check_PROGRAMS                                   += F_version
+F_version_SOURCES                                 = F_version.F90
+F_version_LDADD                                   = ../src/libgrvyf.la
+
+TESTS                                            += F_get_command_arguments.sh
+check_PROGRAMS                                   += F_get_command_arguments
+F_get_command_arguments_SOURCES                   = F_get_command_arguments.f90
+F_get_command_arguments_LDADD                     = ../src/libgrvyf.la
 
 #------------------
 # Test Final Banner

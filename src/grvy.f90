@@ -300,12 +300,22 @@ module grvy
        implicit none
      end subroutine grvy_timer_summarize
 
-     integer (C_int) function grvy_timer_set_summarize_width(value) bind(C)
+     integer (C_int) function grvy_timer_set_summarize_width_passthrough(value) &
+          bind(C,name='grvy_timer_set_summarize_width')
        use iso_c_binding
        implicit none
        integer   (C_int), value, intent(in)  :: value
-     end function grvy_timer_set_summarize_width
+     end function grvy_timer_set_summarize_width_passthrough
 
+!     subroutine grvy_timer_set_summarize_width(value, return_flag)
+!       use iso_c_binding
+!       implicit none
+!       integer  (C_int), value, intent(in)  :: value
+!       integer  (C_int), intent(inout)      :: return_flag
+!
+!       return_flag = grvy_timer_set_summarize_width_passthrough(value)
+!     end subroutine grvy_timer_set_summarize_width
+!
      subroutine grvy_asci_time(timestring)
        implicit none
        character :: timestring
@@ -767,5 +777,14 @@ end subroutine grvy_get_command_arguments
          num_procs,jobId,code_revision,filename//C_NULL_CHAR)
     return
   end subroutine grvy_timer_save_hist
+
+     subroutine grvy_timer_set_summarize_width(value, return_flag)
+       use iso_c_binding
+       implicit none
+       integer  (C_int), value, intent(in)  :: value
+       integer  (C_int), intent(inout)      :: return_flag
+
+       return_flag = grvy_timer_set_summarize_width_passthrough(value)
+     end subroutine grvy_timer_set_summarize_width
   
 end module grvy

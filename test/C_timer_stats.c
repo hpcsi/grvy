@@ -72,7 +72,6 @@ int main()
     foo_fast();
 
   grvy_timer_finalize();
-  //  grvy_timer_summarize();
 
   call_count = grvy_timer_stats_count("foo_fast");
 
@@ -97,7 +96,6 @@ int main()
     }
 
   grvy_timer_finalize();
-  //  grvy_timer_summarize();
 
   call_count    = grvy_timer_stats_count("foo");
   call_mean     = grvy_timer_stats_mean("boo");
@@ -127,8 +125,6 @@ int main()
     }
 
   // make sure summarize funcion is accessible
-
-  freopen("/dev/null","w",stdout);
 
   grvy_timer_summarize();
 
