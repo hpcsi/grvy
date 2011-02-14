@@ -598,7 +598,7 @@ namespace GRVY {
       for(int i=0;i<40;i++)
 	grvy_printf(GRVY_INFO,"-");
 
-    printf("\n");
+    grvy_printf(GRVY_INFO,"\n");
 
     max_timer_name_width = display_id_width + 13;
 
