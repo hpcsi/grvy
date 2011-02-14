@@ -4,7 +4,7 @@ Version 0.30.0 (In Progress)
   * add defensive warning against dos newlines for input parsing
   * addition of historical performance logging capability using HDF
   * initial addition of HDF5 convenience class for I/O related operations
-  * additional of optional HDF5 library linkage
+  * configuration update to allow for optional HDF5 library linkage
   * migrated portions of Fortran interface to use iso_c_bindings 
   * updated Fortran interface to trim trailing white space for input parsing filename
   * updated Fortran library linkage (use -lgrvy and -lgrvyf)
