@@ -293,14 +293,29 @@ namespace GRVY {
   // Scalar Reads
   //--------------
 
+  template <typename T> int GRVY_Input_Class:: Read_Var(std::string var, T *value)
+  {
+    return (Read_Var( var.c_str(),value,Get_Default(*value)));
+  }
+
   template <typename T> int GRVY_Input_Class:: Read_Var(const char *var, T *value)
   {
     return (Read_Var( var,value,Get_Default(*value)));
   }
 
+  template <typename T> int GRVY_Input_Class:: Read_Var_Vec(std::string var, T *value, int nelem)
+  {
+    return (Read_Var_Vec( var.c_str(),value,nelem,Get_Default(*value)));
+  }
+
   template <typename T> int GRVY_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelem)
   {
     return (Read_Var_Vec( var,value,nelem,Get_Default(*value)));
+  }
+
+  template <typename T> int GRVY_Input_Class:: Read_Var_iVec(std::string var, T *value, int elem)
+  {
+    return(Read_Var_iVec( var.c_str(),value,elem,Get_Default(*value)));
   }
 
   template <typename T> int GRVY_Input_Class:: Read_Var_iVec(const char *var, T *value, int elem)
@@ -657,6 +672,18 @@ namespace GRVY {
   template int GRVY_Input_Class::Read_Var_iVec <int>     (const char *var, int    *value, int elem);
   template int GRVY_Input_Class::Read_Var_iVec <float>   (const char *var, float  *value, int elem);
   template int GRVY_Input_Class::Read_Var_iVec <double>  (const char *var, double *value, int elem);
+
+  template int GRVY_Input_Class::Read_Var <int>          (std::string var, int    *value);
+  template int GRVY_Input_Class::Read_Var <float>        (std::string var, float  *value);
+  template int GRVY_Input_Class::Read_Var <double>       (std::string var, double *value);
+
+  template int GRVY_Input_Class::Read_Var_Vec <int>      (std::string var, int    *value, int nelem);
+  template int GRVY_Input_Class::Read_Var_Vec <float>    (std::string var, float  *value, int nelem);
+  template int GRVY_Input_Class::Read_Var_Vec <double>   (std::string var, double *value, int nelem);
+
+  template int GRVY_Input_Class::Read_Var_iVec <int>     (std::string var, int    *value, int elem);
+  template int GRVY_Input_Class::Read_Var_iVec <float>   (std::string var, float  *value, int elem);
+  template int GRVY_Input_Class::Read_Var_iVec <double>  (std::string var, double *value, int elem);
 
   // (a) cases with default value provided....
 

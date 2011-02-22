@@ -558,6 +558,14 @@ class GRVY_Input_Class {
 
   // Numerical Read Functions
 
+  template <typename T> int Read_Var      (std::string var, T *value );
+  template <typename T> int Read_Var_Vec  (std::string var, T *value, int nelems);
+  template <typename T> int Read_Var_iVec (std::string var, T *value, int elem);
+
+  template <typename T> int Read_Var      (std::string var, T *value, T vardef);
+  template <typename T> int Read_Var_Vec  (std::string var, T *value, int nelems, T vardef);
+  template <typename T> int Read_Var_iVec (std::string var, T *value, int elem,   T vardef);
+
   template <typename T> int Read_Var      (const char *var, T *value );
   template <typename T> int Read_Var_Vec  (const char *var, T *value, int nelems);
   template <typename T> int Read_Var_iVec (const char *var, T *value, int elem);
@@ -571,7 +579,7 @@ class GRVY_Input_Class {
   int Read_Var                            (const char *var, char **value);
   int Read_Var_iVec                       (const char *var, char **value, int elem);
 
-  // C++ String Read Functions
+  // String Read Functions
 
   int Read_Var                            (const char *var, std::string *value);
   int Read_Var                            (const char *var, std::string *value, std::string vardef);
