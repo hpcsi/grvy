@@ -11,7 +11,7 @@ Version 0.30.0 (In Progress)
   * addition of grvy_log_setmask() function to override default log mask
   * deprecated hpct-based api, all library access should use grvy semantics
   * performance timer class public interface included in grvy.h
-  * build system fix for parallel build failure
+  * build system fix for parallel builds
 
 Version 0.29.1 (26 September 2010)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.29.1
