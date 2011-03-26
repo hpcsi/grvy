@@ -823,14 +823,40 @@ namespace GRVY {
       }
     else
       {
-	int compression_level = 5; // value between 0 and 9 (or -1 for no compression)
+	int compression_level = -1;   // value between 0 and 9 (or -1 for no compression)
+	hsize_t chunk_size    =  -1;  // experience dictates that small values bloat file size
 
+#if USE_PTABLE
 	if( (tableId = H5PTcreate_fl(h5.m_pimpl->groupIds[hostlevel],tablename.c_str(),
-				     timers_type,(hsize_t)256,compression_level)) == H5I_BADID)
+				     timers_type,chunk_size,compression_level)) == H5I_BADID)
 	  {
 	    grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename.c_str());
 	    exit(1);
 	  }
+#else
+	hsize_t dims_current[1];
+	hsize_t dims_max[1];
+	hid_t chunk_props;
+
+	dims_current[0] = 1;
+	dims_max[0]     = H5S_UNLIMITED;
+
+	hid_t space_id = H5Screate_simple(1,dims_current,dims_max);
+
+	// enable chunking on this group
+	
+	chunk_props = H5Pcreate(H5P_DATASET_CREATE);
+	H5Pset_chunk(chunk_props,1,dims_current);
+
+	tableId = H5Dcreate(h5.m_pimpl->groupIds[hostlevel],tablename.c_str(),
+			    timers_type, space_id ,H5P_DEFAULT,chunk_props,H5P_DEFAULT);
+
+	H5Sclose(space_id);
+	H5Pclose(chunk_props);
+
+	//	grvy_printf(GRVY_INFO,"Exiting for testing...\n");
+
+#endif
 
 	// Save environment attributes and assign local packet table
 	// version in case we ever need to make a change in the future
@@ -853,7 +879,12 @@ namespace GRVY {
     // Clean up shop
 
     H5Tclose(timers_type);
+
+#if USE_PTABLE
     h5.m_pimpl->PTableClose(tableId);
+#else
+    H5Dclose(tableId);
+#endif
 
     h5.Close();
 
@@ -1570,7 +1601,24 @@ namespace GRVY {
 
 	// That was fun, now we can append the packet data
 
+#if USE_PTABLE
 	assert(H5PTappend( tableId, 1, &(header) ) >= 0);
+#else
+	hsize_t dims_current[1];
+	hsize_t dims_max[1];
+
+
+	dims_current[0] = 1;
+	dims_max[0]     = H5S_UNLIMITED;
+
+	hid_t space_id = H5Screate_simple(1,dims_current,dims_max);
+
+	hid_t timers_type = CreateHistType(PTABLE_VERSION);
+
+	//hid_t filespace = H5Dget_space(dataset);
+	//	H5Select_elements(filespace,H5S_SELECT_APPEND,1,
+	H5Dwrite(tableId,timers_type,H5S_ALL,H5S_ALL,H5P_DEFAULT,&(header));
+#endif
     
       }
       break;
