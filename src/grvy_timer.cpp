@@ -866,9 +866,8 @@ namespace GRVY {
 
 	hid_t chunk_props = H5Pcreate(H5P_DATASET_CREATE);
 
-	// enable compression?
-
-	//H5Pset_deflate(chunk_props,6);
+	// enable compression? (experimentals indicate not useful for VL data)
+	//H5Pset_deflate(chunk_props,9);
 
 	H5Pset_chunk(chunk_props,1,dims_current);
 
@@ -897,9 +896,13 @@ namespace GRVY {
       
       }
 
-    // Append performance data to HDF performance table - we query the
-    // current number of measurements to decide where to place new
-    // data.  After the append, we increment the measurement counter.
+    // --------------------------------------------------
+    // Append performance data to HDF performance table 
+    // --------------------------------------------------
+
+    // we query the current number of measurements to decide where to
+    // place new data.  After the append, we increment the measurement
+    // counter.
 
     int num_measurements;
 
@@ -919,7 +922,13 @@ namespace GRVY {
     // exactly what we do, and our use case is to write one
     // performance timing result at a time).  Consequently, we attempt
     // to recreate the effect of an h5repack periodically.
+    // 
+    // *update*: this work great for first repack, but then loses it's 
+    // effectiveness for subsquent repacks. Users should use h5repack
+    // periodically if file get's too big and hopefully hdf5 will provide either 
+    // a dataset delete capability or repack API at some point.....
 
+#if 0
     if( (num_measurements % PERF_HIST_PACK_FREQ) == 0) 
       {
 	//int ibegin = NPACK*((num_measurements/NPACK)-1);
@@ -929,6 +938,7 @@ namespace GRVY {
 
 	RepackAllHostData(&h5,PTABLE_VERSION,tableId,timers_type,hostlevel);
       }
+#endif
 
     // -----------------------------------------------------
     // Extend the data set if we are on a chunksize boundary
@@ -1477,8 +1487,12 @@ namespace GRVY {
     hsize_t dims_max[1]     = {H5S_UNLIMITED};
     hsize_t coord[1];
     hid_t   filespace       = H5Dget_space(tableId);
-    hid_t   space_id        = H5Screate_simple(1,dims_current,dims_max);
 
+#if 0
+
+    // method to write one at a time
+
+    hid_t   space_id        = H5Screate_simple(1,dims_current,dims_max);
     for(int i=0;i<data.size();i++)
       {
 	coord[0] = i;
@@ -1486,6 +1500,21 @@ namespace GRVY {
 
 	H5Dwrite(tableId,timers_type,space_id,filespace,H5P_DEFAULT,&(data)[i]);
       }
+#else
+
+    // method to write all data at once
+
+    hsize_t  offset[1] = {0};
+    dims_current[0]    = data.size();
+
+    hid_t   space_id   = H5Screate_simple(1,dims_current,dims_max);
+
+    H5Sselect_hyperslab(filespace,H5S_SELECT_SET,offset,NULL,dims_current,NULL);
+
+    H5Dwrite(tableId,timers_type,space_id,filespace,H5P_DEFAULT,&(data)[0]);
+
+    grvy_printf(GRVY_INFO,"%s: rewrote %i packets\n",__func__,data.size());
+#endif
 
     return(0);
   }
@@ -1731,7 +1760,8 @@ namespace GRVY {
 	assert(H5PTappend( tableId, 1, &(header) ) >= 0);
 #else
 	hsize_t dims_current[1] = {1};
-	hsize_t dims_max[1]     = {1};
+	//	hsize_t dims_max[1]     = {1};
+	hsize_t dims_max[1]     = {H5S_UNLIMITED};
 	hsize_t coord[1]        = {num_measurements};
 
 	hid_t filespace         = H5Dget_space(tableId);
