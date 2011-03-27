@@ -88,12 +88,9 @@ namespace GRVY {
 
 #endif
 
-  // Macro Defaults
+  // Macro Defines
 
-  //#define GRVY_HIST_TIMING_DEFAULT_JOBID       -1
-  //#define GRVY_HIST_TIMING_DEFAULT_NUMPROCS     1
-  //#define GRVY_HIST_TIMING_DEFAULT_REVISION "-r0"
-  //#define GRVY_HIST_TIMING_DEFAULT_FLOPS      0.0
+  //#define USE_HDF5_PTABLE
 
   // Classes/Typedefs
 
@@ -128,7 +125,8 @@ namespace GRVY {
 #ifdef HAVE_HDF5  
     hid_t fileId;                             // hdf5 file handle
     std::map<std::string,hid_t> groupIds;     // hdf5 group handles
-    std::map<std::string,hid_t> dataspaceIds; // hdf5 dataspace hancles
+    std::map<std::string,hid_t> datasetIds;   // hdf5 dataset handles
+    std::map<std::string,hid_t> attributeIds; // hdf5 attribute handles
     
     H5E_auto2_t error_orig_func;              // error-handle func
     void       *error_orig_data;              // error-handle stack data

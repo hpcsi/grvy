@@ -741,7 +741,15 @@ private:
 
    std::vector<std::string> ListSubGroups(std::string groupname);
 
+   // Dataset-related functions
+
+   int  DatasetOpen  (std::string groupname, std::string datasetname);
+   bool DatasetExists(std::string groupname, std::string datasetname);
+
    // Attribute-related functions
+
+   int  AttributeOpen  (std::string groupname, std::string attribute);
+   bool AttributeExists(std::string groupname, std::string attribute);
 
    int AttributeWrite(std::string groupname, std::string attribute,          short int  value);
    int AttributeWrite(std::string groupname, std::string attribute,                int  value);

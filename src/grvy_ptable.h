@@ -22,7 +22,7 @@
 //
 //-----------------------------------------------------------------------el-
 //
-// Packet table data structure for performance logging.
+// HDF table data structure for performance logging.
 //
 // $Id: grvy_timer_interface.cpp 15042 2010-10-17 15:39:22Z karl $
 //--------------------------------------------------------------------------
@@ -59,5 +59,12 @@ typedef struct TimerPTable_V1 {
   hvl_t vl_env_variables;	// variable number of runtime environment variables
   hvl_t vl_subtimers;		// inclusion of a variable number of subtimers
 } Timer_PTable_V1;
+
+//--------------------------------------------------------------------
+// Controls related to historical HDF performance logging
+//--------------------------------------------------------------------
+
+const int PERF_HIST_CHUNKSIZE = 100; // chunk size for HDF performance datatype
+const int PERF_HIST_PACK_FREQ = 100; // frequency for repacking of performance data
 
 #endif

@@ -248,6 +248,65 @@ int GRVY_HDF5_Class::GroupOpen(string groupname)
   return 0; 
 }
 
+// -------------------------------
+// HDF5 Dataset-related functions
+// -------------------------------
+
+bool GRVY_HDF5_Class::DatasetExists(string groupname, string dataname)
+{
+  hid_t Id;
+
+  m_pimpl->silence_hdf_error_handler();
+
+  if ( (Id = H5Dopen(m_pimpl->groupIds[groupname],dataname.c_str(),H5P_DEFAULT)) == H5I_BADID ) 
+    {
+      m_pimpl->restore_hdf_error_handler();  
+      return(false);
+    }
+  else
+    {
+      H5Dclose(Id);
+      m_pimpl->restore_hdf_error_handler();  
+      return(true);
+    }
+}
+
+int GRVY_HDF5_Class::DatasetOpen(string groupname,string dataname)
+{
+  if(m_pimpl->fileId < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: no hdf5 file is actively open - unable to open data %s\n",
+		  __func__,dataname.c_str());
+      exit(1);
+    }
+
+  // is dataset already open?
+
+  map<std::string,hid_t>::iterator it = m_pimpl->datasetIds.find(dataname);
+
+  if( it != m_pimpl->datasetIds.end() )
+    {
+      grvy_printf(GRVY_DEBUG,"%s: data %s already opened\n",__func__,dataname.c_str());
+      return 0;
+    }
+
+  // open desired dataset and save hdf identifier
+
+  m_pimpl->silence_hdf_error_handler();
+
+  if ( (m_pimpl->datasetIds[dataname] = H5Dopen(m_pimpl->groupIds[groupname], dataname.c_str(),H5P_DEFAULT)) < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to open *existing* HDF dataset (%s/%s)\n",__func__,
+		  groupname.c_str(),dataname.c_str());
+      exit(1);
+    }  
+
+  m_pimpl->restore_hdf_error_handler();  
+
+  grvy_printf(GRVY_DEBUG,"%s: Successfully opened existing HDF dataset (%s)\n",__func__,dataname.c_str());
+  return 0; 
+}
+
 // Prototype for H5Literate callback function used in ListSubGroups
 
 herr_t op_callback (hid_t loc_id, const char *name, const H5L_info_t *info, void *data);
@@ -389,6 +448,62 @@ int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribut
   return(m_pimpl->AttributeRead(name,attribute,value));
 }
 
+bool GRVY_HDF5_Class::AttributeExists(string groupname,string attribute)
+{
+  hid_t attrId;
+
+  m_pimpl->silence_hdf_error_handler();
+  if ( (attrId = H5Aopen(m_pimpl->groupIds[groupname],attribute.c_str(),H5P_DEFAULT)) < 0)
+    {
+      m_pimpl->restore_hdf_error_handler();  
+      return false;
+    }
+  else
+    {
+      H5Aclose(attrId);
+      m_pimpl->restore_hdf_error_handler();  
+      return true;
+    }
+}
+
+int GRVY_HDF5_Class::AttributeOpen(string groupname,string attribute)
+{
+  hid_t attrId;
+
+  if(m_pimpl->fileId < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: no hdf5 file is actively open - unable to open attribute %s\n",
+		  __func__,attribute.c_str());
+      exit(1);
+    }
+
+  // is dataset already open?
+
+  map<std::string,hid_t>::iterator it = m_pimpl->attributeIds.find(attribute);
+
+  if( it != m_pimpl->attributeIds.end() )
+    {
+      grvy_printf(GRVY_DEBUG,"%s: attribute %s already opened\n",__func__,attribute.c_str());
+      return 0;
+    }
+
+  // open desired attribute and save hdf identifier
+
+  m_pimpl->silence_hdf_error_handler();
+
+  if ( (m_pimpl->attributeIds[attribute] = H5Aopen(m_pimpl->groupIds[groupname], attribute.c_str(),H5P_DEFAULT)) < 0)
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to open *existing* HDF dataset (%s/%s)\n",__func__,
+		  groupname.c_str(),attribute.c_str());
+      exit(1);
+    }  
+
+  m_pimpl->restore_hdf_error_handler();  
+
+  grvy_printf(GRVY_DEBUG,"%s: Successfully opened existing HDF attribute (%s)\n",__func__,attribute.c_str());
+  return 0; 
+}
+
 #if 0
 int GRVY_HDF5_Class::GRVY_HDF5_Class::AttributeRead(string name, string attribute, string &value)
 { 
@@ -406,8 +521,18 @@ template <typename T> int GRVY_HDF5_Class::GRVY_HDF5_ClassImp::AttributeWrite(st
 
   hid_t attr_type_ondisk = get_little_endian_type(value);
   hid_t dataspaceId      = H5Screate(H5S_SCALAR);
-  hid_t attrId           = H5Acreate(groupIds[groupname],attribute.c_str(),
-				     attr_type_ondisk,dataspaceId,H5P_DEFAULT,H5P_DEFAULT);
+  hid_t attrId;
+
+  if(self->AttributeExists(groupname,attribute))
+    {
+      self->AttributeOpen(groupname,attribute);
+      attrId = attributeIds[attribute];
+    }
+  else
+    {
+      attrId = H5Acreate(groupIds[groupname],attribute.c_str(),
+			 attr_type_ondisk,dataspaceId,H5P_DEFAULT,H5P_DEFAULT);
+    }
 
   if(dataspaceId < 0 || attrId < 0)
     {
@@ -574,12 +699,21 @@ hid_t GRVY_HDF5_Class::GRVY_HDF5_ClassImp::PTableOpen(string groupname,string ta
 
   self->GroupOpen(groupname);
 
+#ifdef USE_HDF5_PTABLE
   if ( (tableId = H5PTopen(groupIds[groupname],tablename.c_str())) == H5I_BADID )
     {
       grvy_printf(GRVY_FATAL,"%s: Unable to open *existing* HDF PTable (%s)\n",__func__,tablename.c_str());
       restore_hdf_error_handler();  
       exit(1);
     }
+#else
+  if ( (tableId = H5Dopen(groupIds[groupname],tablename.c_str(),H5P_DEFAULT)) == H5I_BADID )
+    {
+      grvy_printf(GRVY_FATAL,"%s: Unable to open *existing* HDF PTable (%s)\n",__func__,tablename.c_str());
+      restore_hdf_error_handler();  
+      exit(1);
+    }
+#endif
   else
     {
       restore_hdf_error_handler();  
@@ -742,9 +876,12 @@ int  GRVY_HDF5_Class::Open  (string filename, bool) { return 0; }
 int  GRVY_HDF5_Class::Close ()                      { return 0; }
 bool GRVY_HDF5_Class::Exists(string filename)       { return 0; }
 						   	     
-int  GRVY_HDF5_Class::GroupOpen   (string)       { return 0; }
-int  GRVY_HDF5_Class::GroupCreate (string)       { return 0; }
-bool GRVY_HDF5_Class::GroupExists (string)       { return false; }
+int  GRVY_HDF5_Class::GroupOpen   (string)          { return 0; }
+int  GRVY_HDF5_Class::GroupCreate (string)          { return 0; }
+bool GRVY_HDF5_Class::GroupExists (string)          { return false; }
+
+bool GRVY_HDF5_Class::DatasetExists(string,string)  { return false;}
+int  GRVY_HDF5_Class::DatasetOpen  (string,string)  { return 0; }
 
 int GRVY_HDF5_Class::AttributeWrite(string, string,          short int) { return 0; }
 int GRVY_HDF5_Class::AttributeWrite(string, string,                int) { return 0; }

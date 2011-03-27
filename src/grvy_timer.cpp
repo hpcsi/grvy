@@ -107,17 +107,19 @@ namespace GRVY {
     void   AddEllipsis     (std::string &);
 
 #ifdef HAVE_HDF5
-    hid_t  CreateHistType  (int version); 
-    int    AppendHistData  (double timing, string experiment, string comment, int num_procs, int jobId,
-			    string code_revision, double flops, int version, hid_t tableId, 
-			    bool save_internal_timer);
-    int    ReadAllHostData (GRVY_HDF5_Class *h5, hid_t tableId, vector <TimerPTable_V1> *data);
-    int    ReadPTable      (string host);
-    void   SummarizeHost   (string host);
-    void   WriteHeaderInfo (FILE *fp, const char *delim);
+    hid_t  CreateHistType   (int version); 
+    int    AppendHistData   (double timing, string experiment, string comment, int num_procs, int jobId,
+			     string code_revision, double flops, int version, hid_t tableId, hid_t timers_type,
+			     bool save_internal_timer, int num_measurements);
+    int    ReadAllHostData  (GRVY_HDF5_Class *h5, string machine, hid_t tableId, hid_t timers_type, 
+			     vector <TimerPTable_V1> *data);
+    int    RepackAllHostData(GRVY_HDF5_Class *h5,  int version, hid_t tableId, hid_t timers_type, string machine);
+    int    ReadPTable       (string host);
+    void   SummarizeHost    (string host);
+    void   WriteHeaderInfo  (FILE *fp, const char *delim);
 #endif
-    int    SaveHistTiming  (double timiing, string machinename, string experiment, string comment, int num_procs, 
-			    int jobId, string code_revision, double flops, string filename, bool save_internal_timer );
+    int    SaveHistTiming   (double timiing, string machinename, string experiment, string comment, int num_procs, 
+			     int jobId, string code_revision, double flops, string filename, bool save_internal_timer );
 
     bool        initialized;            // initialized?
     double      timer_finalize;         // raw timer value at time of finalize()
@@ -137,6 +139,9 @@ namespace GRVY {
     GRVY_Timer_Class *self;	       // back pointer to public class
 
     accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
+
+  private:
+    bool new_performance_table;
   };
 
 } // matches namespace GRVY
@@ -817,35 +822,54 @@ namespace GRVY {
   
     GRVY_Hostenv_Class myenv;
 
+#ifdef USE_HDF5_PTABLE
+
     if (h5.m_pimpl->PTableExists(hostlevel,tablename))
       {
+	new_performance_table = false;
 	tableId = h5.m_pimpl->PTableOpen(hostlevel,tablename);
       }
     else
       {
-	int compression_level = -1;   // value between 0 and 9 (or -1 for no compression)
-	hsize_t chunk_size    =  -1;  // experience dictates that small values bloat file size
 
-#if USE_PTABLE
+	int compression_level = -1;   // value between 0 and 9 (or -1 for no compression)
+	hsize_t chunk_size    =  1;   
+	new_performance_table = true;
+
 	if( (tableId = H5PTcreate_fl(h5.m_pimpl->groupIds[hostlevel],tablename.c_str(),
 				     timers_type,chunk_size,compression_level)) == H5I_BADID)
 	  {
 	    grvy_printf(GRVY_FATAL,"%s: Unable to create HDF packet table (%s)\n",__func__,tablename.c_str());
 	    exit(1);
 	  }
+
+      }
 #else
-	hsize_t dims_current[1];
-	hsize_t dims_max[1];
-	hid_t chunk_props;
+    if (h5.DatasetExists(hostlevel,tablename))
+      {
+	new_performance_table = false;
 
-	dims_current[0] = 1;
-	dims_max[0]     = H5S_UNLIMITED;
+	h5.DatasetOpen(hostlevel,tablename);
+	tableId = h5.m_pimpl->datasetIds[tablename];
+      }
+    else
+      {
+	new_performance_table = true;
 
-	hid_t space_id = H5Screate_simple(1,dims_current,dims_max);
+	// create 1D hdf data type with unlimited dimension
 
-	// enable chunking on this group
-	
-	chunk_props = H5Pcreate(H5P_DATASET_CREATE);
+	hsize_t dims_current[1] = {PERF_HIST_CHUNKSIZE};
+	hsize_t dims_max[1]     = {H5S_UNLIMITED};
+	hid_t space_id          = H5Screate_simple(1,dims_current,dims_max);
+
+	// enable chunking for this performance logging dataset
+
+	hid_t chunk_props = H5Pcreate(H5P_DATASET_CREATE);
+
+	// enable compression?
+
+	//H5Pset_deflate(chunk_props,6);
+
 	H5Pset_chunk(chunk_props,1,dims_current);
 
 	tableId = H5Dcreate(h5.m_pimpl->groupIds[hostlevel],tablename.c_str(),
@@ -853,34 +877,79 @@ namespace GRVY {
 
 	H5Sclose(space_id);
 	H5Pclose(chunk_props);
-
-	//	grvy_printf(GRVY_INFO,"Exiting for testing...\n");
-
+      }
 #endif
+
+    if(new_performance_table)
+      {
 
 	// Save environment attributes and assign local packet table
 	// version in case we ever need to make a change in the future
 
 	int format_version = PTABLE_VERSION;
 
-	h5.AttributeWrite(hostlevel,"format_version", format_version);
-	h5.AttributeWrite(hostlevel,"os_sysname",     myenv.os_sysname);
-	h5.AttributeWrite(hostlevel,"os_release",     myenv.os_release);
-	h5.AttributeWrite(hostlevel,"os_version",     myenv.os_version);
-	h5.AttributeWrite(hostlevel,"cputype",        myenv.cputype   );
+	h5.AttributeWrite(hostlevel,"format_version",   format_version);
+	h5.AttributeWrite(hostlevel,"os_sysname",       myenv.os_sysname);
+	h5.AttributeWrite(hostlevel,"os_release",       myenv.os_release);
+	h5.AttributeWrite(hostlevel,"os_version",       myenv.os_version);
+	h5.AttributeWrite(hostlevel,"cputype",          myenv.cputype   );
+	h5.AttributeWrite(hostlevel,"num_measurements", 0);
       
       }
 
-    // Append performance data to HDF packet table
+    // Append performance data to HDF performance table - we query the
+    // current number of measurements to decide where to place new
+    // data.  After the append, we increment the measurement counter.
+
+    int num_measurements;
+
+    h5.AttributeRead(hostlevel,"num_measurements", num_measurements );
 
     AppendHistData(timing,experiment,comment,num_procs,jobId,code_revision,flops,
-		   PTABLE_VERSION,tableId,save_internal_timer);
+		   PTABLE_VERSION,tableId,timers_type,save_internal_timer,num_measurements);
+
+    h5.AttributeWrite(hostlevel,"num_measurements", ++num_measurements );
+
+    // -----------------------------------------------------
+    // Repack data if we have reached the NPACK threshold 
+    // -----------------------------------------------------
+
+    // The reason for this addition is that HDF file size can bloat
+    // with frequent file writes when using VL datatypes (which is
+    // exactly what we do, and our use case is to write one
+    // performance timing result at a time).  Consequently, we attempt
+    // to recreate the effect of an h5repack periodically.
+
+    if( (num_measurements % PERF_HIST_PACK_FREQ) == 0) 
+      {
+	//int ibegin = NPACK*((num_measurements/NPACK)-1);
+	//int iend   = ibegin + NPACK - 1;
+
+	grvy_printf(GRVY_INFO,"\n%s: Repacking performance data to minimize file size\n",__func__);
+
+	RepackAllHostData(&h5,PTABLE_VERSION,tableId,timers_type,hostlevel);
+      }
+
+    // -----------------------------------------------------
+    // Extend the data set if we are on a chunksize boundary
+    // -----------------------------------------------------
+
+    if( (num_measurements % PERF_HIST_CHUNKSIZE) == 0 )
+      {
+	hsize_t dims_current[1] = {num_measurements + PERF_HIST_CHUNKSIZE};
+	hsize_t dims_max[1]     = {H5S_UNLIMITED};
+
+	grvy_printf(GRVY_DEBUG,"\n%s: Adding additional chunksize space for performance data (%i)\n",
+		    __func__,PERF_HIST_CHUNKSIZE);
+
+	H5Dset_extent(tableId,dims_current);
+      }
   
     // Clean up shop
 
     H5Tclose(timers_type);
 
-#if USE_PTABLE
+#ifdef USE_HDF5_PTABLE
     h5.m_pimpl->PTableClose(tableId);
 #else
     H5Dclose(tableId);
@@ -960,7 +1029,7 @@ namespace GRVY {
 	h5.AttributeRead(machine,"cputype",       cputype);
 
 	hid_t timers_type = m_pimpl->CreateHistType(Ptable_Version);
-	hid_t     tableId = h5.m_pimpl->PTableOpen(toplevel+machines[imach],"PTable");
+       	hid_t     tableId = h5.m_pimpl->PTableOpen(machine,"PTable");
 
 	map<string,minmax> max_vals;
 	map<string,minmax> min_vals;
@@ -979,8 +1048,13 @@ namespace GRVY {
 	case 1:
 	  {
 	    vector<TimerPTable_V1> data;
-	    m_pimpl->ReadAllHostData(&h5,tableId,&data);
+	    m_pimpl->ReadAllHostData(&h5,machine,tableId,timers_type,&data);
+
+#if USE_HDF5_PTABLE
 	    h5.m_pimpl->PTableClose(tableId);
+#else
+	    assert(H5Dclose(tableId) >= 0);
+#endif
 
 	    grvy_printf(GRVY_DEBUG,"%s: Number of experiments = %i\n",__func__,data.size());	  
 
@@ -1101,14 +1175,6 @@ namespace GRVY {
 		    grvy_printf(GRVY_INFO,"    --> Max  time = %.8e on %s\n\n",
 				max_vals[ename].value,data[max_vals[ename].index].timestamp);
 		  
-#if 0
-		    grvy_printf(GRVY_INFO,"  --> Mean time = %.8e (secs)\n",mean(ii->second));
-		    grvy_printf(GRVY_INFO,"  --> Variance  = %.8e\n",variance(ii->second));
-		    gry_printf(GRVY_INFO,"  --> Min  time = %.8e on %s\n",
-			       min_vals[ename].value,data[min_vals[ename].index].timestamp);
-		    grvy_printf(GRVY_INFO,"  --> Max  time = %.8e on %s\n\n",
-				max_vals[ename].value,data[max_vals[ename].index].timestamp);
-#endif
 		  }
 		  
 		if(dump_files)
@@ -1157,7 +1223,6 @@ namespace GRVY {
 		    if(output_subtimers)
 		      {
 
-			//fprintf(fp_mach," | ");
 			fprintf(fp_mach," ");
 
 			// first, we generate a list of all possible
@@ -1337,17 +1402,32 @@ namespace GRVY {
 
 #ifdef HAVE_HDF5
 
-  int GRVY_Timer_Class::GRVY_Timer_ClassImp::ReadAllHostData(GRVY_HDF5_Class *h5, 
-							     hid_t tableId, vector <TimerPTable_V1> *data)
+  int GRVY_Timer_Class::GRVY_Timer_ClassImp::ReadAllHostData(GRVY_HDF5_Class *h5, string machine,
+							     hid_t tableId, hid_t timers_type, 
+							     vector <TimerPTable_V1> *data)
   {
 
     grvy_printf(GRVY_DEBUG,"%s: Reading performance data (format = V1)\n",__func__);
 
+#ifdef USE_HDF5_PTABLE
     hsize_t nrecords = h5->m_pimpl->PTableNumPackets(tableId);
+#else
+    int num_measurements;
+    h5->AttributeRead(machine,"num_measurements", num_measurements );
+    hsize_t nrecords = num_measurements;
+#endif
 
     grvy_printf(GRVY_DEBUG,"%s: %i packets are available for reading \n",__func__,nrecords);
 
     data->reserve(nrecords);
+
+    // Initialize mem/file space for subsquent data reads
+
+    hsize_t dims_current[1] = {1};
+    hsize_t dims_max[1]     = {1};
+    hsize_t coord[1];
+    hid_t   filespace       = H5Dget_space(tableId);
+    hid_t   space_id        = H5Screate_simple(1,dims_current,dims_max);
 
     // Loop over all packet entries and stash results in (data)
 
@@ -1355,11 +1435,23 @@ namespace GRVY {
 
     for(int i=0;i<nrecords;i++)
       {
+#ifdef USE_HDF5_PTABLE
 	if (H5PTget_next(tableId,1,&packet_data) < 0)
 	  {
 	    grvy_printf(GRVY_FATAL,"%s: Unable to read %i packet (%i)\n",__func__,i);
 	    exit(1);
 	  }
+#else
+
+	coord[0] = i;
+	H5Sselect_elements(filespace,H5S_SELECT_SET,1,coord);
+
+	if (H5Dread(tableId,timers_type,space_id,filespace,H5P_DEFAULT,&packet_data) < 0)
+	  {
+	    grvy_printf(GRVY_FATAL,"%s: Unable to read %i performance packet (%i)\n",__func__,i);
+	    exit(1);
+	  }
+#endif
 	else
 	  {
 	    data->push_back(packet_data);
@@ -1367,6 +1459,33 @@ namespace GRVY {
       }
 
     grvy_printf(GRVY_DEBUG,"%s: Finished reading performance data (format = V1)\n",__func__);
+
+    return(0);
+  }
+
+  int GRVY_Timer_Class::GRVY_Timer_ClassImp::RepackAllHostData(GRVY_HDF5_Class *h5, int version,
+							       hid_t tableId, hid_t timers_type, string machine)
+  {
+    vector<TimerPTable_V1> data;
+    ReadAllHostData(h5,machine,tableId,timers_type,&data);
+
+    grvy_printf(GRVY_INFO,"%s: Repacking %i measurements for host %s\n",__func__,data.size(),machine.c_str());
+
+    // Initialize mem/file space for subsquent data reads
+
+    hsize_t dims_current[1] = {1};
+    hsize_t dims_max[1]     = {H5S_UNLIMITED};
+    hsize_t coord[1];
+    hid_t   filespace       = H5Dget_space(tableId);
+    hid_t   space_id        = H5Screate_simple(1,dims_current,dims_max);
+
+    for(int i=0;i<data.size();i++)
+      {
+	coord[0] = i;
+	H5Sselect_elements(filespace,H5S_SELECT_SET,1,coord);
+
+	H5Dwrite(tableId,timers_type,space_id,filespace,H5P_DEFAULT,&(data)[i]);
+      }
 
     return(0);
   }
@@ -1451,6 +1570,10 @@ namespace GRVY {
       H5Tclose(ptable_type);
       H5Tclose(ptable_env_type);
     
+      // Pack the datatype for mem alignment
+
+      H5Tpack(timers_type);
+
       return(timers_type);
       break;
 
@@ -1500,7 +1623,8 @@ namespace GRVY {
   int GRVY_Timer_Class::GRVY_Timer_ClassImp::AppendHistData(double timing, string experiment, string comment, 
 							    int num_procs,int jobId, string code_revision, 
 							    double flops, int version, hid_t tableId, 
-							    bool save_internal_timers)
+							    hid_t timers_type, bool save_internal_timers,
+							    int num_measurements)
   {
     grvy_printf(GRVY_DEBUG,"Appending historical timer data for PTable version %i\n",version);
     grvy_printf(GRVY_DEBUG,"--> save_internal_timer = %i\n",save_internal_timers);
@@ -1510,7 +1634,7 @@ namespace GRVY {
     if(save_internal_timers)
       num_subtimers = TimerMap.size() - 1;  // -1 since global timer goes in header
     else
-      num_subtimers = 0;		         // no subtimers if user is providing a global timing
+      num_subtimers = 0;		    // no subtimers if user is providing a global timing
 
     // timestamp the data
 
@@ -1599,25 +1723,24 @@ namespace GRVY {
 
 	assert(subtimers.size() == num_subtimers);
 
+	// ------------------------------------------------
 	// That was fun, now we can append the packet data
+	// ------------------------------------------------
 
-#if USE_PTABLE
+#ifdef USE_HDF5_PTABLE
 	assert(H5PTappend( tableId, 1, &(header) ) >= 0);
 #else
-	hsize_t dims_current[1];
-	hsize_t dims_max[1];
+	hsize_t dims_current[1] = {1};
+	hsize_t dims_max[1]     = {1};
+	hsize_t coord[1]        = {num_measurements};
 
+	hid_t filespace         = H5Dget_space(tableId);
+	hid_t space_id          = H5Screate_simple(1,dims_current,dims_max);
 
-	dims_current[0] = 1;
-	dims_max[0]     = H5S_UNLIMITED;
+	H5Sselect_elements(filespace,H5S_SELECT_SET,1,coord);
+	assert( H5Dwrite(tableId,timers_type,space_id,filespace,H5P_DEFAULT,&(header)) >= 0);
 
-	hid_t space_id = H5Screate_simple(1,dims_current,dims_max);
-
-	hid_t timers_type = CreateHistType(PTABLE_VERSION);
-
-	//hid_t filespace = H5Dget_space(dataset);
-	//	H5Select_elements(filespace,H5S_SELECT_APPEND,1,
-	H5Dwrite(tableId,timers_type,H5S_ALL,H5S_ALL,H5P_DEFAULT,&(header));
+	grvy_printf(GRVY_DEBUG,"%s: Just wrote performance packet data)\n",__func__);
 #endif
     
       }
