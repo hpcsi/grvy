@@ -142,6 +142,7 @@ namespace GRVY_gadd
     if(vmap.count("quiet"))
       {
 	gt->SetOption("output_stdout",false);
+	grvy_log_setlevel(GRVY_ERROR);
 	
 	grvy_printf(GRVY_DEBUG,"User requested --quiet option\n");
       }

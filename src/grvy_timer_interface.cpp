@@ -143,11 +143,44 @@ double grvy_timer_stats_variance(const char *id)
   return(_GRVY_Timers->StatsVariance(id));
 }
 
-int grvy_timer_save_hist(const char*experiment, const char *comment, 
-			 int num_procs, int jobId, const char *code_revision, double flops,
-			 const char *filename)
+// grvy_summarize_hist_timing(): summarize and dump historical timing information to ascii files
+void grvy_summarize_hist_timing(const char *filename, const char *delimiter, const char *outdir)
+{
+  return(_GRVY_Timers->SummarizeHistTiming(filename,delimiter,outdir));
+}
+
+// grvy_timer_save_hist(): save internal GRVY timer to historical repository (short)
+
+int grvy_timer_save_hist(const char*experiment, const char *comment, int num_procs,const char *filename)
+{
+  return(_GRVY_Timers->SaveHistTiming(experiment,comment,num_procs,filename));
+}
+
+// grvy_timer_save_hist(): save internal GRVY timer to historical repository (expanded)
+
+int grvy_timer_save_hist_exp(const char*experiment, const char *comment, 
+			     int num_procs, int jobId, const char *code_revision, double flops,
+			     const char *filename)
 {
   return(_GRVY_Timers->SaveHistTiming(experiment,comment,num_procs,jobId,code_revision,flops,filename));
+}
+
+// grvy_timer_save_hist_ext(): save external performance data to historical repository (short)
+
+int grvy_timer_save_hist_ext(double timing, const char *machinename, const char*experiment, 
+			     const char *comment, int num_procs,const char *filename)
+{
+  return(_GRVY_Timers->SaveHistTiming(timing,machinename,experiment,comment,num_procs,filename));
+}
+
+// grvy_timer_save_hist_ext_exp(): save external performance data to historical repository (expanded)
+
+int grvy_timer_save_hist_ext_exp(double timing, const char *machinename, const char*experiment, const char *comment, 
+				 int num_procs, int jobId, const char *code_revision, double flops,
+				 const char *filename)
+{
+  return(_GRVY_Timers->SaveHistTiming(timing,machinename,experiment,comment,num_procs,
+				      jobId,code_revision,flops,filename));
 }
 
 //-----------------------------------------------------------------
