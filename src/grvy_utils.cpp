@@ -366,6 +366,10 @@ extern "C" void grvy_create_scratch_dir_(char *name_template,int _namelen,int *f
     return(output);
   }
 
+#if 0
+
+  // next two functions deprecated with iso_c implementation 
+
   char *grvy_f2c_char_no_spaces(char*input,int len)
   {
     char* output = new char[len+1];
@@ -376,6 +380,7 @@ extern "C" void grvy_create_scratch_dir_(char *name_template,int _namelen,int *f
 
     return(output);
   }
+
 
   // C style whitespace trimmer - mod'd example from Stack Overflow
   // primarily used to trim Fortran provided strings (you said trim...)
@@ -401,6 +406,7 @@ extern "C" void grvy_create_scratch_dir_(char *name_template,int _namelen,int *f
     return(str);
   }
 
+#endif
   
   // verify_string_ends_with_6_Xs(): 
   //

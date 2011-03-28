@@ -261,6 +261,8 @@ F_get_command_arguments_LDADD                     = ../src/libgrvyf.la
 # Standalone Binaries
 #--------------------
 
+TESTS                                           += version hostinfo
+
 if HDF5_ENABLED
 TESTS                                           += gadd
 TESTS                                           += gdump

@@ -55,6 +55,13 @@ if test -d $TEST_DIR ; then
     rm -rf $TEST_DIR
 fi
 
+#------------------------------------
+# Run binary with additional options
+#------------------------------------
+
+$GDUMP -q -a -d "%" -o $TEST_DIR $TEST_FILE || exit 1
+$GDUMP -q -s $TEST_FILE || exit 1
+
 # -------------------------------------
 # Now, run the binary with help option
 # -------------------------------------

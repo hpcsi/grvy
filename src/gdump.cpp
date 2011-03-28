@@ -135,7 +135,7 @@ namespace GRVY_gdump
 
     if(vmap.count("with-env"))
       {
-	gt->SetOption("output_env",true);
+	gt->SetOption("output_printenv",true);
 	grvy_printf(GRVY_DEBUG,"User requested --with-env option\n");
       }
 

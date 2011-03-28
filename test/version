@@ -1,0 +1,50 @@
+#!/bin/bash
+
+echo "-------------------------------------------------------"
+echo "Standalone Binaries"
+echo "-------------------------------------------------------"
+
+#--------------------------------------------------------------------------
+# GRVY Test Suite
+#
+# Test standalone binaries
+# --------------------------------------------------------------------------
+
+EXE=../src/version
+TEST_FILE=.version
+
+# Compiled binaries must exist
+
+if test ! -x $EXE ; then
+    echo "${0}: Expected binary does not exist or is not executable"
+    exit 1
+fi
+
+$EXE >& $TEST_FILE || exit 1
+
+# Verify we have expected output files
+
+if test ! -s $TEST_FILE ; then
+    exit 1
+fi
+
+# Let's at least check that we got the version info correctly
+
+VER1=`cat $TEST_FILE | grep Version | awk '{print "\""$5"\""}'`
+VER2=`grep GRVY_LIB_VERSION ../src/grvy.h | awk '{print $3}'`
+
+if test "$VER1" != "$VER2" ;then
+    echo "${0}: Version mismatch"
+    exit 1	 
+fi
+
+# Clean up
+
+if test -e $TEST_FILE ; then
+    rm -f $TEST_FILE
+fi
+
+exit 0
+
+
+

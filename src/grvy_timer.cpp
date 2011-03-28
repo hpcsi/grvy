@@ -172,7 +172,7 @@ namespace GRVY {
     m_pimpl->options["output_subtimer_raw"  ] = false;
     m_pimpl->options["dump_files"           ] = true;
     m_pimpl->options["output_comments"      ] = false;
-    m_pimpl->options["output_env"           ] = false;
+    m_pimpl->options["output_printenv"      ] = false;
 
   }
 
@@ -987,7 +987,7 @@ namespace GRVY {
     bool output_totaltimers = m_pimpl->options["output_totaltimer_raw"];
     bool output_subtimers   = m_pimpl->options["output_subtimer_raw"];
     bool output_comments    = m_pimpl->options["output_comments"];
-    bool output_env         = m_pimpl->options["output_env"];
+    bool output_env         = m_pimpl->options["output_printenv"];
 
     // Open existing file
 
@@ -1108,7 +1108,7 @@ namespace GRVY {
 		    max_comment_width +=2; // include quotes around comment
 		  }
 
-#if 0
+#if 1
 		if(output_env)
 		  {
 		    Env_PTable_V1 *env_variables = (Env_PTable_V1*)data[i].vl_env_variables.p;
@@ -1712,6 +1712,7 @@ namespace GRVY {
 	    Env_PTable_V1 env_tmp;
 
 	    runtimeEnv = myenv.Getenv();
+
 	    for(vector<string>::iterator it=runtimeEnv.begin();it != runtimeEnv.end(); ++it)
 	      {
 		env_tmp.env_string = (*it).c_str();

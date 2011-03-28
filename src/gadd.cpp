@@ -73,7 +73,6 @@ namespace GRVY_gadd
     int    numprocs =   1;	 // default processor count
     string revision = "unknown"; // default processor count
     double flops    = 0.0;	 // default FLOPs
-    //    vector<string> AllEnv;	 // list of all runtime environment variables
     
     // Define supported options for Boost
     
@@ -150,7 +149,7 @@ namespace GRVY_gadd
 #if 1
     if(vmap.count("env"))
       {
-	gt->SetOption("output_env",true);
+	gt->SetOption("output_printenv",true);
 	grvy_printf(GRVY_DEBUG,"User requested --env option\n");
       }
 #endif
