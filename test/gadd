@@ -12,6 +12,7 @@ echo "-------------------------------------------------------"
 # --------------------------------------------------------------------------
 
 GADD=../src/gadd
+REF_DIR=ref_files
 TEST_FILE=.test.h5
 
 # Compiled binaries must exist
@@ -25,7 +26,30 @@ if test -e $TEST_FILE ;then
     rm -f $TEST_FILE
 fi
 
-# Run the binary and make sure it exits with zero status
+
+# -------------------------------------
+# First, run the binary with help option
+# -------------------------------------
+
+$GADD -h >& $TEST_FILE || exit 1
+
+if test ! -s $TEST_FILE ; then
+    echo "${0}: No output generated from $GADD"
+    exit 1
+fi
+
+diff $TEST_FILE $REF_DIR/gadd.help || exit 1
+
+# Clean up
+
+if test -e $TEST_FILE ; then
+    rm -f $TEST_FILE
+fi
+
+# --------------------------------------------------------------
+# Second, run the binary and make sure it generates output
+# (will be used as input for subsequent gdump test)
+# --------------------------------------------------------------
 
 $GADD -q -c "acomment" -m "mymachine"   -j "12345" -p 42 -r "r2222" -f 65 13.45  "example1" $TEST_FILE || exit 1
 $GADD -q -c "commentb" -m "mymachine"   -j "54321" -p  1 -r "r2223" -f 65  2.45  "example1" $TEST_FILE || exit 1
@@ -35,3 +59,5 @@ if test ! -s $TEST_FILE ; then
     echo "${0}: No output generated from $GADD"
     exit 1
 fi
+
+exit 0

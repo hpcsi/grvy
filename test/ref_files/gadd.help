@@ -1,0 +1,24 @@
+
+Usage: gadd [OPTIONS] time name file
+
+where "time" is the performancing timing in seconds, "name" is the
+experiment identifier, and "file" is the path to a libGRVY style historical
+performance database.
+
+This utility is used to store application runtime measurements from various
+compute resources to provide historical monitoring during application development,
+perform system benchmarking, identify performance outliers, and facilitate
+cross-platform comparisons.
+
+OPTIONS:
+  --help                generate help message and exit
+  --version             output version information and exit
+  -q [ --quiet ]        suppress normal stdout messages
+  -e [ --env ]          store runtime environment with timing
+  -c [ --comment ] arg  additional comment string for the measurement
+  -m [ --machine ] arg  machine name (default=local hostname)
+  -j [ --jobid ] arg    batch job identifier (default = -1)
+  -p [ --numprocs ] arg number of processors (default = 1)
+  -r [ --revision ] arg application/code revision (default = unknown)
+  -f [ --flops ] arg    measured FLOPs (default = 0.0)
+
