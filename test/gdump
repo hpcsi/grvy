@@ -51,8 +51,8 @@ diff $TEST_DIR/mymachine/example1.pruned $REF_DIR/$TEST_DIR/mymachine/example1.p
 
 # Clean up
 
-if test -e $TEST_FILE ; then
-    rm -f $TEST_FILE
+if test -d $TEST_DIR ; then
+    rm -rf $TEST_DIR
 fi
 
 # -------------------------------------

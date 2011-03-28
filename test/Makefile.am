@@ -126,6 +126,15 @@ check_PROGRAMS                                  += C_version_stdout
 C_version_stdout_SOURCES                         = C_version_stdout.c
 C_version_stdout_LDADD                           = ../src/libgrvy.la
 
+if HDF5_ENABLED
+
+TESTS                                           += C_hdf_hist_timing
+check_PROGRAMS                                  += C_hdf_hist_timing
+C_hdf_hist_timing_SOURCES                        = C_hdf_hist_timing.c
+C_hdf_hist_timing_LDADD                          = ../src/libgrvy.la
+
+endif
+
 #-----------------
 # C++ Tests
 #-----------------
