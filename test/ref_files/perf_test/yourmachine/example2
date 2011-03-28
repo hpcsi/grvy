@@ -1,0 +1,21 @@
+# --
+# Historical Performance Timing Records
+# libGRVY: Version = 0.30.0 (3000)
+#
+# Host     = yourmachine
+# Sysname  = Darwin
+# Release  = 10.6.0
+# Version  = Darwin Kernel Version 10.6.0: Wed Nov 10 18:13:17 PST 2010; root:xnu-1504.9.26~3/RELEASE_I386
+# CPU Type = Unknown
+# --
+# Experiment: example2 (1 total samples)
+#
+#  --> Mean time = 8.30000000e+02 (secs)
+#  --> Variance  = 0.00000000e+00
+#  --> Min  time = 8.30000000e+02 on 2011-03-27 19:00:00 CDT
+#  --> Max  time = 8.30000000e+02 on 2011-03-27 19:00:00 CDT
+#
+# --
+# Index     Experiment-Date     Total Time(sec)    # Procs      JobId Revision      Flops  Comment 
+# --
+      1 2011-03-27 19:00:00 CDT  8.30000000e+02         99      98765    norev 0.0000e+00 "totoro"

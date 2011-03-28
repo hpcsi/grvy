@@ -161,6 +161,7 @@ TESTS                                           += CXX_hdf_hist_timing
 check_PROGRAMS                                  += CXX_hdf_hist_timing
 CXX_hdf_hist_timing_SOURCES                      = C++_hdf_hist_timing.cpp 
 CXX_hdf_hist_timing_LDADD                        = ../src/libgrvy.la
+
 endif
 
 #-----------------
@@ -246,6 +247,15 @@ TESTS                                            += F_get_command_arguments.sh
 check_PROGRAMS                                   += F_get_command_arguments
 F_get_command_arguments_SOURCES                   = F_get_command_arguments.f90
 F_get_command_arguments_LDADD                     = ../src/libgrvyf.la
+
+#--------------------
+# Standalone Binaries
+#--------------------
+
+if HDF5_ENABLED
+TESTS                                           += gadd
+TESTS                                           += gdump
+endif
 
 #------------------
 # Test Final Banner

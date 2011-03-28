@@ -1,0 +1,37 @@
+#!/bin/bash
+
+echo "-------------------------------------------------------"
+echo "Standalone Binaries"
+echo "-------------------------------------------------------"
+
+#--------------------------------------------------------------------------
+# GRVY Test Suite
+#
+# Test historical performance logging capabilities using standalone
+# binaries, gadd and gdump
+# --------------------------------------------------------------------------
+
+GADD=../src/gadd
+TEST_FILE=.test.h5
+
+# Compiled binaries must exist
+
+if test ! -x $GADD ; then
+    echo "${0}: Expected binary does not exist or is not executable"
+    exit 1
+fi
+
+if test -e $TEST_FILE ;then
+    rm -f $TEST_FILE
+fi
+
+# Run the binary and make sure it exits with zero status
+
+$GADD -q -c "acomment" -m "mymachine"   -j "12345" -p 42 -r "r2222" -f 65 13.45  "example1" $TEST_FILE || exit 1
+$GADD -q -c "commentb" -m "mymachine"   -j "54321" -p  1 -r "r2223" -f 65  2.45  "example1" $TEST_FILE || exit 1
+$GADD -q -c "totoro"   -m "yourmachine" -j "98765" -p 99 -r "norev"        8.3e2 "example2" $TEST_FILE || exit 1
+
+if test ! -s $TEST_FILE ; then
+    echo "${0}: No output generated from $GADD"
+    exit 1
+fi

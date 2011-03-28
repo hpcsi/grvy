@@ -1,0 +1,61 @@
+#!/bin/bash
+#--------------------------------------------------------------------------
+# GRVY Test Suite
+#
+# Test historical performance logging capabilities using standalone
+# binaries, gadd and gdump
+# --------------------------------------------------------------------------
+
+GDUMP=../src/gdump
+
+REF_DIR=ref_files
+TEST_FILE=.test.h5
+TEST_DIR=perf_test
+
+# Compiled binaries must exist
+
+if test ! -x $GDUMP ; then
+    echo "${0}: Expected binary does not exist or is not executable"
+    exit 1
+fi
+
+if test ! -s $TEST_FILE ; then
+    echo "${0}: No output generated from $GADD"
+    exit 1
+fi
+
+# Previous test generated new hdf file using gadd; now dump the
+# performance data using $GDUMP
+
+$GDUMP -q -c -o $TEST_DIR $TEST_FILE || exit 1
+
+# Verify we have expected output files
+
+if test ! -s $TEST_DIR/mymachine/example1 ;then
+    echo "${0}: $GDUMP did not create $TEST_DIR/mymachine/example1"
+    exit 1
+fi
+
+if test ! -s $TEST_DIR/yourmachine/example2 ;then
+    echo "${0}: $GDUMP did not create $TEST_DIR/yourmachine/example2"
+    exit 1
+fi
+
+# Compare the result to reference output
+
+cat $TEST_DIR/mymachine/example1   | grep -v "^#"  | awk '{$2=$3=$4="";print}' >& $TEST_DIR/mymachine/example1.pruned
+cat $TEST_DIR/yourmachine/example2 | grep -v "^#"  | awk '{$2=$3=$4="";print}' >& $TEST_DIR/yourmachine/example2.pruned
+
+diff $TEST_DIR/mymachine/example1.pruned $REF_DIR/$TEST_DIR/mymachine/example1.pruned >& /dev/null || exit 1
+diff $TEST_DIR/mymachine/example1.pruned $REF_DIR/$TEST_DIR/mymachine/example1.pruned >& /dev/null || exit 1
+
+# Clean up
+
+if test -e $TEST_FILE ; then
+    rm -f $TEST_FILE
+fi
+
+exit 0
+
+
+
