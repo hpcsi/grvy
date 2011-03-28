@@ -118,7 +118,7 @@ namespace GRVY {
     void   SummarizeHost    (string host);
     void   WriteHeaderInfo  (FILE *fp, const char *delim);
 #endif
-    int    SaveHistTiming   (double timiing, string machinename, string experiment, string comment, int num_procs, 
+    int    SaveHistTiming   (double timing, string machinename, string experiment, string comment, int num_procs, 
 			     int jobId, string code_revision, double flops, string filename, bool save_internal_timer );
 
     bool        initialized;            // initialized?
@@ -736,7 +736,7 @@ namespace GRVY {
 				   save_internal_timer));
   }
 
-  // SaveHistTiming wrapper -> save_internal_timer
+  // SaveHistTiming wrapper -> save_internal_timer (expanded)
 
   int GRVY_Timer_Class::SaveHistTiming(string experiment, string comment, int num_procs, 
 				       int jobId, string code_revision, double flops, string filename )
@@ -750,6 +750,17 @@ namespace GRVY {
   }
 
   // SaveHistTiming wrapper -> save external timing
+
+  int GRVY_Timer_Class::SaveHistTiming(double timing, string machine, string experiment, 
+				       string comment, int num_procs, string filename )
+  {
+    bool save_internal_timer = false;
+    return(m_pimpl->SaveHistTiming(timing,machine,experiment,comment,num_procs,
+				   m_pimpl->default_jobId,m_pimpl->default_revision,m_pimpl->default_flops,
+				   filename,save_internal_timer));
+  }
+
+  // SaveHistTiming wrapper -> save external timing (expanded version)
 
   int GRVY_Timer_Class::SaveHistTiming(double timing, string machine, string experiment, string comment, int num_procs, 
 				       int jobId, string code_revision, double flops, string filename )
