@@ -1321,7 +1321,6 @@ namespace GRVY {
 		    if(output_subtimers)
 		      {
 
-			//			fprintf(fp_mach,"    ");
 			fprintf(fp_mach," ");
 
 			hvl_t subtimers = data[i].vl_subtimers;
@@ -1338,7 +1337,7 @@ namespace GRVY {
 			    it_sub != aggregate_subtimers[ename].end(); ++it_sub)
 			  {
 			    int width = std::max(14,(int)strlen( (it_sub->first).c_str()));
-			    fprintf(fp_mach,"%*-.8e ",width,(it_sub)->second);
+			    fprintf(fp_mach,"%*.8e ",width,(it_sub)->second);
 			  }
 
 		      }	// end if(output_subtimers)

@@ -1,3 +1,7 @@
+Version 0.30.1 (In Progress)
+
+  * fix ascii output conversion when including subtimers option (-a) with gdump
+
 Version 0.30.0 (28 March 2011)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.30.0
 
