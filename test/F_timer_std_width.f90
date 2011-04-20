@@ -30,10 +30,14 @@
 program main
   use grvy
 
+  implicit none
+
   integer :: Max_Iters = 1
   real*8  :: work1
   integer :: i
   integer :: ierr
+
+  real*8 :: do_work1
 
   call grvy_log_setlevel(GRVY_INFO)
 

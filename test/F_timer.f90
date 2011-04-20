@@ -30,6 +30,7 @@
 program main
   use grvy
 
+  real*8 :: do_work1
   integer :: Max_Iters = 3
   real*8  :: grvy_total_timing
   real*8  :: dtime_global
@@ -44,6 +45,7 @@ program main
   real*8  :: diff
   character :: timestring*50 = ''
   integer :: i
+  
 
   call grvy_log_setlevel(GRVY_INFO)
 
