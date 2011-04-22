@@ -44,10 +44,10 @@ libgrvyf_la_LIBADD        = libgrvy.la
 # Additional Binaries
 #-----------------------
 
-bin_PROGRAMS             += version
-version_SOURCES           = version.cpp grvy.h
-version_LDADD             = -L$(top_builddir)/src -lgrvy
-version_DEPENDENCIES      = libgrvy.la
+bin_PROGRAMS             += grvy_version
+grvy_version_SOURCES      = version.cpp grvy.h
+grvy_version_LDADD        = -L$(top_builddir)/src -lgrvy
+grvy_version_DEPENDENCIES = libgrvy.la
 
 bin_PROGRAMS             += hostinfo
 hostinfo_SOURCES          = hostinfo.cpp

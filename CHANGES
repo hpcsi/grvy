@@ -1,5 +1,7 @@
 Version 0.30.1 (In Progress)
-
+  
+  * regression test updates for compatability with gcc 4.6.0
+  * standalone version binary renamed to grvy_version
   * fix ascii output conversion when including subtimers option (-a) with gdump
 
 Version 0.30.0 (28 March 2011)

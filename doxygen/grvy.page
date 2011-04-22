@@ -53,7 +53,7 @@ welcome at the same e-mail address.  All bug reports should include:
 <ul>
 
 <li>the version number of the GRVY library (versioning information can
-be obtained by running the <B><code>version</code></B> binary located in the
+be obtained by running the <B><code>grvy_version</code></B> binary located in the
 bin/ directory of a local libGRVY installation),
 <li>the hardware and operating system,
 <li>the local compiler version number,
