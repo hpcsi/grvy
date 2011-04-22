@@ -29,6 +29,7 @@
 
 program main
   use grvy
+  implicit none
 
   real*8 :: do_work1
   integer :: Max_Iters = 3

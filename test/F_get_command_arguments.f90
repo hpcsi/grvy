@@ -29,7 +29,7 @@
 
 program F_get_command_arguments
   use grvy
-  implicit none;
+  implicit none
 
   character*17 :: program_name = "F_get_command_arguments"
 

@@ -29,7 +29,7 @@
 
 program F_check_file_path
   use grvy
-  implicit none;
+  implicit none
 
   character*17 :: program_name = "F_check_file_path"
 
