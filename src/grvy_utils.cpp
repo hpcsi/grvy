@@ -81,9 +81,26 @@ namespace GRVY {
 	return 0;
       }
 
+    // Deal with the possibility of an absolute path being provided
+
+    bool abs_path = false;
+
+    std::string leading_char("");
+    std::string path_to_check;
+
+    if(strncmp(parents,"/",1) == 0)
+      {
+	leading_char = "/";
+	abs_path     = true;
+      }
+
+    // Verify existence of top-level directory
+
     if( (token = strtok(parents,"/")) != NULL )
       {
-	if ( _GRVY_CheckDir(token) )
+	path_to_check += leading_char + token;
+
+	if ( _GRVY_CheckDir(path_to_check.c_str()) )
 	  {
 	    free(pathlocal);
 	    free(dirstring);
@@ -92,11 +109,15 @@ namespace GRVY {
 
 	// Now, search for any remaining parent directories.
 
-	sprintf(dirstring,"%s",token);
+	if(abs_path)
+	  sprintf(dirstring,"/%s",token);
+	else
+	  sprintf(dirstring,"%s",token);
 
 	while ( (token = strtok(0,"/")) && (depth < MAX_DEPTH) )
 	  {
 	    dirstring = strcat(dirstring,"/");
+
 	    if(_GRVY_CheckDir(strcat(dirstring,token)))
 	      {
 		free(pathlocal);

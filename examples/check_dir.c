@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <grvy.h>
+#include <assert.h>
 
 int main(int argc, char **argv)
 {
@@ -38,7 +39,7 @@ int main(int argc, char **argv)
   char *filepath1 = "./afile";
   char *filepath2 = "bfile";
   char *filepath3 = "adir/bdir/cfile";
-  char *filepath4 = "/tmp/moontower";
+  char *filepath4 = "/tmp/foo/moontower";
   char *filepath5 = "../sneaky/adir/dfile";
 
   FILE *fp;
@@ -60,23 +61,28 @@ int main(int argc, char **argv)
 
   /* Write to the files */
 
-  fp = fopen(filepath1,"w");
+  fp = fopen(filepath1,"w"); 
+  assert(fp != NULL);
   fprintf(fp,"tori is sweet\n");
   fclose(fp);
 
   fp = fopen(filepath2,"w");
+  assert(fp != NULL);
   fprintf(fp,"tori is stinky\n");
   fclose(fp);
 
   fp = fopen(filepath3,"w");
+  assert(fp != NULL);
   fprintf(fp,"tori needs a job\n");
   fclose(fp);
 
   fp = fopen(filepath4,"w");
+  assert(fp != NULL);
   fprintf(fp,"tori plays the bongos\n");
   fclose(fp);
 
   fp = fopen(filepath5,"w");
+  assert(fp != NULL);
   fprintf(fp,"tori frowns upon straight ticket voters\n");
   fclose(fp);
 

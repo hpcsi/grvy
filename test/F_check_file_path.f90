@@ -79,7 +79,7 @@ program F_check_file_path
 
   call grvy_check_file_path("CheckFilePathDir/A/B/C/foo", flag);
   if (flag.ne.0) then
-    write (*,*) "Expected zero return for a multiple directories"
+    write (*,*) "Expected zero return for multiple directories"
     retval = 1
   end if
 
