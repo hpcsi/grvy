@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/param.h>
 #include <unistd.h>
 #include <grvy.h>
 
@@ -80,7 +81,7 @@ int main(int argc, char **argv)
     flag *= (0 == rmdir("CheckFilePathDir"));
   }
 
-  /* Create a several new directories */
+  /* Create several new directories */
   {
     /* Ensure the directory doesn't already exist */
     DIR *dir_handle = opendir("CheckFilePathDir");
@@ -90,6 +91,23 @@ int main(int argc, char **argv)
 
     /* Ensure directory structure exists afterwards and remove it */
     flag *= (0 == rmdir("CheckFilePathDir/A/B/C"));
+    flag *= (0 == rmdir("CheckFilePathDir/A/B"));
+    flag *= (0 == rmdir("CheckFilePathDir/A"));
+    flag *= (0 == rmdir("CheckFilePathDir"));
+  }
+
+  /* Create new directories based on absolute path */
+
+  {
+    char  pwd[MAXPATHLEN];
+    char path[MAXPATHLEN];
+    getcwd(pwd,MAXPATHLEN);
+    sprintf(path,"%s/CheckFilePathDir/A/B/foo",pwd);
+
+    flag *= (0 == grvy_check_file_path(path));
+
+    /* Ensure directory structure exists afterwards and remove it */
+
     flag *= (0 == rmdir("CheckFilePathDir/A/B"));
     flag *= (0 == rmdir("CheckFilePathDir/A"));
     flag *= (0 == rmdir("CheckFilePathDir"));
