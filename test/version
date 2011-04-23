@@ -10,7 +10,7 @@ echo "-------------------------------------------------------"
 # Test standalone binaries
 # --------------------------------------------------------------------------
 
-EXE=../src/version
+EXE=../src/grvy_version
 TEST_FILE=.version
 
 # Compiled binaries must exist
