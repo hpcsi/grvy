@@ -34,7 +34,9 @@ program main
   real*8 :: do_work1
   integer :: Max_Iters = 3
   real*8  :: grvy_total_timing
+  real*8  :: grvy_work1_timing
   real*8  :: dtime_global
+  real*8  :: dtime
 !  real*8  :: Tolerance = 1.0d-1 ! resolution of dtime is terrible, be very generous here.
   real*8  :: Tolerance = 1.0d-3 ! resolution of dtime is terrible, be very generous here.
   real    :: timearray(2)
