@@ -7,7 +7,7 @@
 #--------------------------------------------------------------------------
 
 EXE=F_log
-REF_FILE=ref_files/log_priorities.txt
+REF_FILE=$GRVY_INPUT_EXAMPLE_DIR/ref_files/log_priorities.txt
 TEST_FILE=F_log.output
 
 # Set non-buffered output for stdout && gfortran; otherwise stdout

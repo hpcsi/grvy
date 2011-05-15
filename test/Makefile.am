@@ -10,7 +10,7 @@ EXTRA_DIST        = init.sh finalize.sh version hostinfo gadd gdump C_*.sh F_*.s
 EXTRA_DIST       += input-example.txt ref_files
 CLEANFILES        = .license.stamp *.gcno *.gcda
 TESTS             = # Append below
-TESTS_ENVIRONMENT = HPCT_INPUT_EXAMPLE_DIR=$(srcdir)
+TESTS_ENVIRONMENT = GRVY_INPUT_EXAMPLE_DIR=$(srcdir)
 check_PROGRAMS    = # Append below
 
 # C and Fortran require libgrvy.la and libgrvyf.la, respectively
@@ -250,11 +250,13 @@ TESTS += finalize.sh
 # Embedded license header support
 #---------------------------------
 
-.license.stamp: $(top_builddir)/LICENSE
+.license.stamp: $(top_srcdir)/LICENSE
 	for file in $(srcdir)/*.h $(srcdir)/*.c ; do \
-		$(top_srcdir)/src/common/lic_utils/update_license.pl $(top_builddir)/LICENSE $$file | tee -a $@ ;\
+		$(top_srcdir)/src/common/lic_utils/update_license.pl -S=$(top_srcdir)/src \
+			$(top_srcdir)/LICENSE $$file | tee -a $@ ;\
 	done
 	for file in $(srcdir)/*.f90 $(srcdir)/*.F90 ; do \
-		$(top_srcdir)/src/common/lic_utils/update_license.pl --c2f_comment $(top_builddir)/LICENSE $$file | tee -a $@ ;\
+		$(top_srcdir)/src/common/lic_utils/update_license.pl -S=$(top_srcdir)/src \
+			--c2f_comment $(top_builddir)/LICENSE $$file | tee -a $@ ;\
 	done
 	touch .license.stamp

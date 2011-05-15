@@ -7,7 +7,7 @@
 #--------------------------------------------------------------------------
 
 EXE=C_timer_std_width
-REF_FILE=ref_files/summarize.std.txt
+REF_FILE=$GRVY_INPUT_EXAMPLE_DIR/ref_files/summarize.std.txt
 TEST_FILE=C_timer_width.output
 
 # Compiled binary must exist

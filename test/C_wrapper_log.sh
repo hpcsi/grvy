@@ -7,7 +7,7 @@
 #--------------------------------------------------------------------------
 
 EXE=C_log
-REF_FILE=ref_files/log_priorities.txt
+REF_FILE=$GRVY_INPUT_EXAMPLE_DIR/ref_files/log_priorities.txt
 TEST_FILE=C_log.output
 
 # Compiled binary must exist
