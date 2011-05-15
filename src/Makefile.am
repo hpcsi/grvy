@@ -81,7 +81,7 @@ gadd_DEPENDENCIES         = libgrvy.la
 
 install-data-local: libgrvyf.la
 	mkdir -p $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) $(top_srcdir)/src/grvy.mod $(DESTDIR)$(libdir)/grvy.mod
+	$(INSTALL_DATA) $(top_builddir)/src/grvy.mod $(DESTDIR)$(libdir)/grvy.mod
 
 dist-hook:
 	rm -rf `find $(distdir)/ -name .svn`
