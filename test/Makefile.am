@@ -252,11 +252,11 @@ TESTS += finalize.sh
 
 .license.stamp: $(top_srcdir)/LICENSE
 	for file in $(srcdir)/*.h $(srcdir)/*.c ; do \
-		$(top_srcdir)/src/common/lic_utils/update_license.pl -S=$(top_srcdir)/test \
+		$(top_srcdir)/src/common/lic_utils/update_license.pl \
 			$(top_srcdir)/LICENSE $$file | tee -a $@ ;\
 	done
 	for file in $(srcdir)/*.f90 $(srcdir)/*.F90 ; do \
-		$(top_srcdir)/src/common/lic_utils/update_license.pl -S=$(top_srcdir)/test \
-			--c2f_comment $(top_builddir)/LICENSE $$file | tee -a $@ ;\
+		$(top_srcdir)/src/common/lic_utils/update_license.pl \
+			--c2f_comment $(top_srcdir)/LICENSE $$file | tee -a $@ ;\
 	done
 	touch .license.stamp

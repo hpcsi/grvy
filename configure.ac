@@ -75,6 +75,7 @@ BOOST_REQUIRE([1.36])
 BOOST_MATH
 BOOST_REGEX
 BOOST_PROGRAM_OPTIONS
+BOOST_ASIO
 AC_CACHE_SAVE
 
 #--------------------------
@@ -103,7 +104,8 @@ DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(GRVY, doxygen/grvy.dox, docs)
 
 AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile grvy.pc \
-	   grvy.spec doxygen/Makefile src/grvy.h test/F_version.F90 )
+	   grvy.spec doxygen/Makefile src/grvy.h test/F_version.F90      \
+	   doxygen/txt_common/about_vpath.page )
 
 # Final summary
 
