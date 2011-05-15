@@ -32,7 +32,8 @@ program main
   implicit none
 
   integer(4)        :: flag
-  character(len=60) :: filepath
+  character*512     :: example_dir
+  integer           :: length, status
 
   ! to be written
   integer(4)        :: iset = 123
@@ -45,6 +46,14 @@ program main
   real(4)           :: fgot 
   real(8)           :: dgot 
   character(len=60) :: sgot
+
+  call get_environment_variable("GRVY_INPUT_EXAMPLE_DIR",example_dir,length,status)
+
+  if(status .ne. 0)then
+     example_dir = "./"
+  else
+     example_dir = trim(example_dir)//"/"
+  endif
 
   ! Register variable (used for backwards-compatible input file
   ! support)
@@ -89,15 +98,7 @@ program main
   dgot=-1.0d0
   sgot= ""
 
-  ! TODO: need to build a Fortran equivalent of
-  ! build_example_file_path() that is used in C tests to support VPATH
-  ! builds - might want to use ISO_C bindings to call the C version
-  ! directly.  For now, revert to using local copy of input file.
-
-  !call build_example_file_path    (filepath,flag)
-  !call grvy_input_fopen           (filepath,flag)
-
-  call grvy_input_fopen       ("./input-example.txt",flag)
+  call grvy_input_fopen       (trim(example_dir)//"./input-example.txt",flag)
   call grvy_input_fread_int   ("sec1/aint",igot,flag)
   call grvy_input_fread_real  ("sec1/afloat",fgot,flag)
   call grvy_input_fread_double("sec1/adouble",dgot,flag)

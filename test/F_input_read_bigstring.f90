@@ -34,10 +34,20 @@ program main
   integer        :: flag
   character      :: key1*2
   character      :: gridfile*10
+  character*512  :: example_dir
+  integer        :: length, status
 
   call grvy_log_setlevel(GRVY_NOLOG);
 
-  call grvy_input_fopen("./input-example.txt",flag)
+  call get_environment_variable("GRVY_INPUT_EXAMPLE_DIR",example_dir,length,status)
+
+  if(status .ne. 0)then
+     example_dir = "./"
+  else
+     example_dir = trim(example_dir)//"/"
+  endif
+
+  call grvy_input_fopen(trim(example_dir)//"input-example.txt",flag)
 
   if(flag .eq. 0)then
      call exit(1)

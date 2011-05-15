@@ -7,7 +7,7 @@
 #--------------------------------------------------------------------------
 
 EXE=F_timer_expanded_width
-REF_FILE=ref_files/summarize.expanded.txt
+REF_FILE=$GRVY_INPUT_EXAMPLE_DIR/ref_files/summarize.expanded.txt
 TEST_FILE=F_timer_width.output
 
 # Compiled binary must exist

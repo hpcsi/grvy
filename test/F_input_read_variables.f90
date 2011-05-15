@@ -34,6 +34,8 @@ program main
   integer(4)     :: iter_max,turbulent,ivar1,ivar2,ivec(4)
   integer        :: string_size
   integer(4)     :: error, flag ! 1 for success, 0 for failure
+  character*512  :: example_dir
+  integer        :: length, status
 
   real           :: reyn,mach,aoa, A(3)
   real(4)        :: fvar1,fvar2,fvec(3)
@@ -45,8 +47,16 @@ program main
 
   call grvy_log_setlevel(GRVY_NOLOG)
 
+  call get_environment_variable("GRVY_INPUT_EXAMPLE_DIR",example_dir,length,status)
+
+  if(status .ne. 0)then
+     example_dir = "./"
+  else
+     example_dir = trim(example_dir)//"/"
+  endif
+
   error=1 ! start with no error condition
-  call grvy_input_fopen("./input-example.txt",flag)
+  call grvy_input_fopen(trim(example_dir)//"./input-example.txt",flag)
   error=error*flag
 
   ! ----- read from BASIC section -----
@@ -168,7 +178,7 @@ program main
 
   ! Double check that we can open and read the same file again.
 
-  call grvy_input_fopen("./input-example.txt",flag)
+  call grvy_input_fopen(trim(example_dir)//"./input-example.txt",flag)
   error=error*flag
 
   ! ----- read from BASIC section -----
