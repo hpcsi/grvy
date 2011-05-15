@@ -5,11 +5,11 @@ cc_sources                = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp grvy_
 
 getpot_sources            = common/getpot/getpot.h
 
-INCLUDES                  = -I$(top_builddir)/src/common/getpot
+INCLUDES                  = -I$(top_srcdir)/src/common/getpot
 AM_FCFLAGS                = $(INCLUDES)
 AM_CFLAGS                 = $(INCLUDES)
 AM_CPPFLAGS               = $(INCLUDES) $(BOOST_CPPFLAGS)
-LIBS                      = $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS)
+LIBS                      = $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) $(BOOST_ASIO_LDFLAGS) $(BOOST_ASIO_LIBS) $(BOOST_SYSTEM_LIBS)
 BUILT_SOURCES             = .license.stamp
 
 bin_PROGRAMS              = # Appended below
@@ -70,8 +70,9 @@ gadd_DEPENDENCIES         = libgrvy.la
 #---------------------------------
 
 .license.stamp: $(top_srcdir)/LICENSE
-	$(top_srcdir)/src/common/lic_utils/update_license.pl $(top_srcdir)/LICENSE $(cc_sources) $(h_sources) \
-	$(version_SOURCES) $(hostinfo_SOURCES) $(gdump_SOURCES)
+	$(top_srcdir)/src/common/lic_utils/update_license.pl -S=$(top_srcdir)/src \
+		$(top_srcdir)/LICENSE $(cc_sources) $(h_sources)                  \
+		$(version_SOURCES) $(hostinfo_SOURCES) $(gdump_SOURCES)
 	echo 'updated source license headers' >$@
 
 #-------------------------
