@@ -568,10 +568,14 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = src/grvy.h examples/pecos-input.txt \
-		       	 src/grvy.f90 $(SRCDIR)/doxygen/grvy.page \
-			 $(SRCDIR)/doxygen/txt_common \
-			 ./doxygen/txt_common/ \
-			 $(BUILDDIR)/doxygen/txt_common
+		       	 src/grvy.f90 \
+			 $(SRCDIR)/doxygen/grvy.page \
+			 .//doxygen/txt_common/about_vpath.page \
+			 $(SRCDIR)/doxygen/txt_common/acknowledgment.page \
+			 $(SRCDIR)/doxygen/txt_common/gpl.page  \ 
+			 $(SRCDIR)/doxygen/txt_common/lgpl.page \ 
+			 $(SRCDIR)/doxygen/txt_common/noop.page \
+
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 
@@ -628,7 +632,9 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = $(SRCDIR)/examples $(SRCDIR)/doxygen/fig_common $(BUILDDIR)/doxygen/txt_common
+EXAMPLE_PATH           = $(SRCDIR)/examples $(SRCDIR)/doxygen/fig_common 
+
+#$(BUILDDIR)/doxygen/txt_common
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -1244,7 +1250,7 @@ SEARCH_INCLUDES        = YES
 # contain include files that are not input files but should be processed by 
 # the preprocessor.
 
-INCLUDE_PATH           = $(SRCDIR)/doxygen/txt_common/ $(BUILDDIR)/doxygen/txt_common/
+INCLUDE_PATH           = 
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard 
 # patterns (like *.h and *.hpp) to filter out the header-files in the 
