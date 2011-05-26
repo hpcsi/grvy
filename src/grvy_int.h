@@ -40,6 +40,11 @@
 
 namespace GRVY {
 
+  //#define ginfo (...) grvy_printf(GRVY_INFO, __VA_ARGS__)
+  //#define gerror(...) grvy_printf(GRVY_ERROR,__VA_ARGS__)
+
+  //#define DBGPRINT(fmt, ...) printf(fmt, __VA_ARGS__)
+
 #ifdef _GRVY_GLOBAL_DEF
 #define GLOBAL
 #else

@@ -1,6 +1,6 @@
 h_sources                 = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h grvy_env.h grvy_ptable.h
 cc_sources                = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp grvy_timer_interface.cpp \
-		            grvy_utils.cpp grvy_math.cpp grvy_log.cpp \
+		            grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_ramdisk.cpp \
 			    grvy_version.cpp grvy_env.cpp grvy_hdf5.cpp
 
 getpot_sources            = common/getpot/getpot.h
@@ -64,6 +64,11 @@ bin_PROGRAMS             += gadd
 gadd_SOURCES              = gadd.cpp
 gadd_LDADD                = -L$(top_builddir)/src -lgrvy
 gadd_DEPENDENCIES         = libgrvy.la
+
+bin_PROGRAMS             += example
+example_SOURCES              = example.cpp
+example_LDADD                = -L$(top_builddir)/src -lgrvy
+example_DEPENDENCIES         = libgrvy.la
 
 
 #---------------------------------
