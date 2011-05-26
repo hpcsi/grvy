@@ -37,6 +37,21 @@ AC_PROG_LN_S
 AC_PROG_SED
 AM_SANITY_CHECK
 
+# ---------------------
+# Enable MPI utilities?
+# ---------------------
+
+AC_ARG_ENABLE(mpi, AC_HELP_STRING([--enable-mpi],[enable MPI associated utilities]))
+
+HAVE_MPI=0
+
+if test "x$enable_mpi" = "xyes"; then
+   ACX_MPI([HAVE_MPI=1 CXX="$MPICXX" AC_DEFINE(HAVE_MPI,1,[Define if MPI is available])], 
+           AC_MSG_ERROR([Could not find MPI compiler support]))
+fi
+
+AM_CONDITIONAL(MPI_ENABLED,test x$HAVE_MPI = x1)
+
 # Conditionals
 
 dnl AM_CONDITIONAL(CODE_COVERAGE_ENABLED,FALSE)
@@ -77,6 +92,8 @@ BOOST_REGEX
 BOOST_PROGRAM_OPTIONS
 BOOST_ASIO
 AC_CACHE_SAVE
+
+
 
 #--------------------------
 # Checks for code coverage

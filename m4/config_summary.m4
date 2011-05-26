@@ -40,6 +40,11 @@ echo Optional Features:
    else
      echo '   'Link with HDF5............. : yes
    fi
+   if test "$HAVE_MPI" = "0"; then
+     echo '   'Link with MPI.............. : no
+   else
+     echo '   'Link with MPI.............. : yes
+   fi
    if test "$HAVE_GCOV_TOOLS" = "0"; then
      echo '   'Enable gcov code coverage.. : no
    else
