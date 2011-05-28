@@ -1215,7 +1215,7 @@ namespace GRVY {
 		    fprintf(fp_mach,"%s CPU Type = %s\n",cdelim, cputype.c_str()   );
 		    fprintf(fp_mach,"%s --\n",cdelim);
 
-		    fprintf(fp_mach,"%s Experiment: %s (%i total samples)\n",cdelim,
+		    fprintf(fp_mach,"%s Experiment: %s (%zu total samples)\n",cdelim,
 			    ename.c_str(),boost::accumulators::count(ii->second));
 		    fprintf(fp_mach,"%s\n",cdelim);
 		    fprintf(fp_mach,"%s  --> Mean time = %.8e (secs)\n",cdelim,mean(ii->second));
@@ -1345,10 +1345,16 @@ namespace GRVY {
 		    if(output_comments)
 		      {
 			if(strlen(data[i].user_comment) > 0)
-			  fprintf(fp_mach," %*s%s\"",max_comment_width-strlen(data[i].user_comment)-1,
-				  "\"",data[i].user_comment);
+			  {
+			    //			    int mylength = max_comment_width-strlen(data[i].user_comment)-1;
+			    fprintf(fp_mach," %*s%s\"",(int)(max_comment_width-strlen(data[i].user_comment)-1),
+				    "\"",data[i].user_comment);
+				    //			    fprintf(fp_mach," %*s%s\"",mylength,
+			  }
 			else
-			  fprintf(fp_mach," %*sN/A\"",max_comment_width-strlen("N/A")-1,"\"");
+			  {
+			      fprintf(fp_mach," %*sN/A\"",(int)(max_comment_width-strlen("N/A")-1),"\"");
+			  }
 		      }
 
 		    if(output_env)

@@ -33,6 +33,10 @@
 #include<grvy_int.h>
 #include<map>
 
+#ifdef HAVE_MPI
+#include<mpi.h>
+#endif
+
 using namespace std;
 using namespace GRVY;
 
@@ -60,9 +64,12 @@ namespace GRVY {
   public:
     GRVY_MPI_Ocore_ClassImp () {}
    ~GRVY_MPI_Ocore_ClassImp () {}
-    
-    int Initialize(string input_file, int blocksize);
-    int GetRecord (int sparse_index);
+
+#ifdef HAVE_MPI
+    int  Initialize         (string input_file, int blocksize);
+    int  GetRecord          (int sparse_index);
+    int  Write_to_Pool      (int mpi_task,int ocore_index, double *data);
+    void Poll_For_Work      ();
   
     bool use_mpi_ocore;
     bool initialized;			
@@ -88,10 +95,13 @@ namespace GRVY {
 
   private:
     int num_active_records;	        // number of currently active records
-    
-};
+    MPI_Comm MYCOMM;			// MPI communicator for ocore activity
+#endif    
+  };
 
 } // matches namespace GRVY
+
+#ifdef HAVE_MPI    
 
 namespace GRVY {
 
@@ -110,7 +120,6 @@ namespace GRVY {
     m_pimpl->sendtag               = 1001;
     m_pimpl->recvtag               = 2001;
     m_pimpl->self                  = this;
-
 
     //------------
     // MPI setup
@@ -143,9 +152,80 @@ namespace GRVY {
 
   int GRVY_MPI_Ocore_Class::Write(int rank, int size, int offset, double *data)
   {
-    
-    return(m_pimpl->Initialize(input_file,blocksize));
+    grvy_printf(info,"inside write\n");
+
+    // \todo: decide which rank to use, don't require as input
+
+    assert(rank > 0 && rank < m_pimpl->mpi_nprocs );
+
+    int ocore_index = m_pimpl->GetRecord(offset);
+
+    return(m_pimpl->Write_to_Pool(rank,ocore_index,data));
   }
+
+  // poll_for_work(): Work poller for ocore slaves
+
+  void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Poll_For_Work()
+  {
+    int hbuf[4];		// header buffer (includes info about next message)
+    int msg_destination;	// message destination
+    int msg_offset;		// message offset
+    int msg_size;		// message size
+
+    int recv_request;
+
+    // ---------------------------------------------------------
+    // note: header buffer layout
+    // 
+    //  hbuf(0) -> next message type: 0=write, 1=read, 2=exit
+    //  hbuf(2) -> message destination
+    //  hbuf(3) -> storage offset
+    //  hbuf(4) -> message size
+    // ---------------------------------------------------------
+
+    assert(mpi_rank > 0);
+
+    while(1)
+      {
+
+	// get next item of work from rank 0 (distributed to all tasks)
+
+	MPI_Bcast(hbuf,4,MPI_INTEGER,0,MYCOMM);
+
+	// Based on received header buffer, decide what to do next
+
+	switch(hbuf[0])
+	  {
+	  
+	  case 0:		// write: specified child receives from rank 0
+	    grvy_printf(info,"%s: polling -> write request\n",prefix);
+	    break;
+
+	  case 1:		// read: specified chield sends to rank 0
+	    grvy_printf(info,"%s: polling -> read request\n",prefix);
+	    break;
+
+	  case 2:		// exit: task 0 has requested us to finish
+	    break;
+	    
+	  default:
+	    grvy_printf(error,"%s: Internal Error - unknown work request received (%i)\n",prefix,hbuf[0]);
+	    exit(1);
+	  }
+
+      }
+
+    grvy_printf(info,"%s (%5i): Exiting polling work loop\n",prefix,mpi_rank);
+    return;
+  }
+
+  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Write_to_Pool(int mpi_task, int ocore_index, double *data)
+  {
+    
+
+
+  }
+
 
   int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Initialize(string input_file,int blocksize)
   {
@@ -248,3 +328,37 @@ namespace GRVY {
   }
 
 } // matches namespace GRVY
+
+#else
+
+//----------------------------------------------------------
+// NOOP public interface for case when MPI is not linked in
+//----------------------------------------------------------
+
+namespace GRVY {
+#if 1
+GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class()
+{
+  grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI support\n\n");
+  grvy_printf(GRVY_FATAL,"Please enable support using the \"--with-mpi\" option to configure \n");
+  grvy_printf(GRVY_FATAL,"and reinstall if you desire to use MPI out-of-core related functionality.\n\n");
+  exit(1);
+}
+
+
+GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
+{
+  grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI support\n\n");
+  grvy_printf(GRVY_FATAL,"Please enable support using the \"--with-mpi\" option to configure \n");
+  grvy_printf(GRVY_FATAL,"and reinstall if you desire to use MPI out-of-core related functionality.\n\n");
+  exit(1);
+}
+#endif
+
+}
+
+int GRVY_MPI_Ocore_Class::Initialize(string input_file,int blocksize) { return 0;}
+
+#endif
+
+

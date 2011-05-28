@@ -768,7 +768,6 @@ private:
   std::auto_ptr<GRVY_MPI_Ocore_ClassImp> m_pimpl; // pointer to implementation
 };
 
-
 //--------------------
 // HDF5 Utility Class
 //--------------------
