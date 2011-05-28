@@ -31,6 +31,7 @@
 #include<grvy.h>
 #include<grvy_env.h>
 #include<boost/regex.hpp>
+#include<netdb.h>
 #include<iostream> 
 #include<unistd.h>
 
@@ -44,20 +45,35 @@ GRVY_Hostenv_Class::GRVY_Hostenv_Class()
   os_sysname = uts.sysname;
   os_release = uts.release;
   os_version = uts.version;
-  
-  // Cull domainname from nodename
 
-  boost::regex re("(\\S+)\\.(\\S+)");
+  // Cull domainname from nodename. 
+
+  boost::regex re("(\\w+)\\.(\\S+)");
   boost::cmatch regex_match;
 
-  //  const std::string Host(uts.nodename);
-
   if(boost::regex_match(uts.nodename,regex_match,re))
-    {
       domainname = regex_match[2];
-    }
   else
-    grvy_printf(GRVY_WARN,"unable to determine domainname\n");
+    {
+      // use gethostbyname as a last resort to gleen domainname
+
+      struct hostent *hp = gethostbyname(hostname.c_str());
+      if(hp != NULL)
+	{
+	  std::string myname(hp->h_name); 
+
+	  grvy_printf(GRVY_DEBUG,"%s: hostbyname = %s\n",__func__,myname.c_str());
+
+	  if(boost::regex_match(hp->h_name,regex_match,re))
+	    {
+	      domainname = regex_match[2];
+	    }
+	  else
+	    grvy_printf(GRVY_WARN,"unable to determine domainname\n");
+	} 
+      else
+	grvy_printf(GRVY_WARN,"unable to run gethostbyname()\n");
+    }
 
   cputype = "Unknown";
   
