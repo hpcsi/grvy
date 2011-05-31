@@ -94,12 +94,15 @@ namespace GRVY {
     void   Summarize        ();
     void   Abort	    ();		
   
-    bool use_mpi_ocore;		        // flag: enable use of MPI ocore?
-    bool initialized;			// flag: Init functioned complete?
-    bool mpi_initialized_by_ocore;	// flag: did we have to init MPI locally?
-    bool master;			// flag: master MPI process?
+    bool use_mpi_ocore;		        // enable use of MPI ocore?
+    bool initialized;			// init function complete?
+    bool use_disk_overflow;		// use disk-based storage for overflow?
+    bool mpi_initialized_by_ocore;	// did we have to init MPI locally?
+    bool master;			// master MPI process?
 
-    string inputfile;			// input file with runtime controls
+    string inputfile;			  // input file with runtime controls
+    string tmpdir;			  // parent directory to store overflow ocore data
+    char *tmp_unique_path;		  // unique path to overflow ocore data 
 
     int max_poolsize_MBs;		  // max ramdisk size (in MBs)
     int max_mapsize_MBs;		  // max mapsize (in MBs)
@@ -141,12 +144,14 @@ namespace GRVY {
     // Default settings 
 
     m_pimpl->use_mpi_ocore         = true;
+    m_pimpl->use_disk_overflow     = true;
     m_pimpl->max_mapsize_MBs       = 10;
     m_pimpl->max_poolsize_MBs      = 200;
     m_pimpl->word_size             = 8;
     m_pimpl->blocksize             = 8192;
     m_pimpl->sendtag               = 1001;
     m_pimpl->recvtag               = 2001;
+    m_pimpl->tmpdir                = "/tmp";
     m_pimpl->num_active_records    = 0;
     m_pimpl->self                  = this;
 
@@ -516,10 +521,41 @@ namespace GRVY {
 	grvy_printf(info,"%s: --> Max number of mappable records      = %15i\n",         prefix,num_smap_records);
 	grvy_printf(info,"%s: --> Max number of ocore ramdisk records = %15i\n",         prefix,max_num_records );
 	grvy_printf(info,"\n");
+
+	MPI_Barrier(MYCOMM);
       }
     else 			// children
       {
-    
+
+	MPI_Barrier(MYCOMM);
+
+	// -------------------------------------------
+	// Setup scratch space for file-based overflow
+	// -------------------------------------------
+	
+	if(use_disk_overflow)
+	  {
+	    char dir_template[] = "/grvy_ocore_XXXXXX";
+	    
+	    tmp_unique_path = (char *)malloc(tmpdir.size()+strlen(dir_template)+1);
+	    assert(tmp_unique_path != NULL);
+	    
+	    sprintf(tmp_unique_path,"%s%s",tmpdir.c_str(),dir_template);
+	    
+	    if(grvy_create_unique_dir(tmp_unique_path) != 0)
+	      {
+		grvy_printf(error,"%s (%5i): Unable to create local scratch directory\n",prefix,mpi_rank);
+		Abort();
+	      }
+	    else
+	      {
+		grvy_printf(info,"\n%s (%5i): File-based scratch space enabled for ocore overflow\n",prefix,mpi_rank);
+		grvy_printf(info,"%s (%5i): --> local scratch directory = %s\n",prefix,mpi_rank,tmp_unique_path);
+	      }
+	  }
+	else
+	  grvy_printf(info,"\n%s(%5i): File-based scratch space disabled for ocore overflow\n",prefix,mpi_rank);
+
 	// -------------------------------
 	// allocation for raw storage pool
 	// -------------------------------
@@ -527,7 +563,6 @@ namespace GRVY {
 	// \todo: allow for non-fixed size pool
 
 #if 1
-
 	try 
 	  {
 	    vector<double> data(blocksize);
@@ -550,7 +585,6 @@ namespace GRVY {
 	
 	grvy_printf(info,"%s (%5i): Successfully initialized ramdisk storage pool of %8i MBs\n",
 		    prefix,mpi_rank,max_poolsize_MBs);
-	
 #endif
 	
       }
