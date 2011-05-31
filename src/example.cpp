@@ -49,43 +49,28 @@ int main(int argc, char *argv[])
     {
       double data[blocksize];
 
+      const int num_records = 100;
+
       // Store some known data
 
-      init_data(5,blocksize,data);
-      ocore.Write(5,data);
-
-      init_data(12,blocksize,data);
-      ocore.Write(12,data);
-
-      init_data(14,blocksize,data);
-      ocore.Write(14,data);
-
-      init_data(1,blocksize,data);
-      ocore.Write(1,data);
+      for(int i=0;i<num_records;i++)
+	{
+	  init_data(i,blocksize,data);
+	  ocore.Write(i,data);
+	}
 
       // Change data locally
 
-      zero_data(5,blocksize,data);
-      zero_data(12,blocksize,data);
-      zero_data(14,blocksize,data);
-      zero_data(1,blocksize,data);
+      for(int i=0;i<num_records;i++)
+	zero_data(i,blocksize,data);
 
-      // Read back known data and verify
+      // Read back known data in opposite order and verify
 
-      ocore.Read(5,data);
-      assert(verify_data(5,blocksize,data) );
-
-      ocore.Read(1,data);
-      assert(verify_data(1,blocksize,data) );
-
-      ocore.Read(12,data);
-      assert(verify_data(12,blocksize,data) );
-
-      ocore.Read(14,data);
-      assert(verify_data(14,blocksize,data) );
-
-      printf("data[0] = %f\n",data[0]);
-      printf("data[1] = %f\n\n",data[1]);
+      for(int i=num_records-1;i>=0;i--)
+	{
+	  ocore.Read(i,data);
+	  assert(verify_data(i,blocksize,data) );
+	}
 
     }
 
