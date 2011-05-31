@@ -58,14 +58,16 @@ enum OCORE_MSG_TYPES {
 
 typedef struct MPI_Ocore_datagram {
   bool in_mem;			// data resides in memory or disk?
-  size_t read_counts;		// read  frequency
-  size_t write_counts;		// write frequency
+  //  size_t read_count;		// read  frequency
+  //  size_t write_count;		// write frequency
   size_t index;			// data index location (for mem or disk)
 } MPI_Ocore_datagram;
 
 typedef struct MPI_Ocore_owners {
-  size_t user_index;		// global user-provided offset index
+  //  size_t user_index;		// global user-provided offset index
   int data_hostId;		// MPI rank Id assigned to store data
+  size_t read_count;		// read frequency
+  size_t write_count;		// write frequency
 } MPI_Ocore_owners;
 
 //------------------------------------------------------------
@@ -83,10 +85,13 @@ namespace GRVY {
 #ifdef HAVE_MPI
     int    Initialize       (string input_file, int blocksize);
     int    AssignOwnership  (size_t sparse_index);
-    size_t GetRecord        (size_t sparse_index);
+    //    size_t GetRecord        (size_t sparse_index);
+    int    PullData         (size_t sparse_index);
     int    StoreData        (size_t sparse_index, bool new_data);
+    int    Read_from_Pool   (int mpi_task, size_t sparse_index,double *data);
     int    Write_to_Pool    (int mpi_task, bool new_data, size_t sparse_index,double *data);
     void   PollForWork      ();
+    void   Summarize        ();
     void   Abort	    ();		
   
     bool use_mpi_ocore;		        // flag: enable use of MPI ocore?
@@ -96,33 +101,29 @@ namespace GRVY {
 
     string inputfile;			// input file with runtime controls
 
-    int max_poolsize_MBs;		// max ramdisk size (in MBs)
-    int max_mapsize_MBs;		// max mapsize (in MBs)
-    int word_size;			// individual word size in bytes
-    int blocksize;			// data element blocksize 
-    int mpi_rank;			// rank of local processs
-    int mpi_nprocs;			// total number of procs available
-    int sendtag;		        // MPI message sendtag
-    int recvtag;			// MPI message recvtag
-    int num_map_records;		// max number of mappable record indices
-    int max_num_records;		// max number of raw records
-    int num_active;		        // active number of raw records
+    int max_poolsize_MBs;		  // max ramdisk size (in MBs)
+    int max_mapsize_MBs;		  // max mapsize (in MBs)
+    int word_size;			  // individual word size in bytes
+    int blocksize;			  // data element blocksize 
+    int mpi_rank;			  // rank of local processs
+    int mpi_nprocs;			  // total number of procs available
+    int sendtag;		          // MPI message sendtag
+    int recvtag;			  // MPI message recvtag
+    int num_smap_records;		  // max number of mappable sparse record indices (user index)
+    int max_num_records;		  // max number of sequential ocore records (ocore index)
+    int num_active_records;	          // number of currently active records
+    int distrib_rank;			  // incremental counter used for distributing ocore data
 
-    vector< vector <double>  > pool;    // raw data pool storage
-    map<size_t,size_t> smap;		// sparse data map (sparse indices -> contiguous pool indices)
-    map<int,MPI_Ocore_owners> rank_map;	// map for rank 0 to identify which child rank owns the data
-    //vector<MPI_Ocore_datagram> map;	// data map
+    vector< vector <double>  > pool;       // raw data pool storage
+    map<size_t,MPI_Ocore_datagram> smap;   // sparse data map (sparse indices -> contiguous pool indices)
+    map<size_t,MPI_Ocore_owners> rank_map; // map for rank 0 to identify which child rank owns the data
 
-    MPI_Comm MYCOMM;			// MPI communicator for ocore activity
+    MPI_Comm MYCOMM;			   // MPI communicator for ocore activity
 
-    GRVY_MPI_Ocore_Class *self;	        // back pointer to public class
-    int distrib_rank;			// incremental counter used for distributing ocore data
+    GRVY_MPI_Ocore_Class *self;	          // back pointer to public class
 
   private:
-    int num_active_records;	        // number of currently active records
-
-    GRVY_Timer_Class ptimer;		// Local performance timer
-
+    GRVY_Timer_Class ptimer;		  // Local performance timer
 #endif    
   };
 
@@ -146,6 +147,7 @@ namespace GRVY {
     m_pimpl->blocksize             = 8192;
     m_pimpl->sendtag               = 1001;
     m_pimpl->recvtag               = 2001;
+    m_pimpl->num_active_records    = 0;
     m_pimpl->self                  = this;
 
     //--------------------------
@@ -162,6 +164,7 @@ namespace GRVY {
 
     if(!initialized)
       {
+	grvy_printf(info,"%s (%5i): Performing MPI_Init()\n",prefix,m_pimpl->mpi_rank);
 	MPI_Init(&init_argc,NULL);
 	m_pimpl->mpi_initialized_by_ocore = true;
       }
@@ -193,7 +196,10 @@ namespace GRVY {
     // tear down MPI if we initialized 
 
     if(m_pimpl->mpi_initialized_by_ocore)
-      MPI_Finalize();
+      {
+	grvy_printf(info,"%s (%5i): Performing MPI_Finalize()\n",prefix,m_pimpl->mpi_rank);
+	MPI_Finalize();
+      }
   }
 
   int GRVY_MPI_Ocore_Class::Initialize(string input_file,int blocksize)
@@ -207,24 +213,20 @@ namespace GRVY {
 
   void GRVY_MPI_Ocore_Class::Finalize()
   {
+
     if(m_pimpl->master)
       {
 	grvy_printf(info,"%s: master task initiating finalize\n",prefix);
 
 	int hbuf[4] = {OCORE_EXIT,0,0,m_pimpl->blocksize};
 
-	//	hbuf[0] = OCORE_EXIT;
-	//	hbuf[1] = 0;
-	//	hbuf[2] = 0;
-	//	hbuf[3] = m_pimpl->blocksize;
-	
 	MPI_Bcast(hbuf,4,MPI_INTEGER,0,m_pimpl->MYCOMM);
-
-	//	for(int i=1;i<m_pimpl->mpi_nprocs;i++)
-	//	  {
-	//	    hbuf[1] = i;
-	//	  }
       }
+
+    fflush(NULL);
+    MPI_Barrier(m_pimpl->MYCOMM);
+
+    m_pimpl->Summarize();
 
     return;
   }
@@ -235,9 +237,13 @@ namespace GRVY {
 
   int GRVY_MPI_Ocore_Class::Write(size_t offset, double *data)
   {
-    grvy_printf(info,"%s: Writing data for offset %i\n",prefix,offset);
+    if(!m_pimpl->use_mpi_ocore)
+      {
+	grvy_printf(info,"\n%s: Use of MPI_ocore disabled, unable to complete write request\n",prefix);
+	return(1);
+      }
 
-    map<int,MPI_Ocore_owners> :: iterator it = m_pimpl->rank_map.find(offset);
+    map<size_t,MPI_Ocore_owners> :: iterator it = m_pimpl->rank_map.find(offset);
     int rank_owner;
     bool new_data = false;
 
@@ -247,15 +253,53 @@ namespace GRVY {
 	new_data   = true;
       }
     else			// old record
-      rank_owner = it->second.data_hostId;
-
+      {
+	rank_owner = it->second.data_hostId;
+	it->second.write_count++;
+      }
+    
     assert(rank_owner > 0 && rank_owner < m_pimpl->mpi_nprocs );
+
+    grvy_printf(info,"%s: Writing data for offset %i to task %i\n",prefix,offset,rank_owner);
 
     return(m_pimpl->Write_to_Pool(rank_owner,new_data,offset,data));
   }
 
   // ---------------------------------------------------------------------------------------
-  // poll_for_work(): Work poller for ocore slaves
+  // Write(): Public read data function
+  // ---------------------------------------------------------------------------------------
+
+  int GRVY_MPI_Ocore_Class::Read(size_t offset, double *data)
+  {
+    if(!m_pimpl->use_mpi_ocore)
+      {
+	grvy_printf(info,"\n%s: Use of MPI_ocore disabled, unable to complete read request\n",prefix);
+	return(1);
+      }
+
+    map<size_t,MPI_Ocore_owners> :: iterator it = m_pimpl->rank_map.find(offset);
+    int rank_owner;
+
+    if(it == m_pimpl->rank_map.end())	// unknown record
+      {
+	grvy_printf(error,"%s (%5i): Error - unknown record index requested for read (%i)\n",prefix,m_pimpl->mpi_rank,offset);
+	m_pimpl->Abort();
+      }
+    else			// old record
+      {
+	rank_owner = it->second.data_hostId;
+	it->second.read_count++;
+      }
+
+    assert(rank_owner > 0 && rank_owner < m_pimpl->mpi_nprocs );
+
+    grvy_printf(info,"%s: Reading data for offset %i from task %i\n",prefix,offset,rank_owner);
+
+    return(m_pimpl->Read_from_Pool(rank_owner,offset,data));
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // PollForWork(): Work poller for ocore slaves
   // ---------------------------------------------------------------------------------------
 
   void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PollForWork()
@@ -294,7 +338,7 @@ namespace GRVY {
 	  case OCORE_WRITE_NEW:		
 	    if(mpi_rank == hbuf[1] )
 	      {
-		grvy_printf(info,"%s (%5i): polling -> NEW write request received\n",prefix,mpi_rank);
+		grvy_printf(info,"\n%s (%5i): Polling -> NEW write request received\n",prefix,mpi_rank);
 
 		bool new_data = true;
 		StoreData(hbuf[2],new_data);
@@ -303,25 +347,73 @@ namespace GRVY {
 	  case OCORE_UPDATE_OLD: 
 	    if(mpi_rank == hbuf[1] )
 	      {
-		grvy_printf(info,"%s (%5i): polling -> UPDATE write request received\n",prefix,mpi_rank);
+		grvy_printf(info,"\n%s (%5i): Polling -> UPDATE write request received\n",prefix,mpi_rank);
 
 		bool new_data = false;
 		StoreData(hbuf[2],new_data);
 	      }
 	    break;
 	  case OCORE_READ:
-	    grvy_printf(info,"%s (%5i): polling -> READ request received\n",prefix,mpi_rank);
+	    if(mpi_rank == hbuf[1] )
+	      {
+		grvy_printf(info,"\n%s (%5i): polling -> READ request received\n",prefix,mpi_rank);
+		PullData(hbuf[2]);
+	      }
 	    break;
 	  case OCORE_EXIT:		// exit: task 0 has requested us to finish
-	    grvy_printf(info,"%s (%5i): polling -> EXIT request received\n",prefix,mpi_rank);
+	    grvy_printf(info,"\n%s (%5i): polling -> EXIT request received\n",prefix,mpi_rank);
 	    return;
 	  default:
-	    grvy_printf(error,"%s: Internal Error - unknown work request received (%i)\n",prefix,hbuf[0]);
+	    grvy_printf(error,"\n%s: Internal Error - unknown work request received (%i)\n",prefix,hbuf[0]);
 	    Abort();
 	  }
 
       }	// end infinite polling while(1) loop
 
+    return;
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // Summarize(): Summarize read/write statistics and performance
+  // ---------------------------------------------------------------------------------------
+
+  void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Summarize()
+  {
+
+    if(master)
+      {
+	size_t total_written    = ptimer.StatsCount("write_to_pool" )*blocksize*word_size;
+	size_t total_read       = ptimer.StatsCount("read_from_pool")*blocksize*word_size;
+	
+	double aggr_write_speed = total_written/ptimer.ElapsedSeconds("write_to_pool");
+	double aggr_read_speed  = total_read/ptimer.ElapsedSeconds("read_from_pool");
+	
+	grvy_printf(info,"\n%s: Final MPI Ocore Read/Write Stats\n",prefix);
+	grvy_printf(info,"%s:   --> Total Written = %12.5e GBs; Avg. = %12.5e MB/sec\n",prefix,
+		    1.0*total_written/(1024*1024*1024),aggr_write_speed/(1024*1024));
+	grvy_printf(info,"%s:   --> Total Read    = %12.5e GBs; Avg. = %12.5e MB/sec\n\n",prefix,
+		    1.0*total_read/(1024*1024*1024),aggr_read_speed/(1024*1024));
+
+      }
+
+    // Memory Usage
+
+    int *num_active_per_task;
+
+    if(master)
+      {
+	num_active_per_task = new int[mpi_nprocs];
+	MPI_Gather(&num_active_records,1,MPI_INTEGER,num_active_per_task,1,MPI_INTEGER,0,MYCOMM);
+
+	for(int i=1;i<mpi_nprocs;i++)
+	  grvy_printf(info,"%s:   --> Proc %5i - Memory Used = %12.5e MBs (Max Req. = %i MBs)\n",prefix,i,
+		      1.0*num_active_per_task[i]*blocksize*word_size/(1024*1024),max_poolsize_MBs);
+
+	delete [] num_active_per_task;
+      }
+    else
+      MPI_Gather(&num_active_records,1,MPI_INTEGER,num_active_per_task,1,MPI_INTEGER,0,MYCOMM);
+    
     return;
   }
 
@@ -333,30 +425,62 @@ namespace GRVY {
 								    size_t offset, double *data)
   {
 
+    ptimer.BeginTimer("write_to_pool");
+
     // create msg header
 
     int hbuf[4];
 
     if(new_data)
-      hbuf[0] = 0;		// write new record
+      hbuf[0] = OCORE_WRITE_NEW;   
     else
-      hbuf[0] = 1;		// update old record
+      hbuf[0] = OCORE_UPDATE_OLD;  
 
     hbuf[1] = dest_task;
     hbuf[2] = offset;
     hbuf[3] = blocksize;
     
-    ptimer.BeginTimer("write_to_pool");
-    
     // Notify children of upcoming write request
+
+    grvy_printf(info,"%s (%5i): Performing mpi_bcast to prep rank %i\n",prefix,mpi_rank,dest_task);
 
     MPI_Bcast(hbuf,4,MPI_INTEGER,0,MYCOMM);
 
     // Perform the write (sync for now)
 
+    grvy_printf(info,"%s (%5i): Performing mpi_send to rank %i\n",prefix,mpi_rank,dest_task);
+
     MPI_Send(data,blocksize,MPI_DOUBLE,dest_task,sendtag,MYCOMM);
 
     ptimer.EndTimer("write_to_pool");
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // Read_from_Pool(): Internal read method - use MPI to xfer desired data
+  // ---------------------------------------------------------------------------------------
+
+  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_from_Pool(int recv_task, size_t offset, double *data)
+  {
+    MPI_Status status;
+    ptimer.BeginTimer("read_from_pool");
+
+    // create msg header
+
+    int hbuf[4] = {OCORE_READ,recv_task,offset,blocksize};
+
+    // Notify children of upcoming read request
+
+    grvy_printf(info,"%s (%5i): Performing mpi_bcast to prep rank %i\n",prefix,mpi_rank,recv_task);
+
+    MPI_Bcast(hbuf,4,MPI_INTEGER,0,MYCOMM);
+
+    // Perform the read (sync for now)
+
+    grvy_printf(info,"%s (%5i): Performing mpi_recv from rank %i\n",prefix,mpi_rank,recv_task);
+
+    MPI_Recv(data,blocksize,MPI_DOUBLE,recv_task,recvtag,MYCOMM,&status);
+
+    ptimer.EndTimer("read_from_pool");
   }
 
   // ---------------------------------------------------------------------------------------
@@ -375,64 +499,71 @@ namespace GRVY {
     
     ptimer.Init("GRVY MPI_Ocore");
 
-    // todo: read input variables
+    // todo: read input variables/bcast from rank 0
 
-    // todo: bcast to children
-
-    num_map_records = max_poolsize_MBs*1024*1024/sizeof(int);
-    max_num_records = max_poolsize_MBs*1024*1024/(blocksize*word_size);
+    num_smap_records = max_mapsize_MBs*1024*1024/sizeof(int);
+    max_num_records  = max_poolsize_MBs*1024*1024/(blocksize*word_size);
 
     if(master)
       {
 	grvy_printf(info,"\n");
-	grvy_printf(info,"%s: --> Individual record word size        = %15i (Bytes )\n",prefix,word_size);
-	grvy_printf(info,"%s: --> Individual record blocksize        = %15i (Bytes )\n",prefix,blocksize);
-
-#if 0
-	grvy_printf(info,"%s: --> Max sparse map memory size         = %15i (MBytes)\n",prefix,max_mapsize_MBs);
-	grvy_printf(info,"%s: --> MPI ramdisk memory size (per proc) = %15i (MBytes)\n",prefix,max_poolsize_MBs);
-	grvy_printf(info,"%s: --> Max number of mappable records     = %15i\n",         prefix,num_map_records);
-	grvy_printf(info,"%s: --> Max number of raw ramdisk records  = %15i\n",         prefix,max_num_records);
-#endif
+	grvy_printf(info,"%s: --> Individual record word size         = %15i (Bytes )\n",prefix,word_size);
+	grvy_printf(info,"%s: --> Individual record blocksize         = %15i (Words )\n",prefix,blocksize);
+	grvy_printf(info,"\n");
+	grvy_printf(info,"%s: --> Max sparse map memory size          = %15i (MBytes)\n",prefix,max_mapsize_MBs );
+	grvy_printf(info,"%s: --> MPI ramdisk memory size (per proc)  = %15i (MBytes)\n",prefix,max_poolsize_MBs);
+	grvy_printf(info,"\n");
+	grvy_printf(info,"%s: --> Max number of mappable records      = %15i\n",         prefix,num_smap_records);
+	grvy_printf(info,"%s: --> Max number of ocore ramdisk records = %15i\n",         prefix,max_num_records );
 	grvy_printf(info,"\n");
       }
+    else 			// children
+      {
     
-    // -------------------------------
-    // allocation for raw storage pool
-    // -------------------------------
+	// -------------------------------
+	// allocation for raw storage pool
+	// -------------------------------
+	
+	// \todo: allow for non-fixed size pool
 
-#if 0    
-    try 
-      {
-	vector<double> data(blocksize);
+#if 1
+
+	try 
+	  {
+	    vector<double> data(blocksize);
+	    
+	    for(int i=0;i<max_num_records;i++)
+	      pool.push_back(data);
+	  }
 	
-	for(int i=0;i<max_num_records;i++)
-	  pool.push_back(data);
-      }
+	catch(const std::bad_alloc& ex) 
+	  {
+	    grvy_printf(error,"%s (p%5i): Unable to allocate raw storage pool...exiting.\n",prefix,mpi_rank);
+	    exit(1);
+	  }
 	
-    catch(const std::bad_alloc& ex) 
-      {
-	grvy_printf(error,"%s (p%5i): Unable to allocate raw storage pool...exiting.\n",prefix,mpi_rank);
-	exit(1);
-      }
-      
-    catch(...)
-      {
-	grvy_printf(error,"%s (p%5i): Unknown exception...exiting\n",prefix,mpi_rank);
-	exit(1);
-      }
+	catch(...)
+	  {
+	    grvy_printf(error,"%s (p%5i): Unknown exception...exiting\n",prefix,mpi_rank);
+	    exit(1);
+	  }
 	
-    grvy_printf(info,"%s (%5i): Successfully initialized ramdisk storage pool of %8i MBs\n",
-		prefix,mpi_rank,max_poolsize_MBs);
+	grvy_printf(info,"%s (%5i): Successfully initialized ramdisk storage pool of %8i MBs\n",
+		    prefix,mpi_rank,max_poolsize_MBs);
+	
 #endif
+	
+      }
 
-    // Put children tasks to work in polling mode
+	initialized = true;    
+	
+	// Put children tasks to work in polling mode
+	
+	if(!master)
+	  PollForWork();
 
-    if(!master)
-      PollForWork();
-
-    initialized = true;    
-    return 0;
+	fflush(NULL);
+	return 0;
   }
 
   // --------------------------------------------------------------------------------
@@ -441,7 +572,7 @@ namespace GRVY {
 
   int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: AssignOwnership(size_t sparse_index)
   {
-    grvy_printf(info,"%s: assigning task ownershiop for new record %i\n",prefix,sparse_index);
+
     
     // Assign mpi task ownership based on round-robin 
     
@@ -450,9 +581,10 @@ namespace GRVY {
     distrib_rank++;
     if(distrib_rank == mpi_nprocs)
       distrib_rank = 1;
-    
+   
     owner.data_hostId = distrib_rank;
-    owner.user_index  = sparse_index;
+    owner.write_count = 1;
+    owner.read_count  = 0;
     
     try {
       rank_map[sparse_index] = owner;
@@ -469,23 +601,123 @@ namespace GRVY {
 	Abort();	    
       }
 
+    grvy_printf(info,"\n%s: Assigned task ownership for new record %i to task %i\n",prefix,sparse_index,distrib_rank);
+
     return(distrib_rank);
   }
 
   // ---------------------------------------------------------------------------------------
-  // Initialize(): Initialize data structures for MPI Ocore
+  // StoreData(): Recv and store ocore data from rank 0
   // ---------------------------------------------------------------------------------------
 
   int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: StoreData(size_t sparse_index, bool new_data)
   {
-    if(!initialized)
-      return(1);
 
-    size_t seq_index = GetRecord(sparse_index);
+    MPI_Status status;
+
+    grvy_printf(info,"%s (%5i): Entering StoreData()\n",prefix,mpi_rank);
+
+    if(!initialized)
+      {
+	grvy_printf(info,"%s (%5i): Ocore must be initialized prior to storing data\n",prefix,mpi_rank);
+	Abort();
+      }
+
+    assert(mpi_rank > 0);
+
+    map<size_t,MPI_Ocore_datagram>:: iterator it = smap.find(sparse_index);
+    size_t offset;
+    bool   in_mem;
+
+    if(it == smap.end())	// new record
+      {
+	MPI_Ocore_datagram datagram;	
+	datagram.in_mem      = true;
+	datagram.index       = num_active_records;
+
+	offset               = num_active_records;
+	in_mem               = true;
+
+	try {
+	  smap[sparse_index] = datagram;
+	}
+
+	catch(const std::bad_alloc& ex) 
+	  {
+	    grvy_printf(error,"%s (%5i): Unable to allocate smap storage...exiting.\n",prefix,mpi_rank);
+	    Abort();	    
+	  }
+	catch(...)
+	  {
+	    grvy_printf(error,"%s (%5i): Unknown exception...exiting\n",prefix,mpi_rank);
+	    Abort();	    
+	  }
+	num_active_records++;
+      }
+    else
+      {
+	offset = smap[sparse_index].index;
+	in_mem = smap[sparse_index].in_mem;
+	
+      }
 
     grvy_printf(info,"%s (%5i): Prepping to recv data (user index %i -> ocore index %i)\n",prefix,mpi_rank,
-		sparse_index,seq_index);
+		sparse_index,offset);
 
+    if(in_mem)
+      {
+	MPI_Recv(&pool[offset][0],blocksize,MPI_DOUBLE,0,sendtag,MYCOMM,&status);
+	grvy_printf(info,"%s (%5i): Data received into memory pool\n",prefix,mpi_rank);
+      }
+    else
+      {
+	grvy_printf(error,"%s (%5i): disk-transaction not yet enabled\n",prefix,mpi_rank);
+	Abort();
+      }
+    
+      return(0);
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // PullData(): Read and send ocore data record to rank 0
+  // ---------------------------------------------------------------------------------------
+
+  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PullData(size_t sparse_index)
+  {
+
+    MPI_Status status;
+
+    grvy_printf(info,"%s (%5i): Entering PullData()\n",prefix,mpi_rank);
+
+    if(!initialized)
+      {
+	grvy_printf(info,"%s (%5i): Ocore must be initialized prior to pulling data\n",prefix,mpi_rank);
+	Abort();
+      }
+
+    assert(mpi_rank > 0);
+
+    map<size_t,MPI_Ocore_datagram>:: iterator it = smap.find(sparse_index);
+
+    assert(it != smap.end());
+
+    size_t offset = it->second.index;
+    bool   in_mem = it->second.in_mem;
+
+    grvy_printf(info,"%s (%5i): Prepping to send data (user index %i -> ocore index %i)\n",prefix,mpi_rank,
+		sparse_index,offset);
+
+    if(in_mem)
+      {
+	MPI_Send(&pool[offset][0],blocksize,MPI_DOUBLE,0,recvtag,MYCOMM);
+	grvy_printf(info,"%s (%5i): Data sent from memory pool\n",prefix,mpi_rank);
+      }
+    else
+      {
+	grvy_printf(error,"%s (%5i): disk-transaction not yet enabled\n",prefix,mpi_rank);
+	Abort();
+      }
+    
       return(0);
   }
 
@@ -493,6 +725,7 @@ namespace GRVY {
   // GetRecord(): map sparse index to Ocore index
   // --------------------------------------------------------------------------------
 
+#if 0
   size_t GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: GetRecord(size_t sparse_index)
   {
 
@@ -502,6 +735,7 @@ namespace GRVY {
       {
 	// store mapping and allocate raw storage for new record
 
+#if 0
 	try {
 	  smap[sparse_index] = ++num_active_records;;
 
@@ -520,6 +754,7 @@ namespace GRVY {
 	    grvy_printf(error,"%s (%5i): Unknown exception...exiting\n",prefix,mpi_rank);
 	    Abort();	    
 	  }
+#endif
 
 	grvy_printf(info,"%s (%5i): Registered new active record (record = %15i)\n",prefix,num_active_records);
 
@@ -528,6 +763,7 @@ namespace GRVY {
     else			// an old record
       return( it->second );
   }
+#endif
 
   void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Abort()
   {
