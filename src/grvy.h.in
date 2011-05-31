@@ -760,8 +760,9 @@ public:
  ~GRVY_MPI_Ocore_Class();
 
   int Initialize      (std::string inputfile, int blocksize);
-  int Write           (int rank, int size, int offset, double *data);
-  int Read            (int rank, int size, int offset, double *data);
+  int Write           (size_t offset, double *data);
+  int Read            (size_t offset, double *data);
+  void Finalize       ();
 
 private:
   class GRVY_MPI_Ocore_ClassImp;		  // forward declaration to Ocore implementation
