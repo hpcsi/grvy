@@ -36,7 +36,16 @@
 #include<stack>
 
 #ifdef HAVE_MPI
+
+// Request OpenMPI to ignore C++ bindings (requires so we can also
+// link C code against libgrvy
+
+#define OMPI_SKIP_MPICXX
+
 #include<mpi.h>
+
+#undef OMPI_SKIP_MPICXX
+
 #endif
 
 using namespace std;

@@ -2,16 +2,19 @@
 #include<mpi.h>
 #include<assert.h>
 #include<math.h>
+#include<stdio.h>
 
 void init_data(int offset,int size, double *data)
 {
-  for(int i=0;i<size;i++)
+  int i;
+  for(i=0;i<size;i++)
     data[i] = offset*i;
 }
 
 int verify_data(int offset,int size, double *data)
 {
-  for(int i=0;i<size;i++)
+  int i;
+  for(i=0;i<size;i++)
     {
       if(fabs(data[i] - 1.0*offset*i) > 1.0e-15)
 	{
@@ -24,7 +27,8 @@ int verify_data(int offset,int size, double *data)
 
 void zero_data(int offset, int size, double *data)
 {
-  for(int i=0;i<size;i++)
+  int i;
+  for(i=0;i<size;i++)
     data[i] = 0.0;
 }
 
@@ -33,6 +37,7 @@ int main(int argc, char *argv[])
 
   int num_local;
   const int blocksize = 8192;
+  int i;
 
   MPI_Init(&argc,&argv);
   MPI_Comm_rank(MPI_COMM_WORLD,&num_local);
@@ -47,7 +52,7 @@ int main(int argc, char *argv[])
 
       // Store some known data
 
-      for(int i=0;i<num_records;i++)
+      for(i=0;i<num_records;i++)
 	{
 	  init_data(i,blocksize,data);
 	  grvy_ocore_write(i,data);
@@ -55,20 +60,20 @@ int main(int argc, char *argv[])
 
       // Change data locally
 
-      for(int i=0;i<num_records;i++)
+      for(i=0;i<num_records;i++)
 	zero_data(i,blocksize,data);
 
       // Read back known data in opposite order and verify
 
-      for(int i=num_records-1;i>=0;i--)
+      for(i=num_records-1;i>=0;i--)
 	{
-	  mpi_ocore_read(i,data);
+	  grvy_ocore_read(i,data);
 	  assert(verify_data(i,blocksize,data) );
 	}
 
     }
 
-  mpi_ocore_finalize();
+  grvy_ocore_finalize();
   MPI_Finalize();
 
 }
