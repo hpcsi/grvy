@@ -44,7 +44,7 @@ AC_ARG_ENABLE(mpi, AC_HELP_STRING([--enable-mpi],[enable MPI associated utilitie
 HAVE_MPI=0
 
 if test "x$enable_mpi" = "xyes"; then
-   ACX_MPI([HAVE_MPI=1 CXX="$MPICXX" AC_DEFINE(HAVE_MPI,1,[Define if MPI is available])], 
+   ACX_MPI([HAVE_MPI=1 CXX="$MPICXX" CC="$MPICC" AC_DEFINE(HAVE_MPI,1,[Define if MPI is available])], 
            AC_MSG_ERROR([Could not find MPI compiler support]))
 fi
 

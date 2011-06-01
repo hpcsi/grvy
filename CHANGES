@@ -1,5 +1,7 @@
-Version 0.30.1 (In Progress)
-
+Version 0.31 (In Progress)
+  
+  * addition of MPI based out-of-core ramdisk utility
+  * added optional --enable-mpi configure to enable MPI-based utilities
   * re-enabled support for VPATH builds   
   * fix for grvy_check_file_path() when absolute paths provided as input  
   * regression test updates for compatability with gcc 4.6.0
