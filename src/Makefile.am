@@ -24,7 +24,7 @@ library_include_HEADERS   = grvy.h grvy_classes.h
 
 lib_LTLIBRARIES          += libgrvy.la
 libgrvy_la_LDFLAGS        = $(all_libraries) -release $(GENERIC_RELEASE) $(BOOST_REGEX_LDFLAGS) \
-				$(BOOST_REGEX_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) -R/Users/karl/bin/boost-1.42/lib
+				$(BOOST_REGEX_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) #-R/Users/karl/bin/boost-1.42/lib
 libgrvy_la_SOURCES        = $(getpot_sources) $(cc_sources) $(h_sources)
 
 if HDF5_ENABLED	         
@@ -65,16 +65,17 @@ gadd_SOURCES              = gadd.cpp
 gadd_LDADD                = -L$(top_builddir)/src -lgrvy
 gadd_DEPENDENCIES         = libgrvy.la
 
-bin_PROGRAMS             += example
-example_SOURCES              = example.cpp
-example_LDADD                = -L$(top_builddir)/src -lgrvy
-example_DEPENDENCIES         = libgrvy.la
+if MPI_ENABLED
+   bin_PROGRAMS          += example
+   example_SOURCES        = example.cpp
+   example_LDADD          = -L$(top_builddir)/src -lgrvy
+   example_DEPENDENCIES   = libgrvy.la
 
-bin_PROGRAMS             += example2
-example2_SOURCES              = example2.c
-example2_LDADD                = -L$(top_builddir)/src -lgrvy
-example2_DEPENDENCIES         = libgrvy.la
-
+   bin_PROGRAMS          += example2
+   example2_SOURCES       = example2.c
+   example2_LDADD         = -L$(top_builddir)/src -lgrvy
+   example2_DEPENDENCIES  = libgrvy.la
+endif
 
 #---------------------------------
 # Embedded license header support

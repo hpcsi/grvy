@@ -2,16 +2,17 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(grvy, 0.30.1, karl@ices.utexas.edu)
+AC_INIT(grvy, 0.31.0, karl@ices.utexas.edu)
 AC_CONFIG_HEADER(config_grvy.h)
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE(grvy,0.30.1)
+AM_INIT_AUTOMAKE
 
 # Release versioning
 
-GENERIC_MAJOR_VERSION=0
-GENERIC_MINOR_VERSION=30
-GENERIC_MICRO_VERSION=1
+AX_SPLIT_VERSION
+GENERIC_MAJOR_VERSION=$AX_MAJOR_VERSION
+GENERIC_MINOR_VERSION=$AX_MINOR_VERSION
+GENERIC_MICRO_VERSION=$AX_POINT_VERSION
 
 GENERIC_RELEASE=$GENERIC_MAJOR_VERSION.$GENERIC_MINOR_VERSION
 
@@ -21,9 +22,6 @@ AC_SUBST(GENERIC_MINOR_VERSION)
 AC_SUBST(GENERIC_MICRO_VERSION)
 
 # Required for some macros
-
-#AX_AM_MACROS
-#AC_CONFIG_MACRO_DIR(m4)
 
 #------------------------------
 # Checks for required programs

@@ -1005,8 +1005,10 @@ GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
 
 }
 
-int GRVY_MPI_Ocore_Class::Initialize(string input_file,int blocksize) { return 0;}
-
+int  GRVY_MPI_Ocore_Class::Initialize(string input_file,int blocksize) { return 0;}
+int  GRVY_MPI_Ocore_Class::Read      (size_t record_id,double *data  ) { return 0;}
+int  GRVY_MPI_Ocore_Class::Write     (size_t record_id,double *data  ) { return 0;}
+void GRVY_MPI_Ocore_Class::Finalize  () { return;}
 #endif
 
 

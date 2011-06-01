@@ -320,8 +320,8 @@ extern "C" {
 
   extern    int grvy_ocore_init                (const char *input_file, int blocksize);
   extern   void grvy_ocore_finalize            ();
-  extern   int  grvy_ocore_write               (size_t record_id, double *data);
-  extern   int  grvy_ocore_read                (size_t record_id, double *data);
+  extern    int grvy_ocore_write               (size_t record_id, double *data);
+  extern    int grvy_ocore_read                (size_t record_id, double *data);
 					      
   /*
    * Basic API Definition for Math Utilities
