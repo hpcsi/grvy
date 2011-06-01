@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     {
       double data[blocksize];
 
-      const int num_records = 100;
+      const int num_records = 800;
 
       // Store some known data
 
