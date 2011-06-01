@@ -252,7 +252,7 @@ namespace GRVY {
 
     if(m_pimpl->master)
       {
-	grvy_printf(info,"%s: master task initiating finalize\n",prefix);
+	grvy_printf(debug,"%s: master task initiating finalize\n",prefix);
 
 	int hbuf[4] = {OCORE_EXIT,0,0,m_pimpl->blocksize};
 
@@ -304,7 +304,7 @@ namespace GRVY {
     
     assert(rank_owner > 0 && rank_owner < m_pimpl->mpi_nprocs );
 
-    grvy_printf(info,"%s: Writing data for offset %i to task %i\n",prefix,offset,rank_owner);
+    grvy_printf(debug,"%s: Writing data for offset %i to task %i\n",prefix,offset,rank_owner);
 
     return(m_pimpl->Write_to_Pool(rank_owner,new_data,offset,data));
   }
@@ -337,7 +337,7 @@ namespace GRVY {
 
     assert(rank_owner > 0 && rank_owner < m_pimpl->mpi_nprocs );
 
-    grvy_printf(info,"%s: Reading data for offset %i from task %i\n",prefix,offset,rank_owner);
+    grvy_printf(debug,"%s (%5i): Reading data for offset %i from task %i\n",prefix,m_pimpl->mpi_rank,offset,rank_owner);
 
     return(m_pimpl->Read_from_Pool(rank_owner,offset,data));
   }
@@ -366,7 +366,7 @@ namespace GRVY {
 
     assert(mpi_rank > 0);
 
-    grvy_printf(info,"%s (%5i): Child task entering polling mode\n",prefix,mpi_rank);
+    grvy_printf(debug,"%s (%5i): Child task entering polling mode\n",prefix,mpi_rank);
 
     while(1)
       {
@@ -382,7 +382,7 @@ namespace GRVY {
 	  case OCORE_WRITE_NEW:		
 	    if(mpi_rank == hbuf[1] )
 	      {
-		grvy_printf(info,"\n%s (%5i): Polling -> NEW write request received\n",prefix,mpi_rank);
+		grvy_printf(debug,"\n%s (%5i): Polling -> NEW write request received\n",prefix,mpi_rank);
 
 		bool new_data = true;
 		StoreData(hbuf[2],new_data);
@@ -391,7 +391,7 @@ namespace GRVY {
 	  case OCORE_UPDATE_OLD: 
 	    if(mpi_rank == hbuf[1] )
 	      {
-		grvy_printf(info,"\n%s (%5i): Polling -> UPDATE write request received\n",prefix,mpi_rank);
+		grvy_printf(debug,"\n%s (%5i): Polling -> UPDATE write request received\n",prefix,mpi_rank);
 
 		bool new_data = false;
 		StoreData(hbuf[2],new_data);
@@ -400,12 +400,12 @@ namespace GRVY {
 	  case OCORE_READ:
 	    if(mpi_rank == hbuf[1] )
 	      {
-		grvy_printf(info,"\n%s (%5i): polling -> READ request received\n",prefix,mpi_rank);
+		grvy_printf(debug,"\n%s (%5i): polling -> READ request received\n",prefix,mpi_rank);
 		PullData(hbuf[2]);
 	      }
 	    break;
 	  case OCORE_EXIT:		// exit: task 0 has requested us to finish
-	    grvy_printf(info,"\n%s (%5i): polling -> EXIT request received\n",prefix,mpi_rank);
+	    grvy_printf(debug,"\n%s (%5i): polling -> EXIT request received\n",prefix,mpi_rank);
 	    return;
 	  default:
 	    grvy_printf(error,"\n%s: Internal Error - unknown work request received (%i)\n",prefix,hbuf[0]);
@@ -486,13 +486,13 @@ namespace GRVY {
     
     // Notify children of upcoming write request
 
-    grvy_printf(info,"%s (%5i): Performing mpi_bcast to prep rank %i\n",prefix,mpi_rank,dest_task);
+    grvy_printf(debug,"%s (%5i): Performing mpi_bcast to prep rank %i\n",prefix,mpi_rank,dest_task);
 
     MPI_Bcast(hbuf,4,MPI_INTEGER,0,MYCOMM);
 
     // Perform the write (sync for now)
 
-    grvy_printf(info,"%s (%5i): Performing mpi_send to rank %i\n",prefix,mpi_rank,dest_task);
+    grvy_printf(debug,"%s (%5i): Performing mpi_send to rank %i\n",prefix,mpi_rank,dest_task);
 
     MPI_Send(data,blocksize,MPI_DOUBLE,dest_task,sendtag,MYCOMM);
 
@@ -514,13 +514,13 @@ namespace GRVY {
 
     // Notify children of upcoming read request
 
-    grvy_printf(info,"%s (%5i): Performing mpi_bcast to prep rank %i\n",prefix,mpi_rank,recv_task);
+    grvy_printf(debug,"%s (%5i): Performing mpi_bcast to prep rank %i\n",prefix,mpi_rank,recv_task);
 
     MPI_Bcast(hbuf,4,MPI_INTEGER,0,MYCOMM);
 
     // Perform the read (sync for now)
 
-    grvy_printf(info,"%s (%5i): Performing mpi_recv from rank %i\n",prefix,mpi_rank,recv_task);
+    grvy_printf(debug,"%s (%5i): Performing mpi_recv from rank %i\n",prefix,mpi_rank,recv_task);
 
     MPI_Recv(data,blocksize,MPI_DOUBLE,recv_task,recvtag,MYCOMM,&status);
 
@@ -688,7 +688,7 @@ namespace GRVY {
 	Abort();	    
       }
 
-    grvy_printf(info,"\n%s: Assigned task ownership for new record %i to task %i\n",prefix,sparse_index,distrib_rank);
+    grvy_printf(debug,"\n%s: Assigned task ownership for new record %i to task %i\n",prefix,sparse_index,distrib_rank);
 
     return(distrib_rank);
   }
@@ -701,8 +701,6 @@ namespace GRVY {
   {
 
     MPI_Status status;
-
-    grvy_printf(info,"%s (%5i): Entering StoreData()\n",prefix,mpi_rank);
 
     if(!initialized)
       {
@@ -719,29 +717,12 @@ namespace GRVY {
     if(it == smap.end())	// new record being written (always written to ramdisk)
       {
 
-#if 0
-	if(num_active_records == max_num_records - 1) // memory cache is full
-	  if(use_disk_overflow)
-	    DumptoDisk();
-	  else
-	    {
-	      grvy_printf(error,"%s (%5i): Error: MPI ocore ramdisk is full and disk-based overflow is disabled\n",
-			 prefix,mpi_rank);
-	      grvy_printf(error,"%s (%5i):       Please increase amount of memory available for MPI Ocore storage\n",
-			  prefix,mpi_rank);
-	      Abort();
-	    }
-#endif
-
 	MPI_Ocore_datagram datagram;	
 	datagram.in_mem      = true;
-	//	datagram.index       = num_active_records;
 	datagram.index       = GetFreeRecord(sparse_index);
-	//datagram.occupied    = true;
 	datagram.write_count = 1;
 	datagram.read_count  = 0;
 
-	//offset               = num_active_records;
 	offset               = datagram.index;
 	in_mem               = true;
 
@@ -769,25 +750,22 @@ namespace GRVY {
 	smap[sparse_index].write_count++;
       }
 
-    grvy_printf(info,"%s (%5i): Prepping to recv data (user index %i -> ocore index %i)\n",prefix,mpi_rank,
+    grvy_printf(debug,"%s (%5i): Prepping to recv data (user index %i -> ocore index %i)\n",prefix,mpi_rank,
 		sparse_index,offset);
 
     if(in_mem)			// save record in ramdisk
       {
 	MPI_Recv(&pool[offset][0],blocksize,MPI_DOUBLE,0,sendtag,MYCOMM,&status);
-	grvy_printf(info,"%s (%5i): Data received into memory pool\n",prefix,mpi_rank);
+	grvy_printf(debug,"%s (%5i): Data received into memory pool\n",prefix,mpi_rank);
       }
     else			// save record to disk
       {
 	MPI_Recv(data_tmp,blocksize,MPI_DOUBLE,0,sendtag,MYCOMM,&status);
 
-
 	size_t disk_offset = offset*blocksize*word_size;
-	printf("prep for saving to disk, data_tmp[1] = %f\n",data_tmp[1]);
-	printf("disk_offset (write) = %li\n",disk_offset);
 	fseek(fp_tmp,disk_offset,SEEK_SET);
 	fwrite(data_tmp,word_size,blocksize,fp_tmp);
-	grvy_printf(info,"%s (%5i): Data received into disk pool\n",prefix,mpi_rank);
+	grvy_printf(debug,"%s (%5i): Data received into disk pool\n",prefix,mpi_rank);
       }
     
       return(0);
@@ -802,7 +780,7 @@ namespace GRVY {
 
     MPI_Status status;
 
-    grvy_printf(info,"%s (%5i): Entering PullData()\n",prefix,mpi_rank);
+    grvy_printf(debug,"%s (%5i): Entering PullData()\n",prefix,mpi_rank);
 
     if(!initialized)
       {
@@ -821,13 +799,12 @@ namespace GRVY {
 
     smap[sparse_index].read_count++;
 
-    grvy_printf(info,"%s (%5i): Prepping to send data (user index %i -> ocore index %i)\n",prefix,mpi_rank,
+    grvy_printf(debug,"%s (%5i): Prepping to send data (user index %i -> ocore index %i)\n",prefix,mpi_rank,
 		sparse_index,offset);
 
     if(in_mem)			// record in ramdisk
       {
 	MPI_Send(&pool[offset][0],blocksize,MPI_DOUBLE,0,recvtag,MYCOMM);
-	grvy_printf(info,"%s (%5i): Data sent from memory pool\n",prefix,mpi_rank);
       }
     else			// record on disk, read first prior to sending
       {
@@ -870,15 +847,14 @@ namespace GRVY {
 	q.push(node);
       }
 
-    grvy_printf(info,"%s (%5i): Priority queue completed for ramdisk offload\n",prefix,mpi_rank);
-
     // Dump least-frequently used data to disk
     
-    int num_to_dump = (int) 1.0*dump_watermark_ratio*q.size();
+    size_t num_to_dump = (size_t) 1.0*dump_watermark_ratio*q.size();
 
-    grvy_printf(info,"%s (%5i): Flagging %i records for ramdisk offload\n",prefix,mpi_rank,num_to_dump);
+    grvy_printf(info,"\n%s (%5i): Ocore memory cache full -> moving %li records to disk)\n",
+		prefix,mpi_rank,num_to_dump);
 
-    for(int i=0;i<num_to_dump;i++)
+    for(size_t i=0;i<num_to_dump;i++)
       {
 	size_t disk_index = num_active_disk_records;
 	size_t offset     = disk_index*blocksize*word_size;
