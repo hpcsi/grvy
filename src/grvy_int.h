@@ -79,7 +79,8 @@ namespace GRVY {
   GRVY_Log_Class    _GRVY_Log;                           // Log mechanism
   GLOBAL const char *_GRVY_gtimer  = "GRVY_Unassigned";  // default global timer key
 
-  GRVY_Timer_Class *_GRVY_Timers   =  NULL;              // performance timer 
+  GRVY_Timer_Class *_GRVY_Timers    = NULL;              // performance timer 
+  GRVY_MPI_Ocore_Class *_GRVY_Ocore = NULL;		 // MPI ramdisk for out-of-core methods
 
   GLOBAL double _GRVY_TIMER_THRESH       = 9.0e-8;      // low water mark for expected timer usage deltas        
   GLOBAL double _GRVY_PERC_TOL           = 1e-3;        // tolerance for defining acceptable global percentages
@@ -90,6 +91,7 @@ namespace GRVY {
   GLOBAL const char *_GRVY_gtimer;
 
   GLOBAL GRVY_Timer_Class *_GRVY_Timers;
+  GLOBAL GRVY_MPI_Ocore_Class *_GRVY_Ocore;
   GLOBAL double _GRVY_TIMER_THRESH;
   GLOBAL double _GRVY_PERC_TOL;
 

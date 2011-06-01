@@ -28,6 +28,8 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
+#include<stddef.h>
+
 #ifndef GRVY_H_
 #define GRVY_H_
 
@@ -309,6 +311,17 @@ extern "C" {
   // Summaraze and dump historical timing information to ascii files
 
   void grvy_summarize_hist_timing            (const char *filename, const char *delimiter, const char *outdir);
+
+
+  // ----------------------------------------------------------------
+  // ----------------------------------------------------------------
+
+  /** \name MPI Ocore Functions */
+
+  extern    int grvy_ocore_init                (const char *input_file, int blocksize);
+  extern   void grvy_ocore_finalize            ();
+  extern   int  grvy_ocore_write               (size_t record_id, double *data);
+  extern   int  grvy_ocore_read                (size_t record_id, double *data);
 					      
   /*
    * Basic API Definition for Math Utilities
