@@ -44,8 +44,13 @@ AC_ARG_ENABLE(mpi, AC_HELP_STRING([--enable-mpi],[enable MPI associated utilitie
 HAVE_MPI=0
 
 if test "x$enable_mpi" = "xyes"; then
-   ACX_MPI([HAVE_MPI=1 CXX="$MPICXX" CC="$MPICC" AC_DEFINE(HAVE_MPI,1,[Define if MPI is available])], 
-           AC_MSG_ERROR([Could not find MPI compiler support]))
+   AC_LANG([C])
+   ACX_MPI([CC="$MPICC"], AC_MSG_ERROR([Could not find MPI C compiler support]))
+   AC_LANG([Fortran])
+   ACX_MPI([FC="$MPIFC"], AC_MSG_ERROR([Could not find MPI F90 compiler support]))
+   AC_LANG([C++])
+   ACX_MPI([HAVE_MPI=1 CXX="$MPICXX" AC_DEFINE(HAVE_MPI,1,[Define if MPI is available])], 
+           AC_MSG_ERROR([Could not find MPI C++ compiler support]))
 fi
 
 AM_CONDITIONAL(MPI_ENABLED,test x$HAVE_MPI = x1)
@@ -88,7 +93,7 @@ BOOST_REQUIRE([1.36])
 BOOST_MATH
 BOOST_REGEX
 BOOST_PROGRAM_OPTIONS
-BOOST_ASIO
+#BOOST_ASIO
 AC_CACHE_SAVE
 
 
