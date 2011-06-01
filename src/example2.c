@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
   MPI_Init(&argc,&argv);
   MPI_Comm_rank(MPI_COMM_WORLD,&num_local);
 
-  grvy_ocore_init("myfile",blocksize);
+  assert( grvy_ocore_init("myfile",blocksize) == 0);
 
   if(num_local == 0)
     {

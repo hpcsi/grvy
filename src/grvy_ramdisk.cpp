@@ -566,7 +566,7 @@ namespace GRVY {
   int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Initialize(string input_file,int blocksize)
   {
 
-    if(!use_mpi_ocore) return 0;
+    if(!use_mpi_ocore) return 1;
 
     if(master)
       grvy_printf(info,"\n%s: Initializing on %i processors...\n",prefix,mpi_nprocs);

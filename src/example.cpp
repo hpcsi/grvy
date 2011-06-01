@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
   GRVY_MPI_Ocore_Class ocore;
 
-  ocore.Initialize(inputfile,blocksize);
+  assert(ocore.Initialize(inputfile,blocksize) == 0); 
 
   if(num_local == 0)
     {
