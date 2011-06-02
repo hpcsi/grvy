@@ -475,20 +475,34 @@ namespace GRVY {
     // Global Stats
     // ----------------
 
+    size_t total_written;
+    size_t total_read;
+
     if(master)
       {
-	size_t total_written    = ptimer.StatsCount("write_to_pool" )*blocksize*word_size;
-	size_t total_read       = ptimer.StatsCount("read_from_pool")*blocksize*word_size;
+	total_written    = ptimer.StatsCount("write_to_pool" );
+	total_read       = ptimer.StatsCount("read_from_pool");
 
-	double aggr_write_speed = total_written/ptimer.ElapsedSeconds("write_to_pool");
-	double aggr_read_speed  = total_read/ptimer.ElapsedSeconds   ("read_from_pool");
+	double aggr_write_speed = total_written*blocksize*word_size/ptimer.ElapsedSeconds("write_to_pool");
+	double aggr_read_speed  = total_read   *blocksize*word_size/ptimer.ElapsedSeconds("read_from_pool");
 
-	grvy_printf(info,"\n------------------------------------------------------------------------------------------\n");
+	grvy_printf(info,"\n---------------------------------------------------------------------------------------------\n");
 	grvy_printf(info,"%s: Final Overall MPI Ocore Read/Write Stats:\n",prefix);
-	grvy_printf(info,"%s:   --> Total Written = %12.5e GBs; Avg. = %12.5e MB/sec\n",prefix,
-		    1.0*total_written/(1024*1024*1024),aggr_write_speed/(1024*1024));
-	grvy_printf(info,"%s:   --> Total Read    = %12.5e GBs; Avg. = %12.5e MB/sec\n\n",prefix,
-		    1.0*total_read/(1024*1024*1024),aggr_read_speed/(1024*1024));
+	grvy_printf(info,"\n");
+	grvy_printf(info,"%s:   --> Number of Records Written = %15i\n",prefix,total_written);
+	grvy_printf(info,"%s:   --> Total Data Written        = %15.5e GBs\n",prefix,
+		    1.0*total_written*blocksize*word_size/(1024*1024*1024));
+	grvy_printf(info,"%s:   --> Aggregate Write Speed     = %15.5e MB/sec\n",prefix,
+		    aggr_write_speed/(1024*1024));
+
+	grvy_printf(info,"\n");
+	grvy_printf(info,"%s:   --> Number of Records Read    = %15i\n",prefix,total_read);
+	grvy_printf(info,"%s:   --> Total Data Read           = %15.5e GBs\n",prefix,
+		    1.0*total_read*blocksize*word_size/(1024*1024*1024));
+	grvy_printf(info,"%s:   --> Aggregate Read  Speed     = %15.5e MB/sec\n",prefix,
+		    aggr_read_speed/(1024*1024));
+	grvy_printf(info,"\n");
+
       }
 
     // ----------------
@@ -498,28 +512,37 @@ namespace GRVY {
     int    local_disk_written = 0;    // values local to each ocore slave
     int    local_disk_read    = 0;
     double local_disk_wspeed  = 0.0;
+    double local_disk_rspeed  = 0.0;
 
     int    *all_disk_written;	     // results to be gathered on ocore master
     int    *all_disk_read;
     double *all_disk_wspeed;
+    double *all_disk_rspeed;
 
     if(master)
       {
 	all_disk_written = new    int[mpi_nprocs];
 	all_disk_read    = new    int[mpi_nprocs];
 	all_disk_wspeed  = new double[mpi_nprocs];
+	all_disk_rspeed  = new double[mpi_nprocs];
       }
     else
       {
 	if(overflow_triggered)
 	  {
-	    local_disk_written = ptimer.StatsCount    ("dump_disk")*blocksize*word_size;
-	    local_disk_wspeed  = local_disk_written/ptimer.ElapsedSeconds("dump_disk");
+	    local_disk_written = ptimer.StatsCount    ("write_to_disk");
+	    local_disk_wspeed  = local_disk_written*blocksize*word_size/ptimer.ElapsedSeconds("write_to_disk");
+
+	    local_disk_read    = ptimer.StatsCount    ("read_from_disk");
+	    local_disk_rspeed  = local_disk_read*blocksize*word_size/ptimer.ElapsedSeconds("read_from_disk");
 	  }
       }
 
     MPI_Gather(&local_disk_written,1,MPI_INTEGER,all_disk_written,1,MPI_INTEGER,0,MYCOMM);
+    MPI_Gather(&local_disk_read   ,1,MPI_INTEGER,all_disk_read   ,1,MPI_INTEGER,0,MYCOMM);
+
     MPI_Gather(&local_disk_wspeed ,1,MPI_DOUBLE, all_disk_wspeed ,1,MPI_DOUBLE ,0,MYCOMM);
+    MPI_Gather(&local_disk_rspeed ,1,MPI_DOUBLE, all_disk_rspeed ,1,MPI_DOUBLE ,0,MYCOMM);
 
     if(master)
       {
@@ -534,10 +557,26 @@ namespace GRVY {
 
 	if(disk_overflow_triggered)
 	  {
-	    grvy_printf(info,"%s: Disk-based transactions for MPI Ocore Overflow:\n",prefix);
+
+	    int sum_disk_writes = 0;
+	    int sum_disk_reads  = 0;
+
+	    grvy_printf(info,"%s: Disk-based transactions for MPI Ocore Overflow:\n\n",prefix);
 	    for(int i=1;i<mpi_nprocs;i++)
-	      grvy_printf(info,"%s:   --> Proc %5i - Written to Disk = %12.5e GBs; Avg = %12.5e MB/sec\n",prefix,i,
-			  1.0*all_disk_written[i]/(1024*1024*1024),all_disk_wspeed[i]/(1024*1024));
+	      {
+		sum_disk_writes += all_disk_written[i];
+		sum_disk_reads  += all_disk_read[i];
+
+		grvy_printf(info,"%s:   --> Proc %5i - Written to Disk = %12.5e GBs; Avg = %12.5e MB/sec\n",prefix,i,
+			    1.0*all_disk_written[i]*blocksize*word_size/(1024*1024*1024),all_disk_wspeed[i]/(1024*1024));
+	      }
+
+	    grvy_printf(info,"\n");
+	    grvy_printf(info,"%s:   --> %i of %i total write transactions were disk based (%5.2f %)\n",prefix,
+			sum_disk_writes,total_written,100.0*sum_disk_writes/total_written);
+	    grvy_printf(info,"%s:   --> %i of %i total read  transactions were disk based (%5.2f %)\n",prefix,
+			sum_disk_reads,total_read,100.0*sum_disk_reads/total_read);
+			
 	  }
 	else
 	  grvy_printf(info,"%s: No disk-based overflow transactions required\n",prefix);
@@ -552,7 +591,7 @@ namespace GRVY {
 	num_active_per_task = new int[mpi_nprocs];
 	MPI_Gather(&num_active_records,1,MPI_INTEGER,num_active_per_task,1,MPI_INTEGER,0,MYCOMM);
 
-	grvy_printf(info,"\n%s: MPI Memory Consumption:\n",prefix);
+	grvy_printf(info,"\n%s: MPI Memory Consumption:\n\n",prefix);
 
 	double usage;
 
@@ -567,7 +606,7 @@ namespace GRVY {
 			usage,max_poolsize_MBs);
 	  }
 
-	grvy_printf(info,"\n------------------------------------------------------------------------------------------\n");
+	grvy_printf(info,"\n---------------------------------------------------------------------------------------------\n");
 
 	delete [] all_disk_written;
 	delete [] all_disk_read;
@@ -778,6 +817,7 @@ namespace GRVY {
 	if(use_disk_overflow)
 	  {
 	    num_active_disk_records = 0;
+
 	    char dir_template[] = "/grvy_ocore_XXXXXX";
 	    
 	    tmp_unique_path = (char *)malloc(tmpdir.size()+strlen(dir_template)+1);
@@ -970,9 +1010,15 @@ namespace GRVY {
       {
 	MPI_Recv(data_tmp,blocksize,MPI_DOUBLE,0,sendtag,MYCOMM,&status);
 
+	ptimer.BeginTimer("write_to_disk");
+
 	size_t disk_offset = offset*blocksize*word_size;
+
 	fseek(fp_tmp,disk_offset,SEEK_SET);
 	fwrite(data_tmp,word_size,blocksize,fp_tmp);
+
+	ptimer.EndTimer("write_to_disk");
+
 	grvy_printf(debug,"%s (%5i): Data received into disk pool\n",prefix,mpi_rank);
       }
     
@@ -1016,11 +1062,17 @@ namespace GRVY {
       }
     else			// record on disk, read first prior to sending
       {
+	ptimer.BeginTimer("read_from_disk");
+
 	size_t disk_offset = offset*blocksize*word_size;
 	fseek(fp_tmp,disk_offset,SEEK_SET);
 
 	assert( fread(data_tmp,word_size,blocksize,fp_tmp) == blocksize );
+
+	ptimer.EndTimer("read_from_disk");
+
 	MPI_Send(data_tmp,blocksize,MPI_DOUBLE,0,recvtag,MYCOMM);
+
       }
     
       return(0);
@@ -1032,7 +1084,6 @@ namespace GRVY {
 
   int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: DumptoDisk()
   {
-
     ptimer.BeginTimer("dump_priority");
 
     if(!overflow_triggered)
@@ -1062,21 +1113,20 @@ namespace GRVY {
     
     size_t num_to_dump = (size_t) 1.0*dump_watermark_ratio*q.size();
 
-    grvy_printf(info,"\n%s (%5i): Ocore memory cache full -> moving %li records to disk)\n",
+    grvy_printf(debug,"\n%s (%5i): Ocore memory cache full -> moving %li records to disk)\n",
 		prefix,mpi_rank,num_to_dump);
-
-    ptimer.EndTimer("dump_priority");
 
     for(size_t i=0;i<num_to_dump;i++)
       {
-	ptimer.BeginTimer("dump_disk");
+	ptimer.BeginTimer("write_to_disk");
 
 	size_t disk_index = num_active_disk_records;
 	size_t offset     = disk_index*blocksize*word_size;
 
 	fseek(fp_tmp,offset,SEEK_SET);
 	fwrite(&pool[q.top().ocore_index][0],word_size,blocksize,fp_tmp);
-	grvy_printf(debug,"%s (%5i): data-write[1] = %f\n",prefix,mpi_rank,pool[q.top().ocore_index][1]);
+
+	ptimer.EndTimer("write_to_disk");
 
 	// mark record as residing on disk and save local disk index
 
@@ -1093,8 +1143,9 @@ namespace GRVY {
 	num_active_records--;
 
 	q.pop();
-	ptimer.EndTimer("dump_disk");
       }
+
+    ptimer.EndTimer("dump_priority");
 
     return 0;
   }
@@ -1111,7 +1162,7 @@ namespace GRVY {
     // increment assigned records until memory cache is exhausted;
     // after that, use unoccupied records freed up via DumptoDisk
 
-    if(num_active_records < max_num_records - 1)
+    if(num_active_records < max_num_records )
       if(free_records.empty())
 	return(num_active_records);
       else
