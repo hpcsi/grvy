@@ -287,6 +287,7 @@ namespace GRVY {
 
   void GRVY_MPI_Ocore_Class::Finalize()
   {
+    if(!m_pimpl->use_mpi_ocore) return;
 
     if(m_pimpl->master)
       {
@@ -501,6 +502,8 @@ namespace GRVY {
   void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Summarize()
   {
 
+    if(!use_mpi_ocore) return;
+
     // ----------------
     // Global Stats
     // ----------------
@@ -601,10 +604,14 @@ namespace GRVY {
 			    1.0*all_disk_written[i]*blocksize*word_size/(1024*1024*1024),all_disk_wspeed[i]/(1024*1024));
 	      }
 
+	    for(int i=1;i<mpi_nprocs;i++)
+	      grvy_printf(info,"%s:   --> Proc %5i - Read from Disk  = %12.5e GBs; Avg = %12.5e MB/sec\n",prefix,i,
+			  1.0*all_disk_read[i]*blocksize*word_size/(1024*1024*1024),all_disk_rspeed[i]/(1024*1024));
+
 	    grvy_printf(info,"\n");
-	    grvy_printf(info,"%s:   --> %i of %i total write transactions were disk based (%5.2f %)\n",prefix,
+	    grvy_printf(info,"%s:   --> %9i of %9i total write transactions were disk based (%5.2f %)\n",prefix,
 			sum_disk_writes,total_written,100.0*sum_disk_writes/total_written);
-	    grvy_printf(info,"%s:   --> %i of %i total read  transactions were disk based (%5.2f %)\n",prefix,
+	    grvy_printf(info,"%s:   --> %9i of %9i total read  transactions were disk based (%5.2f %)\n",prefix,
 			sum_disk_reads,total_read,100.0*sum_disk_reads/total_read);
 			
 	  }
@@ -741,16 +748,18 @@ namespace GRVY {
     // Read user options
     // ------------------
 
+    int default_priority;
+    GRVY_Input_Class iparse;      // Input parsing object
+    int flag=1;
+
     if(master)
       {
 	grvy_printf(info,"%s: --> Parsing runtime options from file %s\n",prefix,input_file.c_str());
 	
-	GRVY_Input_Class iparse;      // Input parsing object
-	int flag=1;
-
 	// hush parsing messages as we will provide sane defaults if no input given
 
-	int default_priority = grvy_log_getlevel();
+	//int default_priority = grvy_log_getlevel();
+	default_priority = grvy_log_getlevel();
 	grvy_log_setlevel(GRVY_ERROR);
 
 	if(! iparse.Open(input_file.c_str()) )
@@ -758,57 +767,66 @@ namespace GRVY {
 	else
 	  {
 	    iparse.Read_Var("grvy/mpi_ocore/enable_ocore",&use_mpi_ocore,true);
-
-	    if(!use_mpi_ocore)	// don't use ocore at user's request
-	      {
-		grvy_log_setlevel(default_priority);
-		return 1;
-	      }
-
-	    // Register default values (0.31.0)
-
-	    iparse.Register_Var    ("grvy/mpi_ocore/use_disk_overflow",    1                    );
-	    iparse.Register_Var    ("grvy/mpi_ocore/allow_empty_records",  0                    );
-	    iparse.Register_Var    ("grvy/mpi_ocore/watermark_ratio",      dump_watermark_ratio );
-	    iparse.Register_Var    ("grvy/mpi_ocore/max_pool_size_in_mbs", max_poolsize_MBs     );
-	    iparse.Register_Var    ("grvy/mpi_ocore/max_map_size_in_mbs",  max_mapsize_MBs      );
-	    iparse.Register_Var    ("grvy/mpi_ocore/blocksize",            blocksize            );
-
-	    // Read any user-provided inputs
-
-	    int tmp_use_overflow;
-	    int tmp_allow_empties;
-	    
-	    flag *= iparse.Read_Var("grvy/mpi_ocore/use_disk_overflow",    &tmp_use_overflow    );
-	    flag *= iparse.Read_Var("grvy/mpi_ocore/allow_empty_records",  &tmp_allow_empties   );
-	    flag *= iparse.Read_Var("grvy/mpi_ocore/watermark_ratio",      &dump_watermark_ratio);
-	    flag *= iparse.Read_Var("grvy/mpi_ocore/max_pool_size_in_mbs", &max_poolsize_MBs    );
-	    flag *= iparse.Read_Var("grvy/mpi_ocore/max_map_size_in_mbs",  &max_mapsize_MBs     );
-	    flag *= iparse.Read_Var("grvy/mpi_ocore/blocksize",            &blocksize           );
-
-	    use_disk_overflow   = (tmp_use_overflow  == 1) ? true : false ;
-	    allow_empty_records = (tmp_allow_empties == 1) ? true : false ;
-
-	    if(flag == 0)
-	      {
-		grvy_printf(error,"%s: --> Error parsing grvy mpi_ocore inputs...aborting\n",prefix);
-		Abort();
-	      }
-
-	    // Input sanitcy check
-
-	    assert(dump_watermark_ratio > 0.0 && dump_watermark_ratio < 1.0);
-	    assert(max_poolsize_MBs > 0);
-	    assert(max_mapsize_MBs  > 0);
-	    assert(blocksize        > 0);
 	  }
+
+	printf("use_mpi_ocore on rank 0 = %i\n",use_mpi_ocore);
+      }
+
+    if(!use_mpi_ocore)	// don't use ocore at user's request
+      {
+	if(master)
+	  grvy_log_setlevel(default_priority);
+
+	MPI_Bcast(&use_mpi_ocore,1,MPI_LOGICAL, 0,MYCOMM);
+	return 1;
+      }
+
+    if(master)
+      {
+	// Register default values (0.31.0)
+
+	iparse.Register_Var    ("grvy/mpi_ocore/use_disk_overflow",    1                    );
+	iparse.Register_Var    ("grvy/mpi_ocore/allow_empty_records",  0                    );
+	iparse.Register_Var    ("grvy/mpi_ocore/watermark_ratio",      dump_watermark_ratio );
+	iparse.Register_Var    ("grvy/mpi_ocore/max_pool_size_in_mbs", max_poolsize_MBs     );
+	iparse.Register_Var    ("grvy/mpi_ocore/max_map_size_in_mbs",  max_mapsize_MBs      );
+	iparse.Register_Var    ("grvy/mpi_ocore/blocksize",            blocksize            );
+	
+	// Read any user-provided inputs
+	
+	int tmp_use_overflow;
+	int tmp_allow_empties;
+	
+	flag *= iparse.Read_Var("grvy/mpi_ocore/use_disk_overflow",    &tmp_use_overflow    );
+	flag *= iparse.Read_Var("grvy/mpi_ocore/allow_empty_records",  &tmp_allow_empties   );
+	flag *= iparse.Read_Var("grvy/mpi_ocore/watermark_ratio",      &dump_watermark_ratio);
+	flag *= iparse.Read_Var("grvy/mpi_ocore/max_pool_size_in_mbs", &max_poolsize_MBs    );
+	flag *= iparse.Read_Var("grvy/mpi_ocore/max_map_size_in_mbs",  &max_mapsize_MBs     );
+	flag *= iparse.Read_Var("grvy/mpi_ocore/blocksize",            &blocksize           );
+	
+	use_disk_overflow   = (tmp_use_overflow  == 1) ? true : false ;
+	allow_empty_records = (tmp_allow_empties == 1) ? true : false ;
+	
+	if(flag == 0)
+	  {
+	    grvy_printf(error,"%s: --> Error parsing grvy mpi_ocore inputs...aborting\n",prefix);
+	    Abort();
+	  }
+
+	iparse.Close();
+	
+	// Input sanitcy check
+	
+	assert(dump_watermark_ratio > 0.0 && dump_watermark_ratio < 1.0);
+	assert(max_poolsize_MBs > 0);
+	assert(max_mapsize_MBs  > 0);
+	assert(blocksize        > 0);
 
 	// restore original logging priority
 
 	grvy_log_setlevel(default_priority);
-
       }
-
+    
     // Bcast inputs to all ocore children
 
     MPI_Bcast(&dump_watermark_ratio,1,MPI_DOUBLE, 0,MYCOMM);
