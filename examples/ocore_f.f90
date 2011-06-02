@@ -116,9 +116,9 @@ function verify_data(seed,size,data)
 
   integer verify_data
 
-  integer*8, intent(in)  :: seed
-  integer,   intent(in)  :: size
-  real*8,    intent(out) :: data(size)
+  integer*8, intent(in)    :: seed
+  integer,   intent(in)    :: size
+  real*8,    intent(inout) :: data(size)
 
   integer :: i
 
