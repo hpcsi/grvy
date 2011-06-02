@@ -21,7 +21,7 @@
 !!
 !!--------------------------------------------------------------------------
 !!
-!! ocoref.f90: Fortran example illustrating MPI out-of-core usage.
+!! ocore_f.f90: Fortran example illustrating MPI out-of-core usage.
 !!
 !! $Id$
 !!--------------------------------------------------------------------------

@@ -31,3 +31,9 @@ timer_sumf_LDADD        = ../src/libgrvyf.la
 
 check_dir_SOURCES       = check_dir.c
 message_SOURCES         = messages.c
+
+if MPI_ENABLED
+   example_PROGRAMS    += ocore_f
+   ocore_f_SOURCES      = ocore_f.f90
+   ocore_f_LDADD        = ../src/libgrvyf.la
+endif
