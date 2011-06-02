@@ -224,9 +224,6 @@ namespace GRVY {
     MPI_Comm_size(m_pimpl->MYCOMM,&m_pimpl->mpi_nprocs);
     MPI_Comm_rank(m_pimpl->MYCOMM,&m_pimpl->mpi_rank);
 
-    printf("%i of %i procs say hello\n",m_pimpl->mpi_rank,m_pimpl->mpi_nprocs);
-    fflush(NULL);
-
     if(m_pimpl->mpi_rank == 0)
       m_pimpl->master = true;
 
@@ -649,8 +646,6 @@ namespace GRVY {
 
     if(!use_mpi_ocore) return 1;
 
-    printf("%i of %i procs say hello2 (master = %i)\n",mpi_rank,mpi_nprocs,master);
-
     if(master)
       grvy_printf(info,"\n%s: Initializing on %i processors...\n",prefix,mpi_nprocs);
 
@@ -727,7 +722,7 @@ namespace GRVY {
 	
 	// \todo: allow for non-fixed size pool
 
-	grvy_printf(debug,"%s (%5i): Attempting allocation of %i recordss\n",prefix,mpi_rank,blocksize);
+	grvy_printf(debug,"%s (%5i): Attempting allocation of %i records\n",prefix,mpi_rank,blocksize);
 
 #if 1
 	try 
@@ -764,6 +759,8 @@ namespace GRVY {
     fflush(NULL);
     
     // Put children tasks to work in polling mode
+    
+    MPI_Barrier(MYCOMM);
     
     if(!master)
       PollForWork();
