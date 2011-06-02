@@ -128,8 +128,9 @@ namespace GRVY {
     bool use_mpi_ocore;		          // enable use of MPI ocore?
     bool initialized;			  // init function complete?
     bool use_disk_overflow;		  // use disk-based storage for overflow?
-    bool mpi_initialized_by_ocore;	  // did we have to init MPI locally?
     bool master;			  // master MPI process?
+    bool mpi_initialized_by_ocore;	  // did we have to init MPI locally?
+    bool overflow_triggered;              // track whether ramdisk overflow has been triggered
 
     double dump_watermark_ratio;          // watermark for how much data to dump to disk when ramdisk is full
 
@@ -164,7 +165,7 @@ namespace GRVY {
     GRVY_Timer_Class ptimer;		  // Local performance timer
     size_t num_active_disk_records;       // number of currently active disk records
     stack<size_t> free_records;           // list of currently unoccupied ramdisk records
-    bool overflow_triggered;              // Track whether ramdisk overflow has been triggered
+
 #endif    
   };
 
@@ -177,24 +178,29 @@ namespace GRVY {
   GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class() :m_pimpl(new GRVY_MPI_Ocore_ClassImp() )
   {
 
-    m_pimpl->initialized           = false;
+    m_pimpl->initialized              = false;
+
+    // Initial values
+
+    m_pimpl->master                   = false;
+    m_pimpl->overflow_triggered       = false;
+    m_pimpl->mpi_initialized_by_ocore = false;
+    m_pimpl->sendtag                  = 1001;
+    m_pimpl->recvtag                  = 2001;
+    m_pimpl->num_active_records       = 0;
 
     // Default settings 
 
-    m_pimpl->use_mpi_ocore         = true;
-    m_pimpl->use_disk_overflow     = true;
-    m_pimpl->max_mapsize_MBs       = 10;
-    m_pimpl->max_poolsize_MBs      = 20;
-    m_pimpl->word_size             = 8;
-    m_pimpl->blocksize             = 8192;
-    m_pimpl->sendtag               = 1001;
-    m_pimpl->recvtag               = 2001;
-    m_pimpl->tmpdir                = "/tmp";
-    m_pimpl->num_active_records    = 0;
-    m_pimpl->dump_watermark_ratio  = 0.1;
+    m_pimpl->use_mpi_ocore            = true;
+    m_pimpl->use_disk_overflow        = true;
+    m_pimpl->max_mapsize_MBs          = 10;
+    m_pimpl->max_poolsize_MBs         = 20;
+    m_pimpl->word_size                = 8;
+    m_pimpl->blocksize                = 8192;
+    m_pimpl->tmpdir                   = "/tmp";
+    m_pimpl->dump_watermark_ratio     = 0.1;
 
-    m_pimpl->self                  = this;
-
+    m_pimpl->self                     = this;
 
     //--------------------------
     // MPI setup/initialization
@@ -217,6 +223,9 @@ namespace GRVY {
 
     MPI_Comm_size(m_pimpl->MYCOMM,&m_pimpl->mpi_nprocs);
     MPI_Comm_rank(m_pimpl->MYCOMM,&m_pimpl->mpi_rank);
+
+    printf("%i of %i procs say hello\n",m_pimpl->mpi_rank,m_pimpl->mpi_nprocs);
+    fflush(NULL);
 
     if(m_pimpl->mpi_rank == 0)
       m_pimpl->master = true;
@@ -639,6 +648,8 @@ namespace GRVY {
   {
 
     if(!use_mpi_ocore) return 1;
+
+    printf("%i of %i procs say hello2 (master = %i)\n",mpi_rank,mpi_nprocs,master);
 
     if(master)
       grvy_printf(info,"\n%s: Initializing on %i processors...\n",prefix,mpi_nprocs);
