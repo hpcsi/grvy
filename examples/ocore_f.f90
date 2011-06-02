@@ -36,7 +36,8 @@ program main
   integer             :: num_records = 800 ! # of records defined in this example
 
   integer             :: ierr              ! Ocore return code
-  integer*8           :: elem
+  integer*8           :: elem, index
+  integer*8           :: pool_size
   integer             :: verify_data 
 
   ! Initialize MPI-based Ocore ramdisk (myfile is a GRVY-style
@@ -77,6 +78,17 @@ program main
       do elem = num_records,1,-1
          call grvy_ocore_read(elem,data,ierr);
          if( verify_data(elem,blocksize,data) .ne. 1)then
+            stop
+         endif
+      enddo
+
+      ! Pull all active data from pool
+
+      pool_size = grvy_ocore_num_active()
+
+      do elem=1,pool_size
+         index = grvy_ocore_pop_record(data)
+         if(verify_data(index,blocksize,data) .ne. 1)then
             stop
          endif
       enddo

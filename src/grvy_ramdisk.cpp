@@ -252,6 +252,36 @@ namespace GRVY {
   }
 
   // ---------------------------------------------------------------------------------------
+  // GetNumRecords(): Public function to return number of currently active records
+  // ---------------------------------------------------------------------------------------
+
+  size_t GRVY_MPI_Ocore_Class::NumActive()
+  {
+    return(m_pimpl->rank_map.size());
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // PopRecord(): Public function to return data record and pop/remove from ocore pool
+  // ---------------------------------------------------------------------------------------
+
+  size_t GRVY_MPI_Ocore_Class::PopRecord(double *data)
+  {
+    map<size_t,MPI_Ocore_owners> :: iterator it = m_pimpl->rank_map.begin();
+
+    if(it == m_pimpl->rank_map.end() )
+      {
+	grvy_printf(error,"%s: No Ocore records remain for PopRecord()\n",prefix);
+	m_pimpl->Abort();
+      }
+    
+    assert( Read(it->first,data) == 0);
+    m_pimpl->rank_map.erase(it);
+    
+    return(it->first);
+  }
+
+
+  // ---------------------------------------------------------------------------------------
   // Finalize(): Public finalize -> sends notice to children to exit polling loop
   // ---------------------------------------------------------------------------------------
 
@@ -735,22 +765,29 @@ namespace GRVY {
 		return 1;
 	      }
 
-	    iparse.Read_Var        ("grvy/mpi_ocore/use_disk_overflow",  &use_disk_overflow,   true);
-	    iparse.Read_Var        ("grvy/mpi_ocore/allow_empty_records",&allow_empty_records,false);
-
 	    // Register default values (0.31.0)
 
+	    iparse.Register_Var    ("grvy/mpi_ocore/use_disk_overflow",    1                    );
+	    iparse.Register_Var    ("grvy/mpi_ocore/allow_empty_records",  0                    );
 	    iparse.Register_Var    ("grvy/mpi_ocore/watermark_ratio",      dump_watermark_ratio );
 	    iparse.Register_Var    ("grvy/mpi_ocore/max_pool_size_in_mbs", max_poolsize_MBs     );
 	    iparse.Register_Var    ("grvy/mpi_ocore/max_map_size_in_mbs",  max_mapsize_MBs      );
 	    iparse.Register_Var    ("grvy/mpi_ocore/blocksize",            blocksize            );
 
 	    // Read any user-provided inputs
+
+	    int tmp_use_overflow;
+	    int tmp_allow_empties;
 	    
+	    flag *= iparse.Read_Var("grvy/mpi_ocore/use_disk_overflow",    &tmp_use_overflow    );
+	    flag *= iparse.Read_Var("grvy/mpi_ocore/allow_empty_records",  &tmp_allow_empties   );
 	    flag *= iparse.Read_Var("grvy/mpi_ocore/watermark_ratio",      &dump_watermark_ratio);
 	    flag *= iparse.Read_Var("grvy/mpi_ocore/max_pool_size_in_mbs", &max_poolsize_MBs    );
 	    flag *= iparse.Read_Var("grvy/mpi_ocore/max_map_size_in_mbs",  &max_mapsize_MBs     );
 	    flag *= iparse.Read_Var("grvy/mpi_ocore/blocksize",            &blocksize           );
+
+	    use_disk_overflow   = (tmp_use_overflow  == 1) ? true : false ;
+	    allow_empty_records = (tmp_allow_empties == 1) ? true : false ;
 
 	    if(flag == 0)
 	      {

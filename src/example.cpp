@@ -66,6 +66,16 @@ int main(int argc, char *argv[])
 	  assert(verify_data(i,blocksize,data) );
 	}
 
+      // Loop over all active data (say if we want to save to disk)
+
+      size_t pool_size = ocore.NumActive();
+
+      for(size_t i=0;i<pool_size;i++)
+	{
+	  int index = ocore.PopRecord(data);
+	  assert(verify_data(index,blocksize,data) );
+	}
+
     }
 
   ocore.Finalize();

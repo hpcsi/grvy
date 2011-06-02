@@ -77,3 +77,17 @@ int grvy_ocore_master()
 {
   return( ( _GRVY_Ocore->isMaster() ) ? 1 : 0 );
 }
+
+// grvy_ocore_num_active(): return number of active records;
+
+size_t grvy_ocore_num_active()
+{
+  return(_GRVY_Ocore->NumActive());
+}
+
+// grvy_ocore_pop_record(): return data record and pop/remove from ocore pool
+
+size_t grvy_ocore_pop_record(double *data)
+{
+  return(_GRVY_Ocore->PopRecord(data));
+}

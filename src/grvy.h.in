@@ -322,6 +322,9 @@ extern "C" {
   extern    int grvy_ocore_write               (size_t record_id, double *data);
   extern    int grvy_ocore_read                (size_t record_id, double *data);
   extern    int grvy_ocore_master              ();
+
+  extern size_t grvy_ocore_num_active          ();
+  extern size_t grvy_ocore_pop_record          (double *data);
 					      
   /*
    * Basic API Definition for Math Utilities
@@ -778,7 +781,9 @@ public:
   int  Read           (size_t offset, double *data);
   void Finalize       ();
   bool isMaster       ();
-
+  size_t NumActive    ();
+  size_t PopRecord    (double *data);
+  
 private:
   class GRVY_MPI_Ocore_ClassImp;		  // forward declaration to Ocore implementation
   std::auto_ptr<GRVY_MPI_Ocore_ClassImp> m_pimpl; // pointer to implementation

@@ -440,6 +440,23 @@ module grvy
        implicit none
      end subroutine grvy_ocore_finalize
 
+     integer (C_SIZE_T) function grvy_ocore_num_active() bind (C)
+       use iso_c_binding
+       implicit none
+     end function grvy_ocore_num_active
+
+     integer (C_SIZE_T) function grvy_ocore_pop_record(data) bind (C)
+       use iso_c_binding
+       implicit none
+       real  (C_DOUBLE),  intent(inout)    :: data(*)   !< Block of data to return
+     end function grvy_ocore_pop_record
+
+     integer (C_SIZE_T) function grvy_ocore_pop_record_i8(data) bind (C,name='grvy_ocore_pop_record')
+       use iso_c_binding
+       implicit none
+       integer  (C_LONG),  intent(inout)    :: data(*)   !< Block of data to return
+     end function grvy_ocore_pop_record_i8
+
      ! ---------------
      ! Math
      ! ---------------
