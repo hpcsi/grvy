@@ -69,7 +69,6 @@ enum OCORE_MSG_TYPES {
 
 typedef struct MPI_Ocore_datagram {
   bool in_mem;			// data resides in memory or disk?
-  //  bool occupied;		// record is currently occupied
   size_t index;			// ocore data index location (for mem or disk)
   size_t read_count;		// read frequency
   size_t write_count;		// write frequency
@@ -131,6 +130,7 @@ namespace GRVY {
     bool master;			  // master MPI process?
     bool mpi_initialized_by_ocore;	  // did we have to init MPI locally?
     bool overflow_triggered;              // track whether ramdisk overflow has been triggered
+    bool allow_empty_records;             // allow return of empty record if not previously written
 
     double dump_watermark_ratio;          // watermark for how much data to dump to disk when ramdisk is full
 
@@ -193,6 +193,7 @@ namespace GRVY {
 
     m_pimpl->use_mpi_ocore            = true;
     m_pimpl->use_disk_overflow        = true;
+    m_pimpl->allow_empty_records      = true;
     m_pimpl->max_mapsize_MBs          = 10;
     m_pimpl->max_poolsize_MBs         = 20;
     m_pimpl->word_size                = 8;
@@ -349,8 +350,22 @@ namespace GRVY {
 
     if(it == m_pimpl->rank_map.end())	// unknown record
       {
-	grvy_printf(error,"%s (%5i): Error - unknown record index requested for read (%i)\n",prefix,m_pimpl->mpi_rank,offset);
-	m_pimpl->Abort();
+	// allow for user to return back record of all zero's if
+	// desired when the record has not been written previously
+	
+	if(m_pimpl->allow_empty_records)
+	  {
+	    grvy_printf(warn,"\n%s: Returning previously unwritten empty record (index = %li)\n",prefix,offset);
+	    for(size_t i=0;i<m_pimpl->blocksize;i++)
+	      data[i] = 0.0;
+	    return(0);
+	  }
+	else
+	  {
+	    grvy_printf(error,"%s (%5i): Error - unknown record index requested for read (%i)\n",
+			prefix,m_pimpl->mpi_rank,offset);
+	    m_pimpl->Abort();
+	  }
       }
     else			// old record
       {
