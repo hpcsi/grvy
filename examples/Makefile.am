@@ -10,6 +10,9 @@ AM_CFLAGS               = $(INCLUDES)
 AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
 LIBS                    = -L$(top_builddir)/src -lgrvy $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
 
+BUILT_SOURCES           = .license.stamp
+CLEANFILES              = .license.stamp *.gcno *.gcda
+
 example_PROGRAMS        = input timer_sum check_dir inputf timer_sumf message timer cpp-example \
 	                  hdf5_access cpp-timer 
 
@@ -37,3 +40,19 @@ if MPI_ENABLED
    ocore_f_SOURCES      = ocore_f.f90
    ocore_f_LDADD        = ../src/libgrvyf.la
 endif
+
+
+#---------------------------------
+# Embedded license header support
+#---------------------------------
+
+.license.stamp: $(top_srcdir)/LICENSE
+	for file in $(srcdir)/*.cpp $(srcdir)/*.c ; do \
+		$(top_srcdir)/src/common/lic_utils/update_license.pl \
+			$(top_srcdir)/LICENSE $$file | tee -a $@ ;\
+	done
+	for file in $(srcdir)/*.f90 ; do \
+		$(top_srcdir)/src/common/lic_utils/update_license.pl \
+			--c2f_comment $(top_srcdir)/LICENSE $$file | tee -a $@ ;\
+	done
+	touch .license.stamp
