@@ -55,10 +55,10 @@ program main
    if(grvy_ocore_master() .eq. 1)then
 
       ! Write some known data records to Ocore ramdisk - the
-      ! grvy_ocore_write() function distribute the data over the
+      ! grvy_ocore_write() function distributes data over the
       ! network to children Ocore tasks which cache the data in
       ! memory. Once the memory cache is full, it will (optionally)
-      ! dump less-freqently access records to a disk-based temporary
+      ! dump less-freqently accessed records to a disk-based temporary
       ! file.
 
       do elem = 1,num_records
