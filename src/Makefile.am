@@ -75,6 +75,11 @@ if MPI_ENABLED
    example2_SOURCES       = example2.c
    example2_LDADD         = -L$(top_builddir)/src -lgrvy
    example2_DEPENDENCIES  = libgrvy.la
+
+   bin_PROGRAMS          += example3
+   example3_SOURCES       = example3.f90
+   example3_LDADD         = -L$(top_builddir)/src -lgrvy -lgrvyf
+   example3_DEPENDENCIES  = libgrvy.la libgrvyf.la
 endif
 
 #---------------------------------

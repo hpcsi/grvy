@@ -209,7 +209,7 @@ namespace GRVY {
 
     if(!initialized)
       {
-	grvy_printf(info,"%s (%5i): Performing MPI_Init()\n",prefix,m_pimpl->mpi_rank);
+	grvy_printf(debug,"%s: Performing MPI_Init()\n",prefix,m_pimpl->mpi_rank);
 	MPI_Init(&init_argc,NULL);
 	m_pimpl->mpi_initialized_by_ocore = true;
       }
@@ -276,7 +276,7 @@ namespace GRVY {
 
     if(m_pimpl->mpi_initialized_by_ocore)
       {
-	grvy_printf(info,"%s (%5i): Performing MPI_Finalize()\n",prefix,m_pimpl->mpi_rank);
+	grvy_printf(debug,"%s (%5i): Performing MPI_Finalize()\n",prefix,m_pimpl->mpi_rank);
 	MPI_Finalize();
       }
 
@@ -651,6 +651,8 @@ namespace GRVY {
 	// -------------------------------
 	
 	// \todo: allow for non-fixed size pool
+
+	grvy_printf(debug,"%s (%5i): Attempting allocation of %i recordss\n",prefix,mpi_rank,blocksize);
 
 #if 1
 	try 
