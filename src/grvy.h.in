@@ -359,6 +359,7 @@ extern "C" {
   /** \name Logging Utilities */
 
   extern void grvy_log_setlevel           (int priority);
+  extern int  grvy_log_getlevel           ();
   extern void grvy_log_setmask            (int loglevel, const char *delimiter);
   extern void grvy_log                    (int loglevel, const char *mesg);
   extern  int grvy_printf                 (int loglevel, const char *format,...);

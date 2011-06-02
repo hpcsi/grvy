@@ -661,12 +661,84 @@ namespace GRVY {
 
     if(!use_mpi_ocore) return 1;
 
-    if(master)
-      grvy_printf(info,"\n%s: Initializing on %i processors...\n",prefix,mpi_nprocs);
-
     // Initialize timer
     
     ptimer.Init("GRVY MPI_Ocore");
+
+    if(master)
+      grvy_printf(info,"\n%s: Initializing on %i processors...\n",prefix,mpi_nprocs);
+
+    // ------------------
+    // Read user options
+    // ------------------
+
+    if(master)
+      {
+	grvy_printf(info,"%s: --> Parsing runtime options from file %s\n",prefix,input_file.c_str());
+	
+	GRVY_Input_Class iparse;      // Input parsing object
+	int flag=1;
+
+	// hush parsing messages as we will provide sane defaults if no input given
+
+	int default_priority = grvy_log_getlevel();
+	grvy_log_setlevel(GRVY_ERROR);
+
+	if(! iparse.Open(input_file.c_str()) )
+	  grvy_printf(info,"%s: --> Unable to open input file, using default options\n",prefix);
+	else
+	  {
+	    iparse.Read_Var("grvy/mpi_ocore/enable_ocore",&use_mpi_ocore,true);
+
+	    if(!use_mpi_ocore)	// don't use ocore at user's request
+	      {
+		grvy_log_setlevel(default_priority);
+		return 1;
+	      }
+
+	    iparse.Read_Var        ("grvy/mpi_ocore/use_disk_overflow",  &use_disk_overflow,   true);
+	    iparse.Read_Var        ("grvy/mpi_ocore/allow_empty_records",&allow_empty_records,false);
+
+	    // Register default values (0.31.0)
+
+	    iparse.Register_Var    ("grvy/mpi_ocore/watermark_ratio",      dump_watermark_ratio );
+	    iparse.Register_Var    ("grvy/mpi_ocore/max_pool_size_in_mbs", max_poolsize_MBs     );
+	    iparse.Register_Var    ("grvy/mpi_ocore/max_map_size_in_mbs",  max_mapsize_MBs      );
+	    iparse.Register_Var    ("grvy/mpi_ocore/blocksize",            blocksize            );
+
+	    // Read any user-provided inputs
+	    
+	    flag *= iparse.Read_Var("grvy/mpi_ocore/watermark_ratio",      &dump_watermark_ratio);
+	    flag *= iparse.Read_Var("grvy/mpi_ocore/max_pool_size_in_mbs", &max_poolsize_MBs    );
+	    flag *= iparse.Read_Var("grvy/mpi_ocore/max_map_size_in_mbs",  &max_mapsize_MBs     );
+	    flag *= iparse.Read_Var("grvy/mpi_ocore/blocksize",            &blocksize           );
+
+	    if(flag == 0)
+	      {
+		grvy_printf(error,"%s: --> Error parsing grvy mpi_ocore inputs...aborting\n",prefix);
+		Abort();
+	      }
+
+	    // Input sanitcy check
+
+	    assert(dump_watermark_ratio > 0.0 && dump_watermark_ratio < 1.0);
+	    assert(max_poolsize_MBs > 0);
+	    assert(max_mapsize_MBs  > 0);
+	    assert(blocksize        > 0);
+	  }
+
+	// restore original logging priority
+
+	grvy_log_setlevel(default_priority);
+
+      }
+
+    // Bcast inputs to all ocore children
+
+    MPI_Bcast(&dump_watermark_ratio,1,MPI_DOUBLE, 0,MYCOMM);
+    MPI_Bcast(&max_poolsize_MBs,    1,MPI_INTEGER,0,MYCOMM);
+    MPI_Bcast(&max_mapsize_MBs,     1,MPI_INTEGER,0,MYCOMM);
+    MPI_Bcast(&blocksize,           1,MPI_INTEGER,0,MYCOMM);
 
     // todo: read input variables/bcast from rank 0
 
@@ -675,7 +747,7 @@ namespace GRVY {
 
     if(master)
       {
-	grvy_printf(info,"\n");
+	grvy_printf(info,"\n%s: Runtime Options:\n",prefix);
 	grvy_printf(info,"%s: --> Individual record word size         = %15i (Bytes )\n",prefix,word_size);
 	grvy_printf(info,"%s: --> Individual record blocksize         = %15i (Words )\n",prefix,blocksize);
 	grvy_printf(info,"\n");
@@ -684,6 +756,12 @@ namespace GRVY {
 	grvy_printf(info,"\n");
 	grvy_printf(info,"%s: --> Max number of mappable records      = %15i\n",         prefix,num_smap_records);
 	grvy_printf(info,"%s: --> Max number of ocore ramdisk records = %15i\n",         prefix,max_num_records );
+
+	grvy_printf(info,"\n%s: --> Enable disk-based overflow          = %15i\n",       prefix,use_disk_overflow);
+	if(use_disk_overflow)
+	  grvy_printf(info,"%s: --> Overflow watermark ratio            = %15.3f\n",     prefix,dump_watermark_ratio);
+
+	grvy_printf(info,"%s: --> Allow empty read records            = %15i\n",         prefix,allow_empty_records);
 	grvy_printf(info,"\n");
 
 	MPI_Barrier(MYCOMM);
@@ -724,8 +802,8 @@ namespace GRVY {
 		    Abort();
 		  }
 
-		grvy_printf(info,"\n%s (%5i): File-based scratch space enabled for ocore overflow\n",prefix,mpi_rank);
-		grvy_printf(info,"%s (%5i): --> local scratch file = %s\n",prefix,mpi_rank,tmpfile.c_str());
+		grvy_printf(info,"\n%s (%5i): File-based scratch space created for ocore overflow\n",prefix,mpi_rank);
+		grvy_printf(info,"%s (%5i): --> local scratch file = %s\n\n",prefix,mpi_rank,tmpfile.c_str());
 	      }
 	  }
 	else

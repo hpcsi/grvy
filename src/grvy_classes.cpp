@@ -747,6 +747,11 @@ namespace GRVY {
     return;
   }
 
+ int GRVY_Log_Class::get_priority()
+  {
+    return(log_level);
+  }
+
   void GRVY_Log_Class::change_mask(int priority, const std::string delimiter)
   {
     LogMask[priority] = delimiter;

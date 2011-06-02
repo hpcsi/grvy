@@ -44,6 +44,11 @@ void grvy_log_setlevel(int priority)
   return;
 }
 
+int grvy_log_getlevel()
+{
+  return(_GRVY_Log.get_priority());
+}
+
 void grvy_log_setmask(int loglevel,const char *delimiter)
 {
   _GRVY_Log.change_mask(loglevel,delimiter);
