@@ -164,6 +164,7 @@ namespace GRVY {
     GRVY_Timer_Class ptimer;		  // Local performance timer
     size_t num_active_disk_records;       // number of currently active disk records
     stack<size_t> free_records;           // list of currently unoccupied ramdisk records
+    bool overflow_triggered;              // Track whether ramdisk overflow has been triggered
 #endif    
   };
 
@@ -270,9 +271,17 @@ namespace GRVY {
 	delete [] m_pimpl->data_tmp;
       }
 
+    // Free memory pools
+
+    if(!m_pimpl->master)
+      for(int i=0;i<m_pimpl->max_num_records;i++)
+	m_pimpl->pool[i].clear();
+
+    // Summarize statistics
+
     m_pimpl->Summarize();
 
-    // tear down MPI if we initialized 
+    // Tear down MPI if we initialized 
 
     if(m_pimpl->mpi_initialized_by_ocore)
       {
@@ -429,7 +438,7 @@ namespace GRVY {
 	    Abort();
 	  }
 
-      }	// end infinite polling while(1) loop
+      }	// end infinite polling loop
 
     return;
   }
@@ -441,6 +450,10 @@ namespace GRVY {
   void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Summarize()
   {
 
+    // ----------------
+    // Global Stats
+    // ----------------
+
     if(master)
       {
 	size_t total_written    = ptimer.StatsCount("write_to_pool" )*blocksize*word_size;
@@ -450,30 +463,63 @@ namespace GRVY {
 	double aggr_read_speed  = total_read/ptimer.ElapsedSeconds   ("read_from_pool");
 
 	grvy_printf(info,"\n------------------------------------------------------------------------------------------\n");
-	grvy_printf(info,"%s: Final Overall MPI Ocore Read/Write Stats\n",prefix);
-	grvy_printf(info,"%s:   --> Total Written = %12.5e GBs; Avg = %12.5e MB/sec\n",prefix,
+	grvy_printf(info,"%s: Final Overall MPI Ocore Read/Write Stats:\n",prefix);
+	grvy_printf(info,"%s:   --> Total Written = %12.5e GBs; Avg. = %12.5e MB/sec\n",prefix,
 		    1.0*total_written/(1024*1024*1024),aggr_write_speed/(1024*1024));
 	grvy_printf(info,"%s:   --> Total Read    = %12.5e GBs; Avg. = %12.5e MB/sec\n\n",prefix,
 		    1.0*total_read/(1024*1024*1024),aggr_read_speed/(1024*1024));
-
-	if(use_disk_overflow)
-	  {
-	    grvy_printf(info,"%s: Disk-based Transacations for MPI Ocore Overflow:\n",prefix);
-	  }
-
-	MPI_Barrier(MYCOMM);
-	
       }
 
+    // ----------------
+    // Disk-based Usage
+    // ----------------
+
+    int    local_disk_written = 0;    // values local to each ocore slave
+    int    local_disk_read    = 0;
+    double local_disk_wspeed  = 0.0;
+
+    int    *all_disk_written;	     // results to be gathered on ocore master
+    int    *all_disk_read;
+    double *all_disk_wspeed;
+
+    if(master)
+      {
+	all_disk_written = new    int[mpi_nprocs];
+	all_disk_read    = new    int[mpi_nprocs];
+	all_disk_wspeed  = new double[mpi_nprocs];
+      }
     else
       {
-	size_t disk_written     = ptimer.StatsCount("dump_disk")*blocksize*word_size;
-	double disk_write_speed = disk_written/ptimer.ElapsedSeconds ("dump_disk");
+	if(overflow_triggered)
+	  {
+	    local_disk_written = ptimer.StatsCount    ("dump_disk")*blocksize*word_size;
+	    local_disk_wspeed  = local_disk_written/ptimer.ElapsedSeconds("dump_disk");
+	  }
+      }
 
-	MPI_Barrier(MYCOMM);
+    MPI_Gather(&local_disk_written,1,MPI_INTEGER,all_disk_written,1,MPI_INTEGER,0,MYCOMM);
+    MPI_Gather(&local_disk_wspeed ,1,MPI_DOUBLE, all_disk_wspeed ,1,MPI_DOUBLE ,0,MYCOMM);
 
-	grvy_printf(info,"%s:   --> Proc %i - Written to Disk = %12.5e GBs; Avg = %12.5e MB/sec\n",prefix,mpi_rank,
-		    1.0*disk_written/(1024*1024*1024),disk_write_speed/(1024*1024));
+    if(master)
+      {
+	bool disk_overflow_triggered = false;
+
+	for(int i=1;i<mpi_nprocs;i++)
+	  if(all_disk_written[i] > 0)
+	    {
+	      disk_overflow_triggered = true;
+	      break;
+	    }
+
+	if(disk_overflow_triggered)
+	  {
+	    grvy_printf(info,"%s: Disk-based transactions for MPI Ocore Overflow:\n",prefix);
+	    for(int i=1;i<mpi_nprocs;i++)
+	      grvy_printf(info,"%s:   --> Proc %5i - Written to Disk = %12.5e GBs; Avg = %12.5e MB/sec\n",prefix,i,
+			  1.0*all_disk_written[i]/(1024*1024*1024),all_disk_wspeed[i]/(1024*1024));
+	  }
+	else
+	  grvy_printf(info,"%s: No disk-based overflow transactions required\n",prefix);
       }
 
     // Memory Usage
@@ -485,12 +531,26 @@ namespace GRVY {
 	num_active_per_task = new int[mpi_nprocs];
 	MPI_Gather(&num_active_records,1,MPI_INTEGER,num_active_per_task,1,MPI_INTEGER,0,MYCOMM);
 
-	grvy_printf(info,"\n");
+	grvy_printf(info,"\n%s: MPI Memory Consumption:\n",prefix);
+
+	double usage;
+
 	for(int i=1;i<mpi_nprocs;i++)
-	  grvy_printf(info,"%s:   --> Proc %5i - Memory Used = %12.5e MBs (Max Req. = %i MBs)\n",prefix,i,
-		      1.0*num_active_per_task[i]*blocksize*word_size/(1024*1024),max_poolsize_MBs);
+	  {
+	    if(all_disk_written[i] > 0) // overflow enabled, peak memory used
+	      usage = max_poolsize_MBs;
+	    else			      // overflow avoided, report current usage
+	      usage = 1.0*num_active_per_task[i]*blocksize*word_size/(1024*1024);
+	    
+	    grvy_printf(info,"%s:   --> Proc %5i - Memory Used = %12.5e MBs (Max Req. = %i MBs)\n",prefix,i,
+			usage,max_poolsize_MBs);
+	  }
 
 	grvy_printf(info,"\n------------------------------------------------------------------------------------------\n");
+
+	delete [] all_disk_written;
+	delete [] all_disk_read;
+	delete [] all_disk_wspeed;
 	delete [] num_active_per_task;
       }
     else
@@ -537,6 +597,8 @@ namespace GRVY {
     MPI_Send(data,blocksize,MPI_DOUBLE,dest_task,sendtag,MYCOMM);
 
     ptimer.EndTimer("write_to_pool");
+
+    return 0;
   }
 
   // ---------------------------------------------------------------------------------------
@@ -565,6 +627,8 @@ namespace GRVY {
     MPI_Recv(data,blocksize,MPI_DOUBLE,recv_task,recvtag,MYCOMM,&status);
 
     ptimer.EndTimer("read_from_pool");
+
+    return 0;
   }
 
   // ---------------------------------------------------------------------------------------
@@ -684,15 +748,16 @@ namespace GRVY {
 	
       }
 
-	initialized = true;    
-	
-	// Put children tasks to work in polling mode
-	
-	if(!master)
-	  PollForWork();
-
-	fflush(NULL);
-	return 0;
+    overflow_triggered = false;
+    initialized = true;    
+    fflush(NULL);
+    
+    // Put children tasks to work in polling mode
+    
+    if(!master)
+      PollForWork();
+    
+    return 0;
   }
 
   // --------------------------------------------------------------------------------
@@ -868,6 +933,9 @@ namespace GRVY {
   {
 
     ptimer.BeginTimer("dump_priority");
+
+    if(!overflow_triggered)
+      overflow_triggered = true;
 
     // Build priority queue based on how frequently Ocore records have been read
 
