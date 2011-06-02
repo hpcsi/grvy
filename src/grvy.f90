@@ -380,6 +380,42 @@ module grvy
        character(C_char),intent(in)         :: filename(*)
      end subroutine grvy_timer_save_hist_passthrough
 
+     ! -------------------
+     ! MPI_Ocore Routines
+     ! -------------------
+
+     integer (C_int) function grvy_ocore_init_passthrough(filename,blocksize) bind (C,name='grvy_ocore_init')
+       use iso_c_binding
+       implicit none
+
+       character (C_char),intent(in) :: filename(*) !< Ocore input filename (parsed using libGRVY)
+       integer   (C_int), intent(in) :: blocksize   !< Number of elements per each record block
+
+     end function grvy_ocore_init_passthrough
+
+     integer (C_int) function grvy_ocore_read(record_id,data) bind (C,name='grvy_ocore_read')
+       use iso_c_binding
+       implicit none
+
+       integer  (C_SIZE_T),intent(in) :: record_id !< Record identifier
+       real     (C_double),intent(out):: data(*)   !< Block of data to store (number of elements = blocksize)
+
+     end function grvy_ocore_read
+
+     integer (C_int) function grvy_ocore_write(record_id,data) bind (C,name='grvy_ocore_write')
+       use iso_c_binding
+       implicit none
+
+       integer  (C_SIZE_T),intent(in) :: record_id !< Record identifier
+       real     (C_double),intent(out):: data(*)   !< Block of data to store (number of elements = blocksize)
+
+     end function grvy_ocore_write
+
+     subroutine grvy_ocore_finalize() bind (C)
+       use iso_c_binding
+       implicit none
+     end subroutine grvy_ocore_finalize
+
      ! ---------------
      ! Math
      ! ---------------
@@ -778,13 +814,28 @@ end subroutine grvy_get_command_arguments
     return
   end subroutine grvy_timer_save_hist
 
-     subroutine grvy_timer_set_summarize_width(value, return_flag)
-       use iso_c_binding
-       implicit none
-       integer  (C_int), value, intent(in)  :: value
-       integer  (C_int), intent(inout)      :: return_flag
-
-       return_flag = grvy_timer_set_summarize_width_passthrough(value)
-     end subroutine grvy_timer_set_summarize_width
+  subroutine grvy_timer_set_summarize_width(value, return_flag)
+    use iso_c_binding
+    implicit none
+    integer  (C_int), value, intent(in)  :: value
+    integer  (C_int), intent(inout)      :: return_flag
+    
+    return_flag = grvy_timer_set_summarize_width_passthrough(value)
+  end subroutine grvy_timer_set_summarize_width
+  
+  ! ----------------
+  ! Ocore wrappers
+  ! ----------------
+  
+  subroutine grvy_ocore_init(filename,blocksize,return_flag)
+    use iso_c_binding
+    implicit none
+    character(len=*),intent(in)         :: filename
+    integer  (C_int), value, intent(in) :: blocksize
+    integer  (C_int),intent(inout)      :: return_flag
+    
+    return_flag = grvy_ocore_init_passthrough(filename//C_NULL_CHAR,blocksize)
+    return
+  end subroutine grvy_ocore_init
   
 end module grvy

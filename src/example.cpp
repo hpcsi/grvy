@@ -1,5 +1,4 @@
 #include<grvy.h>
-#include<mpi.h>
 #include<assert.h>
 #include<math.h>
 
@@ -33,19 +32,14 @@ void zero_data(int offset, int size, double *data)
 
 int main(int argc, char *argv[])
 {
-
   string inputfile("myfile");
-  int num_local;
   const int blocksize = 8192;
-
-  MPI_Init(&argc,&argv);
-  MPI_Comm_rank(MPI_COMM_WORLD,&num_local);
 
   GRVY_MPI_Ocore_Class ocore;
 
   assert(ocore.Initialize(inputfile,blocksize) == 0); 
 
-  if(num_local == 0)
+  if( ocore.isMaster() )
     {
       double data[blocksize];
 
@@ -75,7 +69,6 @@ int main(int argc, char *argv[])
     }
 
   ocore.Finalize();
-  MPI_Finalize();
 
 }
 

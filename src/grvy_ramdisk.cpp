@@ -236,15 +236,6 @@ namespace GRVY {
   GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
   {
     // using auto_ptr for proper cleanup
-
-
-    // tear down MPI if we initialized 
-
-    if(m_pimpl->mpi_initialized_by_ocore)
-      {
-	grvy_printf(info,"%s (%5i): Performing MPI_Finalize()\n",prefix,m_pimpl->mpi_rank);
-	MPI_Finalize();
-      }
   }
 
   int GRVY_MPI_Ocore_Class::Initialize(string input_file,int blocksize)
@@ -280,6 +271,14 @@ namespace GRVY {
       }
 
     m_pimpl->Summarize();
+
+    // tear down MPI if we initialized 
+
+    if(m_pimpl->mpi_initialized_by_ocore)
+      {
+	grvy_printf(info,"%s (%5i): Performing MPI_Finalize()\n",prefix,m_pimpl->mpi_rank);
+	MPI_Finalize();
+      }
 
     return;
   }
@@ -349,6 +348,15 @@ namespace GRVY {
     grvy_printf(debug,"%s (%5i): Reading data for offset %i from task %i\n",prefix,m_pimpl->mpi_rank,offset,rank_owner);
 
     return(m_pimpl->Read_from_Pool(rank_owner,offset,data));
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // isMaster(): is calling process the MPI master task?
+  // ---------------------------------------------------------------------------------------
+
+  bool GRVY_MPI_Ocore_Class::isMaster()
+  {
+    return(m_pimpl->master);
   }
 
   // ---------------------------------------------------------------------------------------

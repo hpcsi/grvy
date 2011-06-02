@@ -70,3 +70,10 @@ int grvy_ocore_read(size_t offset, double *data)
 {
   return(_GRVY_Ocore->Read(offset,data));
 }
+
+// grvy_ocore_master(): determine if calling process is the master MPI task
+
+int grvy_ocore_master()
+{
+  return( ( _GRVY_Ocore->isMaster() ) ? 1 : 0 );
+}
