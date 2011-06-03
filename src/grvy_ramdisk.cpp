@@ -637,10 +637,10 @@ namespace GRVY {
     // Empty reads
     // -------------
 
-    if(allow_empty_records && master)
+    if(allow_empty_records && master && (num_empty_reads > 0) )
       {
-	grvy_printf(info,"\n%s: Empty Record Access:\n\n",prefix);
-	grvy_printf(info,"%s:   --> Number of empty reads = %12i\n",prefix,num_empty_reads);
+	grvy_printf(info,"\n%s: Empty Record Access:\n",prefix);
+	grvy_printf(info,"%s:   --> Number of empty reads     = %12i\n",prefix,num_empty_reads);
       }
 
     // -------------
@@ -654,7 +654,7 @@ namespace GRVY {
 	num_active_per_task = new int[mpi_nprocs];
 	MPI_Gather(&num_active_records,1,MPI_INTEGER,num_active_per_task,1,MPI_INTEGER,0,MYCOMM);
 
-	grvy_printf(info,"\n%s: MPI Memory Consumption:\n\n",prefix);
+	grvy_printf(info,"\n%s: MPI Memory Consumption:\n",prefix);
 
 	double usage;
 
@@ -944,7 +944,6 @@ namespace GRVY {
 	// \todo: allow for non-fixed size pool
 
 	grvy_printf(debug,"%s (%5i): Attempting allocation of %i records\n",prefix,mpi_rank,blocksize);
-
 #if 1
 	try 
 	  {
@@ -972,17 +971,22 @@ namespace GRVY {
 	grvy_printf(info,"%s (%5i): Successfully initialized ramdisk storage pool of %8i MBs\n",
 		    prefix,mpi_rank,max_poolsize_MBs);
 #endif
-	
-	grvy_printf(info,"\n---------------------------------------------------------------------------------------------\n");
+
       }
+
+    fflush(NULL);
+    MPI_Barrier(MYCOMM);
+
+      
+    if(master)
+      grvy_printf(info,"\n---------------------------------------------------------------------------------------------\n");
+    
+    fflush(NULL);
 
     overflow_triggered = false;
     initialized        = true;    
-    fflush(NULL);
     
     // Put children tasks to work in polling mode
-    
-    MPI_Barrier(MYCOMM);
     
     if(!master)
       PollForWork();
