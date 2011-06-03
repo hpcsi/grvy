@@ -322,6 +322,7 @@ extern "C" {
   extern    int grvy_ocore_write               (size_t record_id, double *data);
   extern    int grvy_ocore_read                (size_t record_id, double *data);
   extern    int grvy_ocore_master              ();
+  extern    int grvy_ocore_enabled             ();
 
   extern size_t grvy_ocore_num_active          ();
   extern size_t grvy_ocore_pop_record          (double *data);
@@ -776,13 +777,16 @@ public:
   GRVY_MPI_Ocore_Class(); 
  ~GRVY_MPI_Ocore_Class();
 
-  int  Initialize     (std::string inputfile, int blocksize);
-  int  Write          (size_t offset, double *data);
-  int  Read           (size_t offset, double *data);
-  void Finalize       ();
-  bool isMaster       ();
+  int    Initialize   (std::string inputfile, int blocksize);
+  int    Write        (size_t offset, double *data);
+  int    Read         (size_t offset, double *data);
+  void   Finalize     ();
   size_t NumActive    ();
   size_t PopRecord    (double *data);
+
+  bool   isMaster     ();	// is the calling task the ocore master?
+  bool   isEnabled    ();	// is MPI Ocore enabled? (can be controlled via input file)
+
   
 private:
   class GRVY_MPI_Ocore_ClassImp;		  // forward declaration to Ocore implementation

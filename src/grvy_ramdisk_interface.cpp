@@ -78,6 +78,13 @@ int grvy_ocore_master()
   return( ( _GRVY_Ocore->isMaster() ) ? 1 : 0 );
 }
 
+// grvy_ocore_master(): determine if MPI Ocore is enabled
+
+int grvy_ocore_enabled()
+{
+  return( ( _GRVY_Ocore->isEnabled() ) ? 1 : 0 );
+}
+
 // grvy_ocore_num_active(): return number of active records;
 
 size_t grvy_ocore_num_active()

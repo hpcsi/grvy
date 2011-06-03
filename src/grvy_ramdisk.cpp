@@ -151,6 +151,7 @@ namespace GRVY {
     int max_num_records;		  // max number of sequential ocore records (ocore index)
     int num_active_records;	          // number of currently active records (ramdisk)
     int distrib_rank;			  // incremental counter used for distributing ocore data
+    int num_empty_reads;	          // number of empty reads encountered
 
     vector< vector <double>  > pool;      // raw data pool storage
     map<size_t,MPI_Ocore_datagram> smap;  // sparse data map (sparse indices -> contiguous pool indices)
@@ -165,6 +166,7 @@ namespace GRVY {
     GRVY_Timer_Class ptimer;		  // Local performance timer
     size_t num_active_disk_records;       // number of currently active disk records
     stack<size_t> free_records;           // list of currently unoccupied ramdisk records
+
 
 #endif    
   };
@@ -188,6 +190,7 @@ namespace GRVY {
     m_pimpl->sendtag                  = 1001;
     m_pimpl->recvtag                  = 2001;
     m_pimpl->num_active_records       = 0;
+    m_pimpl->num_empty_reads          = 0;
 
     // Default settings 
 
@@ -386,9 +389,11 @@ namespace GRVY {
 	
 	if(m_pimpl->allow_empty_records)
 	  {
-	    grvy_printf(warn,"\n%s: Returning previously unwritten empty record (index = %li)\n",prefix,offset);
+	    grvy_printf(debug,"\n%s: Returning previously unwritten empty record (index = %li)\n",prefix,offset);
 	    for(size_t i=0;i<m_pimpl->blocksize;i++)
 	      data[i] = 0.0;
+
+	    m_pimpl->num_empty_reads++;
 	    return(0);
 	  }
 	else
@@ -418,6 +423,15 @@ namespace GRVY {
   bool GRVY_MPI_Ocore_Class::isMaster()
   {
     return(m_pimpl->master);
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // isEnabled(): is MPI_Ocore enabled (controlled via input file)
+  // ---------------------------------------------------------------------------------------
+
+  bool GRVY_MPI_Ocore_Class::isEnabled()
+  {
+    return(m_pimpl->use_mpi_ocore);
   }
 
   // ---------------------------------------------------------------------------------------
@@ -499,7 +513,7 @@ namespace GRVY {
   // Summarize(): Summarize read/write statistics and performance
   // ---------------------------------------------------------------------------------------
 
-  void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Summarize()
+  void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Summarize()
   {
 
     if(!use_mpi_ocore) return;
@@ -519,7 +533,7 @@ namespace GRVY {
 	double aggr_write_speed = total_written*blocksize*word_size/ptimer.ElapsedSeconds("write_to_pool");
 	double aggr_read_speed  = total_read   *blocksize*word_size/ptimer.ElapsedSeconds("read_from_pool");
 
-	grvy_printf(info,"\n---------------------------------------------------------------------------------------------\n");
+	grvy_printf(info,"\n---------------------------------------------------------------------------------------------\n\n");
 	grvy_printf(info,"%s: Final Overall MPI Ocore Read/Write Stats:\n",prefix);
 	grvy_printf(info,"\n");
 	grvy_printf(info,"%s:   --> Number of Records Written = %15i\n",prefix,total_written);
@@ -619,7 +633,19 @@ namespace GRVY {
 	  grvy_printf(info,"%s: No disk-based overflow transactions required\n",prefix);
       }
 
+    // -------------
+    // Empty reads
+    // -------------
+
+    if(allow_empty_records && master)
+      {
+	grvy_printf(info,"\n%s: Empty Record Access:\n\n",prefix);
+	grvy_printf(info,"%s:   --> Number of empty reads = %12i\n",prefix,num_empty_reads);
+      }
+
+    // -------------
     // Memory Usage
+    // -------------
 
     int *num_active_per_task;
 
@@ -634,7 +660,7 @@ namespace GRVY {
 
 	for(int i=1;i<mpi_nprocs;i++)
 	  {
-	    if(all_disk_written[i] > 0) // overflow enabled, peak memory used
+	    if(all_disk_written[i] > 0)       // overflow enabled, report peak memory used
 	      usage = max_poolsize_MBs;
 	    else			      // overflow avoided, report current usage
 	      usage = 1.0*num_active_per_task[i]*blocksize*word_size/(1024*1024);
@@ -732,7 +758,7 @@ namespace GRVY {
   // Initialize(): Initialize data structures for MPI Ocore
   // ---------------------------------------------------------------------------------------
 
-  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Initialize(string input_file,int blocksize)
+  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file,int blocksize)
   {
 
     if(!use_mpi_ocore) return 1;
@@ -751,42 +777,44 @@ namespace GRVY {
     int default_priority;
     GRVY_Input_Class iparse;      // Input parsing object
     int flag=1;
+    int tmp_use_ocore;
 
     if(master)
       {
 	grvy_printf(info,"%s: --> Parsing runtime options from file %s\n",prefix,input_file.c_str());
 	
 	// hush parsing messages as we will provide sane defaults if no input given
-
+	
 	default_priority = grvy_log_getlevel();
 	grvy_log_setlevel(GRVY_ERROR);
-
+	
 	if(! iparse.Open(input_file.c_str()) )
 	  grvy_printf(info,"%s: --> Unable to open input file, using default options\n",prefix);
 	else
 	  {
-	    int tmp_use_ocore;
 	    iparse.Register_Var ("grvy/mpi_ocore/enable_ocore",1);
 	    iparse.Read_Var     ("grvy/mpi_ocore/enable_ocore",&tmp_use_ocore);
-	    
-	    use_mpi_ocore = (tmp_use_ocore == 1) ? true : false;
 	  }
-
       }
 
-    MPI_Bcast(&use_mpi_ocore,1,MPI_LOGICAL, 0,MYCOMM);
 
+    MPI_Bcast(&tmp_use_ocore,1,MPI_LOGICAL, 0,MYCOMM);
+
+    use_mpi_ocore = (tmp_use_ocore == 1) ? true : false;
+    
     if(!use_mpi_ocore)	// don't use ocore at user's request
       {
 	if(master)
 	  grvy_log_setlevel(default_priority);
-
+	
 	return 1;
       }
-
+    
     if(master)
       {
 	// Register default values (0.31.0)
+
+	printf("registering defaults\n");
 
 	iparse.Register_Var    ("grvy/mpi_ocore/use_disk_overflow",    1                    );
 	iparse.Register_Var    ("grvy/mpi_ocore/allow_empty_records",  0                    );
@@ -799,14 +827,14 @@ namespace GRVY {
 	
 	int tmp_use_overflow;
 	int tmp_allow_empties;
-	
+
 	flag *= iparse.Read_Var("grvy/mpi_ocore/use_disk_overflow",    &tmp_use_overflow    );
 	flag *= iparse.Read_Var("grvy/mpi_ocore/allow_empty_records",  &tmp_allow_empties   );
 	flag *= iparse.Read_Var("grvy/mpi_ocore/watermark_ratio",      &dump_watermark_ratio);
 	flag *= iparse.Read_Var("grvy/mpi_ocore/max_pool_size_in_mbs", &max_poolsize_MBs    );
 	flag *= iparse.Read_Var("grvy/mpi_ocore/max_map_size_in_mbs",  &max_mapsize_MBs     );
 	flag *= iparse.Read_Var("grvy/mpi_ocore/blocksize",            &blocksize           );
-	
+
 	use_disk_overflow   = (tmp_use_overflow  == 1) ? true : false ;
 	allow_empty_records = (tmp_allow_empties == 1) ? true : false ;
 	
@@ -844,6 +872,8 @@ namespace GRVY {
 
     if(master)
       {
+	grvy_printf(info,"\n---------------------------------------------------------------------------------------------\n");
+	grvy_printf(info,"%s: Final Overall MPI Ocore Read/Write Stats:\n",prefix);
 	grvy_printf(info,"\n%s: Runtime Options:\n",prefix);
 	grvy_printf(info,"%s: --> Individual record word size         = %15i (Bytes )\n",prefix,word_size);
 	grvy_printf(info,"%s: --> Individual record blocksize         = %15i (Words )\n",prefix,blocksize);
@@ -943,10 +973,11 @@ namespace GRVY {
 		    prefix,mpi_rank,max_poolsize_MBs);
 #endif
 	
+	grvy_printf(info,"\n---------------------------------------------------------------------------------------------\n");
       }
 
     overflow_triggered = false;
-    initialized = true;    
+    initialized        = true;    
     fflush(NULL);
     
     // Put children tasks to work in polling mode
@@ -1003,7 +1034,7 @@ namespace GRVY {
   // StoreData(): Recv and store ocore data from rank 0
   // ---------------------------------------------------------------------------------------
 
-  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: StoreData(size_t sparse_index, bool new_data)
+  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::StoreData(size_t sparse_index, bool new_data)
   {
 
     MPI_Status status;

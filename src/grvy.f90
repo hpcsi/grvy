@@ -435,6 +435,12 @@ module grvy
 
      end function grvy_ocore_master
 
+     integer (C_int) function grvy_ocore_enabled() bind (C)
+       use iso_c_binding
+       implicit none
+
+     end function grvy_ocore_enabled
+
      subroutine grvy_ocore_finalize() bind (C)
        use iso_c_binding
        implicit none
