@@ -758,7 +758,6 @@ namespace GRVY {
 	
 	// hush parsing messages as we will provide sane defaults if no input given
 
-	//int default_priority = grvy_log_getlevel();
 	default_priority = grvy_log_getlevel();
 	grvy_log_setlevel(GRVY_ERROR);
 
@@ -766,18 +765,22 @@ namespace GRVY {
 	  grvy_printf(info,"%s: --> Unable to open input file, using default options\n",prefix);
 	else
 	  {
-	    iparse.Read_Var("grvy/mpi_ocore/enable_ocore",&use_mpi_ocore,true);
+	    int tmp_use_ocore;
+	    iparse.Register_Var ("grvy/mpi_ocore/enable_ocore",1);
+	    iparse.Read_Var     ("grvy/mpi_ocore/enable_ocore",&tmp_use_ocore);
+	    
+	    use_mpi_ocore = (tmp_use_ocore == 1) ? true : false;
 	  }
 
-	printf("use_mpi_ocore on rank 0 = %i\n",use_mpi_ocore);
       }
+
+    MPI_Bcast(&use_mpi_ocore,1,MPI_LOGICAL, 0,MYCOMM);
 
     if(!use_mpi_ocore)	// don't use ocore at user's request
       {
 	if(master)
 	  grvy_log_setlevel(default_priority);
 
-	MPI_Bcast(&use_mpi_ocore,1,MPI_LOGICAL, 0,MYCOMM);
 	return 1;
       }
 
