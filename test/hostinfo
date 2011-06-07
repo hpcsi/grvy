@@ -27,7 +27,7 @@ fi
 # Let's at least check that we got the hostname right
 
 HOST1=`cat $TEST_FILE | head -1 | awk '{print $3}'`
-HOST2=`hostname -f`
+HOST2=`hostname -s`
 
 if test "$HOST1" != "$HOST2" ;then
     echo "${0}: Hostname mismatch"
