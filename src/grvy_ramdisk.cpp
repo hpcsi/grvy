@@ -1328,10 +1328,14 @@ GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
 
 }
 
-int  GRVY_MPI_Ocore_Class::Initialize(string input_file,int blocksize) { return 0;}
-int  GRVY_MPI_Ocore_Class::Read      (size_t record_id,double *data  ) { return 0;}
-int  GRVY_MPI_Ocore_Class::Write     (size_t record_id,double *data  ) { return 0;}
-void GRVY_MPI_Ocore_Class::Finalize  () { return;}
+int    GRVY_MPI_Ocore_Class::Initialize(string input_file,int blocksize) { return 0;}
+int    GRVY_MPI_Ocore_Class::Read      (size_t record_id,double *data  ) { return 0;}
+int    GRVY_MPI_Ocore_Class::Write     (size_t record_id,double *data  ) { return 0;}
+size_t GRVY_MPI_Ocore_Class::PopRecord (double *data)                     {return 0;}
+size_t GRVY_MPI_Ocore_Class::NumActive () {return 0;}
+void   GRVY_MPI_Ocore_Class::Finalize  () {return;}
+bool   GRVY_MPI_Ocore_Class::isMaster  () {return true;}
+bool   GRVY_MPI_Ocore_Class::isEnabled () {return false;}
 #endif
 
 
