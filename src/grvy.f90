@@ -1,9 +1,9 @@
+!!-----------------------------------------------------------------------bl-
 !!--------------------------------------------------------------------------
-!!--------------------------------------------------------------------------
-!!
+!! 
 !! libGRVY - a utility library for scientific computing.
 !!
-!! Copyright (C) 2008,2009,2010 The PECOS Development Team
+!! Copyright (C) 2008,2009,2010,2011 The PECOS Development Team
 !!
 !! This library is free software; you can redistribute it and/or
 !! modify it under the terms of the Version 2.1 GNU Lesser General
@@ -16,10 +16,10 @@
 !!
 !! You should have received a copy of the GNU Lesser General Public
 !! License along with this library; if not, write to the Free Software
-!! Foundation, Inc. 51 Franklin Street, Fifth Floor,
+!! Foundation, Inc. 51 Franklin Street, Fifth Floor, 
 !! Boston, MA  02110-1301  USA
 !!
-!!--------------------------------------------------------------------------
+!!-----------------------------------------------------------------------el-
 !!
 !! grvy.f90: Fortran module interface definition for GRVY routines.
 !!
@@ -851,9 +851,9 @@ end subroutine grvy_get_command_arguments
     implicit none
     character(len=*),intent(in)         :: experiment
     character(len=*),intent(in)         :: comment
-    integer  (C_int),intent(in), value  :: num_procs
-    integer  (C_int),intent(in), value  :: jobId
-    integer  (C_int),intent(in), value  :: code_revision
+    integer  (C_int),intent(in)         :: num_procs
+    integer  (C_int),intent(in)         :: jobId
+    integer  (C_int),intent(in)         :: code_revision
     character(len=*),intent(in)         :: filename
     
     call grvy_timer_save_hist_passthrough(experiment//C_NULL_CHAR,comment//C_NULL_CHAR, &
@@ -878,7 +878,7 @@ end subroutine grvy_get_command_arguments
     use iso_c_binding
     implicit none
     character(len=*),intent(in)         :: filename
-    integer  (C_int),intent(in),value   :: blocksize
+    integer  (C_int),intent(in)         :: blocksize
     integer  (C_int),intent(inout)      :: return_flag
     
     return_flag = grvy_ocore_init_passthrough(filename//C_NULL_CHAR,blocksize)
@@ -889,9 +889,9 @@ end subroutine grvy_get_command_arguments
     use iso_c_binding
     implicit none
 
-    integer  (C_SIZE_T),intent(in),value :: record_id   !< Record identifier
+    integer  (C_size_t),intent(in)       :: record_id   !< Record identifier
     real     (C_double),intent(out)      :: data(*)     !< Block of data to store (number of elements = blocksize)
-    integer  (C_int),intent(inout)       :: return_flag !< Return flag
+    integer  (C_int),   intent(inout)    :: return_flag !< Return flag
     
     return_flag = grvy_ocore_write_passthrough(record_id,data)
     return
@@ -901,9 +901,9 @@ end subroutine grvy_get_command_arguments
     use iso_c_binding
     implicit none
 
-    integer  (C_SIZE_T),intent(in),value :: record_id   !< Record identifier
-    integer  (C_LONG),intent(inout)      :: data(*)     !< Block of data to store (number of elements = blocksize)
-    integer  (C_INT),intent(inout)       :: return_flag !< Return flag
+    integer  (C_size_t),intent(in)       :: record_id   !< Record identifier
+    integer  (C_long),  intent(inout)    :: data(*)     !< Block of data to store (number of elements = blocksize)
+    integer  (C_int),   intent(inout)    :: return_flag !< Return flag
 
     return_flag = grvy_ocore_write_i8_passthrough(record_id,data)
     return
@@ -913,9 +913,9 @@ end subroutine grvy_get_command_arguments
     use iso_c_binding
     implicit none
 
-    integer  (C_SIZE_T),intent(in),value :: record_id   !< Record identifier
-    real     (C_DOUBLE),intent(out)      :: data(*)     !< Block of data to store (number of elements = blocksize)
-    integer  (C_INT),intent(inout)       :: return_flag !< Return flag
+    integer  (C_size_t),intent(in)       :: record_id   !< Record identifier
+    real     (C_double),intent(out)      :: data(*)     !< Block of data to store (number of elements = blocksize)
+    integer  (C_int),  intent(inout)     :: return_flag !< Return flag
     
     return_flag = grvy_ocore_read_passthrough(record_id,data)
     return
@@ -925,9 +925,9 @@ end subroutine grvy_get_command_arguments
     use iso_c_binding
     implicit none
 
-    integer  (C_SIZE_T),intent(in),value :: record_id   !< Record identifier
-    integer  (C_LONG),  intent(out)      :: data(*)     !< Block of data to store (number of elements = blocksize)
-    integer  (C_INT),intent(inout)       :: return_flag !< Return flag
+    integer  (C_size_t),intent(in)       :: record_id   !< Record identifier
+    integer  (C_long),  intent(out)      :: data(*)     !< Block of data to store (number of elements = blocksize)
+    integer  (C_int),   intent(inout)    :: return_flag !< Return flag
     
     return_flag = grvy_ocore_read_i8_passthrough(record_id,data)
     return

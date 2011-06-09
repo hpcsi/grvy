@@ -85,6 +85,8 @@ endif
 	$(top_srcdir)/src/common/lic_utils/update_license.pl -S=$(top_srcdir)/src \
 		$(top_srcdir)/LICENSE $(cc_sources) $(h_sources)                  \
 		$(version_SOURCES) $(hostinfo_SOURCES) $(gdump_SOURCES)
+	$(top_srcdir)/src/common/lic_utils/update_license.pl -S=$(top_srcdir)/src \
+		--c2f_comment $(top_srcdir)/LICENSE grvy.f90
 	echo 'updated source license headers' >$@
 
 #-------------------------
