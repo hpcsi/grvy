@@ -798,21 +798,13 @@ public:
 
   // Read/Write Functions
 
-  int Write (size_t offset, int           *data );
-  int Write (size_t offset, long long int *data );
-  int Write (size_t offset, float         *data );
-  int Write (size_t offset, double        *data );
-
-  int Read  (size_t offset, int           *data );
-  int Read  (size_t offset, long long int *data );
-  int Read  (size_t offset, float         *data );
-  int Read  (size_t offset, double        *data );
+  template <typename T> int Write (size_t offset,T *data );
+  template <typename T> int Read  (size_t offset,T *data );
 
   // Record retrieval/removal
 
-  size_t PopRecord    (       double *data);
-  size_t PopRecord    (long long int *data);
-  
+  template <typename T> size_t PopRecord (T *data );
+
 private:
   class GRVY_MPI_Ocore_ClassImp;		  // forward declaration to Ocore implementation
   std::auto_ptr<GRVY_MPI_Ocore_ClassImp> m_pimpl; // pointer to implementation
