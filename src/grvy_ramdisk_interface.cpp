@@ -57,19 +57,23 @@ void grvy_ocore_finalize()
   return(_GRVY_Ocore->Finalize());
 }
 
-// grvy_ocore_write(): write record to MPI Ocore
+// ----------------------------
+// grvy_ocore_write functions
+// ----------------------------
 
-int grvy_ocore_write(size_t offset, double *data)
-{
-  return(_GRVY_Ocore->Write(offset,data));
-}
+int grvy_ocore_write_float   (size_t offset,         float *data) {return(_GRVY_Ocore->Write(offset,data));}
+int grvy_ocore_write_double  (size_t offset,        double *data) {return(_GRVY_Ocore->Write(offset,data));};
+int grvy_ocore_write_int     (size_t offset,           int *data) {return(_GRVY_Ocore->Write(offset,data));};
+int grvy_ocore_write_longlong(size_t offset, long long int *data) {return(_GRVY_Ocore->Write(offset,data));};
 
-// grvy_ocore_read(): write record to MPI Ocore
+// ----------------------------
+// grvy_ocore_read functions
+// ----------------------------
 
-int grvy_ocore_read(size_t offset, double *data)
-{
-  return(_GRVY_Ocore->Read(offset,data));
-}
+int grvy_ocore_read_float (size_t offset,          float *data) {return(_GRVY_Ocore->Read(offset,data));};
+int grvy_ocore_read_double(size_t offset,         double *data) {return(_GRVY_Ocore->Read(offset,data));};
+int grvy_ocore_read_int   (size_t offset,            int *data) {return(_GRVY_Ocore->Read(offset,data));};
+int grvy_ocore_read_int64 (size_t offset,  long long int *data) {return(_GRVY_Ocore->Read(offset,data));};
 
 // grvy_ocore_master(): determine if calling process is the master MPI task
 
@@ -94,7 +98,5 @@ size_t grvy_ocore_num_active()
 
 // grvy_ocore_pop_record(): return data record and pop/remove from ocore pool
 
-size_t grvy_ocore_pop_record(double *data)
-{
-  return(_GRVY_Ocore->PopRecord(data));
-}
+size_t grvy_ocore_pop_record_double       (       double *data) { return(_GRVY_Ocore->PopRecord(data)); }
+size_t grvy_ocore_pop_record_long_long_int(long long int *data) { return(_GRVY_Ocore->PopRecord(data)); }

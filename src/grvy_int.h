@@ -119,6 +119,8 @@ namespace GRVY {
   typedef std::map<std::vector <double>,std::string,TimerCmpHighLow > _GRVY_Type_TimerMapSortHL;  
   typedef std::map<std::vector <double>,std::string,TimerCmpLowHigh > _GRVY_Type_TimerMapSortLH;  
 
+
+
   // ---------------------------------------------------------------
   // Private class implementations which require declaration across
   // multiple classes
@@ -245,5 +247,19 @@ namespace GRVY {
   }
 
 } // end namespace GRVY
+
+namespace GRVY_Internal {
+
+
+#ifdef HAVE_MPI
+  template <typename T> MPI_Datatype Get_MPI_Type (T *value);
+  
+  MPI_Datatype Get_MPI_Type(          int *value) { return(MPI_INT       ) };
+  MPI_Datatype Get_MPI_Type(long long int *value) { return(MPI_LONG_LONG ) };
+  MPI_Datatype Get_MPI_Type(        float *value) { return(MPI_FLOAT     ) };
+  MPI_Datatype Get_MPI_Type(       double *value) { return(MPI_DOUBLE    ) };
+#endif
+
+} // end namespace GRVY_Internal 
 
 #endif

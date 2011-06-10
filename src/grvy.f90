@@ -393,41 +393,77 @@ module grvy
 
      end function grvy_ocore_init_passthrough
 
-     integer (C_int) function grvy_ocore_read_passthrough(record_id,data) bind (C,name='grvy_ocore_read')
+     integer (C_int) function grvy_ocore_read_real8(record_id,data) bind (C,name='grvy_ocore_read_double')
        use iso_c_binding
        implicit none
 
        integer  (C_SIZE_T),intent(in),value :: record_id !< Record identifier
        real     (C_double),intent(out)      :: data(*)   !< Block of data to store (number of elements = blocksize)
 
-     end function grvy_ocore_read_passthrough
+     end function grvy_ocore_read_real8
 
-     integer (C_int) function grvy_ocore_read_i8_passthrough(record_id,data) bind (C,name='grvy_ocore_read')
+     integer (C_int) function grvy_ocore_read_real4(record_id,data) bind (C,name='grvy_ocore_read_float')
        use iso_c_binding
        implicit none
 
-       integer  (C_SIZE_T),intent(in),value :: record_id !< Record identifier
-       integer  (C_LONG),  intent(out)      :: data(*)   !< Block of data to store (number of elements = blocksize)
+       integer  (C_SIZE_T),intent(in),value   :: record_id !< Record identifier
+       real     (C_float), intent(out)        :: data(*)   !< Block of data to store (number of elements = blocksize)
 
-     end function grvy_ocore_read_i8_passthrough
+     end function grvy_ocore_read_real4
 
-     integer (C_int) function grvy_ocore_write_passthrough(record_id,data) bind (C,name='grvy_ocore_write')
+     integer (C_int) function grvy_ocore_read_int8(record_id,data) bind (C,name='grvy_ocore_read_long_long_int')
+       use iso_c_binding
+       implicit none
+
+       integer  (C_SIZE_T),   intent(in),value :: record_id !< Record identifier
+       integer  (C_LONG_LONG),intent(out)      :: data(*)   !< Block of data to store (number of elements = blocksize)
+
+     end function grvy_ocore_read_int8
+
+     integer (C_int) function grvy_ocore_read_int4(record_id,data) bind (C,name='grvy_ocore_read_int')
+       use iso_c_binding
+       implicit none
+
+       integer  (C_SIZE_T),   intent(in),value :: record_id !< Record identifier
+       integer  (C_INT),      intent(out)      :: data(*)   !< Block of data to store (number of elements = blocksize)
+
+     end function grvy_ocore_read_int4
+
+     integer (C_int) function grvy_ocore_write_real8(record_id,data) bind (C,name='grvy_ocore_write_double')
        use iso_c_binding
        implicit none
 
        integer  (C_SIZE_T),intent(in),value :: record_id !< Record identifier
        real     (C_DOUBLE),intent(out)      :: data(*)   !< Block of data to store (number of elements = blocksize)
 
-     end function grvy_ocore_write_passthrough
+     end function grvy_ocore_write_real8
 
-     integer (C_int) function grvy_ocore_write_i8_passthrough(record_id,data) bind (C,name='grvy_ocore_write')
+     integer (C_int) function grvy_ocore_write_real4(record_id,data) bind (C,name='grvy_ocore_write_float')
        use iso_c_binding
        implicit none
 
        integer  (C_SIZE_T),intent(in),value :: record_id !< Record identifier
-       integer  (C_LONG),  intent(inout)    :: data(*)   !< Block of data to store (number of elements = blocksize)
+       real     (C_FLOAT), intent(out)      :: data(*)   !< Block of data to store (number of elements = blocksize)
 
-     end function grvy_ocore_write_i8_passthrough
+     end function grvy_ocore_write_real4
+
+     integer (C_int) function grvy_ocore_write_int4(record_id,data) bind (C,name='grvy_ocore_write_int')
+       use iso_c_binding
+       implicit none
+
+       integer  (C_SIZE_T),intent(in),value :: record_id !< Record identifier
+       integer  (C_INT),   intent(out)      :: data(*)   !< Block of data to store (number of elements = blocksize)
+
+     end function grvy_ocore_write_int4
+
+     integer (C_int) function grvy_ocore_write_int8(record_id,data) bind (C,name='grvy_ocore_write_long_long_int')
+       use iso_c_binding
+       implicit none
+
+       integer  (C_SIZE_T),   intent(in),value :: record_id !< Record identifier
+       integer  (C_LONG_LONG),intent(inout)    :: data(*)   !< Block of data to store (number of elements = blocksize)
+
+     end function grvy_ocore_write_int8
 
      integer (C_int) function grvy_ocore_master() bind (C)
        use iso_c_binding
@@ -451,17 +487,17 @@ module grvy
        implicit none
      end function grvy_ocore_num_active
 
-     integer (C_SIZE_T) function grvy_ocore_pop_record(data) bind (C)
+     integer (C_SIZE_T) function grvy_ocore_pop_record_double(data) bind (C)
        use iso_c_binding
        implicit none
        real  (C_DOUBLE),  intent(inout)    :: data(*)   !< Block of data to return
-     end function grvy_ocore_pop_record
+     end function grvy_ocore_pop_record_double
 
-     integer (C_SIZE_T) function grvy_ocore_pop_record_i8(data) bind (C,name='grvy_ocore_pop_record')
+     integer (C_SIZE_T) function grvy_ocore_pop_record_long_long_int(data) bind (C)
        use iso_c_binding
        implicit none
-       integer  (C_LONG),  intent(inout)    :: data(*)   !< Block of data to return
-     end function grvy_ocore_pop_record_i8
+       integer  (C_LONG_LONG),  intent(inout)    :: data(*)   !< Block of data to return
+     end function grvy_ocore_pop_record_long_long_int
 
      ! ---------------
      ! Math
@@ -885,52 +921,52 @@ end subroutine grvy_get_command_arguments
     return
   end subroutine grvy_ocore_init
 
-  subroutine grvy_ocore_write(record_id,data,return_flag)
-    use iso_c_binding
-    implicit none
+!   subroutine grvy_ocore_write_int4(record_id,data,return_flag)
+!     use iso_c_binding
+!     implicit none
 
-    integer  (C_size_t),intent(in)       :: record_id   !< Record identifier
-    real     (C_double),intent(out)      :: data(*)     !< Block of data to store (number of elements = blocksize)
-    integer  (C_int),   intent(inout)    :: return_flag !< Return flag
+!     integer  (C_size_t),intent(in)       :: record_id   !< Record identifier
+!     real     (C_int),   intent(out)      :: data(*)     !< Block of data to store (number of elements = blocksize)
+!     integer  (C_int),   intent(inout)    :: return_flag !< Return flag
     
-    return_flag = grvy_ocore_write_passthrough(record_id,data)
-    return
-  end subroutine grvy_ocore_write
+!     return_flag = grvy_ocore_write_int4_passthrough(record_id,data)
+!     return
+!   end subroutine grvy_ocore_write_int4
 
-  subroutine grvy_ocore_write_i8(record_id,data,return_flag)
-    use iso_c_binding
-    implicit none
+!   subroutine grvy_ocore_write_int8(record_id,data,return_flag)
+!     use iso_c_binding
+!     implicit none
 
-    integer  (C_size_t),intent(in)       :: record_id   !< Record identifier
-    integer  (C_long),  intent(inout)    :: data(*)     !< Block of data to store (number of elements = blocksize)
-    integer  (C_int),   intent(inout)    :: return_flag !< Return flag
+!     integer  (C_size_t),   intent(in)     :: record_id   !< Record identifier
+!     integer  (C_long_long),intent(inout)  :: data(*)     !< Block of data to store (number of elements = blocksize)
+!     integer  (C_int),      intent(inout)  :: return_flag !< Return flag
 
-    return_flag = grvy_ocore_write_i8_passthrough(record_id,data)
-    return
-  end subroutine grvy_ocore_write_i8
+!     return_flag = grvy_ocore_write_int8_passthrough(record_id,data)
+!     return
+!   end subroutine grvy_ocore_write_int8
 
-  subroutine grvy_ocore_read(record_id,data,return_flag)
-    use iso_c_binding
-    implicit none
+!   subroutine grvy_ocore_read_int4(record_id,data,return_flag)
+!     use iso_c_binding
+!     implicit none
 
-    integer  (C_size_t),intent(in)       :: record_id   !< Record identifier
-    real     (C_double),intent(out)      :: data(*)     !< Block of data to store (number of elements = blocksize)
-    integer  (C_int),  intent(inout)     :: return_flag !< Return flag
+!     integer  (C_size_t),intent(in)        :: record_id   !< Record identifier
+!     real     (C_int),   intent(out)       :: data(*)     !< Block of data to store (number of elements = blocksize)
+!     integer  (C_int),   intent(inout)     :: return_flag !< Return flag
     
-    return_flag = grvy_ocore_read_passthrough(record_id,data)
-    return
-  end subroutine grvy_ocore_read
+!     return_flag = grvy_ocore_read_int4_passthrough(record_id,data)
+!     return
+!   end subroutine grvy_ocore_read_int4
 
-  subroutine grvy_ocore_read_i8(record_id,data,return_flag)
-    use iso_c_binding
-    implicit none
+!   subroutine grvy_ocore_read_int8(record_id,data,return_flag)
+!     use iso_c_binding
+!     implicit none
 
-    integer  (C_size_t),intent(in)       :: record_id   !< Record identifier
-    integer  (C_long),  intent(out)      :: data(*)     !< Block of data to store (number of elements = blocksize)
-    integer  (C_int),   intent(inout)    :: return_flag !< Return flag
+!     integer  (C_size_t),   intent(in)     :: record_id   !< Record identifier
+!     integer  (C_long_long),intent(out)    :: data(*)     !< Block of data to store (number of elements = blocksize)
+!     integer  (C_int),      intent(inout)  :: return_flag !< Return flag
     
-    return_flag = grvy_ocore_read_i8_passthrough(record_id,data)
-    return
-  end subroutine grvy_ocore_read_i8
+!     return_flag = grvy_ocore_read_int8_passthrough(record_id,data)
+!     return
+!   end subroutine grvy_ocore_read_int8
   
 end module grvy

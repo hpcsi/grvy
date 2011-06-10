@@ -319,13 +319,27 @@ extern "C" {
 
   extern    int grvy_ocore_init                (const char *input_file, int blocksize);
   extern   void grvy_ocore_finalize            ();
-  extern    int grvy_ocore_write               (size_t record_id, double *data);
-  extern    int grvy_ocore_read                (size_t record_id, double *data);
+
   extern    int grvy_ocore_master              ();
   extern    int grvy_ocore_enabled             ();
-
   extern size_t grvy_ocore_num_active          ();
-  extern size_t grvy_ocore_pop_record          (double *data);
+
+  /* Read/Write Routines */
+
+  extern    int grvy_ocore_write_double        (size_t record_id,    double     *data);
+  extern    int grvy_ocore_write_float         (size_t record_id,     float     *data);
+  extern    int grvy_ocore_write_int           (size_t record_id,       int     *data);
+  extern    int grvy_ocore_write_long_long_int (size_t record_id, long long int *data);
+
+  extern    int grvy_ocore_read_double         (size_t record_id,    double     *data);
+  extern    int grvy_ocore_read_float          (size_t record_id,     float     *data);
+  extern    int grvy_ocore_read_int            (size_t record_id,       int     *data);
+  extern    int grvy_ocore_read_long_long_int  (size_t record_id, long long int *data);
+
+  /* Record retreival */
+
+  extern size_t grvy_ocore_pop_record_double        (double *data);
+  extern size_t grvy_ocore_pop_record_long_long_int (long long int *data);
 					      
   /*
    * Basic API Definition for Math Utilities
@@ -756,7 +770,6 @@ class GRVY_Timer_Class {
 
   void SummarizeHistTiming (std::string filename,   std::string delimiter, std::string outdir);
 
-
   // Class options 
 
   int  SetOption           (std::string option, bool flag);
@@ -778,15 +791,27 @@ public:
  ~GRVY_MPI_Ocore_Class();
 
   int    Initialize   (std::string inputfile, int blocksize);
-  int    Write        (size_t offset, double *data);
-  int    Read         (size_t offset, double *data);
   void   Finalize     ();
-  size_t NumActive    ();
-  size_t PopRecord    (double *data);
-
+  size_t NumActive    ();	// number of currently active records
   bool   isMaster     ();	// is the calling task the ocore master?
   bool   isEnabled    ();	// is MPI Ocore enabled? (can be controlled via input file)
 
+  // Read/Write Functions
+
+  int Write (size_t offset, int           *data );
+  int Write (size_t offset, long long int *data );
+  int Write (size_t offset, float         *data );
+  int Write (size_t offset, double        *data );
+
+  int Read  (size_t offset, int           *data );
+  int Read  (size_t offset, long long int *data );
+  int Read  (size_t offset, float         *data );
+  int Read  (size_t offset, double        *data );
+
+  // Record retrieval/removal
+
+  size_t PopRecord    (       double *data);
+  size_t PopRecord    (long long int *data);
   
 private:
   class GRVY_MPI_Ocore_ClassImp;		  // forward declaration to Ocore implementation

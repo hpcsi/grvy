@@ -37,8 +37,8 @@
 
 #ifdef HAVE_MPI
 
-// Request OpenMPI to ignore C++ bindings (requires so we can also
-// link C code against libgrvy
+// Request OpenMPI to ignore C++ bindings (necessary so we can also
+// link C code against libgrvy)
 
 #define OMPI_SKIP_MPICXX
 
@@ -154,7 +154,7 @@ namespace GRVY {
     int num_empty_reads;	          // number of empty reads encountered
 
     vector< vector <double>  > pool;      // raw data pool storage
-    map<size_t,MPI_Ocore_datagram> smap;  // sparse data map (sparse indices -> contiguous pool indices)
+    map<size_t,MPI_Ocore_datagram> smap;  // sparse data map (sparse user indices -> contiguous pool indices)
     map<size_t,MPI_Ocore_owners> rank_map;// map for rank 0 to identify which child rank owns the data
     double* data_tmp;		          // temporary buffer for disk_overflow block storage
 
@@ -283,7 +283,6 @@ namespace GRVY {
     return(it->first);
   }
 
-
   // ---------------------------------------------------------------------------------------
   // Finalize(): Public finalize -> sends notice to children to exit polling loop
   // ---------------------------------------------------------------------------------------
@@ -337,13 +336,16 @@ namespace GRVY {
   // Write(): Public write data function
   // ---------------------------------------------------------------------------------------
 
-  int GRVY_MPI_Ocore_Class::Write(size_t offset, double *data)
+  //  template <typename T> int GRVY_Input_Class:: Read_Var(std::string var, T *value)
+  template <typename T> int GRVY_MPI_Ocore_Class::Write(size_t offset, T *data)
   {
     if(!m_pimpl->use_mpi_ocore)
       {
 	grvy_printf(info,"\n%s: Use of MPI_ocore disabled, unable to complete write request\n",prefix);
 	return(1);
       }
+
+    assert(sizeof(data[0]) == m_pimpl->word_size);
 
     map<size_t,MPI_Ocore_owners> :: iterator it = m_pimpl->rank_map.find(offset);
     int rank_owner;
@@ -354,10 +356,9 @@ namespace GRVY {
 	rank_owner = m_pimpl->AssignOwnership(offset);
 	new_data   = true;
       }
-    else			// old record
+    else			       // old record
       {
 	rank_owner = it->second.data_hostId;
-	//it->second.write_count++;
       }
     
     assert(rank_owner > 0 && rank_owner < m_pimpl->mpi_nprocs );
@@ -688,8 +689,9 @@ namespace GRVY {
   // Write_to_Pool(): Internal write method - use MPI to xfer desired data
   // ---------------------------------------------------------------------------------------
 
-  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Write_to_Pool(int dest_task, bool new_data, 
-								    size_t offset, double *data)
+  //  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Write_to_Pool(int dest_task, bool new_data, 
+  template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Write_to_Pool(int dest_task, bool new_data, 
+											  size_t offset, T *data)
   {
 
     ptimer.BeginTimer("write_to_pool");
@@ -1295,8 +1297,6 @@ namespace GRVY {
     MPI_Abort(MPI_COMM_WORLD,42);
     return;
   }
-
-
 
 } // matches namespace GRVY
 
