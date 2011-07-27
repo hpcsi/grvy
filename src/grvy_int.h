@@ -38,6 +38,19 @@
 
 #include <boost/program_options.hpp>
 
+#ifdef HAVE_MPI
+
+// Request OpenMPI to ignore C++ bindings (necessary so we can also
+// link C code against libgrvy)
+
+#define OMPI_SKIP_MPICXX
+
+#include<mpi.h>
+
+#undef OMPI_SKIP_MPICXX
+
+#endif
+
 namespace GRVY {
 
   //#define ginfo (...) grvy_printf(GRVY_INFO, __VA_ARGS__)
@@ -254,10 +267,10 @@ namespace GRVY_Internal {
 #ifdef HAVE_MPI
   template <typename T> MPI_Datatype Get_MPI_Type (T *value);
   
-  MPI_Datatype Get_MPI_Type(          int *value) { return(MPI_INT       ) };
-  MPI_Datatype Get_MPI_Type(long long int *value) { return(MPI_LONG_LONG ) };
-  MPI_Datatype Get_MPI_Type(        float *value) { return(MPI_FLOAT     ) };
-  MPI_Datatype Get_MPI_Type(       double *value) { return(MPI_DOUBLE    ) };
+  MPI_Datatype Get_MPI_Type(          int *value) { return(MPI_INT       ); };
+  MPI_Datatype Get_MPI_Type(long long int *value) { return(MPI_LONG_LONG ); };
+  MPI_Datatype Get_MPI_Type(        float *value) { return(MPI_FLOAT     ); };
+  MPI_Datatype Get_MPI_Type(       double *value) { return(MPI_DOUBLE    ); };
 #endif
 
 } // end namespace GRVY_Internal 

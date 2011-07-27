@@ -35,6 +35,7 @@
 #include<queue>
 #include<stack>
 
+#if 0
 #ifdef HAVE_MPI
 
 // Request OpenMPI to ignore C++ bindings (necessary so we can also
@@ -46,6 +47,7 @@
 
 #undef OMPI_SKIP_MPICXX
 
+#endif
 #endif
 
 using namespace std;
@@ -283,7 +285,8 @@ size_t GRVY_MPI_Ocore_Class::NumActive()
 // PopRecord(): Public function to return data record and pop/remove from ocore pool
 // ---------------------------------------------------------------------------------------
 
-size_t GRVY_MPI_Ocore_Class::PopRecord(double *data)
+//size_t GRVY_MPI_Ocore_Class::PopRecord(double *data)
+template <typename T> size_t GRVY_MPI_Ocore_Class::PopRecord(T *data)
 {
   map<size_t,MPI_Ocore_owners> :: iterator it = m_pimpl->rank_map.begin();
   
@@ -387,7 +390,8 @@ template <typename T> int GRVY_MPI_Ocore_Class::Write(size_t offset, T *data)
 // Read(): Public read data function
 // ---------------------------------------------------------------------------------------
 
-int GRVY_MPI_Ocore_Class::Read(size_t offset, double *data)
+//int GRVY_MPI_Ocore_Class::Read(size_t offset, double *data)
+template <typename T> int GRVY_MPI_Ocore_Class::Read(size_t offset, T *data)
 {
   if(!m_pimpl->use_mpi_ocore)
     {
@@ -441,7 +445,17 @@ bool GRVY_MPI_Ocore_Class::isMaster() { return(m_pimpl->master); }
 // isEnabled(): is MPI_Ocore enabled (controlled via input file)
 // ---------------------------------------------------------------------------------------
 
-bool GRVY_MPI_Ocore_Class::isEnabled() { return(m_pimpl->use_mpi_ocore); }
+bool GRVY_MPI_Ocore_Class::isEnabled() 
+{ 
+  // this check returns false if user has not initialized mpi_ocore
+  
+  if(_GRVY_Ocore == NULL)	
+    return(false);
+
+  // normal check to query runtime option 
+
+  return(m_pimpl->use_mpi_ocore); 
+}
 
 // ---------------------------------------------------------------------------------------
 // PollForWork(): Work poller for ocore slaves
