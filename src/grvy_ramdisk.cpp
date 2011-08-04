@@ -763,7 +763,6 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
 
     grvy_printf(debug,"%s (%5i): Performing mpi_recv from rank %i\n",prefix,mpi_rank,recv_task);
 
-    //MPI_Recv(data,blocksize,MPI_DOUBLE,recv_task,recvtag,MYCOMM,&status);
     MPI_Recv(data,blocksize,GRVY_Internal::Get_MPI_Type(data[0]),recv_task,recvtag,MYCOMM,&status);
 
     ptimer.EndTimer("read_from_pool");
@@ -803,7 +802,7 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
 	// hush parsing messages as we will provide sane defaults if no input given
 	
 	default_priority = grvy_log_getlevel();
-	grvy_log_setlevel(GRVY_ERROR);
+	//	grvy_log_setlevel(GRVY_ERROR);    // this burned csim, disabling to let user see defaults being used.
 	
 	if(! iparse.Open(input_file.c_str()) )
 	  grvy_printf(info,"%s: --> Unable to open input file, using default options\n",prefix);
@@ -830,8 +829,6 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
     if(master)
       {
 	// Register default values (0.31.0)
-
-	printf("registering defaults\n");
 
 	iparse.Register_Var    ("grvy/mpi_ocore/use_disk_overflow",    1                    );
 	iparse.Register_Var    ("grvy/mpi_ocore/allow_empty_records",  0                    );
@@ -863,7 +860,7 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
 
 	iparse.Close();
 	
-	// Input sanitcy check
+	// Input sanity check
 	
 	assert(dump_watermark_ratio > 0.0 && dump_watermark_ratio < 1.0);
 	assert(max_poolsize_MBs > 0);
