@@ -31,24 +31,11 @@
 #include<grvy_classes.h>
 #include<grvy.h>
 #include<grvy_int.h>
+#include<grvy_mpi.h>
 #include<map>
 #include<queue>
 #include<stack>
-
-#if 0
-#ifdef HAVE_MPI
-
-// Request OpenMPI to ignore C++ bindings (necessary so we can also
-// link C code against libgrvy)
-
-#define OMPI_SKIP_MPICXX
-
-#include<mpi.h>
-
-#undef OMPI_SKIP_MPICXX
-
-#endif
-#endif
+#include <boost/type_traits/is_floating_point.hpp>
 
 using namespace std;
 using namespace GRVY;
@@ -108,26 +95,26 @@ namespace GRVY {
 
 // Supported Function Templates for Ocore Read/Write
 
-template    int GRVY_MPI_Ocore_Class::Write     <       double>(size_t offset,        double *data);
-template    int GRVY_MPI_Ocore_Class::Write     <        float>(size_t offset,         float *data);
-template    int GRVY_MPI_Ocore_Class::Write     <          int>(size_t offset,           int *data);
-template    int GRVY_MPI_Ocore_Class::Write     <long long int>(size_t offset, long long int *data);
-
-template    int GRVY_MPI_Ocore_Class::Read      <       double>(size_t offset,        double *data);
-template    int GRVY_MPI_Ocore_Class::Read      <        float>(size_t offset,         float *data);
-template    int GRVY_MPI_Ocore_Class::Read      <          int>(size_t offset,           int *data);
-template    int GRVY_MPI_Ocore_Class::Read      <long long int>(size_t offset, long long int *data);
-
-template size_t GRVY_MPI_Ocore_Class::PopRecord <       double>(       double *data);
-template size_t GRVY_MPI_Ocore_Class::PopRecord <        float>(        float *data);
-template size_t GRVY_MPI_Ocore_Class::PopRecord <          int>(          int *data);
-template size_t GRVY_MPI_Ocore_Class::PopRecord <long long int>(long long int *data);
+template    int GRVY_MPI_Ocore_Class::Write     <       double> (size_t offset,        double *data);
+template    int GRVY_MPI_Ocore_Class::Write     <        float> (size_t offset,         float *data);
+template    int GRVY_MPI_Ocore_Class::Write     <          int> (size_t offset,           int *data);
+template    int GRVY_MPI_Ocore_Class::Write     <long long int> (size_t offset, long long int *data);
+							        
+template    int GRVY_MPI_Ocore_Class::Read      <       double> (size_t offset,        double *data);
+template    int GRVY_MPI_Ocore_Class::Read      <        float> (size_t offset,         float *data);
+template    int GRVY_MPI_Ocore_Class::Read      <          int> (size_t offset,           int *data);
+template    int GRVY_MPI_Ocore_Class::Read      <long long int> (size_t offset, long long int *data);
+							        
+template size_t GRVY_MPI_Ocore_Class::PopRecord <       double> (       double *data);
+template size_t GRVY_MPI_Ocore_Class::PopRecord <        float> (        float *data);
+template size_t GRVY_MPI_Ocore_Class::PopRecord <          int> (          int *data);
+template size_t GRVY_MPI_Ocore_Class::PopRecord <long long int> (long long int *data);
 
 class GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp 
 {
 public:
   GRVY_MPI_Ocore_ClassImp () {}
-  ~GRVY_MPI_Ocore_ClassImp () {}
+ ~GRVY_MPI_Ocore_ClassImp () {}
   
 #ifdef HAVE_MPI
   int    Initialize       (string input_file, int blocksize);
@@ -136,8 +123,10 @@ public:
   size_t GetFreeRecord    (size_t sparse_index);
   int    PullData         (size_t sparse_index);
   int    StoreData        (size_t sparse_index, bool new_data);
-  int    Read_from_Pool   (int mpi_task, size_t sparse_index,double *data);
-  int    Write_to_Pool    (int mpi_task, bool new_data, size_t sparse_index,double *data);
+  //  int    Read_from_Pool   (int mpi_task, size_t sparse_index,double *data);
+  //  int    Write_to_Pool    (int mpi_task, bool new_data, size_t sparse_index,double *data);
+  template <typename T> int Read_from_Pool (int mpi_task, size_t sparse_index,T *data);
+  template <typename T> int  Write_to_Pool (int mpi_task, bool new_data, size_t sparse_index,T *data);
   
   void   PollForWork      ();
   void   Summarize        ();
@@ -374,7 +363,7 @@ template <typename T> int GRVY_MPI_Ocore_Class::Write(size_t offset, T *data)
       rank_owner = m_pimpl->AssignOwnership(offset);
       new_data   = true;
     }
-  else			       // old record
+  else			                // old record
     {
       rank_owner = it->second.data_hostId;
     }
@@ -390,7 +379,6 @@ template <typename T> int GRVY_MPI_Ocore_Class::Write(size_t offset, T *data)
 // Read(): Public read data function
 // ---------------------------------------------------------------------------------------
 
-//int GRVY_MPI_Ocore_Class::Read(size_t offset, double *data)
 template <typename T> int GRVY_MPI_Ocore_Class::Read(size_t offset, T *data)
 {
   if(!m_pimpl->use_mpi_ocore)
@@ -410,9 +398,14 @@ template <typename T> int GRVY_MPI_Ocore_Class::Read(size_t offset, T *data)
       if(m_pimpl->allow_empty_records)
 	{
 	  grvy_printf(debug,"\n%s: Returning previously unwritten empty record (index = %li)\n",prefix,offset);
-	  for(size_t i=0;i<m_pimpl->blocksize;i++)
-	    data[i] = 0.0;
-	  
+
+	  if(boost::is_floating_point<T>::value)
+	    for(size_t i=0;i<m_pimpl->blocksize;i++)
+	      data[i] = 0.0;
+	  else
+	    for(size_t i=0;i<m_pimpl->blocksize;i++)
+	      data[i] = 0;
+
 	  m_pimpl->num_empty_reads++;
 	  return(0);
 	}
@@ -423,7 +416,7 @@ template <typename T> int GRVY_MPI_Ocore_Class::Read(size_t offset, T *data)
 	  m_pimpl->Abort();
 	}
     }
-  else			// old record
+  else			                // old record
     {
       rank_owner = it->second.data_hostId;
     }
@@ -703,7 +696,6 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Summarize()
     MPI_Gather(&num_active_records,1,MPI_INTEGER,num_active_per_task,1,MPI_INTEGER,0,MYCOMM);
     
 
-    
   return;
 }
 
@@ -714,7 +706,6 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Summarize()
 template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Write_to_Pool(int dest_task, bool new_data, 
 											size_t offset, T *data)
   {
-
     ptimer.BeginTimer("write_to_pool");
 
     // create msg header
@@ -740,7 +731,8 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Write_
 
     grvy_printf(debug,"%s (%5i): Performing mpi_send to rank %i\n",prefix,mpi_rank,dest_task);
 
-    MPI_Send(data,blocksize,MPI_DOUBLE,dest_task,sendtag,MYCOMM);
+    //MPI_Send(data,blocksize,MPI_DOUBLE,dest_task,sendtag,MYCOMM);
+    MPI_Send(data,blocksize,GRVY_Internal::Get_MPI_Type(data[0]),dest_task,sendtag,MYCOMM);
 
     ptimer.EndTimer("write_to_pool");
 
@@ -751,7 +743,8 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Write_
   // Read_from_Pool(): Internal read method - use MPI to xfer desired data
   // ---------------------------------------------------------------------------------------
 
-  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_from_Pool(int recv_task, size_t offset, double *data)
+template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_from_Pool(int recv_task, size_t offset,
+											 T *data)
   {
     MPI_Status status;
     ptimer.BeginTimer("read_from_pool");
@@ -770,7 +763,8 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Write_
 
     grvy_printf(debug,"%s (%5i): Performing mpi_recv from rank %i\n",prefix,mpi_rank,recv_task);
 
-    MPI_Recv(data,blocksize,MPI_DOUBLE,recv_task,recvtag,MYCOMM,&status);
+    //MPI_Recv(data,blocksize,MPI_DOUBLE,recv_task,recvtag,MYCOMM,&status);
+    MPI_Recv(data,blocksize,GRVY_Internal::Get_MPI_Type(data[0]),recv_task,recvtag,MYCOMM,&status);
 
     ptimer.EndTimer("read_from_pool");
 
@@ -1172,7 +1166,7 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PullData(size_t sparse_index
   grvy_printf(debug,"%s (%5i): Prepping to send data (user index %i -> ocore index %i)\n",prefix,mpi_rank,
 	      sparse_index,offset);
 
-  if(in_mem)			// record in ramdisk
+  if(in_mem)		// record in ramdisk
     {
       MPI_Send(&pool[offset][0],blocksize,MPI_DOUBLE,0,recvtag,MYCOMM);
     }
@@ -1328,7 +1322,7 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Abort()
 //----------------------------------------------------------
 
 namespace GRVY {
-#if 1
+
 GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class()
 {
   grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI support\n\n");
@@ -1337,7 +1331,6 @@ GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class()
   exit(1);
 }
 
-
 GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
 {
   grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI support\n\n");
@@ -1345,9 +1338,8 @@ GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
   grvy_printf(GRVY_FATAL,"and reinstall if you desire to use MPI out-of-core related functionality.\n\n");
   exit(1);
 }
-#endif
 
-}
+} // end namespace grvy
 
 int    GRVY_MPI_Ocore_Class::Initialize(string input_file,int blocksize) { return 0; }
 

@@ -79,8 +79,8 @@ module grvy
        implicit none
 
        character (C_char),intent(in) :: filename(*) !< libGRVY style input filename
-
      end function grvy_input_fopen_passthrough
+
 
      subroutine grvy_input_fclose() bind (C)
        use iso_c_binding
@@ -487,17 +487,29 @@ module grvy
        implicit none
      end function grvy_ocore_num_active
 
-     integer (C_SIZE_T) function grvy_ocore_pop_record_double(data) bind (C)
+     integer (C_SIZE_T) function grvy_ocore_pop_record_real4(data) bind (C,name='grvy_ocore_pop_record_float')
        use iso_c_binding
        implicit none
-       real  (C_DOUBLE),  intent(inout)    :: data(*)   !< Block of data to return
-     end function grvy_ocore_pop_record_double
+       real  (C_FLOAT),  intent(inout)        :: data(*)   !< Block of data to return
+     end function grvy_ocore_pop_record_real4
 
-     integer (C_SIZE_T) function grvy_ocore_pop_record_long_long_int(data) bind (C)
+     integer (C_SIZE_T) function grvy_ocore_pop_record_real8(data) bind (C,name='grvy_ocore_pop_record_double')
        use iso_c_binding
        implicit none
-       integer  (C_LONG_LONG),  intent(inout)    :: data(*)   !< Block of data to return
-     end function grvy_ocore_pop_record_long_long_int
+       real  (C_DOUBLE),  intent(inout)       :: data(*)   !< Block of data to return
+     end function grvy_ocore_pop_record_real8
+
+     integer (C_SIZE_T) function grvy_ocore_pop_record_int8(data) bind (C,name='grvy_ocore_long_long_int')
+       use iso_c_binding
+       implicit none
+       integer  (C_LONG_LONG),  intent(inout) :: data(*)   !< Block of data to return
+     end function grvy_ocore_pop_record_int8
+
+     integer (C_SIZE_T) function grvy_ocore_pop_record_int4(data) bind (C,name='grvy_ocore_int')
+       use iso_c_binding
+       implicit none
+       integer  (C_LONG_LONG),  intent(inout) :: data(*)   !< Block of data to return
+     end function grvy_ocore_pop_record_int4
 
      ! ---------------
      ! Math

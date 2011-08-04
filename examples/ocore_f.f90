@@ -65,8 +65,8 @@ program main
       ! file.
 
       do elem = 1,num_records
-         call init_data       (elem,blocksize,data)
-         call grvy_ocore_write(elem,data,ierr)
+         call init_data             (elem,blocksize,data)
+         ierr = grvy_ocore_write_real8(elem,data)
       enddo
 
       ! Change the local data record
@@ -76,7 +76,7 @@ program main
       ! Read back known data records in opposite order and verify
 
       do elem = num_records,1,-1
-         call grvy_ocore_read(elem,data,ierr);
+         ierr = grvy_ocore_read_real8(elem,data);
          if( verify_data(elem,blocksize,data) .ne. 1)then
             stop
          endif
@@ -87,7 +87,7 @@ program main
       pool_size = grvy_ocore_num_active()
 
       do elem=1,pool_size
-         index = grvy_ocore_pop_record(data)
+         index = grvy_ocore_pop_record_real8(data)
          if(verify_data(index,blocksize,data) .ne. 1)then
             stop
          endif

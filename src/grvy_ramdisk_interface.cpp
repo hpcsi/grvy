@@ -98,5 +98,7 @@ size_t grvy_ocore_num_active()
 
 // grvy_ocore_pop_record(): return data record and pop/remove from ocore pool
 
+size_t grvy_ocore_pop_record_float        (       float  *data) { return(_GRVY_Ocore->PopRecord(data)); }
 size_t grvy_ocore_pop_record_double       (       double *data) { return(_GRVY_Ocore->PopRecord(data)); }
+size_t grvy_ocore_pop_record_int          (          int *data) { return(_GRVY_Ocore->PopRecord(data)); }
 size_t grvy_ocore_pop_record_long_long_int(long long int *data) { return(_GRVY_Ocore->PopRecord(data)); }

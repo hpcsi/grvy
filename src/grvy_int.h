@@ -36,20 +36,24 @@
 #include<string>
 #include<grvy.h>
 
+//#ifdef HAVE_MPI
+//#include "mpi.h"
+//#endif
+
 #include <boost/program_options.hpp>
 
-#ifdef HAVE_MPI
+// #ifdef HAVE_MPI
 
-// Request OpenMPI to ignore C++ bindings (necessary so we can also
-// link C code against libgrvy)
+// // Request OpenMPI to ignore C++ bindings (necessary so we can also
+// // link C code against libgrvy)
 
-#define OMPI_SKIP_MPICXX
+// #define OMPI_SKIP_MPICXX
 
-#include<mpi.h>
+// #include<mpi.h>
 
-#undef OMPI_SKIP_MPICXX
+// #undef OMPI_SKIP_MPICXX
 
-#endif
+// #endif
 
 namespace GRVY {
 
@@ -131,8 +135,6 @@ namespace GRVY {
   typedef std::map<std::string,std::vector <double> >                      _GRVY_Type_TimerMap;
   typedef std::map<std::vector <double>,std::string,TimerCmpHighLow > _GRVY_Type_TimerMapSortHL;  
   typedef std::map<std::vector <double>,std::string,TimerCmpLowHigh > _GRVY_Type_TimerMapSortLH;  
-
-
 
   // ---------------------------------------------------------------
   // Private class implementations which require declaration across
@@ -261,18 +263,5 @@ namespace GRVY {
 
 } // end namespace GRVY
 
-namespace GRVY_Internal {
-
-
-#ifdef HAVE_MPI
-  template <typename T> MPI_Datatype Get_MPI_Type (T *value);
-  
-  MPI_Datatype Get_MPI_Type(          int *value) { return(MPI_INT       ); };
-  MPI_Datatype Get_MPI_Type(long long int *value) { return(MPI_LONG_LONG ); };
-  MPI_Datatype Get_MPI_Type(        float *value) { return(MPI_FLOAT     ); };
-  MPI_Datatype Get_MPI_Type(       double *value) { return(MPI_DOUBLE    ); };
-#endif
-
-} // end namespace GRVY_Internal 
 
 #endif

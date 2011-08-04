@@ -32,10 +32,10 @@
 
 #include<stdlib.h>
 #include<string.h>
-#include<grvy_classes.h>
-#include<grvy_int.h>
-#include<grvy.h>
-#include"fortran_string_order.h"
+#include "grvy_classes.h"
+#include "grvy.h"
+#include "grvy_int.h"
+#include "fortran_string_order.h"
 
 #include <boost/algorithm/string.hpp>
 
