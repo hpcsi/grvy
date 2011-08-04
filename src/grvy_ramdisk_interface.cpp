@@ -38,7 +38,7 @@
 using namespace std;
 using namespace GRVY;
 
-int grvy_ocore_init(const char *input_file, int blocksize)
+int grvy_ocore_init(const char *input_file)
 {
   // create new timer on 1st call
 
@@ -47,21 +47,24 @@ int grvy_ocore_init(const char *input_file, int blocksize)
 
   // initialize 
 
-  return(_GRVY_Ocore->Initialize(input_file, blocksize));
+  return(_GRVY_Ocore->Initialize(input_file));
 }
 
 // grvy_ocore_finalize(): Finalize MPI ocore and dump statistics
 
 void grvy_ocore_finalize()
 {
-  return(_GRVY_Ocore->Finalize());
+  _GRVY_Ocore->Finalize();
+
+  delete _GRVY_Ocore;
+  return;
 }
 
 // ----------------------------
 // grvy_ocore_write functions
 // ----------------------------
 
-int grvy_ocore_write_float   (size_t offset,         float *data) {return(_GRVY_Ocore->Write(offset,data));}
+int grvy_ocore_write_float   (size_t offset,         float *data) {return(_GRVY_Ocore->Write(offset,data));};
 int grvy_ocore_write_double  (size_t offset,        double *data) {return(_GRVY_Ocore->Write(offset,data));};
 int grvy_ocore_write_int     (size_t offset,           int *data) {return(_GRVY_Ocore->Write(offset,data));};
 int grvy_ocore_write_longlong(size_t offset, long long int *data) {return(_GRVY_Ocore->Write(offset,data));};

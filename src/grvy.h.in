@@ -317,7 +317,7 @@ extern "C" {
 
   /** \name MPI Ocore Functions */
 
-  extern    int grvy_ocore_init                (const char *input_file, int blocksize);
+  extern    int grvy_ocore_init                (const char *input_file);
   extern   void grvy_ocore_finalize            ();
 
   extern    int grvy_ocore_master              ();
@@ -792,7 +792,7 @@ public:
   GRVY_MPI_Ocore_Class(); 
  ~GRVY_MPI_Ocore_Class();
 
-  int    Initialize   (std::string inputfile, int blocksize);
+  int    Initialize   (std::string inputfile);
   void   Finalize     ();
   size_t NumActive    ();	// number of currently active records
   bool   isMaster     ();	// is the calling task the ocore master?

@@ -117,14 +117,13 @@ public:
  ~GRVY_MPI_Ocore_ClassImp () {}
   
 #ifdef HAVE_MPI
-  int    Initialize       (string input_file, int blocksize);
+  int    Initialize       (string input_file  );
   int    AssignOwnership  (size_t sparse_index);
   int    DumptoDisk       ();
   size_t GetFreeRecord    (size_t sparse_index);
   int    PullData         (size_t sparse_index);
   int    StoreData        (size_t sparse_index, bool new_data);
-  //  int    Read_from_Pool   (int mpi_task, size_t sparse_index,double *data);
-  //  int    Write_to_Pool    (int mpi_task, bool new_data, size_t sparse_index,double *data);
+
   template <typename T> int Read_from_Pool (int mpi_task, size_t sparse_index,T *data);
   template <typename T> int  Write_to_Pool (int mpi_task, bool new_data, size_t sparse_index,T *data);
   
@@ -256,9 +255,9 @@ GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
   // using auto_ptr for proper cleanup
 }
 
-int GRVY_MPI_Ocore_Class::Initialize(string input_file,int blocksize)
+int GRVY_MPI_Ocore_Class::Initialize(string input_file)
 {
-  return(m_pimpl->Initialize(input_file,blocksize));
+  return(m_pimpl->Initialize(input_file));
 }
 
 // ---------------------------------------------------------------------------------------
@@ -774,7 +773,7 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
   // Initialize(): Initialize data structures for MPI Ocore
   // ---------------------------------------------------------------------------------------
 
-  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file,int blocksize)
+  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file)
   {
 
     if(!use_mpi_ocore) return 1;
@@ -799,20 +798,25 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
       {
 	grvy_printf(info,"%s: --> Parsing runtime options from file %s\n",prefix,input_file.c_str());
 	
-	// hush parsing messages as we will provide sane defaults if no input given
-	
 	default_priority = grvy_log_getlevel();
-	//	grvy_log_setlevel(GRVY_ERROR);    // this burned csim, disabling to let user see defaults being used.
+	grvy_log_setlevel(GRVY_NOLOG);    
 	
 	if(! iparse.Open(input_file.c_str()) )
-	  grvy_printf(info,"%s: --> Unable to open input file, using default options\n",prefix);
+	  {
+	    grvy_log_setlevel(default_priority);
+	    grvy_printf(info,"%s: --> Unable to open provided input file (%s)\n",prefix,input_file.c_str());
+	    grvy_printf(info,"%s: --> Disabling MPI ocore\n",prefix);
+	    tmp_use_ocore = 0;
+	  }
 	else
 	  {
-	    iparse.Register_Var ("grvy/mpi_ocore/enable_ocore",1);
+	    iparse.Register_Var ("grvy/mpi_ocore/enable_ocore",0);
 	    iparse.Read_Var     ("grvy/mpi_ocore/enable_ocore",&tmp_use_ocore);
 	  }
-      }
 
+	grvy_log_setlevel(default_priority);
+	fflush(NULL);
+      }
 
     MPI_Bcast(&tmp_use_ocore,1,MPI_LOGICAL, 0,MYCOMM);
 
@@ -822,7 +826,7 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
       {
 	if(master)
 	  grvy_log_setlevel(default_priority);
-	
+
 	return 1;
       }
     
