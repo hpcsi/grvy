@@ -42,8 +42,7 @@ program main
 
   ! Initialize MPI-based Ocore ramdisk (myfile is a GRVY-style
   ! input file with optional Ocore controls). blocksize is the number
-  ! of elements in each record and is constant. At present, the default
-  ! element wordsize is 8-bytes
+  ! of elements in each record and is constant. 
 
   call grvy_ocore_init("mpi_ocore.input",blocksize,ierr)
 
