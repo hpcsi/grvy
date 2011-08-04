@@ -1,0 +1,10 @@
+# -*-getpot-*-
+
+# input file for mpi_ocore 
+
+[grvy/mpi_ocore]
+
+enable_ocore      = 1		# use MPI out-of-core  (1=yes,0=no)
+max_pool_size_in_mbs  = 10      # max mpi storage pool size on each child processor       [MBs]
+map_size_in_mbs   = 10	        # max map size for sparse record access on master task [MBs]
+
