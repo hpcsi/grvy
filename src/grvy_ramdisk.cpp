@@ -1342,7 +1342,7 @@ GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
 
 } // end namespace grvy
 
-int    GRVY_MPI_Ocore_Class::Initialize(string input_file,int blocksize) { return 0; }
+int    GRVY_MPI_Ocore_Class::Initialize(string input_file) { return 0; }
 
 size_t GRVY_MPI_Ocore_Class::NumActive () { return 0;     }
 void   GRVY_MPI_Ocore_Class::Finalize  () { return;       }
