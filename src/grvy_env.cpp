@@ -48,7 +48,7 @@ GRVY_Hostenv_Class::GRVY_Hostenv_Class()
 
   // Cull domainname from nodename. 
 
-  boost::regex re("(\\w+)\\.(\\S+)");
+  boost::regex re("^([\\w\\-]+)\\.(\\S+)$");
   boost::cmatch regex_match;
 
   if(boost::regex_match(uts.nodename,regex_match,re))
