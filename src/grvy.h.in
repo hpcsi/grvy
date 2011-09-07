@@ -420,8 +420,19 @@ extern "C" {
   // ----------------------------------------------------------------
   // ----------------------------------------------------------------
 
-  /* \name MPI Ocore Functions */
+  /** \defgroup Cocore MPI Out-of-Core Utilities 
+   *  \ingroup Capi
+   *
+   * \brief Routines to offload out-of-core read/write operations to a
+   * pool of distributed shared-memory nodes using MPI for data
+   * transfer.  An additional level of indirection can be enabled to
+   * offload less-frequently accessed data to one or more disk-based files.
+   */
 
+  /** \ingroup Cocore 
+   * @{ 
+   */
+      
   extern    int grvy_ocore_init                (const char *input_file);
   extern   void grvy_ocore_finalize            ();
 
@@ -429,7 +440,16 @@ extern "C" {
   extern    int grvy_ocore_enabled             ();
   extern size_t grvy_ocore_num_active          ();
 
-  /* Read/Write Routines */
+  /** @}
+   *
+   * \ingroup Cocore 
+   * \name Read/Write Routines 
+   *
+   */
+
+  /** \ingroup Cocore
+   * @{
+   */
 
   extern    int grvy_ocore_write_double        (size_t record_id,    double     *data);
   extern    int grvy_ocore_write_float         (size_t record_id,     float     *data);
@@ -441,24 +461,42 @@ extern "C" {
   extern    int grvy_ocore_read_int            (size_t record_id,       int     *data);
   extern    int grvy_ocore_read_long_long_int  (size_t record_id, long long int *data);
 
-  /* Record retreival */
+  /** @}
+   * \ingroup Cocore
+   * \name Record retreival 
+   */
+
+  /** \ingroup Cocore
+   * @{ */
 
   extern size_t grvy_ocore_pop_record_float         (        float *data);
   extern size_t grvy_ocore_pop_record_double        (       double *data);
   extern size_t grvy_ocore_pop_record_int           (          int *data);
   extern size_t grvy_ocore_pop_record_long_long_int (long long int *data);
+
+  /** @} */
 					      
   /*
    * Basic API Definition for Math Utilities
    */
 
-  /* \name Math Utilities */
+  /** 
+   * \defgroup Cmath Floating-Point Utilities 
+   * \ingroup  Capi
+   * 
+   * \brief Routines for detecting floating-point errors.
+   */
+
+  /** \ingroup Cmath
+   * @{ */
 
   extern int grvy_double_isnan            (double *val);
   extern int grvy_double_isinf            (double *val);
 
   extern int grvy_float_isnan             (float  *val);
   extern int grvy_float_isinf             (float  *val);
+
+  /* @} */
 
   /*
    * Logging Utilities
@@ -481,7 +519,25 @@ extern "C" {
 
   /** \endcond */
 
-  /* \name Logging Utilities */
+  /**
+   * \defgroup Clog Logging Utilities
+   * \ingroup Capi
+   *
+   * \brief The following routines provide a priority-based logging
+   * mechanism to control application messages. A set of default
+   * priority definitions are provided to define messages of the
+   * following form:
+   *
+   * - GRVY_FATAL
+   * - GRVY_ERROR
+   * - GRVY_WARN 
+   * - GRVY_INFO 
+   * - GRVY_DEBUG
+   *
+   */
+
+  /** \ingroup Clog
+   * @{ */
 
   extern void grvy_log_setlevel           (int priority);
   extern int  grvy_log_getlevel           ();
@@ -493,15 +549,23 @@ extern "C" {
   extern void grvy_log_double             (int loglevel, const char *func, const char *mesg, double var);
   extern void grvy_log_char               (int loglevel, const char *func, const char *mesg, const char *char_item);
 
-  /*
-   * \name Miscellaneous File Path Utilities
+  /** @} */
+
+  /** 
+   * \defgroup Cmisc Miscellaneous File Path Utilities
+   * \ingroup Capi
+   * 
+   * \brief I/O utilities for file path interaction.
    */
+
+  /** \ingroup Cmisc
+   * @{ */
 
   extern int  grvy_check_file_path        (const char *pathname);
   extern int  grvy_create_unique_dir      (      char *name_template);
   extern int  grvy_create_scratch_dir     (      char *name_template);
 
-  /* @} */
+  /** @} */
 
   /*
    * Doxygen API Definitions
