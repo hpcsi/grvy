@@ -69,7 +69,10 @@ GRVY_Hostenv_Class::GRVY_Hostenv_Class()
 	      domainname = regex_match[2];
 	    }
 	  else
-	    grvy_printf(GRVY_WARN,"unable to determine domainname\n");
+	    {
+	      fprintf(stderr,"unable to determine domainname\n");
+	    }
+
 	} 
       else
 	grvy_printf(GRVY_WARN,"unable to run gethostbyname()\n");

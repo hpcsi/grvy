@@ -16,7 +16,8 @@ if test ! -x $EXE ; then
     exit 1
 fi
 
-$EXE >& $TEST_FILE || exit 1
+$EXE > $TEST_FILE 2> /dev/null || exit 1
+#$EXE > $TEST_FILE || exit 1
 
 # Verify we have expected output files
 
@@ -36,9 +37,9 @@ fi
 
 # Clean up
 
-if test -e $TEST_FILE ; then
-   rm -f $TEST_FILE
-fi
+#if test -e $TEST_FILE ; then
+#   rm -f $TEST_FILE
+#fi
 
 exit 0
 
