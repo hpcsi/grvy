@@ -41,9 +41,7 @@
  * in the examples section.  Unless specified otherwise, functions
  * which have an integer return value return "0" upon success (and the
  * primary excepton to this rule is with a subset of the Input Parsing
- * routines).  To illustrate the organizational flexibility of the
- * input file parsing, a \ref inputFile "sample input file" is also
- * provided.  <hr>
+ * routines).    <hr>
  *
  */
 
@@ -76,32 +74,6 @@ extern "C" {
 
 /** \endcond */
 
-  /* \page apiC C/C++ Library Interface
-   *
-   * This section outlines the available GRVY functions for C/C++.  To
-   * use, make sure to \#include <grvy.h> within your source code
-   * files. Several simple examples using these functions are provided
-   * in the examples section.  Unless specified otherwise, functions
-   * which have an integer return value return "0" upon success (and
-   * the primary excepton to this rule is with a subset of the Input
-   * Parsing routines).
-   * 
-   * To illustrate the organizational flexibility
-   * of the input file parsing, a \ref inputFile "sample input file"
-   * is also provided.  <hr>
-   * 
-   * \section version Versioning Routines
-   *
-   */
-
-  /**
-   * \page apiC
-   * \code
-   * void grvy_version_stdout           ();
-   *  int grvy_get_numeric_version      ();
-   * \endcode
-   */
-
   /** @defgroup Capi C API
    *
    * \brief This page provides a link to all of the C style functions which
@@ -109,7 +81,7 @@ extern "C" {
    * these routines from C/C++, make sure to \#include <grvy.h> within
    * your source code files. Unless specified otherwise, functions
    * which have an integer return value return "0" upon success (and
-   * the primary excepton to this rule is with a subset of the Input
+   * the primary exception to this rule is with a subset of the Input
    * Parsing routines).
    *
    * Click on one of the boxes to see more details on the routines
@@ -120,77 +92,90 @@ extern "C" {
    * <hr>
    */
 
-  /** @defgroup Cversioning Runtime Versioning Information
-   *  @ingroup Capi
+  //-----------------------------------------------------------------
+  // Versioning Utilities
+  //-----------------------------------------------------------------
+
+  /**
+   * @defgroup Cversioning Runtime Versioning Information
+   * @ingroup Capi
    * 
-   *  \brief Obtain libGRVY runtime versioning information.
-   *
+   * \brief Obtain libGRVY runtime versioning information.
    */
 
-  /** \ingroup Cversioning
-   *  \name Versioning Routines:
+  /**
+   * \ingroup Cversioning
+   * \name Versioning Routines:
    *
-   *  Obtain libGRVY runtime versioning information.
-   *
+   * Obtain libGRVY runtime versioning information.
    */
 
-  /** \ingroup Cversioning
-   *  \brief Echo library versioning information to stdout
+  /** 
+   * \ingroup Cversioning 
+   * @{
    */
+
+  /** \brief Echo library versioning information to stdout */
 
   extern void grvy_version_stdout           ();
 
-  /** \ingroup Cversioning
-   *  \brief Obtain numeric library version 
-   *  \return running version
+  /**
+   * \brief Obtain numeric library version 
+   * \return running version
    */
 
   extern int grvy_get_numeric_version       ();
 
-  /* @} */  
+  /** @} */  
 
-  /*
-   * \page apiC
-   * \section input Input Parsing
-   * 
-   * These routines are used to parse input values keyword/value pairs 
-   */
+  //-----------------------------------------------------------------
+  // Input Parsing Utilities
+  //-----------------------------------------------------------------
 
-  /** \defgroup Cinput Input Parsing
-   *
+  /** 
+   * \defgroup Cinput Input Parsing
    * @ingroup Capi
    *
-   * \brief Routines for accessing input parameters from a libGRVY style
-   * input file. Note that an input file must be open prior to reading
-   * any keyword/value pairs or performing input file dump operations.
+   * \brief Routines for accessing input parameters from a libGRVY
+   * style input file. See the \ref inputFile "example input file" for
+   * more information on the file format.
    *
    */
 
-  /** \ingroup Cinput
+  /** 
+   * \ingroup Cinput
    * \name Input Parsing - File open/close:
    *
    * Routines for accessing input parameters from a libGRVY style
    * input file. Note that an input file must be open prior to reading
-   * any keyword/value pairs or performing input file dump operations.
+   * any keyword/value pairs or performing input file dump
+   * operations. See the \ref inputFile "example input file" for more
+   * information on the file format.
    *
    */
 
-  /** \ingroup Cinput
+  /**
+   * \ingroup Cinput
+   * @{ 
+   */
+
+  /**
    * \brief Open a libGRVY style input file
    * \param filename desired input filename
    */
 
   extern int grvy_input_fopen               (const char *filename);
 
-  /** \ingroup Cinput
-   *  \brief Close the currently open libGRVY style input file */
+  /** \brief Close the currently open libGRVY style input file */
 
   extern int grvy_input_fclose              ();
+
+  /** @} */
 
   /** \ingroup Cinput
    *  \name Input Parsing - Dump input file contents:
    * 
-   * The following routines can be used to dump the entire contents of
+   * The following routines are used to dump the entire contents of
    * a parsed libGRVY style input file to stdout or to an ASCII file
    * (note that all comments within the original input file are
    * stripped). The prefix variable can be used to include an
@@ -214,8 +199,7 @@ extern "C" {
 
   extern int grvy_input_fdump_delim         (const char* prefix);
 
-  /** \brief Dump input file settings to an open file with a provided prefix delimiter 
-   */
+  /** \brief Dump input file settings to an open file with a provided prefix delimiter */
 
   extern int grvy_input_fdump_file          (const char* prefix, const char *filename);
 
@@ -268,8 +252,9 @@ extern "C" {
 
   /** @} */
 
-  /** \ingroup Cinput
-   *  \name Input Parsing (Read vector values):
+  /** 
+   * \ingroup Cinput
+   * \name Input Parsing - Read vector values:
    *
    * The following routines are used to read vector valued input values
    * for common intrinsic datatypes given a desired keyword character
@@ -288,7 +273,7 @@ extern "C" {
   /** @} */  
 
   /** \ingroup Cinput
-   *  \name Input Parsing (Read ith vector values):
+   *  \name Input Parsing - Read ith vector values:
    *
    * The following routines are used to read the ith entry (entry) of
    * vector valued input values for common intrinsic datatypes given a
@@ -305,8 +290,9 @@ extern "C" {
 
   /** @} */
 
-  /** \ingroup Cinput 
-   *  \name Default Value Registration Functions:
+  /** 
+   * \ingroup Cinput 
+   * \name Input Parsing  - Default value registration:
    *
    * The following routines provide a mechanism to register a default
    * value with the input parsing mechanism. If a particular keyword
@@ -322,14 +308,11 @@ extern "C" {
    * @{
    */
 
-  /* Input variable registration functions (to provide default input
-     values and backwards compatibility support) */
-
-  /* Register default integer value */
+  /* \brief Register default integer value */
 
   extern int grvy_input_register_int        (const char *var,     int value);
 
-  /* Register default float value */
+  /* \brief Register default float value */
 
   extern int grvy_input_register_float      (const char *var,   float value);
   extern int grvy_input_register_double     (const char *var,  double value);
@@ -342,6 +325,9 @@ extern "C" {
 
   /** @} */
 
+  //-----------------------------------------------------------------
+  // Performance Timer Utilities
+  //-----------------------------------------------------------------
 
   /** \defgroup Ctimer Performance Timer Utilities 
    *  \ingroup Capi
@@ -351,10 +337,15 @@ extern "C" {
    * analysis, and historical runtime logging.
    */
 
-  /* \ingroup Ctimer
-   * \name Performance Timer Functions 
-   * 
-   * \brief Routines for 
+  /**
+   * \ingroup Ctimer
+   * \name Performance Timer - Initialization and timer definitions:
+   *
+   * The following routines provide support for enabling wall-clock
+   * performance timings of specific code regions. Individual timers
+   * are delineated by a unique id. Individual timers can be nested
+   * and the library will report exclusive timing of the innermost
+   * timers.
    */
 
   /** \ingroup Ctimer
@@ -371,6 +362,23 @@ extern "C" {
   extern   void grvy_timer_finalize            ();
   extern   void grvy_timer_begin               (const char *id);
   extern   void grvy_timer_end                 (const char *id);
+
+  /** @} */
+
+  /**
+   * \ingroup Ctimer
+   * \name Performance Timer - Query Tools:
+   *
+   * The following routines allow for the querying of defined
+   * performance timers to obtain the elapsed time (in seconds) or
+   * various timer statistics (number of timer calls, mean, and
+   * variance). 
+   */
+
+  /**
+   * \ingroup Ctimer
+   * @{ */
+
   extern double grvy_timer_elapsedseconds      (const char *id);
   extern double grvy_timer_elapsed_global      ();
   extern    int grvy_timer_stats_count         (const char *id);
@@ -383,7 +391,8 @@ extern "C" {
 
   /**
    * \ingroup Ctimer
-   * \name Historical Performance Logging
+   * \name Performance Timing - Historical Logging:
+   *
    * There are two primary modes for saving historical performance
    * data:
    * 
@@ -430,8 +439,9 @@ extern "C" {
 
   /** @} */
 
-  // ----------------------------------------------------------------
-  // ----------------------------------------------------------------
+  //-----------------------------------------------------------------
+  // MPI Out-of-Core Utilities
+  //-----------------------------------------------------------------
 
   /** \defgroup Cocore MPI Out-of-Core Utilities 
    *  \ingroup Capi
@@ -440,6 +450,14 @@ extern "C" {
    * pool of distributed shared-memory nodes using MPI for data
    * transfer.  An additional level of indirection can be enabled to
    * offload less-frequently accessed data to one or more disk-based files.
+   */
+
+  /** 
+   * \ingroup Cocore
+   * \name MPI Out-of-Core - Initialization and runtime queries:
+   *
+   * Routines to initialize/finalize out-of-core suport (requires MPI
+   * enabled libGRVY build) and runtime utilities.
    */
 
   /** \ingroup Cocore 
@@ -456,7 +474,10 @@ extern "C" {
   /** @}
    *
    * \ingroup Cocore 
-   * \name Read/Write Routines 
+   * \name MPI Out-of-Core - Read/Write:
+   *
+   * Routines to read and write blocks of data to remote memory pools
+   * for standards intrinsic datatypes.
    *
    */
 
@@ -476,7 +497,11 @@ extern "C" {
 
   /** @}
    * \ingroup Cocore
-   * \name Record retreival 
+   * \name MPI Out-of-Core - Record retreival:
+   * 
+   * Routines to query the state of an existing remote out-of-core
+   * memory pool and read the next available record.  These routies
+   * are primarily used to save the state to disk.
    */
 
   /** \ingroup Cocore
@@ -489,9 +514,9 @@ extern "C" {
 
   /** @} */
 					      
-  /*
-   * Basic API Definition for Math Utilities
-   */
+  //-----------------------------------------------------------------
+  // Floating-Point Utilities
+  //-----------------------------------------------------------------
 
   /** 
    * \defgroup Cmath Floating-Point Utilities 
@@ -500,8 +525,16 @@ extern "C" {
    * \brief Routines for detecting floating-point errors.
    */
 
+  /**
+   * \ingroup Cmath
+   * \name Floating-Point Utilities
+   *
+   * Routines for detecting floating-point errors.
+   */
+
   /** \ingroup Cmath
-   * @{ */
+   * @{ 
+   */
 
   extern int grvy_double_isnan            (double *val);
   extern int grvy_double_isinf            (double *val);
@@ -509,18 +542,38 @@ extern "C" {
   extern int grvy_float_isnan             (float  *val);
   extern int grvy_float_isinf             (float  *val);
 
-  /* @} */
+  /** @} */
 
-  /*
-   * Logging Utilities
+  //-----------------------------------------------------------------
+  // Logging Utilities
+  //-----------------------------------------------------------------
+
+  /**
+   * \defgroup Clog Logging Utilities
+   * \ingroup Capi
+   *
+   * \brief The following routines provide a priority-based printf
+   * sytle logging mechanism to control application messages. A set of
+   * default priority definitions are provided to define messages at
+   * various priority levels. Available priority levels are as
+   * follows:
+   *
+   * - GRVY_NOLOG
+   * - GRVY_FATAL
+   * - GRVY_ERROR
+   * - GRVY_WARN 
+   * - GRVY_INFO 
+   * - GRVY_DEBUG
+   * - GRVY_ALL
+   *
    */
+
+  /** \cond */
 
   /* Available logging priorities; roughly mimics syslog priority levels but with
    * fewer options. Also provides a NOLOG option to disable all log messages. 
    */
 
-  /** \cond */
-  
   typedef enum {GRVY_NOLOG  =  -1,
 		GRVY_FATAL  =   0,
 		GRVY_ERROR  = 100,
@@ -533,20 +586,11 @@ extern "C" {
   /** \endcond */
 
   /**
-   * \defgroup Clog Logging Utilities
-   * \ingroup Capi
+   * \ingroup Clog
+   * \name Logging Utilities
    *
-   * \brief The following routines provide a priority-based logging
-   * mechanism to control application messages. A set of default
-   * priority definitions are provided to define messages of the
-   * following form:
-   *
-   * - GRVY_FATAL
-   * - GRVY_ERROR
-   * - GRVY_WARN 
-   * - GRVY_INFO 
-   * - GRVY_DEBUG
-   *
+   * The following routines provide a priority-based printf
+   * sytle logging mechanism to control application messages.
    */
 
   /** \ingroup Clog
@@ -571,11 +615,42 @@ extern "C" {
    * \brief I/O utilities for file path interaction.
    */
 
+  /**
+   * \ingroup Cmisc
+   * \name Miscellaneous File Path Utilities
+   *
+   * I/O Utilities for file pathname and temporary directory creation.
+   * These routines all return 0 on success.
+   */
+
   /** \ingroup Cmisc
    * @{ */
 
+  /**
+   * \brief Checks a desired output \e pathname and creates any
+   * non-existing parent directories.
+   * The Unix pathname to check can be a relative or absolute path.
+   *
+   */
+
   extern int  grvy_check_file_path        (const char *pathname);
+
+  /** 
+   * \brief Creates a new, unique directory with 0700 permissions using the
+   * provided template name.  The last six characters of \e name_template
+   * must be XXXXXX, and name_template is modified with the unique
+   * name upon return.
+   * 
+   */
+
   extern int  grvy_create_unique_dir      (      char *name_template);
+
+  /** 
+   * \brief  Identical to grvy_create_unique_dir(), except that the new directory and
+   * all of its contents are deleted when the process exits.
+   * 
+   */
+
   extern int  grvy_create_scratch_dir     (      char *name_template);
 
   /** @} */
@@ -741,31 +816,6 @@ extern "C" {
    * int grvy_float_isinf               (float  *val);
    * \endcode
    *
-   * \section misc Miscellaneous Routines
-   * <b>grvy_check_file_path:</b>
-   * This routine checks a desired output \e pathname and creates any non-existing parent directories.
-   * \code
-   * int    grvy_check_file_path        (const char *pathname);
-   * \endcode
-   * <b>grvy_create_unique_dir:</b>
-   *
-   * This routine creates a new, unique directory with 0700 permissions using the
-   * provided template name.  The last six characters of name_template
-   * must be XXXXXX, and name_template is modified with the unique
-   * name upon return.
-   *
-   * \code
-   * int    grvy_create_unique_dir      (char *name_template);
-   * \endcode
-   *
-   * <b>grvy_create_scratch_dir:</b>
-   *
-   * Identical to grvy_create_unique_dir(), except that the new directory and
-   * all of its contents are deleted when the process exits.
-   *
-   * \code
-   * int    grvy_create_scratch_dir     (char *name_template);
-   * \endcode
    */
 
 
