@@ -105,7 +105,7 @@ extern "C" {
   /** @defgroup Capi C API
    *
    * \brief This page provides a link to all of the C style functions which
-   * are available in libGRVY (organized by functionality). To access
+   * are available in libGRVY (grouped by functionality). To access
    * these routines from C/C++, make sure to \#include <grvy.h> within
    * your source code files. Unless specified otherwise, functions
    * which have an integer return value return "0" upon success (and
@@ -114,7 +114,7 @@ extern "C" {
    *
    * Click on one of the boxes to see more details on the routines
    * available for each utility. Alternatively, if you prefer to see
-   * all of the routines as part of the C API on a single page, refer to the
+   * all of the available routines as part of the C API on a single page, refer to the
    * header file, grvy.h directly.
    * 
    * <hr>
@@ -125,11 +125,6 @@ extern "C" {
    * 
    *  \brief Obtain libGRVY runtime versioning information.
    *
-   */
-
-  /* \ingroup Cversioning
-   * \name Versioning Routines:
-   * 
    */
 
   /** \ingroup Cversioning
@@ -386,26 +381,32 @@ extern "C" {
 
   /** @} */
 
-  // ------------------------------------------------------------------------
-  // Historical timing support - note there are two primary mechanisms for
-  // saving performance data: 
-  // 
-  // Mode 1: you are using the grvy_timer_* class of routines to
-  //         define individual sections to monitor and want to save
-  //         the global runtime measurement and all individually
-  //         defined subtimers.
-  // 
-  // Mode 2: you are using other means to profile the application code
-  //         and want to save a single global timing value. Routines
-  //         for this mode are distinguished by the presence of an
-  //         extra "timing" argument in the calling sequence.
-  // 
-  // In both modes, standard and expanded (exp) calling sequences are supported
-  // with the expanded version allowing additional optional runtime
-  // documentation (e.g. flops, code revision) to be provided.
-  // ------------------------------------------------------------------------
-
+  /**
+   * \ingroup Ctimer
+   * \name Historical Performance Logging
+   * There are two primary modes for saving historical performance
+   * data:
+   * 
+   * <b>Mode 1</b>: you are using the grvy_timer_* class of routines to
+   *         define individual sections to monitor and want to save
+   *         the global runtime measurement and all individually
+   *         defined subtimers.
+   * 
+   * <b>Mode 2</b>: you are using other means to profile the application code
+   *         and want to save a single global timing value. Routines
+   *         for this mode are distinguished by the presence of an
+   *         extra "timing" argument in the calling sequence.
+   * 
+   * In both modes, standard and expanded (exp) calling sequences are supported
+   * with the expanded version allowing additional optional runtime
+   * documentation (e.g. flops, code revision) to be provided.
+   */
+  
   // Mode 1: Saving internal GRVY timer values to historical repository
+
+  /** \ingroup Ctimer
+   * @{
+   */
 
   extern    int grvy_timer_save_hist         (const char*experiment, const char *comment, 
 					      int num_procs, const char *filename);
@@ -426,6 +427,8 @@ extern "C" {
   // Summarize and dump historical timing information to ascii files
 
   void grvy_summarize_hist_timing            (const char *filename, const char *delimiter, const char *outdir);
+
+  /** @} */
 
   // ----------------------------------------------------------------
   // ----------------------------------------------------------------
