@@ -112,6 +112,12 @@ extern "C" {
    * the primary excepton to this rule is with a subset of the Input
    * Parsing routines).
    *
+   * Click on one of the boxes to see more details on the routines
+   * available for each utility. Alternatively, if you prefer to see
+   * all of the routines as part of the C API on a single page, refer to the
+   * header file, grvy.h directly.
+   * 
+   * <hr>
    */
 
   /** @defgroup Cversioning Runtime Versioning Information
@@ -341,6 +347,7 @@ extern "C" {
 
   /** @} */
 
+
   /** \defgroup Ctimer Performance Timer Utilities 
    *  \ingroup Capi
    *
@@ -349,8 +356,11 @@ extern "C" {
    * analysis, and historical runtime logging.
    */
 
-  /** \ingroup Ctimer
-   * \name Performance Timer Functions */
+  /* \ingroup Ctimer
+   * \name Performance Timer Functions 
+   * 
+   * \brief Routines for 
+   */
 
   /** \ingroup Ctimer
    * @{
