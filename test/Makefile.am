@@ -8,6 +8,7 @@ AM_LDFLAGS        = ../src/libgrvy.la
 BUILT_SOURCES     = .license.stamp
 EXTRA_DIST        = init.sh finalize.sh version hostinfo gadd gdump C_*.sh F_*.sh CXX_*.sh
 EXTRA_DIST       += input-example.txt ref_files
+EXTRA_DIST       += .license.stamp
 CLEANFILES        = .license.stamp *.gcno *.gcda
 TESTS             = # Append below
 TESTS_ENVIRONMENT = GRVY_INPUT_EXAMPLE_DIR=$(srcdir)

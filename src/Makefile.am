@@ -100,7 +100,7 @@ install-data-local: libgrvyf.la
 dist-hook:
 	rm -rf `find $(distdir)/ -name .svn`
 
-EXTRA_DIST              = common/lic_utils common/lcov
+EXTRA_DIST              = common/lic_utils common/lcov .license.stamp
 CLEANFILES              = grvy.mod .license.stamp *.gcno *.gcda
 
 METASOURCES = AUTO
