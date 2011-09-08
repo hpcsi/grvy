@@ -58,6 +58,7 @@ GRVY_Hostenv_Class::GRVY_Hostenv_Class()
       // use gethostbyname as a last resort to gleen domainname
 
       struct hostent *hp = gethostbyname(hostname.c_str());
+
       if(hp != NULL)
 	{
 	  std::string myname(hp->h_name); 
@@ -75,7 +76,11 @@ GRVY_Hostenv_Class::GRVY_Hostenv_Class()
 
 	} 
       else
-	grvy_printf(GRVY_WARN,"unable to run gethostbyname()\n");
+	{
+	  //grvy_printf(GRVY_WARN,"unable to run gethostbyname()\n");
+	  fprintf(stderr,"unable to run gethostbyname()\n");
+	  //herror("foofoo");
+	}
     }
 
   cputype = "Unknown";
