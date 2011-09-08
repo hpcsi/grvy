@@ -32,7 +32,8 @@ further divided into the following subsections:
 <ul>
 <!-- <li> \subpage model "Library Overview" -->
 <li> \subpage installation
-<li> \subpage apiC "C/C++ Interface"
+<li> \subpage apiC "C/C++ Interface (old doxygen)"
+<li> \ref Capi "C API (new doxygen)"
 <li> \subpage apiF "Fortran Interface"
 <li> <a href="http://buildbot.ices.utexas.edu/docs/buildbot/hpct/build/docs/html/lcov/build/src/index.html">Buildbot Coverage</a>
 </ul>
