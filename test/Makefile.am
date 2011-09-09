@@ -9,7 +9,7 @@ BUILT_SOURCES     = .license.stamp
 EXTRA_DIST        = init.sh finalize.sh version hostinfo gadd gdump C_*.sh F_*.sh CXX_*.sh
 EXTRA_DIST       += input-example.txt ref_files
 EXTRA_DIST       += .license.stamp
-CLEANFILES        = .license.stamp *.gcno *.gcda
+CLEANFILES        = .license.stamp *.gcno *.gcda .hostinfo
 TESTS             = # Append below
 TESTS_ENVIRONMENT = GRVY_INPUT_EXAMPLE_DIR=$(srcdir)
 check_PROGRAMS    = # Append below
