@@ -436,7 +436,6 @@ namespace GRVY {
 	grvy_printf(GRVY_DEBUG,"Registering user-supplied default value for %s\n",var);
 	Register_Var(var,Var_Def);
       }
-    
   
     *value = (*ifile)(var,Var_Def.c_str());
 
@@ -454,6 +453,23 @@ namespace GRVY {
       }
     return 1;
   }
+
+  int GRVY_Input_Class:: Read_Var_iVec(const char *var, std::string *value, int elem)
+  {
+    int i;
+
+    if(! VerifyInit()) return 0;
+
+    *value = (*ifile)(var,String_Def.c_str(),elem);
+
+    if(*value == String_Def)
+      {
+	_GRVY_message(GRVY_ERROR,"fread_ivec_string","Unable to query variable -> ",var);
+	return 0;
+      }
+ 
+    return 1;
+  } 
 
   int GRVY_Input_Class:: Read_Var(const char *var, bool *value, bool Var_Def)
   {

@@ -896,7 +896,7 @@ class GRVY_Input_Class {
 
   int Read_Var                            (const char *var, std::string *value);
   int Read_Var                            (const char *var, std::string *value, std::string vardef);
-  //  int Read_Var_iVec                       (const char *var, char **value, int elem);
+  int Read_Var_iVec                       (const char *var, std::string *value, int elem);
 
   // Bool Read Functions
 

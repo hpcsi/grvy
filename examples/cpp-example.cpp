@@ -43,9 +43,10 @@ int main(int argc, char **argv)
   double reyn, mach, temp;
   float aoa,A[3];
   int   iter_max,turbulent, ikoomie;
-  char *key1, *key2;
+  //  char *key1, *key2;
   bool restart;
   std::string GridFile, RestartFile;
+  std::string Key1, Key2;
 
   //----------------------------
   // Example input file parsing
@@ -78,8 +79,6 @@ int main(int argc, char **argv)
   if( iparse.Read_Var("iter_max",&iter_max,100) )
     printf("--> %-11s = %i\n","iter_max",iter_max);
 
-
-
   if( iparse.Read_Var("gridfile",&GridFile) )
     cout << "--> gridfile    = " << GridFile << endl;
 
@@ -93,16 +92,16 @@ int main(int argc, char **argv)
 	cout << "--> restartfile = " << RestartFile << endl;
     }
 
-  // Read from the soler subsection of input file
+  // Read from the solver subsection of input file
 
   if( iparse.Read_Var("solver/turbulence",&turbulent))
     printf("--> %-10s = %i\n","turbulent",turbulent);
 
-  if( iparse.Read_Var_iVec("solver/keywords",&key1,0)) 
-    printf("--> %-10s = %s \n","solver/keyword 1",key1);
+  if( iparse.Read_Var_iVec("solver/keywords",&Key1,0))
+    cout << "--> solver/keyword (#1) = " << Key1 << endl;
 
-  if( iparse.Read_Var_iVec("solver/keywords",&key2,1))
-    printf("--> %-10s = %s \n","solver/keyword 2",key2);
+  if( iparse.Read_Var_iVec("solver/keywords",&Key2,1))
+    cout << "--> solver/keyword (#2) = " << Key2 << endl;
 
   if( iparse.Read_Var_Vec("turbulence/A",A,3))
     printf("--> %-10s = %f %f %f\n","turbulence/A",A[0],A[1],A[2]);
