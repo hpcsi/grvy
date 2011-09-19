@@ -1,5 +1,6 @@
 Version 0.31 (In Progress)
-  
+
+  * additional std::string handling input support
   * addition of MPI based out-of-core ramdisk utility
   * added optional --enable-mpi configure to enable MPI-based utilities
   * re-enabled support for VPATH builds   

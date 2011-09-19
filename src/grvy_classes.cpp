@@ -471,6 +471,11 @@ namespace GRVY {
     return 1;
   } 
 
+  int GRVY_Input_Class:: Read_Var(std::string var, bool *value, bool Var_Def)
+  {
+    return (Read_Var( var.c_str(),value,Var_Def));
+  }
+
   int GRVY_Input_Class:: Read_Var(const char *var, bool *value, bool Var_Def)
   {
 

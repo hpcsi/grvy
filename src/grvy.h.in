@@ -901,6 +901,7 @@ class GRVY_Input_Class {
   // Bool Read Functions
 
   int Read_Var                            (const char *var, bool *value, bool vardef);
+  int Read_Var                            (std::string var, bool *value, bool vardef);
 
   // Default Variable Registration Functions
 
