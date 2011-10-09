@@ -143,7 +143,12 @@ if HDF5_ENABLED
 TESTS                                           += CXX_hdf_hist_timing
 check_PROGRAMS                                  += CXX_hdf_hist_timing
 CXX_hdf_hist_timing_SOURCES                      = C++_hdf_hist_timing.cpp 
+endif
 
+if MPI_ENABLED
+#TESTS                                           +=  CXX_ocore
+#check_PROGRAMS                                  +=  CXX_ocore
+#CXX_ocore_SOURCES                      =  C++_ocore.cpp
 endif
 
 #-----------------

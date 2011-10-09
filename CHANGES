@@ -1,4 +1,4 @@
-Version 0.31 (In Progress)
+Version 0.31 (09 October 2011)
 
   * additional std::string handling input support
   * addition of MPI based out-of-core ramdisk utility
