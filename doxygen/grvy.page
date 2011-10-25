@@ -7,6 +7,8 @@ Built by: \builduser on \buildhost
 
 \section overview Overview
 
+\image html grvy-small.pdf
+
 The Groovy Toolkit (GRVY) is a library used to house various support
 functions often required for application development of
 high-performance, scientific applications.  The library is written in
