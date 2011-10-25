@@ -7,9 +7,9 @@ Built by: \builduser on \buildhost
 
 \section overview Overview
 
-\image html grvy-small.pdf
+\image html grvy-small.png
 
-The Groovy Toolkit (GRVY) is a library used to house various support
+The GRVY Toolkit is a library used to house various support
 functions often required for application development of
 high-performance, scientific applications.  The library is written in
 C++, but provides an API for development in C and Fortran.  The
