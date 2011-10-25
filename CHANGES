@@ -1,5 +1,9 @@
 Version 0.32 (In progress)
 
+  * addition of grvy_copy_dir() function which recursively copies
+    contents of existing directory to a new directory
+
+
 Version 0.31 (09 October 2011)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.31.0
 

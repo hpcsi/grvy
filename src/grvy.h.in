@@ -619,7 +619,7 @@ extern "C" {
    * \ingroup Cmisc
    * \name Miscellaneous File Path Utilities
    *
-   * I/O Utilities for file pathname and temporary directory creation.
+   * I/O Utilities for directory creation and various copy utilities.
    * These routines all return 0 on success.
    */
 
@@ -659,6 +659,18 @@ extern "C" {
    */
 
   extern int  grvy_create_scratch_dir     (      char *name_template);
+
+  /** 
+   * \brief Recursively copies contents of existing directory
+   * (\a from_dir) to a new directory (\a to_dir).  If \a to_dir does not
+   * exist, it will be created; otherwise it must be empty.
+   * 
+   * \param[in] from_dir
+   * \param[in] to_dir
+   * \return \c 0 if succeeds.
+   */
+
+  extern int  grvy_copy_dir              (const char *from_dir, const char *to_dir);
 
   /** @} */
 

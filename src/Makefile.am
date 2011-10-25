@@ -8,7 +8,7 @@ getpot_sources            = common/getpot/getpot.h
 INCLUDES                  = -I$(top_srcdir)/src/common/getpot
 AM_FCFLAGS                = $(INCLUDES)
 AM_CFLAGS                 = $(INCLUDES)
-AM_CPPFLAGS               = $(INCLUDES) $(BOOST_CPPFLAGS)
+AM_CPPFLAGS               = $(INCLUDES) $(BOOST_CPPFLAGS) 
 #LIBS                      = $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) $(BOOST_ASIO_LDFLAGS) $(BOOST_ASIO_LIBS) $(BOOST_SYSTEM_LIBS)
 BUILT_SOURCES             = .license.stamp
 
@@ -24,7 +24,7 @@ library_include_HEADERS   = grvy.h grvy_classes.h
 
 lib_LTLIBRARIES          += libgrvy.la
 libgrvy_la_LDFLAGS        = $(all_libraries) -release $(GENERIC_RELEASE) $(BOOST_REGEX_LDFLAGS) \
-				$(BOOST_REGEX_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) #-R/Users/karl/bin/boost-1.42/lib
+				$(BOOST_REGEX_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) $(BOOST_FILESYSTEM_LIBS) #-R/Users/karl/bin/boost-1.42/lib
 libgrvy_la_SOURCES        = $(getpot_sources) $(cc_sources) $(h_sources)
 
 if HDF5_ENABLED	         

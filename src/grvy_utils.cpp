@@ -46,7 +46,9 @@
 #include<grvy_int.h>
 #include<grvy.h>
 
+#define BOOST_FILESYSTEM_VERSION 3
 #include"boost/format.hpp"
+#include"boost/filesystem.hpp"
 #include"fortran_string_order.h"
 
 using namespace std;
@@ -174,6 +176,71 @@ namespace GRVY {
       return -1;
     else
       return 0;
+  }
+
+  // ----------------------------------
+  // Recursivy directory copy utility
+  // ----------------------------------
+
+  extern "C" int grvy_copy_dir(const char *from_dir, const char *to_dir)
+  {
+    // verify existence of from_dir
+
+    boost::filesystem::path source_dir(from_dir);
+
+    if(!boost::filesystem::is_directory(source_dir))
+      {
+	grvy_printf(GRVY_ERROR,"%s: %s is not a valid directory\n",__func__,from_dir);
+	return(1);
+      }
+
+    // create destination if necessary and verify empty contents
+
+    boost::system::error_code ec;
+    boost::filesystem::path dest_dir(to_dir);
+
+    if(boost::filesystem::is_directory(dest_dir))
+      {
+	if(!is_empty(dest_dir))
+	  {
+	    grvy_printf(GRVY_ERROR,"%s: %s target directory exists but is not empty\n",__func__,to_dir);
+	    return(1);
+	  }
+      }
+    else
+      {
+	if(!boost::filesystem::create_directory(to_dir,ec))
+	  {
+	    grvy_printf(GRVY_ERROR,"%s: %s unable to create target directory\n",__func__,to_dir);
+	    return(1);
+	  }
+      }
+
+    // now we have a target dir, copy over contents recursively
+
+    for ( boost::filesystem::recursive_directory_iterator end, dir(from_dir);dir != end; ++dir )
+      {
+
+	std::string path_in(dir->path().string());
+	std::string target = to_dir;
+
+	target += path_in.substr(path_in.find_first_not_of(from_dir),string::npos);
+	
+	grvy_printf(GRVY_DEBUG,"%s: copying %s to %s\n",__func__,dir->path().string().c_str(),
+		    target.c_str());
+	
+	copy(dir->path(),target,ec);
+
+	if(ec)
+	  {
+	    grvy_printf(GRVY_ERROR,"%s: unable to complete copy (%s -> %s)\n",__func__,
+			dir->path().string().c_str(),target.c_str());
+	    grvy_printf(GRVY_ERROR,"%s: %s\n",__func__,ec.message().c_str());
+	    return(1);
+	  }
+      }
+    
+	return(0);
   }
 
   // Utility to provide a unique scratch directory for the user - note

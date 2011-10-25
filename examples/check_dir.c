@@ -44,12 +44,12 @@ int main(int argc, char **argv)
 
   FILE *fp;
 
-  printf("\nPossibly creating parent directories for the following files\n");
-  printf("--> %s\n",filepath1);
-  printf("--> %s\n",filepath2);
-  printf("--> %s\n",filepath3);
-  printf("--> %s\n",filepath4);
-  printf("--> %s\n",filepath5);
+  grvy_printf(GRVY_INFO,"\nPossibly creating parent directories for the following files\n");
+  grvy_printf(GRVY_INFO,"--> %s\n",filepath1);
+  grvy_printf(GRVY_INFO,"--> %s\n",filepath2);
+  grvy_printf(GRVY_INFO,"--> %s\n",filepath3);
+  grvy_printf(GRVY_INFO,"--> %s\n",filepath4);
+  grvy_printf(GRVY_INFO,"--> %s\n",filepath5);
 
   /* Create parent directories if necessary */
 
@@ -86,7 +86,18 @@ int main(int argc, char **argv)
   fprintf(fp,"tori frowns upon straight ticket voters\n");
   fclose(fp);
 
-  printf("\nSUCCESS\n");
+  /* Recursively copy contents of existing directory to a unique
+   * temporary directory
+   */
+
+  char newdir[] = "tempXXXXXXX";
+  grvy_create_unique_dir(newdir);
+
+  grvy_printf(GRVY_INFO,"\nRecursively copying contents of adir/ to %s/\n",newdir);
+
+  assert(grvy_copy_dir("adir",newdir) == 0);
+
+  grvy_printf(GRVY_INFO,"\nSUCCESS\n");
 
   return 0;
 }
