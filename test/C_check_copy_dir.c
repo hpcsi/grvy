@@ -36,10 +36,6 @@
 #include <unistd.h>
 #include <grvy.h>
 
-/* Useful for debugging */
-
-//#define CHECKFLAG fprintf(stderr, "\nflag=%d at line %d\n", flag, __LINE__);
-
 int main(int argc, char **argv)
 {
   int flag = 1;
@@ -56,23 +52,30 @@ int main(int argc, char **argv)
 
   /* Failure should occur if we attempt to copy a file */
   {
-    grvy_printf(GRVY_DEBUG,"Testing non-directory input path\n");
+    grvy_printf(GRVY_DEBUG,"<-- Testing non-directory input path\n");
     flag *= (1 == grvy_copy_dir("C_check_file_path",template));
-    grvy_printf(GRVY_DEBUG,"Done\n");
+    grvy_printf(GRVY_DEBUG,"Done -->\n");
   }
 
   /* Failure should occur if input/destination dirs are identical */
   {
-    grvy_printf(GRVY_DEBUG,"Tesing identical input/destination dirs\n");
+    grvy_printf(GRVY_DEBUG,"<-- Testing identical input/destination dirs\n");
     flag *= (1 == grvy_copy_dir(template,template));
-    grvy_printf(GRVY_DEBUG,"Done\n");
+    grvy_printf(GRVY_DEBUG,"Done -->\n");
   }
 
-  /* Success should occur for universally existent file paths */
+  /* Failure should occur if destination path is a file */
   {
-    flag *= (0 == grvy_check_file_path("////"));
-    flag *= (0 == grvy_check_file_path("."));
-    flag *= (0 == grvy_check_file_path(".."));
+    grvy_printf(GRVY_DEBUG,"<-- Testing destination path is a file\n");
+    flag *= (1 == grvy_copy_dir(template,"C_check_copy_dir.o"));
+    grvy_printf(GRVY_DEBUG,"Done -->\n");
+  }
+
+  /* Success should occur for existing directory copied to empty existing destination */
+  {
+    grvy_printf(GRVY_DEBUG,"<-- Testing copy from empty existing destination\n");
+    flag *= (0 == grvy_copy_dir("ref_files/adir",template));
+    grvy_printf(GRVY_DEBUG,"Done -->\n");
   }
 
   /* Cleanup */

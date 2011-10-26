@@ -184,9 +184,11 @@ namespace GRVY {
 
   extern "C" int grvy_copy_dir(const char *from_dir, const char *to_dir)
   {
-    // verify existence of from_dir
 
     boost::filesystem::path source_dir(from_dir);
+    boost::filesystem::path dest_dir  (to_dir);
+
+    // verify existence of from_dir
 
     if(!boost::filesystem::is_directory(source_dir))
       {
@@ -202,10 +204,17 @@ namespace GRVY {
 	return(1);
       }
 
+    // verify destination path is a directory if it exists
+
+    if(boost::filesystem::exists(to_dir) && !boost::filesystem::is_directory(to_dir))
+      {
+	grvy_printf(GRVY_ERROR,"%s: destination path is not a directory\n",__func__,to_dir);
+	return(1);
+      }
+
     // create destination if necessary and verify empty contents
 
     boost::system::error_code ec;
-    boost::filesystem::path dest_dir(to_dir);
 
     if(boost::filesystem::is_directory(dest_dir))
       {
@@ -230,9 +239,19 @@ namespace GRVY {
       {
 
 	std::string path_in(dir->path().string());
-	std::string target = to_dir;
+	//printf("path_in = %s\n",path_in.c_str());
+	//printf("from_dir = %s\n",from_dir);
+	//	std::string target = to_dir + "/";
+	std::string target(to_dir);
+	//printf("target = %s\n",target.c_str());
 
+	printf("before find: path_in = %s, from_dir = %s\n",path_in.c_str(),from_dir);
+	size_t index = path_in.find_first_not_of(from_dir);
+	std::cout << "index = " << index << std::endl;
+
+	//target += "/" + path_in.substr(path_in.find_first_not_of(from_dir),string::npos);
 	target += path_in.substr(path_in.find_first_not_of(from_dir),string::npos);
+	printf("target = %s\n",target.c_str());
 	
 	grvy_printf(GRVY_DEBUG,"%s: copying %s to %s\n",__func__,dir->path().string().c_str(),
 		    target.c_str());
@@ -246,6 +265,7 @@ namespace GRVY {
 	    grvy_printf(GRVY_ERROR,"%s: %s\n",__func__,ec.message().c_str());
 	    return(1);
 	  }
+	grvy_printf(GRVY_DEBUG,"%s: done with copy\n",__func__);
       }
     
 	return(0);
