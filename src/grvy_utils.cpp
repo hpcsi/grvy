@@ -194,6 +194,14 @@ namespace GRVY {
 	return(1);
       }
 
+    // verify sneaky user didn't give us identical from/to paths
+
+    if(strcmp(from_dir,to_dir) == 0)
+      {
+	grvy_printf(GRVY_ERROR,"%s: from/to dirs are identical (%s)\n",__func__,from_dir);
+	return(1);
+      }
+
     // create destination if necessary and verify empty contents
 
     boost::system::error_code ec;

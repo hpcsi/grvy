@@ -87,6 +87,10 @@ TESTS                                           += C_check_file_path
 check_PROGRAMS                                  += C_check_file_path
 C_check_file_path_SOURCES                        = C_check_file_path.c
 
+TESTS                                           += C_check_copy_dir
+check_PROGRAMS                                  += C_check_copy_dir
+C_check_copy_dir_SOURCES                         = C_check_copy_dir.c
+
 TESTS                                           += C_input_fdump
 check_PROGRAMS                                  += C_input_fdump
 C_input_fdump_SOURCES                            = C_input_dump.c C_examplefile.c examplefile.h

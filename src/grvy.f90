@@ -511,8 +511,21 @@ module grvy
        integer  (C_LONG_LONG),  intent(inout) :: data(*)   !< Block of data to return
      end function grvy_ocore_pop_record_int4
 
+     ! -------------------
+     ! File I/O Utilities
+     ! -------------------
+
+     integer (C_int) function grvy_copy_dir_passthrough(from_dir,to_dir) bind (C,name='grvy_copy_dir')
+       use iso_c_binding
+       implicit none
+
+       character (C_char),intent(in)        :: from_dir(*) 
+       character (C_char),intent(in)        :: to_dir(*)   
+     end function grvy_copy_dir_passthrough
+
+
      ! ---------------
-     ! Math
+     ! Math Utilities
      ! ---------------
 
      integer function grvy_double_isnan(value)
@@ -721,7 +734,7 @@ end subroutine grvy_get_command_arguments
 ! 
 ! It is an extra jump, but it's significantly less painful than dealing
 ! with all the various name mangling permutations and hidden argument
-! order betwixt C/Fortran. Kudos to the iso_c_binding folks
+! order betwixt C/Fortran. Kudos to the iso_c_binding folks.
 ! -------------------------------------------------------------------
 
  subroutine grvy_input_fopen(filename,return_flag)
@@ -917,6 +930,31 @@ end subroutine grvy_get_command_arguments
     
     return_flag = grvy_timer_set_summarize_width_passthrough(value)
   end subroutine grvy_timer_set_summarize_width
+
+  ! ----------------
+  ! I/O wrappers
+  ! ----------------
+
+  !>
+  ! \brief Recursively copies contents of existing directory
+  ! (\a from_dir) to a new directory (\a to_dir).  If \a to_dir does not
+  ! exist, it will be created; otherwise it must be empty.
+  ! 
+  ! \param[in] from_dir
+  ! \param[in] to_dir
+  !
+
+  subroutine grvy_copy_dir(from_dir,to_dir,return_flag)
+    use iso_c_binding
+    implicit none
+    character(len=*),intent(in)         :: from_dir 
+    character(len=*),intent(in)         :: to_dir 
+    integer  (C_int),intent(inout)      :: return_flag
+    
+    return_flag = grvy_copy_dir_passthrough(from_dir//C_NULL_CHAR,to_dir//C_NULL_CHAR)
+    return
+  end subroutine grvy_copy_dir
+
   
   ! ----------------
   ! Ocore wrappers
