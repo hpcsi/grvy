@@ -27,10 +27,13 @@
 !!--------------------------------------------------------------------------
 !!--------------------------------------------------------------------------
 
-!> \page apiF Fortran Library Interface
+!> \file
+
+!> @defgroup Fapi Fortran Library Interface
 !!
-!! This section outlines the available GRVY functions for Fortran.
-!! Note that library access is provided thru a Fortran90 module
+!! \brief This page provides a link to all of the Fortran functions which
+!! are available in libGRVY (grouped by functionality). 
+!! Library access is provided thru a Fortran90 module
 !! which requires the external calling application to include the
 !! following within the Fortran90 source code:
 !!
@@ -38,11 +41,14 @@
 !! use grvy
 !! \endcode
 !!
-!! Several simple examples using these functions are provided in the
-!! examples directory. Functions which have an integer return value
-!! return "0" upon success. To illustrate the organizational
-!! flexibility of the input file parsing, a \ref inputFile
-!! "sample input file" is also provided.
+!! Unless specified otherwise, functions which have an integer return
+!! value return "0" upon success (and the primary exception to this
+!! rule is with a subset of the Input Parsing routines).
+!!
+!! Click on one of the boxes to see more details on the routines
+!! available for each utility. Alternatively, if you prefer to see all
+!! of the available routines as part of the Fortran API on a single
+!! page, refer to the F90 interface definitions in grvy.f90 directly.
 
 module grvy
 
@@ -52,27 +58,77 @@ module grvy
      ! Versioning routines
      ! -------------------
 
+     !> 
+     !! @defgroup Fversioning Runtime Versioning Information
+     !! @ingroup Fapi
+     !! 
+     !! \brief Obtain libGRVY runtime versioning information.
+
+     !>
+     !! \ingroup Fversioning
+     !! \name Versioning Routines:
+     !! 
+     !! Obtain libGRVY runtime versioning information.
+
+     !>
+     !! \ingroup Fversioning 
+     !! @{
+     
+     !> Echo library versioning and configuration information to stdout
+
      subroutine grvy_version_stdout() bind (C)
        use iso_c_binding
        implicit none
      end subroutine grvy_version_stdout
+
+     !> Obtain numeric library version 
+     !! \return running version
 
      integer (C_int) function grvy_get_numeric_version() bind (C)
        use iso_c_binding
        implicit none
      end function grvy_get_numeric_version
 
+     !> @}
+
      ! ----------------------
      ! Input Parsing Support
      ! ----------------------
 
-     !> \page apiF
+     !>
+     !! \defgroup Finput Input Parsing
+     !! @ingroup Fapi
+     !! 
+     !! \brief Routines for accessing input parameters from a libGRVY
+     !! style input file. See the \ref inputFile "example input file" for
+     !! more information on the file format.
+
+     !>
+     !! \ingroup Finput
+     !! \name Input Parsing - File open/close:
+     !! 
+     !! Routines for accessing input parameters from a libGRVY style
+     !! input file. Note that an input file must be open prior to reading
+     !! any keyword/value pairs or performing input file dump
+     !! operations. See the \ref inputFile "example input file" for more
+     !! information on the file format.
+
+     !>
+     !! \ingroup Finput
+     !! @{ 
+     !! 
+     
+     !! \page apiF
      !! \section input Input Parsing Routines
      !! <b>Open/close a libGRVY style input file:</b>
      !! \code
      !! subroutine grvy_input_fopen()
      !! subroutine grvy_input_fclose()
      !! \endcode
+
+     !>
+     !! \brief Open a libGRVY style input file
+     !! \param filename desired input filename
 
      integer (C_int) function grvy_input_fopen_passthrough(filename) bind (C,name='grvy_input_fopen')
        use iso_c_binding
@@ -81,13 +137,16 @@ module grvy
        character (C_char),intent(in) :: filename(*) !< libGRVY style input filename
      end function grvy_input_fopen_passthrough
 
+     !> \brief Close the currently open libGRVY style input file
 
      subroutine grvy_input_fclose() bind (C)
        use iso_c_binding
        implicit none
      end subroutine grvy_input_fclose
 
-     !> \page apiF
+     !> @} 
+
+     !! \page apiF
      !!
      !! <b> Dump the contents of a libGRVY style input file :</b>
      !!

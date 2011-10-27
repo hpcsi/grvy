@@ -239,21 +239,9 @@ namespace GRVY {
       {
 
 	std::string path_in(dir->path().string());
-	//printf("path_in = %s\n",path_in.c_str());
-	//printf("from_dir = %s\n",from_dir);
-	//	std::string target = to_dir + "/";
-	//std::string target(to_dir);
 	boost::filesystem::path target(to_dir);
-	//printf("target = %s\n",target.c_str());
 
-	printf("before find: path_in = %s, from_dir = %s\n",path_in.c_str(),from_dir);
-	size_t index = path_in.find_first_not_of(from_dir);
-	std::cout << "index = " << index << std::endl;
-
-	//target += "/" + path_in.substr(path_in.find_first_not_of(from_dir),string::npos);
-	//target += path_in.substr(path_in.find_first_not_of(from_dir),string::npos);
-	target /= path_in.substr(path_in.find_first_not_of(from_dir),string::npos);
-	printf("target = %s\n",target.string().c_str());
+	target /= path_in.substr(path_in.find(from_dir)+strlen(from_dir),string::npos);
 	
 	grvy_printf(GRVY_DEBUG,"\n%s: copying %s to %s\n",__func__,dir->path().string().c_str(),
 		    target.c_str());

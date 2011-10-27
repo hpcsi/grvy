@@ -202,7 +202,8 @@ OPTIMIZE_OUTPUT_JAVA   = NO
 # sources only. Doxygen will then generate output that is more tailored for 
 # Fortran.
 
-OPTIMIZE_FOR_FORTRAN   = NO
+#OPTIMIZE_FOR_FORTRAN   = NO
+OPTIMIZE_FOR_FORTRAN   = YES
 
 # Set the OPTIMIZE_OUTPUT_VHDL tag to YES if your project consists of VHDL 
 # sources. Doxygen will then generate output that is tailored for 
@@ -574,9 +575,7 @@ INPUT                  = src/grvy.h examples/pecos-input.txt \
 			 $(SRCDIR)/doxygen/txt_common/gpl.page  \ 
 			 $(SRCDIR)/doxygen/txt_common/lgpl.page \ 
 			 $(SRCDIR)/doxygen/txt_common/noop.page \
-
-
-#		       	 src/grvy.f90 \
+		       	 src/grvy.f90
 
 
 # This tag can be used to specify the character encoding of the source files 

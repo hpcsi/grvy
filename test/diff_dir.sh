@@ -22,7 +22,7 @@ fi
 
 # a decent one liner if I say so myself
 
-diff <(cd $1 && find . | sort) <(cd $2 && find . | sort) >& /dev/null
+diff <(cd $1 && find . | sort) <(cd $2 && find . | sort) #>& /dev/null
 
 
 
