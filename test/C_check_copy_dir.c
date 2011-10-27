@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 
   /* Cleanup */
 
-  flag *= (0 == rmdir(template));
+  //  flag *= (0 == rmdir(template));
 
   if(flag == 0)
     exit (1);
