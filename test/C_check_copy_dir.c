@@ -40,6 +40,7 @@ int main(int argc, char **argv)
 {
   int flag = 1;
   char template[]   = "tmpdir-XXXXXX";
+  char template2[]  = "tmpdir-XXXXXX";
   char tmp_string[1024];
 
   /* Silence info/warn/error messages */
@@ -47,10 +48,10 @@ int main(int argc, char **argv)
   grvy_log_setlevel(GRVY_NOLOG);
   //grvy_log_setlevel(GRVY_DEBUG);
 
-  /* Generate unique sandbox dir for testing */
+  /* Generate unique sandbox dirs for testing */
 
-  //  flag *= (0 == grvy_create_unique_dir(template));
-  flag *= (0 == grvy_create_scratch_dir(template));
+  flag *= (0 == grvy_create_scratch_dir(template) );
+  flag *= (0 == grvy_create_scratch_dir(template2));
 
   /* Failure should occur if we attempt to copy a file */
   {
@@ -82,6 +83,21 @@ int main(int argc, char **argv)
     /* verify result */
 
     sprintf(tmp_string,"./diff_dir.sh ref_files/adir %s",template);
+    flag *= (0 == system(tmp_string));
+  }
+
+  /* Success should occur for existing directory copied to non-existing destination dir */
+  {
+
+    flag *= (0 == rmdir(template2));
+
+    grvy_printf(GRVY_DEBUG,"<-- Testing copy from non-existent destination\n");
+    flag *= (0 == grvy_copy_dir("ref_files/adir",template2));
+    grvy_printf(GRVY_DEBUG,"Done -->\n");
+
+    /* verify result */
+
+    sprintf(tmp_string,"./diff_dir.sh ref_files/adir %s",template2);
     flag *= (0 == system(tmp_string));
   }
 
