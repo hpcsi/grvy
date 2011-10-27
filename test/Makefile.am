@@ -179,6 +179,11 @@ check_PROGRAMS                                   += F_check_file_path
 F_check_file_path_SOURCES                         = F_check_file_path.f90
 F_check_file_path_LDADD                           = ../src/libgrvyf.la
 
+TESTS                                            += F_check_copy_dir
+check_PROGRAMS                                   += F_check_copy_dir
+F_check_copy_dir_SOURCES                          = F_check_copy_dir.f90
+F_check_copy_dir_LDADD                            = ../src/libgrvyf.la
+
 TESTS                                            += F_wrapper_log.sh
 check_PROGRAMS                                   += F_log
 F_log_SOURCES                                     = F_log.f90
