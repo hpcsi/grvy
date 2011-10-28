@@ -29,6 +29,9 @@
 
 program F_check_copy_dir
   use grvy
+#ifdef __INTEL_COMPILER
+  use ifport
+#endif
   implicit none
 
   character*14 :: template1  = "tmpdirf_XXXXXX"
