@@ -36,6 +36,7 @@ program main
   integer(4)     :: error, flag ! 1 for success, 0 for failure
   character*512  :: example_dir
   integer        :: length, status
+  logical        :: lv1,lv2
 
   real           :: reyn,mach,aoa, A(3)
   real(4)        :: fvar1,fvar2,fvec(3)
@@ -107,6 +108,8 @@ program main
   call grvy_input_fread_int_vec ("verify/ivec",ivec,4,flag)
   error=error*flag
 
+
+
   ! ----- Verify Results -----
   
   ! ----- INTS -----
@@ -158,6 +161,30 @@ program main
   error=error*flag
   call compare_double(dvar2,1.2d20,flag)
   error=error*flag
+
+  ! ----- Logicals -----
+
+  call grvy_input_fread_logical ("verify/lv1",lv1,.true.,flag)
+  error=error*flag
+
+  call grvy_input_fread_logical ("verify/lv2",lv2,.false.,flag)
+  error=error*flag
+
+  if(.not. lv1 .or. lv2)then
+     error = 0
+  endif
+
+  ! Verify we get default value correctly if not available in input file
+
+  call grvy_input_fread_logical ("hello-sweetie/lv1",lv1,.false.,flag)
+  error=error*flag
+
+  call grvy_input_fread_logical ("hello-sweetie/lv2",lv2,.true.,flag)
+  error=error*flag
+
+  if(lv1 .or. .not. lv2)then
+     error = 0
+  endif
 
   ! Verify that we get an error if we try to open a new file prior to
   ! closing the currently open file

@@ -83,6 +83,11 @@ dvec = '1.1e20 1.2e20 1.3e20'
 cvar = "superfly"
 cvec = "tori is cool"
 
+# logical reads
+
+lv1 = true
+lv2 = false
+
 
 
 
