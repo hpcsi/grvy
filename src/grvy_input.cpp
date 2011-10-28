@@ -111,6 +111,16 @@ extern "C" int grvy_input_fread_double(const char *var,double *value)
   return( _GRVY_Input.Read_Var(var,value,Double_Def) );
 }
 
+extern "C" int grvy_input_fread_logical_from_int(const char *var,int *value, int default_value)
+{
+  bool flag;
+  bool default_bool  = (default_value  == 1) ? true : false ;
+  int return_value   = _GRVY_Input.Read_Var(var,&flag,default_bool);
+
+  *value = (flag) ? 1 : 0;
+  return(return_value);
+}
+
 extern "C" int grvy_input_fread_double_vec(const char *var,double *value,int nelems)
 {
   return( _GRVY_Input.Read_Var_Vec(var,value,nelems,Double_Def) );

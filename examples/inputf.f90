@@ -38,6 +38,8 @@ program main
   character            :: filename*100
   character            :: key1*100
   character            :: key2*100
+  logical              :: restart
+  logical :: restart2
 
   ! Initialize/read the file
 
@@ -74,6 +76,14 @@ program main
 
   print*,'solver/keyword 1    = ',trim(key1)
   print*,'solver/keyword 2    = ',trim(key2)
+
+  ! Read a logical (you need to provide a default which is used if the
+  ! keyword is not specified in the input file)
+
+  restart2 = .false.
+  call grvy_input_fread_logical  ("restart",restart,.false.,flag)
+
+  print*,'restart = ',restart
 
   ! Attempt to read undefined variable (should get error message)
 

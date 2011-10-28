@@ -203,6 +203,15 @@ module grvy
        integer   (C_int), intent(out)   :: value
      end function grvy_input_fread_int_passthrough
 
+     integer (C_int) function grvy_input_fread_logical_passthrough(var,value,default_value) &
+          bind (C,name='grvy_input_fread_logical_from_int')
+       use iso_c_binding
+       implicit none
+       character (C_char),intent(in)         :: var(*)
+       integer   (C_int), intent(out)        :: value
+       integer   (C_int), value, intent(in)  :: default_value
+     end function grvy_input_fread_logical_passthrough
+
      ! ----------------------------
      ! vec bindings to C routines
      ! ----------------------------
@@ -867,6 +876,36 @@ end subroutine grvy_get_command_arguments
     return_flag = grvy_input_fread_int_passthrough(var//C_NULL_CHAR,value)
     return
   end subroutine grvy_input_fread_int
+
+  subroutine grvy_input_fread_logical(var,value,default_value,return_flag)
+   use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: var           !< variable keyword
+    logical,            intent(out)     :: value         !< keyword logical value from input
+    logical,            intent(in)      :: default_value !< default value (if not specified in input file)
+    integer  (C_int),   intent(out)     :: return_flag   !< error return flag
+
+    ! Local
+
+    integer  (C_int)                    :: value_int       !< keyword value from input
+    integer  (C_int)                    :: value_def_int   !< keyword value from input
+
+    if(default_value)then
+       value_def_int = 1
+    else
+       value_def_int = 0
+    endif
+
+    return_flag = grvy_input_fread_logical_passthrough(var//C_NULL_CHAR,value_int,value_def_int)
+    
+    if(value_int .eq. 1) then
+       value = .true.
+    else
+       value = .false.
+    endif
+
+    return
+  end subroutine grvy_input_fread_logical
 
   ! ----------------
   ! vec wrappers

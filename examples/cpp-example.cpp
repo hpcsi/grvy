@@ -82,7 +82,10 @@ int main(int argc, char **argv)
   if( iparse.Read_Var("gridfile",&GridFile) )
     cout << "--> gridfile    = " << GridFile << endl;
 
-  if( iparse.Read_Var("restart",&restart,false) )
+  //  if( iparse.Read_Var("restart",&restart,false) )
+  std::string restart_flag("restart");
+
+  if( iparse.Read_Var(restart_flag,&restart,false) )
     cout << "--> restart     = " << restart << endl;
 
   if(restart)
