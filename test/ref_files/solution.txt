@@ -40,6 +40,8 @@
 # verify/cvec="tori
 # verify/is
 # verify/cool"
+# verify/lv1=true
+# verify/lv2=false
 
 # [GRVY Registered Variable Default Values]
 # sec1/aint=1
