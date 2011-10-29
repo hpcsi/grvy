@@ -68,5 +68,10 @@ int main(int argc, char **argv)
 
   gt.SummarizeHistTiming("test.h5","#","ghist");
 
+  // cleanup
+
+  if(unlink("test.h5"))
+    return(1);
+
   return 0;
 }

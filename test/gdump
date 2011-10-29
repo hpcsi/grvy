@@ -8,7 +8,7 @@
 
 GDUMP=../src/gdump
 
-REF_DIR=ref_files
+REF_DIR=$GRVY_INPUT_EXAMPLE_DIR/ref_files
 TEST_FILE=.test.h5
 TEST_DIR=perf_test
 
@@ -79,6 +79,10 @@ diff $TEST_FILE $REF_DIR/gdump.help || exit 1
 
 if test -e $TEST_FILE ; then
     rm -f $TEST_FILE
+fi
+
+if test -d $TEST_DIR ; then
+    rm -rf $TEST_DIR
 fi
 
 exit 0

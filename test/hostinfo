@@ -37,9 +37,9 @@ fi
 
 # Clean up
 
-#if test -e $TEST_FILE ; then
-#   rm -f $TEST_FILE
-#fi
+if test -e $TEST_FILE ; then
+   rm -f $TEST_FILE
+fi
 
 exit 0
 

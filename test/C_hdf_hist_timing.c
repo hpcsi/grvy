@@ -61,5 +61,10 @@ int main(int argc, char **argv)
 
   grvy_summarize_hist_timing("test.h5","#","ghist");
 
+  // cleanup
+
+  if(unlink("test.h5"))
+    return(1);
+
   return 0;
 }

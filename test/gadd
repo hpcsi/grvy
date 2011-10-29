@@ -7,7 +7,7 @@
 # --------------------------------------------------------------------------
 
 GADD=../src/gadd
-REF_DIR=ref_files
+REF_DIR=$GRVY_INPUT_EXAMPLE_DIR/ref_files
 TEST_FILE=.test.h5
 
 # Compiled binaries must exist
@@ -54,5 +54,11 @@ if test ! -s $TEST_FILE ; then
     echo "${0}: No output generated from $GADD"
     exit 1
 fi
+
+#if test -e $TEST_FILE ;then
+#    rm -f $TEST_FILE
+#fi
+
+
 
 exit 0
