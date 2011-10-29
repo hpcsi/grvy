@@ -34,12 +34,16 @@ int main(int argc, char **argv)
 {
 
   int i;
-  double foo = 0;
+  double foo    = 0;
+  char tmpdir[] = "tmpdir-XXXXXX";
 
   grvy_timer_init("mytimer");
   grvy_timer_begin("Main Program");
   
   grvy_log_setlevel(GRVY_NOLOG);
+
+  if(grvy_create_scratch_dir(tmpdir))
+    return(1);
 
   // do some busy work
 
@@ -59,7 +63,7 @@ int main(int argc, char **argv)
 
   // Query the historical performance logs
 
-  grvy_summarize_hist_timing("test.h5","#","ghist");
+  grvy_summarize_hist_timing("test.h5","#",tmpdir);
 
   // cleanup
 

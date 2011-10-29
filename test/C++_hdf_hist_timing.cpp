@@ -40,11 +40,15 @@ int main(int argc, char **argv)
 {
 
   GRVY_Timer_Class gt;	// GRVY performance timer
+  char tmpdir[] = "tmpdir-XXXXXX";
   
   gt.Init("mytimer");
   gt.BeginTimer("Main Program");
   
   grvy_log_setlevel(GRVY_NOLOG);
+
+  if(grvy_create_scratch_dir(tmpdir))
+    return(1);
 
   // do some busy work
 
@@ -66,7 +70,7 @@ int main(int argc, char **argv)
 
   // Query the historical performance logs
 
-  gt.SummarizeHistTiming("test.h5","#","ghist");
+  gt.SummarizeHistTiming("test.h5","#",tmpdir);
 
   // cleanup
 
