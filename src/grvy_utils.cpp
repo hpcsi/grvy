@@ -245,6 +245,8 @@ namespace GRVY {
 	
 	grvy_printf(GRVY_DEBUG,"\n%s: copying %s to %s\n",__func__,dir->path().string().c_str(),
 		    target.c_str());
+
+
 	
 	copy(dir->path(),target,ec);
 
@@ -255,6 +257,29 @@ namespace GRVY {
 	    grvy_printf(GRVY_ERROR,"%s: %s\n",__func__,ec.message().c_str());
 	    return(1);
 	  }
+
+	// if we just created a directory, make sure it is at least
+	// user writable; this is a reasonably odd corner case which
+	// is motivated by the fact that "make distcheck" in autotools
+	// runs in a read-only environment.
+
+	if(boost::filesystem::is_directory(target))
+	  {
+	    grvy_printf(GRVY_DEBUG,"%s: ensuring directory is user-writable (%s)\n",__func__,target.string().c_str());
+	
+	    struct stat statbuf;
+	    if(stat(target.string().c_str(),&statbuf))
+	      {
+		grvy_printf(GRVY_ERROR,"%s: Unable to stat directory (%s)\n",__func__);
+		return(1);
+	      }
+	    if(chmod(target.string().c_str(), (statbuf.st_mode) | S_IWUSR))
+	      {
+		grvy_printf(GRVY_ERROR,"%s: Unable to stat directory (%s)\n",__func__,target.string().c_str());
+		return(1);
+	      }
+	  }
+
 	grvy_printf(GRVY_DEBUG,"%s: done with copy\n",__func__);
       }
     
