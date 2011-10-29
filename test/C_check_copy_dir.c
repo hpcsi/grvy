@@ -41,6 +41,7 @@ int main(int argc, char **argv)
   int flag = 1;
   char template[]   = "tmpdir-XXXXXX";
   char template2[]  = "tmpdir-XXXXXX";
+  char *input_dir   = getenv("GRVY_INPUT_EXAMPLE_DIR");
   char tmp_string[1024];
 
   /* Silence info/warn/error messages */
@@ -77,12 +78,13 @@ int main(int argc, char **argv)
   /* Success should occur for existing directory copied to empty existing destination */
   {
     grvy_printf(GRVY_DEBUG,"<-- Testing copy from empty existing destination\n");
-    flag *= (0 == grvy_copy_dir("ref_files/adir",template));
+    sprintf(tmp_string,"%s/ref_files/adir",input_dir);
+    flag *= (0 == grvy_copy_dir(tmp_string,template));
     grvy_printf(GRVY_DEBUG,"Done -->\n");
 
     /* verify result */
 
-    sprintf(tmp_string,"./diff_dir.sh ref_files/adir %s",template);
+    sprintf(tmp_string,"%s/diff_dir.sh %s/ref_files/adir %s",input_dir,input_dir,template);
     flag *= (0 == system(tmp_string));
   }
 
@@ -92,12 +94,13 @@ int main(int argc, char **argv)
     flag *= (0 == rmdir(template2));
 
     grvy_printf(GRVY_DEBUG,"<-- Testing copy from non-existent destination\n");
-    flag *= (0 == grvy_copy_dir("ref_files/adir",template2));
+    sprintf(tmp_string,"%s/ref_files/adir",input_dir);
+    flag *= (0 == grvy_copy_dir(tmp_string,template2));
     grvy_printf(GRVY_DEBUG,"Done -->\n");
 
     /* verify result */
 
-    sprintf(tmp_string,"./diff_dir.sh ref_files/adir %s",template2);
+    sprintf(tmp_string,"%s/diff_dir.sh %s/ref_files/adir %s",input_dir,input_dir,template2);
     flag *= (0 == system(tmp_string));
   }
 
