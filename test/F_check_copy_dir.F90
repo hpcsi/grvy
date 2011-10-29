@@ -54,13 +54,13 @@ program F_check_copy_dir
      example_dir = trim(example_dir)//"/"
   endif
 
-  call grvy_create_unique_dir(template1, flag)
+  call grvy_create_scratch_dir(template1, flag)
   if(flag .ne. SUCCESS)then
      write (*,*) "Create unique_dir unsuccessful ",template1
      call exit(1)
   endif
 
-  call grvy_create_unique_dir(template2, flag)
+  call grvy_create_scratch_dir(template2, flag)
   if(flag .ne. SUCCESS)then
      write (*,*) "Create unique_dir unsuccessful",template2
      call exit(1)

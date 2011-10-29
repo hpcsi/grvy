@@ -93,9 +93,9 @@ TESTS                                           += C_check_file_path
 check_PROGRAMS                                  += C_check_file_path
 C_check_file_path_SOURCES                        = C_check_file_path.c
 
-#TESTS                                           += C_check_copy_dir
-#check_PROGRAMS                                  += C_check_copy_dir
-#C_check_copy_dir_SOURCES                         = C_check_copy_dir.c
+TESTS                                           += C_check_copy_dir
+check_PROGRAMS                                  += C_check_copy_dir
+C_check_copy_dir_SOURCES                         = C_check_copy_dir.c
 
 TESTS                                           += C_input_fdump
 check_PROGRAMS                                  += C_input_fdump
@@ -185,10 +185,10 @@ check_PROGRAMS                                   += F_check_file_path
 F_check_file_path_SOURCES                         = F_check_file_path.f90
 F_check_file_path_LDADD                           = ../src/libgrvyf.la
 
-#TESTS                                            += F_check_copy_dir
-#check_PROGRAMS                                   += F_check_copy_dir
-#F_check_copy_dir_SOURCES                          = F_check_copy_dir.F90
-#F_check_copy_dir_LDADD                            = ../src/libgrvyf.la
+TESTS                                            += F_check_copy_dir
+check_PROGRAMS                                   += F_check_copy_dir
+F_check_copy_dir_SOURCES                          = F_check_copy_dir.F90
+F_check_copy_dir_LDADD                            = ../src/libgrvyf.la
 
 TESTS                                            += F_wrapper_log.sh
 check_PROGRAMS                                   += F_log
