@@ -6,9 +6,15 @@ AM_F77FLAGS       = $(INCLUDES)
 AM_FCFLAGS        = $(INCLUDES)
 AM_LDFLAGS        = ../src/libgrvy.la
 BUILT_SOURCES     = .license.stamp
-EXTRA_DIST        = init.sh finalize.sh version hostinfo gadd gdump C_*.sh F_*.sh CXX_*.sh
-EXTRA_DIST       += input-example.txt ref_files
-EXTRA_DIST       += .license.stamp
+
+EXTRA_DIST        = init.sh finalize.sh diff_dir.sh version hostinfo gadd gdump \
+		    C_timer_expanded_width.sh C_wrapper_log_printf.sh  C_wrapper_scratch_dir.sh \
+                    C_timer_std_width.sh C_wrapper_log.sh \
+		    F_get_command_arguments.sh  F_timer.sh F_wrapper_check_file_path.sh F_wrapper_scratch_dir.sh \
+		    F_timer_expanded_width.sh  F_timer_std_width.sh F_wrapper_log.sh F_wrapper_unique_dir.sh \
+		    CXX_timer_expanded_width.sh CXX_timer_std_width.sh \
+		    input-example.txt ref_files .license.stamp
+
 CLEANFILES        = .license.stamp *.gcno *.gcda .hostinfo
 TESTS             = # Append below
 TESTS_ENVIRONMENT = GRVY_INPUT_EXAMPLE_DIR=$(srcdir)
@@ -87,9 +93,9 @@ TESTS                                           += C_check_file_path
 check_PROGRAMS                                  += C_check_file_path
 C_check_file_path_SOURCES                        = C_check_file_path.c
 
-TESTS                                           += C_check_copy_dir
-check_PROGRAMS                                  += C_check_copy_dir
-C_check_copy_dir_SOURCES                         = C_check_copy_dir.c
+#TESTS                                           += C_check_copy_dir
+#check_PROGRAMS                                  += C_check_copy_dir
+#C_check_copy_dir_SOURCES                         = C_check_copy_dir.c
 
 TESTS                                           += C_input_fdump
 check_PROGRAMS                                  += C_input_fdump
@@ -179,10 +185,10 @@ check_PROGRAMS                                   += F_check_file_path
 F_check_file_path_SOURCES                         = F_check_file_path.f90
 F_check_file_path_LDADD                           = ../src/libgrvyf.la
 
-TESTS                                            += F_check_copy_dir
-check_PROGRAMS                                   += F_check_copy_dir
-F_check_copy_dir_SOURCES                          = F_check_copy_dir.F90
-F_check_copy_dir_LDADD                            = ../src/libgrvyf.la
+#TESTS                                            += F_check_copy_dir
+#check_PROGRAMS                                   += F_check_copy_dir
+#F_check_copy_dir_SOURCES                          = F_check_copy_dir.F90
+#F_check_copy_dir_LDADD                            = ../src/libgrvyf.la
 
 TESTS                                            += F_wrapper_log.sh
 check_PROGRAMS                                   += F_log
