@@ -1,3 +1,4 @@
+!! -*-f90-*-
 !!-----------------------------------------------------------------------bl-
 !!--------------------------------------------------------------------------
 !! 
@@ -102,7 +103,7 @@ program F_check_copy_dir
 
   status = system ("rmdir "//template2)
   if(status .ne. 0)then
-     write (*,*) "unable to remove existing dir",template2
+     write (*,*) "unable to remove existing dir ",template2
      call exit(1)
   endif
 
