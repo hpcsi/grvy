@@ -440,51 +440,12 @@ namespace GRVY {
   //                     Fortran Interfaces
   //-----------------------------------------------------------------
 
-#ifdef _GRVY_FORTRAN_STRING_ORDER1
-extern "C" void grvy_check_file_path_(char *pathname,int *flag,int _namelen)
-#else
-extern "C" void grvy_check_file_path_(char *pathname,int _namelen,int *flag)
-#endif
-  {
-    char *name = grvy_f2c_char(pathname,_namelen);
-
-    *flag = grvy_check_file_path(name);
-
-    delete[] name;
-    return;
-  }
-
-#ifdef _GRVY_FORTRAN_STRING_ORDER1
-extern "C" void grvy_create_unique_dir_(char *name_template,int *flag,int _namelen)
-#else
-extern "C" void grvy_create_unique_dir_(char *name_template,int _namelen,int *flag)
-#endif
-  {
-    char *c_name_template = grvy_f2c_char(name_template,_namelen);
-
-    *flag = grvy_create_unique_dir(c_name_template);
-    strncpy(name_template,c_name_template,_namelen);
-
-    delete[] c_name_template;
-  }
-
-#ifdef _GRVY_FORTRAN_STRING_ORDER1
-extern "C" void grvy_create_scratch_dir_(char *name_template,int *flag,int _namelen)
-#else
-extern "C" void grvy_create_scratch_dir_(char *name_template,int _namelen,int *flag)
-#endif
-  {
-    char *c_name_template = grvy_f2c_char(name_template,_namelen);
-
-    *flag = grvy_create_scratch_dir(c_name_template);
-    strncpy(name_template,c_name_template,_namelen);
-
-    delete[] c_name_template;
-  }
 
   // ----------------------------------------------------------------
   // -------------------- Convenience Functions ---------------------
   // ----------------------------------------------------------------
+
+
 
   // grvy_f2c_char(): Convert evil Fortran character strings to C
 
@@ -499,7 +460,7 @@ extern "C" void grvy_create_scratch_dir_(char *name_template,int _namelen,int *f
 
 #if 0
 
-  // next two functions deprecated with iso_c implementation 
+  // next functions deprecated with iso_c implementation 
 
   char *grvy_f2c_char_no_spaces(char*input,int len)
   {

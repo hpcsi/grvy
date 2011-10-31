@@ -591,6 +591,25 @@ module grvy
        character (C_char),intent(in)        :: to_dir(*)   
      end function grvy_copy_dir_passthrough
 
+     integer (C_int) function grvy_check_file_path_passthrough(pathname) bind (C,name='grvy_check_file_path')
+       use iso_c_binding
+       implicit none
+       character (C_char),intent(in)        :: pathname(*) 
+     end function grvy_check_file_path_passthrough
+
+     integer (C_int) function grvy_create_unique_dir_passthrough(name_template) bind (C,name='grvy_create_unique_dir')
+       use iso_c_binding
+       implicit none
+       character (C_char),intent(in)     :: name_template(*) 
+     end function grvy_create_unique_dir_passthrough
+
+     integer (C_int) function grvy_create_scratch_dir_passthrough(name_template) bind (C,name='grvy_create_scratch_dir')
+       use iso_c_binding
+       implicit none
+       !!!character(len=*),intent(inout)      :: name_template
+       character (C_char),intent(in)     :: name_template(*) 
+!       character (C_char),intent(inout)     :: name_template(*) 
+     end function grvy_create_scratch_dir_passthrough
 
      ! ---------------
      ! Math Utilities
@@ -631,23 +650,17 @@ module grvy
      ! Miscellaneous
      ! ---------------
 
-     subroutine grvy_check_file_path(pathname,flag)
-       implicit none
-       character :: pathname
-       integer   :: flag
-     end subroutine grvy_check_file_path
-
-     subroutine grvy_create_unique_dir(name_template,flag)
-       implicit none
-       character :: name_template
-       integer   :: flag
-     end subroutine grvy_create_unique_dir
-
-     subroutine grvy_create_scratch_dir(name_template,flag)
-       implicit none
-       character :: name_template
-       integer   :: flag
-     end subroutine grvy_create_scratch_dir
+!!!     subroutine grvy_create_unique_dir(name_template,flag)
+!!!       implicit none
+!!!       character :: name_template
+!!!       integer   :: flag
+!!!     end subroutine grvy_create_unique_dir
+!!!
+!!!     subroutine grvy_create_scratch_dir(name_template,flag)
+!!!       implicit none
+!!!       character :: name_template
+!!!       integer   :: flag
+!!!     end subroutine grvy_create_scratch_dir
 
   end interface
 
@@ -1053,7 +1066,89 @@ end subroutine grvy_get_command_arguments
     return
   end subroutine grvy_copy_dir
 
-  
+  ! ----------------
+  ! Misc. wrappers
+  ! ----------------
+
+  subroutine grvy_check_file_path(pathname,return_flag) 
+    use iso_c_binding
+    implicit none
+    character(len=*),intent(in)         :: pathname
+    integer  (C_int),intent(inout)      :: return_flag
+    
+    return_flag = grvy_check_file_path_passthrough(pathname//C_NULL_CHAR)
+  end subroutine grvy_check_file_path
+
+  subroutine grvy_create_unique_dir(name_template,return_flag) 
+    use iso_c_binding
+    implicit none
+    character(len=*),intent(inout)      :: name_template
+    integer  (C_int),intent(inout)      :: return_flag
+
+    ! Local vars
+    
+    integer   :: string_length
+    character :: tmp_string*1024
+
+    !!!return_flag = grvy_create_unique_dir_passthrough(name_template//C_NULL_CHAR)
+    
+    string_length = len(trim(name_template))
+    
+    if(string_length .ge. 1024)then
+       print*,'Error: unable to create scratch_dir for templates >= 1024 characters'
+       return_flag = 1
+       return
+    endif
+    
+    ! Save a copy of incoming string and append C null character
+
+    write(tmp_string,'(a)') name_template//C_NULL_CHAR
+
+    ! Call C version
+
+    return_flag = grvy_create_unique_dir_passthrough(tmp_string)
+
+    ! Update name_template (without C null)
+
+    write(name_template,'(a)') tmp_string(1:string_length)
+
+  end subroutine grvy_create_unique_dir
+
+  subroutine grvy_create_scratch_dir(name_template,return_flag) 
+    use iso_c_binding
+    implicit none
+    character(len=*),intent(inout)      :: name_template
+    integer  (C_int),intent(inout)      :: return_flag
+
+!!!    return_flag = grvy_create_unique_dir_passthrough(name_template//C_NULL_CHAR)
+
+    ! Local vars
+    
+    integer   :: string_length
+    character :: tmp_string*1024
+    
+    string_length = len(trim(name_template))
+    
+    if(string_length .ge. 1024)then
+       print*,'Error: unable to create scratch_dir for templates >= 1024 characters'
+       return_flag = 1
+       return
+    endif
+    
+    ! Save a copy of incoming string and append C null character
+
+    write(tmp_string,'(a)') name_template//C_NULL_CHAR
+
+    ! Call C version
+
+    return_flag = grvy_create_scratch_dir_passthrough(tmp_string)
+
+    ! Update name_template (without C null)
+
+    write(name_template,'(a)') tmp_string(1:string_length)
+
+  end subroutine grvy_create_scratch_dir
+
   ! ----------------
   ! Ocore wrappers
   ! ----------------
