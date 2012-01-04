@@ -86,16 +86,21 @@ real*8 function do_work1()
   return
 end function do_work1
 
-subroutine do_work2()
+subroutine do_work2(answer)
 
-  integer :: i
-  real*8  :: temp
+  integer               :: i
+  real*8                :: temp
+  real*8,intent(inout)  :: answer
+
+  temp = 0.0d0
 
   call grvy_timer_begin('work2')
 
   do i = 1,7654321
      temp = temp*temp + (3.14*i)/sqrt(1.0d0*i*i)
   enddo
+
+  answer = temp
 
   call grvy_timer_end('work2')
 
