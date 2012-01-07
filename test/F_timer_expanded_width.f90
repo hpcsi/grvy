@@ -33,11 +33,10 @@ program main
   implicit none
 
   integer :: Max_Iters = 1
-  real*8  :: work1
+  real*8  :: work
+  real*8  :: do_work1, do_work2
   integer :: i
   integer ierr
-
-  real*8 :: do_work1
 
   call grvy_log_setlevel(GRVY_INFO)
 
@@ -49,8 +48,8 @@ program main
 
      ! Define the beginning of the overall portion to be monitored
 
-     work1 = do_work1()
-     call do_work2
+     work = do_work1()
+     work = do_work2()
 
   enddo
 
@@ -86,11 +85,10 @@ real*8 function do_work1()
   return
 end function do_work1
 
-subroutine do_work2(answer)
+real*8 function do_work2()
 
   integer               :: i
   real*8                :: temp
-  real*8,intent(inout)  :: answer
 
   temp = 0.0d0
 
@@ -100,11 +98,11 @@ subroutine do_work2(answer)
      temp = temp*temp + (3.14*i)/sqrt(1.0d0*i*i)
   enddo
 
-  answer = temp
+  do_work2 = temp
 
   call grvy_timer_end('work2')
 
   return
-end subroutine do_work2
+end function do_work2
     
 
