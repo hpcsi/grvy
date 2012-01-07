@@ -98,7 +98,7 @@ install-data-local: libgrvyf.la
 	mkdir -p $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) $(top_builddir)/src/grvy.mod $(DESTDIR)$(libdir)/grvy.mod
 
-uninstall-local: libfgrvyf.la
+uninstall-local: 
 	rm -rf $(DESTDIR)$(libdir)/grvy.mod
 
 dist-hook:
