@@ -1,6 +1,7 @@
-h_sources                 = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h grvy_env.h grvy_ptable.h grvy_mpi.h 
+h_sources                 = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h \
+	                    grvy_env.h grvy_ptable.h grvy_mpi.h
 cc_sources                = grvy_input.cpp grvy_classes.cpp grvy_timer.cpp grvy_timer_interface.cpp \
-		            grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_ramdisk.cpp \
+		            grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_ramdisk.cpp              \
 			    grvy_version.cpp grvy_env.cpp grvy_hdf5.cpp grvy_ramdisk_interface.cpp
 
 getpot_sources            = common/getpot/getpot.h
@@ -25,7 +26,7 @@ library_include_HEADERS   = grvy.h grvy_classes.h
 lib_LTLIBRARIES          += libgrvy.la
 libgrvy_la_LDFLAGS        = $(all_libraries) -release $(GENERIC_RELEASE) $(BOOST_REGEX_LDFLAGS) \
 				$(BOOST_PROGRAM_OPTIONS_LIBS) $(BOOST_REGEX_LIBS) \
-				$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) #-R/Users/karl/bin/boost-1.42/lib
+				$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) 
 libgrvy_la_SOURCES        = $(getpot_sources) $(cc_sources) $(h_sources)
 
 if HDF5_ENABLED	         
@@ -65,18 +66,6 @@ bin_PROGRAMS             += gadd
 gadd_SOURCES              = gadd.cpp
 gadd_LDADD                = -L$(top_builddir)/src -lgrvy
 gadd_DEPENDENCIES         = libgrvy.la
-
-# if MPI_ENABLED
-#    bin_PROGRAMS          += example
-#    example_SOURCES        = example.cpp
-#    example_LDADD          = -L$(top_builddir)/src -lgrvy
-#    example_DEPENDENCIES   = libgrvy.la
-
-#    bin_PROGRAMS          += example2
-#    example2_SOURCES       = example2.c
-#    example2_LDADD         = -L$(top_builddir)/src -lgrvy
-#    example2_DEPENDENCIES  = libgrvy.la
-# endif
 
 #---------------------------------
 # Embedded license header support
