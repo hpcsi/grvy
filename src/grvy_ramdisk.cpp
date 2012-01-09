@@ -561,7 +561,7 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Summarize()
       grvy_printf(info,"%s:   --> Number of Records Read    = %15i\n",prefix,total_read);
       grvy_printf(info,"%s:   --> Total Data Read           = %15.5e GBs\n",prefix,
 		  1.0*total_read*blocksize*word_size/(1024*1024*1024));
-      grvy_printf(info,"%s:   --> Aggregate Read  Speed     = %15.5e MB/sec\n",prefix,
+      grvy_printf(info,"%s:   --> Aggregate Read Speed      = %15.5e MB/sec\n",prefix,
 		  aggr_read_speed/(1024*1024));
       grvy_printf(info,"\n");
 
