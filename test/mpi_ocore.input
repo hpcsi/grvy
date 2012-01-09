@@ -1,0 +1,17 @@
+# -*-getpot-*-
+
+# input file for mpi_ocore 
+
+[grvy/mpi_ocore]
+
+enable_ocore      = 1		# use MPI out-of-core  (1=yes,0=no)
+max_pool_size_in_mbs  = 10      # max mpi storage pool size on each child processor    [MBs]
+max_map_size_in_mbs   = 10      # max map size for sparse record access on master task [MBs]
+blocksize             = 8192    # number of array elements in each ocore read/write
+
+
+use_disk_overflow     = 1      # enabled disk-based overflow for least-frequently accessed records (1=yes,0=no)
+watermark_ratio       = 0.2    # percentage of records to dump to disk when memory cache is full
+allow_empty_records   = 0      # allow for empty records to be returned if not written previously (1=yes,0=no)
+
+
