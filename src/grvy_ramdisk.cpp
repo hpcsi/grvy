@@ -126,10 +126,11 @@ public:
 
   template <typename T> int Read_from_Pool (int mpi_task, size_t sparse_index,T *data);
   template <typename T> int  Write_to_Pool (int mpi_task, bool new_data, size_t sparse_index,T *data);
-  
+
+  void   Abort	          ();		  
   void   PollForWork      ();
   void   Summarize        ();
-  void   Abort	    ();		
+  void   DumpStatistics   (string statfile);
   
   bool use_mpi_ocore;		          // enable use of MPI ocore?
   bool initialized;			  // init function complete?
@@ -138,11 +139,13 @@ public:
   bool mpi_initialized_by_ocore;	  // did we have to init MPI locally?
   bool overflow_triggered;                // track whether ramdisk overflow has been triggered
   bool allow_empty_records;               // allow return of empty record if not previously written
+  bool dump_stats;			  // dump raw record read/wrote statistics on finalize
   
   double dump_watermark_ratio;            // watermark for how much data to dump to disk when ramdisk is full
   
   string inputfile;			  // input file with runtime controls
   string tmpdir;			  // parent directory to store overflow ocore data
+  string statsfile;			  // output filename to store raw record statistics
   char *tmp_unique_path;		  // unique path to overflow ocore data 
   FILE *fp_tmp;			          // file pointer to disk-based storage
   
@@ -165,7 +168,8 @@ public:
   map<size_t,MPI_Ocore_owners> rank_map;  // map for rank 0 to identify which child rank owns the data
   double* data_tmp;		          // temporary buffer for disk_overflow block storage
   
-  MPI_Comm MYCOMM;			  // MPI communicator for ocore activity
+  MPI_Comm MYCOMM;			  // MPI communicator for ocore activity (comm_world)
+  MPI_Comm MPI_COMM_OCORE;		  // MPI communicator with task 0 removed
   
   GRVY_MPI_Ocore_Class *self;	          // back pointer to public class
   
@@ -247,7 +251,19 @@ GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class() :m_pimpl(new GRVY_MPI_Ocore_ClassIm
   
   //    m_pimpl->options["output_stdout"        ] = true;
   //    m_pimpl->options["output_totaltimer_raw"] = true;
-  
+
+  // create convenience communicator for Ocore tasks
+
+  MPI_Group group_world;
+  MPI_Group group_ocore;
+    
+  int excl_ranks[1] = {0};	// exclude global rank 0 from ocore subcommunicator
+
+  assert(MPI_Comm_group(MPI_COMM_WORLD,&group_world)  == MPI_SUCCESS);
+  assert(MPI_Group_excl(group_world,1,excl_ranks,&group_ocore) == MPI_SUCCESS);
+
+  MPI_Comm_create(MPI_COMM_WORLD,group_ocore,&m_pimpl->MPI_COMM_OCORE);
+
 }
 
 GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
@@ -317,6 +333,11 @@ void GRVY_MPI_Ocore_Class::Finalize()
       fclose(m_pimpl->fp_tmp);	    
       delete [] m_pimpl->data_tmp;
     }
+
+  // Dump raw statistics
+
+  if(!m_pimpl->master && m_pimpl->dump_stats)
+    m_pimpl->DumpStatistics(m_pimpl->statsfile);
   
   // Free memory pools
   
@@ -525,6 +546,69 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PollForWork()
 }
 
 // ---------------------------------------------------------------------------------------
+// DumpStatistics(): Dump individual read/write statistics to file
+// ---------------------------------------------------------------------------------------
+
+void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::DumpStatistics(std::string statfile)
+{
+  FILE *fp; 
+
+  map<size_t,MPI_Ocore_datagram> :: iterator it;   
+
+  // Simple header 
+
+  if(mpi_rank == 1)
+    {
+      fp = fopen(statfile.c_str(),"w");
+      if(fp == NULL)
+	{
+	  grvy_printf(error,"%s: Unable to create stats file - %s\n",prefix,statfile.c_str());
+	  Abort();
+	}
+
+      fprintf(fp,"#\n");
+      fprintf(fp,"# libGRVY Out-of-Core Record Statistics\n");
+      fprintf(fp,"#\n");
+      fprintf(fp,"# Record Index, Write Count, Read Count, MPI Rank, In-Ram?\n");
+      fprintf(fp,"#\n");
+      fclose(fp);
+    }
+
+  // Dump statistics serially from each ocore subprocess
+
+  MPI_Barrier(MPI_COMM_OCORE);
+
+  for(int i=1;i<mpi_nprocs;i++)
+    {
+      if(mpi_rank == i)
+	{
+	  grvy_printf(info,"%s: Dumping individual read/write statistics for proc %i to %s\n",
+		      prefix,mpi_rank,statsfile.c_str());
+	  assert(smap.size() > 0);
+	  fp = fopen(statfile.c_str(),"a");
+	  
+	  if(fp == NULL)
+	    {
+	      grvy_printf(error,"%s: Unable to append to stats file - %s\n",prefix,statfile.c_str());
+	      Abort();
+	    }
+	  
+	  for(it = smap.begin(); it != smap.end(); it++)
+	    fprintf(fp,"%12li %12li %12li %9i %7i\n",it->first,it->second.write_count,it->second.read_count,
+		    mpi_rank,it->second.in_mem);
+	  
+	  fclose(fp);
+	}
+      MPI_Barrier(MPI_COMM_OCORE);
+    }
+
+  if(mpi_rank == 1)
+    grvy_printf(info,"\n");
+
+  return;
+}
+
+// ---------------------------------------------------------------------------------------
 // Summarize(): Summarize read/write statistics and performance
 // ---------------------------------------------------------------------------------------
 
@@ -576,7 +660,7 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Summarize()
   double local_disk_wspeed  = 0.0;
   double local_disk_rspeed  = 0.0;
 
-  int    *all_disk_written;	     // results to be gathered on ocore master
+  int    *all_disk_written;	    // results to be gathered on ocore master
   int    *all_disk_read;
   double *all_disk_wspeed;
   double *all_disk_rspeed;
@@ -677,7 +761,7 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Summarize()
 	{
 	  if(all_disk_written[i] > 0)       // overflow enabled, report peak memory used
 	    usage = max_poolsize_MBs;
-	  else			      // overflow avoided, report current usage
+	  else			            // overflow avoided, report current usage
 	    usage = 1.0*num_active_per_task[i]*blocksize*word_size/(1024*1024);
 	    
 	  grvy_printf(info,"%s:   --> Proc %5i - Memory Used = %12.5e MBs (Max Req. = %i MBs)\n",prefix,i,
@@ -832,6 +916,10 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
     
     if(master)
       {
+	// Register default values (0.32.0)
+
+	iparse.Register_Var    ("grvy/mpi_ocore/statsfile",           "grvy_ocore_stats.dat");
+
 	// Register default values (0.31.0)
 
 	iparse.Register_Var    ("grvy/mpi_ocore/use_disk_overflow",    1                    );
@@ -852,6 +940,10 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
 	flag *= iparse.Read_Var("grvy/mpi_ocore/max_pool_size_in_mbs", &max_poolsize_MBs    );
 	flag *= iparse.Read_Var("grvy/mpi_ocore/max_map_size_in_mbs",  &max_mapsize_MBs     );
 	flag *= iparse.Read_Var("grvy/mpi_ocore/blocksize",            &blocksize           );
+	flag *= iparse.Read_Var("grvy/mpi_ocore/dump_raw_statistics",  &dump_stats          ,true);
+
+	if(dump_stats)
+	  flag *= iparse.Read_Var("grvy/mpi_ocore/statsfile",          &statsfile           );	  
 
 	use_disk_overflow   = (tmp_use_overflow  == 1) ? true : false ;
 	allow_empty_records = (tmp_allow_empties == 1) ? true : false ;
@@ -883,7 +975,25 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
     MPI_Bcast(&max_mapsize_MBs,     1,MPI_INTEGER,0,MYCOMM);
     MPI_Bcast(&blocksize,           1,MPI_INTEGER,0,MYCOMM);
 
-    // todo: read input variables/bcast from rank 0
+    int tmp_dump_stats = (dump_stats == true) ? 1 : 0 ;
+
+    MPI_Bcast(&tmp_dump_stats,      1,MPI_INTEGER,0,MYCOMM);
+    dump_stats = (tmp_dump_stats == 1) ? true : false ;   
+
+    int   tmp_string_size = statsfile.size()+1;
+    char *tmp_string      = NULL;
+
+    MPI_Bcast(&tmp_string_size,     1,MPI_INTEGER,0,MYCOMM);
+
+    tmp_string = (char *)calloc(tmp_string_size,sizeof(char));
+    
+    strcpy(tmp_string,statsfile.c_str());
+    MPI_Bcast(tmp_string,tmp_string_size,MPI_CHAR,0,MYCOMM);
+    
+    if(!master)
+      statsfile = tmp_string;
+
+    free(tmp_string);
 
     num_smap_records = max_mapsize_MBs*1024*1024/sizeof(int);
     max_num_records  = max_poolsize_MBs*1024*1024/(blocksize*word_size);
@@ -1019,7 +1129,6 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
   int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: AssignOwnership(size_t sparse_index)
   {
 
-    
     // Assign mpi task ownership based on round-robin 
     
     MPI_Ocore_owners owner;

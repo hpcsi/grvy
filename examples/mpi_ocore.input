@@ -14,4 +14,5 @@ use_disk_overflow     = 1      # enabled disk-based overflow for least-frequentl
 watermark_ratio       = 0.2    # percentage of records to dump to disk when memory cache is full
 allow_empty_records   = 0      # allow for empty records to be returned if not written previously (1=yes,0=no)
 
+dump_raw_statistics   = true   # dump raw read/write statistics for each record?
 
