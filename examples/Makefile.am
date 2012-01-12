@@ -36,10 +36,11 @@ check_dir_SOURCES       = check_dir.c
 message_SOURCES         = messages.c
 
 if MPI_ENABLED
-   example_PROGRAMS    += cpp-ocore ocore ocore_f
+   example_PROGRAMS    += cpp-ocore ocore ocore_f ocore_perf
    ocore_SOURCES        = ocore.c
    cpp_ocore_SOURCES    = cpp-ocore.cpp
    ocore_f_SOURCES      = ocore_f.f90
+   ocore_perf_SOURCES   = ocore_performance.cpp
    ocore_f_LDADD        = ../src/libgrvyf.la
 endif
 
