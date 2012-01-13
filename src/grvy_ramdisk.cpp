@@ -995,8 +995,8 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
 
     free(tmp_string);
 
-    num_smap_records = max_mapsize_MBs*1024*1024/sizeof(int);
-    max_num_records  = max_poolsize_MBs*1024*1024/(blocksize*word_size);
+    num_smap_records = 1.0*max_mapsize_MBs*1024*1024/sizeof(int);
+    max_num_records  = 1.0*max_poolsize_MBs*1024*1024/(blocksize*word_size);
 
     if(master)
       {
