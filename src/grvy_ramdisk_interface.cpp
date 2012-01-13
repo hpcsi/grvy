@@ -67,7 +67,7 @@ void grvy_ocore_finalize()
 int grvy_ocore_write_float   (size_t offset,         float *data) {return(_GRVY_Ocore->Write(offset,data));};
 int grvy_ocore_write_double  (size_t offset,        double *data) {return(_GRVY_Ocore->Write(offset,data));};
 int grvy_ocore_write_int     (size_t offset,           int *data) {return(_GRVY_Ocore->Write(offset,data));};
-int grvy_ocore_write_longlong(size_t offset, long long int *data) {return(_GRVY_Ocore->Write(offset,data));};
+int grvy_ocore_write_int64   (size_t offset, long long int *data) {return(_GRVY_Ocore->Write(offset,data));};
 
 // ----------------------------
 // grvy_ocore_read functions
@@ -104,4 +104,4 @@ size_t grvy_ocore_num_active()
 size_t grvy_ocore_pop_record_float        (       float  *data) { return(_GRVY_Ocore->PopRecord(data)); }
 size_t grvy_ocore_pop_record_double       (       double *data) { return(_GRVY_Ocore->PopRecord(data)); }
 size_t grvy_ocore_pop_record_int          (          int *data) { return(_GRVY_Ocore->PopRecord(data)); }
-size_t grvy_ocore_pop_record_long_long_int(long long int *data) { return(_GRVY_Ocore->PopRecord(data)); }
+size_t grvy_ocore_pop_record_int64        (long long int *data) { return(_GRVY_Ocore->PopRecord(data)); }

@@ -488,12 +488,12 @@ extern "C" {
   extern    int grvy_ocore_write_double        (size_t record_id,    double     *data);
   extern    int grvy_ocore_write_float         (size_t record_id,     float     *data);
   extern    int grvy_ocore_write_int           (size_t record_id,       int     *data);
-  extern    int grvy_ocore_write_long_long_int (size_t record_id, long long int *data);
+  extern    int grvy_ocore_write_int64         (size_t record_id, long long int *data);
 
   extern    int grvy_ocore_read_double         (size_t record_id,    double     *data);
   extern    int grvy_ocore_read_float          (size_t record_id,     float     *data);
   extern    int grvy_ocore_read_int            (size_t record_id,       int     *data);
-  extern    int grvy_ocore_read_long_long_int  (size_t record_id, long long int *data);
+  extern    int grvy_ocore_read_int64          (size_t record_id, long long int *data);
 
   /** @}
    * \ingroup Cocore
@@ -510,7 +510,7 @@ extern "C" {
   extern size_t grvy_ocore_pop_record_float         (        float *data);
   extern size_t grvy_ocore_pop_record_double        (       double *data);
   extern size_t grvy_ocore_pop_record_int           (          int *data);
-  extern size_t grvy_ocore_pop_record_long_long_int (long long int *data);
+  extern size_t grvy_ocore_pop_record_int64          (long long int *data);
 
   /** @} */
 					      

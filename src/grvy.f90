@@ -479,7 +479,7 @@ module grvy
 
      end function grvy_ocore_read_real4
 
-     integer (C_int) function grvy_ocore_read_int8(record_id,data) bind (C,name='grvy_ocore_read_long_long_int')
+     integer (C_int) function grvy_ocore_read_int8(record_id,data) bind (C,name='grvy_ocore_read_int64')
        use iso_c_binding
        implicit none
 
@@ -524,7 +524,7 @@ module grvy
 
      end function grvy_ocore_write_int4
 
-     integer (C_int) function grvy_ocore_write_int8(record_id,data) bind (C,name='grvy_ocore_write_long_long_int')
+     integer (C_int) function grvy_ocore_write_int8(record_id,data) bind (C,name='grvy_ocore_write_int64')
        use iso_c_binding
        implicit none
 
@@ -567,7 +567,7 @@ module grvy
        real  (C_DOUBLE),  intent(inout)       :: data(*)   !< Block of data to return
      end function grvy_ocore_pop_record_real8
 
-     integer (C_SIZE_T) function grvy_ocore_pop_record_int8(data) bind (C,name='grvy_ocore_long_long_int')
+     integer (C_SIZE_T) function grvy_ocore_pop_record_int8(data) bind (C,name='grvy_ocore_pop_record_int64')
        use iso_c_binding
        implicit none
        integer  (C_LONG_LONG),  intent(inout) :: data(*)   !< Block of data to return
