@@ -99,6 +99,13 @@ size_t grvy_ocore_num_active()
   return(_GRVY_Ocore->NumActive());
 }
 
+// grvy_ocore_blocksize(): return ocore blocksize 
+
+int grvy_ocore_blocksize()
+{
+  return(_GRVY_Ocore->Blocksize());
+}
+
 // grvy_ocore_pop_record(): return data record and pop/remove from ocore pool
 
 size_t grvy_ocore_pop_record_float        (       float  *data) { return(_GRVY_Ocore->PopRecord(data)); }

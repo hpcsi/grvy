@@ -469,6 +469,7 @@ extern "C" {
 
   extern    int grvy_ocore_master              ();
   extern    int grvy_ocore_enabled             ();
+  extern    int grvy_ocore_blocksize           ();
   extern size_t grvy_ocore_num_active          ();
 
   /** @}
@@ -1051,6 +1052,7 @@ public:
   size_t NumActive    ();	// number of currently active records
   bool   isMaster     ();	// is the calling task the ocore master?
   bool   isEnabled    ();	// is MPI Ocore enabled? (can be controlled via input file)
+  int    Blocksize    ();       // Ocore blocksize
 
   // Read/Write Functions
 

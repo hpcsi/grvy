@@ -286,6 +286,15 @@ size_t GRVY_MPI_Ocore_Class::NumActive()
 }
 
 // ---------------------------------------------------------------------------------------
+// Blocksize(): Public function to return Ocore blocksize (as defined in input file)
+// ---------------------------------------------------------------------------------------
+
+int GRVY_MPI_Ocore_Class::Blocksize()
+{
+  return(m_pimpl->blocksize);
+}
+
+// ---------------------------------------------------------------------------------------
 // PopRecord(): Public function to return data record and pop/remove from ocore pool
 // ---------------------------------------------------------------------------------------
 
@@ -677,10 +686,10 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Summarize()
       if(overflow_triggered)
 	{
 	  local_disk_written = ptimer.StatsCount    ("write_to_disk");
-	  local_disk_wspeed  = local_disk_written*blocksize*word_size/ptimer.ElapsedSeconds("write_to_disk");
+	  local_disk_wspeed  = 1.0*local_disk_written*blocksize*word_size/ptimer.ElapsedSeconds("write_to_disk");
 
 	  local_disk_read    = ptimer.StatsCount    ("read_from_disk");
-	  local_disk_rspeed  = local_disk_read*blocksize*word_size/ptimer.ElapsedSeconds("read_from_disk");
+	  local_disk_rspeed  = 1.0*local_disk_read*blocksize*word_size/ptimer.ElapsedSeconds("read_from_disk");
 	}
     }
 
