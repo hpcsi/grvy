@@ -1463,6 +1463,7 @@ GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
 int    GRVY_MPI_Ocore_Class::Initialize(string input_file) { return 0; }
 
 size_t GRVY_MPI_Ocore_Class::NumActive () { return 0;     }
+int    GRVY_MPI_Ocore_Class::Blocksize () { return 0;     }
 void   GRVY_MPI_Ocore_Class::Finalize  () { return;       }
 bool   GRVY_MPI_Ocore_Class::isMaster  () { return true;  }
 bool   GRVY_MPI_Ocore_Class::isEnabled () { return false; }
