@@ -35,20 +35,6 @@ AC_PROG_LN_S
 AC_PROG_SED
 AM_SANITY_CHECK
 
-#----------------------------------
-# Enable quadrature rule generation
-#----------------------------------
-AC_ARG_ENABLE(gquad, AC_HELP_STRING([--enable-gquad],[enable Gaussian quadrature rule generation]))
-
-# If the user wants the quadrature capability, then GSL is required
-# Note that boost is also required (shared_ptr), but we already check for that.
-if test "x$enable_gquad" = "xyes"; then
-   # We really need 1.15 for a bugfix in one of the special functions used
-   AX_PATH_GSL_NEW(1.15,yes)
-   AC_DEFINE(USE_GQUAD,1,[Define if users wants gquad capbility.])
-   AC_SUBST(USE_GUAD)
-fi
-
 # ---------------------
 # Enable MPI utilities?
 # ---------------------
@@ -98,7 +84,19 @@ BOOST_SYSTEM
 #BOOST_ASIO
 AC_CACHE_SAVE
 
+#----------------------------------
+# Enable quadrature rule generation
+#----------------------------------
+AC_ARG_ENABLE(gquad, AC_HELP_STRING([--enable-gquad],[enable Gaussian quadrature rule generation]))
 
+# If the user wants the quadrature capability, then GSL is required
+# Note that boost is also required (shared_ptr), but we already check for that.
+if test "x$enable_gquad" = "xyes"; then
+   # We really need 1.15 for a bugfix in one of the special functions used
+   AX_PATH_GSL(1.15)
+   AC_DEFINE(USE_GQUAD,1,[Define if users wants gquad capbility.])
+   AC_SUBST(USE_GUAD)
+fi
 
 #--------------------------
 # Checks for code coverage
