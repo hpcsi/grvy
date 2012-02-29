@@ -303,7 +303,7 @@ namespace GRVY {
 	  {
 	    if( increment <= _GRVY_TIMER_THRESH )
 	      {
-		grvy_printf(GRVY_WARN,"Timer acuracy may be insufficient (%.30s) -> measured %le secs\n",
+		grvy_printf(GRVY_WARN,"Timer accuracy may be insufficient (%.30s) -> measured %le secs\n",
 			    id.c_str(),increment);
 	      }
 	  }
