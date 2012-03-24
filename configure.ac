@@ -55,12 +55,6 @@ fi
 
 AM_CONDITIONAL(MPI_ENABLED,test x$HAVE_MPI = x1)
 
-#----------------------
-# Checks for libraries.
-#----------------------
-
-AX_PATH_HDF5_NEW(1.8.0,no)
-
 #---------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
 #---------------------------------------------------------------
@@ -83,6 +77,12 @@ BOOST_FILESYSTEM
 BOOST_SYSTEM
 #BOOST_ASIO
 AC_CACHE_SAVE
+
+#----------------------
+# Checks for libraries.
+#----------------------
+
+AX_PATH_HDF5_NEW(1.8.0,no)
 
 #----------------------------------
 # Enable quadrature rule generation
