@@ -63,19 +63,36 @@ AC_C_CONST
 AC_HEADER_STDBOOL
 AX_TLS
 
-#----------------
-# Check for boost
-#----------------
+#-------------------------------------------------------------------
+# Check for boost - allow for a header-only build which limits some
+# functionality, but avoids pain for folks who don't want to suffer
+# through a full Boost build.
+#-------------------------------------------------------------------
 
+BOOST_HEADER_ONLY=0
+AC_ARG_ENABLE(boost-headers-only, AC_HELP_STRING([--enable-boost-headers-only],
+				  [build GRVY with Boost header-only install (disables some functionality)]),
+				  [boost_header_only=yes],[boost_header_only=no])
+				  
 AC_LANG([C++])
 BOOST_REQUIRE([1.46])
-BOOST_MATH
-BOOST_REGEX
-BOOST_PROGRAM_OPTIONS
-###BOOST_FILESYSTEM('')
-BOOST_FILESYSTEM
-BOOST_SYSTEM
-#BOOST_ASIO
+
+if test "x$boost_header_only" != "xyes";then
+
+   BOOST_MATH
+   BOOST_REGEX
+   BOOST_PROGRAM_OPTIONS
+   ###BOOST_FILESYSTEM('')
+   BOOST_FILESYSTEM
+   BOOST_SYSTEM
+   #BOOST_ASIO
+else
+   BOOST_HEADER_ONLY=1
+   AC_DEFINE(BOOST_HEADER_ONLY,1,[Define if using a header-only build for Boost])
+fi
+
+AC_SUBST(BOOST_HEADER_ONLY)
+AM_CONDITIONAL(BOOST_HEADER_ONLY,test x$BOOST_HEADER_ONLY = x1)
 AC_CACHE_SAVE
 
 #----------------------

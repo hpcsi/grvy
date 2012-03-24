@@ -28,14 +28,23 @@ echo C compiler flags.............. : $CFLAGS
 echo Fortran compiler ............. : $FC
 echo Fortran compiler flags........ : $FCFLAGS
 echo Install dir................... : $prefix 
-echo Boost dir..................... : $BOOST_ROOT
-echo Boost regex lib............... : $BOOST_REGEX_LDFLAGS $BOOST_REGEX_LIBS
-echo Boost filesystem lib.......... : $BOOST_FILESYSTEM_LDFLAGS $BOOST_FILESYSTEM_LIBS
+echo Boost C++ flags............... : $BOOST_CPPFLAGS
 echo Build user.................... : $USER
 echo Build host.................... : $BUILD_HOST
 echo Configure date................ : $BUILD_DATE
 echo Build architecture............ : $BUILD_ARCH
 echo SVN revision number........... : $BUILD_VERSION
+echo
+echo Boost Configuration:
+if test "$BOOST_HEADER_ONLY" = "1"; then
+     echo '   'Header only build - GRVY functionality limited to following modules
+     echo '    --> 'Input Parsing
+     echo '    --> 'Performance Timer Utilities
+else
+     echo '   'Boost library linkage included for the following:
+     echo '   'regex lib............... : $BOOST_REGEX_LDFLAGS $BOOST_REGEX_LIBS
+     echo '   'filesystem lib.......... : $BOOST_FILESYSTEM_LDFLAGS $BOOST_FILESYSTEM_LIBS
+fi
 echo
 echo Optional Features:
    if test "$HAVE_HDF5" = "0"; then
