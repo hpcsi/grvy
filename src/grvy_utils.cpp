@@ -46,9 +46,13 @@
 #include<grvy_int.h>
 #include<grvy.h>
 
-#define BOOST_FILESYSTEM_VERSION 3
 #include"boost/format.hpp"
+
+#define BOOST_FILESYSTEM_VERSION 3
+#ifdef HAVE_BOOST_FILESYSTEM_PATH_HPP
 #include"boost/filesystem.hpp"
+#endif
+
 #include"fortran_string_order.h"
 
 using namespace std;
@@ -179,13 +183,13 @@ namespace GRVY {
   }
 
   // ----------------------------------
-  // Recursivy directory copy utility
+  // Recursive directory copy utility
   // ----------------------------------
 
   extern "C" int grvy_copy_dir(const char *from_dir, const char *to_dir)
   {
 
-#if 0
+#ifdef HAVE_BOOST_FILESYSTEM_PATH_HPP
     boost::filesystem::path source_dir(from_dir);
     boost::filesystem::path dest_dir  (to_dir);
 
@@ -215,7 +219,6 @@ namespace GRVY {
 
     // create destination if necessary and verify empty contents
 
-#if 0
     boost::system::error_code ec;
 
     if(boost::filesystem::is_directory(dest_dir))
@@ -284,10 +287,17 @@ namespace GRVY {
 
 	grvy_printf(GRVY_DEBUG,"%s: done with copy\n",__func__);
       }
+
+    return(0);
+
+#else
+    grvy_printf(GRVY_ERROR,"\nThis GRVY library installation was built with Boost headers-only:\n");
+    grvy_printf(GRVY_ERROR,"--> grvy_copy_dir() function is unsupported as a result.\n");
+    grvy_printf(GRVY_ERROR,"\nPlease rebuild GRVY with full Boost library linkage in order to "
+		"enable this functionality.\n\n");
+    return(1);
 #endif
-#endif
-    
-	return(0);
+
   }
 
   // Utility to provide a unique scratch directory for the user - note

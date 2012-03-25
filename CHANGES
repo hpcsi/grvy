@@ -1,5 +1,8 @@
 Version 0.32 (In progress)
- 
+
+  * added an --enable-boost-headers-only compile mode. This will disable 
+    some functionality (grvy_copy_dir in particular), but allows for a GRVY
+    build using Boost headers only
   * added runtime option to dump indvidudual read/write statistics for MPI ocore  
   * minimum Boost version required updated to 1.46
   * addition of grvy_input_fread_logical() function for parsing logicals in F90

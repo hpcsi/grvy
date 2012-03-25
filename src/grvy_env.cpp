@@ -30,14 +30,18 @@
 #include<sys/utsname.h>
 #include<grvy.h>
 #include<grvy_env.h>
-#include<boost/regex.hpp>
 #include<netdb.h>
 #include<iostream> 
 #include<unistd.h>
+#include<cstdio>
+#include<cstring>
+
+//#include<boost/regex.hpp>
 
 GRVY_Hostenv_Class::GRVY_Hostenv_Class()
 {
   struct utsname uts;
+  char *begin;
 
   uname (&uts);
 
@@ -45,9 +49,24 @@ GRVY_Hostenv_Class::GRVY_Hostenv_Class()
   os_sysname = uts.sysname;
   os_release = uts.release;
   os_version = uts.version;
+  //domainname = uts.domainname;
 
   // Cull domainname from nodename. 
 
+  begin = strstr(uts.nodename,".");
+  if(begin != NULL)
+    {
+      begin++;
+      domainname = begin;
+    }
+  else
+    domainname = "unknown";
+  
+  // 3/25/12 - doing away with Boost regex parsing of hostname in
+  // favor of simple C string parsing above. Removes dependency on
+  // regex library linkage.
+  
+#if 0
   boost::regex re("^([\\w\\-]+)\\.(\\S+)$");
   boost::cmatch regex_match;
 
@@ -82,6 +101,7 @@ GRVY_Hostenv_Class::GRVY_Hostenv_Class()
 	  //herror("foofoo");
 	}
     }
+#endif
 
   cputype = "Unknown";
   

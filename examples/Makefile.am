@@ -4,15 +4,17 @@ example_DATA            = input.c inputf.f90 pecos-input.txt \
 EXTRA_DIST	        = input.c inputf.f90 pecos-input.txt \
 		    	  timer_sum.c timer_sumf.f90 messages.c .license.stamp
 
-INCLUDES                = -I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_builddir)/src/common/getpot
+#INCLUDES                = -I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_builddir)/src/common/getpot
+INCLUDES                = -I$(top_srcdir)/src -I$(top_builddir)/src 
 AM_FCFLAGS              = $(INCLUDES)
 AM_CFLAGS               = $(INCLUDES)
-AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
+#AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
+AM_CPPFLAGS             = $(INCLUDES) 
 LIBS                    = -L$(top_builddir)/src -lgrvy 
 
-if LINK_BOOST_LIBS
-   LIBS                += $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
-endif
+#if LINK_BOOST_LIBS
+#   LIBS                += $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
+#endif
 
 
 BUILT_SOURCES           = .license.stamp

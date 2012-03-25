@@ -82,7 +82,7 @@ if test "x$boost_header_only" != "xyes";then
    BOOST_MATH
    BOOST_REGEX
    BOOST_PROGRAM_OPTIONS
-   ###BOOST_FILESYSTEM('')
+   BOOST_FILESYSTEM('')
    BOOST_FILESYSTEM
    BOOST_SYSTEM
    #BOOST_ASIO

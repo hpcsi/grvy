@@ -35,15 +35,13 @@ echo Configure date................ : $BUILD_DATE
 echo Build architecture............ : $BUILD_ARCH
 echo SVN revision number........... : $BUILD_VERSION
 echo
-echo Boost Configuration:
 if test "$BOOST_HEADER_ONLY" = "1"; then
-     echo '   'Header only build - GRVY functionality limited to following modules
-     echo '    --> 'Input Parsing
-     echo '    --> 'Performance Timer Utilities
+     echo Boost Configuration - Header only build requested
+     echo '   grvy_copy_dir()'............ : disabled
 else
-     echo '   'Boost library linkage included for the following:
-     echo '   'regex lib............... : $BOOST_REGEX_LDFLAGS $BOOST_REGEX_LIBS
-     echo '   'filesystem lib.......... : $BOOST_FILESYSTEM_LDFLAGS $BOOST_FILESYSTEM_LIBS
+     echo Boost Configuration - Library linkage included for the following:
+#     echo '   'regex lib............... : $BOOST_REGEX_LDFLAGS $BOOST_REGEX_LIBS
+     echo '   'Filesystem lib............. : $BOOST_FILESYSTEM_LDFLAGS $BOOST_FILESYSTEM_LIBS
 fi
 echo
 echo Optional Features:

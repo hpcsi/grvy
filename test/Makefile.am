@@ -1,7 +1,7 @@
 SUBDIRS           =
 INCLUDES          = -I$(top_srcdir)/src -I$(top_builddir)/src
 AM_CFLAGS         = $(INCLUDES)
-AM_CPPFLAGS       = $(INCLUDES) #$(BOOST_CPPFLAGS)
+AM_CPPFLAGS       = $(INCLUDES) 
 AM_F77FLAGS       = $(INCLUDES)
 AM_FCFLAGS        = $(INCLUDES)
 AM_LDFLAGS        = ../src/libgrvy.la
@@ -93,9 +93,7 @@ TESTS                                           += C_check_file_path
 check_PROGRAMS                                  += C_check_file_path
 C_check_file_path_SOURCES                        = C_check_file_path.c
 
-TESTS                                           += C_check_copy_dir
-check_PROGRAMS                                  += C_check_copy_dir
-C_check_copy_dir_SOURCES                         = C_check_copy_dir.c
+
 
 TESTS                                           += C_input_fdump
 check_PROGRAMS                                  += C_input_fdump
@@ -117,19 +115,29 @@ TESTS                                           += C_version_stdout
 check_PROGRAMS                                  += C_version_stdout
 C_version_stdout_SOURCES                         = C_version_stdout.c
 
+# Following tests rely on various Boost library linkage
+
+if LINK_BOOST_LIBS
+
+  TESTS                                         += C_check_copy_dir
+  check_PROGRAMS                                += C_check_copy_dir
+  C_check_copy_dir_SOURCES                       = C_check_copy_dir.c
+
+endif
+
 if HDF5_ENABLED
 
-TESTS                                           += C_hdf_hist_timing
-check_PROGRAMS                                  += C_hdf_hist_timing
-C_hdf_hist_timing_SOURCES                        = C_hdf_hist_timing.c
+  TESTS                                         += C_hdf_hist_timing
+  check_PROGRAMS                                += C_hdf_hist_timing
+  C_hdf_hist_timing_SOURCES                      = C_hdf_hist_timing.c
 
 endif
 
 if MPI_ENABLED
 
-TESTS                                           += C_ocore.sh
-check_PROGRAMS                                  += C_ocore
-C_ocore_SOURCES                                  = C_ocore.c
+  TESTS                                         += C_ocore.sh
+  check_PROGRAMS                                += C_ocore
+  C_ocore_SOURCES                                = C_ocore.c
 
 endif
 
@@ -193,11 +201,6 @@ check_PROGRAMS                                   += F_check_file_path
 F_check_file_path_SOURCES                         = F_check_file_path.f90
 F_check_file_path_LDADD                           = ../src/libgrvyf.la
 
-TESTS                                            += F_check_copy_dir
-check_PROGRAMS                                   += F_check_copy_dir
-F_check_copy_dir_SOURCES                          = F_check_copy_dir.F90
-F_check_copy_dir_LDADD                            = ../src/libgrvyf.la
-
 TESTS                                            += F_wrapper_log.sh
 check_PROGRAMS                                   += F_log
 F_log_SOURCES                                     = F_log.f90
@@ -258,12 +261,23 @@ check_PROGRAMS                                   += F_get_command_arguments
 F_get_command_arguments_SOURCES                   = F_get_command_arguments.f90
 F_get_command_arguments_LDADD                     = ../src/libgrvyf.la
 
+# Following tests rely on various Boost library linkage
+
+if LINK_BOOST_LIBS
+
+  TESTS                                          += F_check_copy_dir
+  check_PROGRAMS                                 += F_check_copy_dir
+  F_check_copy_dir_SOURCES                        = F_check_copy_dir.F90
+  F_check_copy_dir_LDADD                          = ../src/libgrvyf.la
+
+endif
+
 if MPI_ENABLED
 
-TESTS                                            += F_ocore.sh
-check_PROGRAMS                                   += F_ocore
-F_ocore_SOURCES                                   = F_ocore.f90
-F_ocore_LDADD                                     = ../src/libgrvyf.la
+  TESTS                                          += F_ocore.sh
+  check_PROGRAMS                                 += F_ocore
+  F_ocore_SOURCES                                 = F_ocore.f90
+  F_ocore_LDADD                                   = ../src/libgrvyf.la
 
 endif
 
