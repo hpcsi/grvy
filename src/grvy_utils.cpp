@@ -185,6 +185,7 @@ namespace GRVY {
   extern "C" int grvy_copy_dir(const char *from_dir, const char *to_dir)
   {
 
+#if 0
     boost::filesystem::path source_dir(from_dir);
     boost::filesystem::path dest_dir  (to_dir);
 
@@ -214,6 +215,7 @@ namespace GRVY {
 
     // create destination if necessary and verify empty contents
 
+#if 0
     boost::system::error_code ec;
 
     if(boost::filesystem::is_directory(dest_dir))
@@ -282,6 +284,8 @@ namespace GRVY {
 
 	grvy_printf(GRVY_DEBUG,"%s: done with copy\n",__func__);
       }
+#endif
+#endif
     
 	return(0);
   }

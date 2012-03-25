@@ -24,14 +24,31 @@ library_include_HEADERS   = grvy.h grvy_classes.h
 #-----------------------
 
 lib_LTLIBRARIES          += libgrvy.la
-libgrvy_la_LDFLAGS        = $(all_libraries) -release $(GENERIC_RELEASE) $(BOOST_REGEX_LDFLAGS) \
-				$(BOOST_PROGRAM_OPTIONS_LIBS) $(BOOST_REGEX_LIBS) \
-				$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) 
+libgrvy_la_LDFLAGS        = $(all_libraries) -release $(GENERIC_RELEASE) 
+
+ # if LINK_BOOST_LIBS
+ #   libgrvy_la_LDFLAGS     += $(BOOST_REGEX_LDFLAGS) \
+ # 				$(BOOST_PROGRAM_OPTIONS_LIBS) $(BOOST_REGEX_LIBS) \
+ # 				$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) 
+ # endif
+
+
 libgrvy_la_SOURCES        = $(getpot_sources) $(cc_sources) $(h_sources)
 
 if HDF5_ENABLED	         
   AM_CPPFLAGS            += $(HDF5_CFLAGS)
   libgrvy_la_LDFLAGS     += $(HDF5_LIBS) -lhdf5_hl
+
+  bin_PROGRAMS           += gdump 
+  gdump_SOURCES           = gdump.cpp
+  gdump_LDADD             = -L$(top_builddir)/src -lgrvy
+  gdump_DEPENDENCI        = libgrvy.la
+ 
+  bin_PROGRAMS           += gadd
+  gadd_SOURCES            = gadd.cpp
+  gadd_LDADD              = -L$(top_builddir)/src -lgrvy
+  gadd_DEPENDENCIES       = libgrvy.la
+
 endif
 
 #-----------------------
@@ -57,15 +74,7 @@ hostinfo_SOURCES          = hostinfo.cpp
 hostinfo_LDADD            = -L$(top_builddir)/src -lgrvy
 hostinfo_DEPENDENCIES     = libgrvy.la
 
-bin_PROGRAMS             += gdump 
-gdump_SOURCES             = gdump.cpp
-gdump_LDADD               = -L$(top_builddir)/src -lgrvy
-gdump_DEPENDENCIES        = libgrvy.la
 
-bin_PROGRAMS             += gadd
-gadd_SOURCES              = gadd.cpp
-gadd_LDADD                = -L$(top_builddir)/src -lgrvy
-gadd_DEPENDENCIES         = libgrvy.la
 
 #---------------------------------
 # Embedded license header support

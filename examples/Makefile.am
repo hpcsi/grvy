@@ -8,7 +8,12 @@ INCLUDES                = -I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_buil
 AM_FCFLAGS              = $(INCLUDES)
 AM_CFLAGS               = $(INCLUDES)
 AM_CPPFLAGS             = $(INCLUDES) $(BOOST_CPPFLAGS)
-LIBS                    = -L$(top_builddir)/src -lgrvy $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
+LIBS                    = -L$(top_builddir)/src -lgrvy 
+
+if LINK_BOOST_LIBS
+   LIBS                += $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) 
+endif
+
 
 BUILT_SOURCES           = .license.stamp
 CLEANFILES              = .license.stamp *.gcno *.gcda

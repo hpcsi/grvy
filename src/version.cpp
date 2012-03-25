@@ -33,7 +33,7 @@
 int main()
 {
   
-  grvy_version_stdout();
+  //  grvy_version_stdout();
   return 0;
 }
 
