@@ -40,8 +40,10 @@ if test "$BOOST_HEADER_ONLY" = "1"; then
      echo '   grvy_copy_dir()'............ : disabled
 else
      echo Boost Configuration - Library linkage included for the following:
-#     echo '   'regex lib............... : $BOOST_REGEX_LDFLAGS $BOOST_REGEX_LIBS
-     echo '   'Filesystem lib............. : $BOOST_FILESYSTEM_LDFLAGS $BOOST_FILESYSTEM_LIBS
+     echo '   'Boost LDFLAGS.............. : $BOOST_PROGRAM_OPTIONS_LDFLAGS
+     echo '   'Program options lib........ : $BOOST_PROGRAM_OPTIONS_LIBS
+     echo '   'Filesystem lib............. : $BOOST_FILESYSTEM_LIBS
+     echo '   'System lib................. : $BOOST_SYSTEM_LIBS
 fi
 echo
 echo Optional Features:
