@@ -30,6 +30,7 @@
 #include<grvy.h>
 #include<sys/time.h>
 #include<time.h>
+#include<unistd.h>
 
 // Convenience timer macros for begin/end functions
 
