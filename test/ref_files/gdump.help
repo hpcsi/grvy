@@ -7,10 +7,10 @@ OPTIONS:
   --help                     generate help message and exit
   --version                  output version information and exit
   -q [ --quiet ]             suppress normal stdout messages
-  -a [ --enable-subtimers ]  include all individual subtimer(s) in output 
+  -a [ --enable-subtimers ]  include all individual subtimer(s) in output
   -s [ --summarize-only ]    summarize timer statistics but do not dump files
-  -d [ --delimiter ] arg     override default comment delimiter (default=#)
-  -o [ --output-dir ] arg    override default dump directory (default=./gdata)
   -c [ --with-comment ]      include user comment string in output
   -e [ --with-env ]          include runtime environment variables in output
+  -d [ --delimiter ]  arg    override default comment delimiter (default=#)
+  -o [ --output-dir ] arg    override default dump directory (default=./gdata)
 
