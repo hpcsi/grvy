@@ -31,15 +31,15 @@
 #include<iostream>
 #include<vector>
 
-#include<boost/program_options.hpp>
-#include<boost/program_options/parsers.hpp>
+#define GETPOT_NAMESPACE GRVYGetPot
+#define GETPOT_DISABLE_MUTEX
+#include<getpot.h>
 
 #include<grvy_classes.h>
 #include<grvy.h>
 #include<grvy_int.h>
 
 using namespace std;
-namespace bo = boost::program_options;
 
 namespace GRVY_gdump
 {
@@ -48,6 +48,18 @@ namespace GRVY_gdump
     grvy_printf(GRVY_INFO,"\nUsage: %s [OPTIONS] file\n\n","gdump");
     grvy_printf(GRVY_INFO,"where \"file\" is the path to a libGRVY style historical performance database.\n\n");
     grvy_printf(GRVY_INFO,"OPTIONS:\n");
+
+    grvy_printf(GRVY_INFO,"  --help                     generate help message and exit\n");
+    grvy_printf(GRVY_INFO,"  --version                  output version information and exit\n");
+    grvy_printf(GRVY_INFO,"  -q [ --quiet ]             suppress normal stdout messages\n");
+    grvy_printf(GRVY_INFO,"  -a [ --enable-subtimers ]  include all individual subtimer(s) in output\n");
+    grvy_printf(GRVY_INFO,"  -s [ --summarize-only ]    summarize timer statistics but do not dump files\n");
+    grvy_printf(GRVY_INFO,"  -c [ --with-comment ]      include user comment string in output\n");
+    grvy_printf(GRVY_INFO,"  -e [ --with-env ]          include runtime environment variables in output\n");
+    grvy_printf(GRVY_INFO,"  -d [ --delimiter ]  arg    override default comment delimiter (default=#)\n");
+    grvy_printf(GRVY_INFO,"  -o [ --output-dir ] arg    override default dump directory (default=./gdata)\n");
+
+    grvy_printf(GRVY_INFO,"\n");
     return;
   }
 
@@ -58,116 +70,117 @@ namespace GRVY_gdump
     string delimiter ("#");
     string output_dir("./gdata");
 
-    // define supported options
-
-    bo::options_description visible;
-    bo::options_description hidden;
-    bo::options_description desc;
-    bo::variables_map vmap;
-    bo::positional_options_description p;
-
-    visible.add_options()
-      ("help",                            "generate help message and exit")
-      ("version",                         "output version information and exit")
-      ("quiet,q",                         "suppress normal stdout messages")
-      ("enable-subtimers,a",              "include all individual subtimer(s) in output ")
-      ("summarize-only,s",                "summarize timer statistics but do not dump files")
-      ("delimiter,d",bo::value<string>(), "override default comment delimiter (default=#)")
-      ("output-dir,o",bo::value<string>(),"override default dump directory (default=./gdata)")
-      ("with-comment,c",                  "include user comment string in output")
-      ("with-env,e",                      "include runtime environment variables in output");
-
-      //("dump-files,D",      "dump output to individual ascii files")
-      //("output-dir,O",bo::value<string>()->default_value("./gdata"),"specify output file dump directory");
-      ;
-
-    hidden.add_options()
-      ("input-file",bo::value< string >(),"input file")
-      ("debug",                           "verbose debugging output")
-      ;
-
-    desc.add(hidden).add(visible); // combined option set
-    p.add("input-file",1);	   // required input-file name
-
     //-------------------
     // parse command line
     //-------------------
 
-    bo::parsed_options parsed = 
-      bo::command_line_parser(argc,argv).options(desc).positional(p).allow_unregistered().run();
+    GRVYGetPot::GetPot cl(argc,argv);
 
-    bo::store(parsed,vmap);
-    bo::notify(vmap);
-
-    if(vmap.count("version"))
+    if(cl.search("--version"))
       {
 	grvy_version_stdout();
 	return;
       }
 
-    if(vmap.count("help")  || !vmap.count("input-file") || (argc == 1) ) 
+    if(cl.search(2,"--help","-h"))
       {
 	GRVY_gdump::summarize_usage();
-	cout << visible << "\n";
 	return;
       }
 
-    if(vmap.count("debug"))
-      {
-	grvy_log_setlevel(GRVY_DEBUG);
-      }
+    // store inputs (variables with no leading minus sign); because
+    // some of our command-line options have arguments, this vector
+    // can be longer than one. We will prune values from this vector
+    // as we parse known options; you're probably thinking to yourself
+    // that Boost program options handles this a little nicer - you're
+    // probably right. But GetPot is header only, and isn't that
+    // much more work, so we're switching to minimize the number of
+    // external library linkages.
 
-    if(vmap.count("quiet"))
+    vector<string> inputs = cl.nominus_vector();
+
+    if(cl.search(2,"--quiet","-q"))
       {
 	gt->SetOption("output_stdout",false);
 	grvy_printf(GRVY_DEBUG,"User requested --quiet option\n");
       }
 
-    if(vmap.count("summarize-only"))
+    if(cl.search("--debug"))
+      {
+	grvy_log_setlevel(GRVY_DEBUG);
+      }
+
+    if(cl.search(2,"--summarize-only","-s"))
       {
 	gt->SetOption("dump_files",false);
 	grvy_printf(GRVY_DEBUG,"User requested --sumarize-only option\n");
       }
 
-    if(vmap.count("with-comment"))
+    if(cl.search(2,"--with-comment","-c"))
       {
 	gt->SetOption("output_comments",true);
 	grvy_printf(GRVY_DEBUG,"User requested --with-comment option\n");
       }
 
-    if(vmap.count("with-env"))
+    if(cl.search(2,"--with-env","-e"))
       {
 	gt->SetOption("output_printenv",true);
 	grvy_printf(GRVY_DEBUG,"User requested --with-env option\n");
       }
 
-    if(vmap.count("enable-subtimers"))
+    if(cl.search(2,"--enable-subtimers","-a"))
       {
 	gt->SetOption("output_subtimer_raw",  true);
 	gt->SetOption("output_totaltimer_raw",true);
 	grvy_printf(GRVY_DEBUG,"User requested --enable-subtimer option\n");
       }
 
-    delimiter  = GRVY::read_boost_option(vmap,"delimiter",  delimiter);
-    output_dir = GRVY::read_boost_option(vmap,"output-dir", output_dir);
-    input_file = GRVY::read_boost_option(vmap,"input-file", input_file);
+    if(cl.search(2,"--delimiter","-d"))
+      {
+	delimiter = cl.next(delimiter);
+	grvy_printf(GRVY_DEBUG,"User requested --delimiter option with %s\n",delimiter.c_str());
 
-    // Error on unsupported options
+	for(size_t i=0;i<inputs.size();i++) // pop this arg from remaining inputs
+	  if(inputs[i] == delimiter)
+	    {
+	      grvy_printf(GRVY_DEBUG,"Erasing delimiter = %s\n",delimiter.c_str());
+	      inputs.erase(inputs.begin()+i);
+	    }
+      }
 
-    vector<string> unknown = bo::collect_unrecognized(parsed.options,bo::exclude_positional);
+    if(cl.search(2,"--output-dir","-o"))
+      {
+	output_dir = cl.next(output_dir);
+	grvy_printf(GRVY_DEBUG,"User requested --output-dir option with %s\n",output_dir.c_str());
 
-    if(unknown.size() > 0)
+	for(size_t i=0;i<inputs.size();i++) // pop this arg from remaining inputs
+	  if(inputs[i] == output_dir)
+	    {
+	      grvy_printf(GRVY_DEBUG,"Erasing output_dir = %s\n",output_dir.c_str());
+	      inputs.erase(inputs.begin()+i);
+	    }
+      }
+
+    if(inputs.size() != 1)
+      {
+	printf("size of raw inputs = %i\n",inputs.size());
+	GRVY_gdump::summarize_usage();
+	return;
+      } 
+    else
+      input_file = inputs[0];
+
+    // error on unknown options....
+
+    vector<string> ufos = cl.unidentified_options();
+
+    if(ufos.size() > 0)
       {
 	grvy_printf(GRVY_ERROR,"\n");
-
-	for(int i=0;i<unknown.size();i++)
-	  {
-	    grvy_printf(GRVY_ERROR,"%s: Unsupported command-line argument detected (%s)\n","[*] Error:",
-			unknown[i].c_str());
-	  }
-
+	for(size_t i = 0;i<ufos.size();i++)
+	  grvy_printf(GRVY_ERROR,"%s: Unsupported command-line argument detected (%s)\n","[*] Error",
+		    ufos[i].c_str());
 	GRVY_gdump::summarize_usage();
-	cout << visible << "\n";
 	exit(1);
       }
 
