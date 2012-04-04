@@ -31,12 +31,16 @@
 
 #include<iostream>
 #include<vector>
-#include<boost/program_options.hpp>
-#include<boost/program_options/parsers.hpp>
+#include<boost/lexical_cast.hpp>
+
 #include<grvy_classes.h>
 #include<grvy_env.h>
 #include<grvy.h>
 #include<grvy_int.h>
+
+#define GETPOT_NAMESPACE GRVYGetPot
+#define GETPOT_DISABLE_MUTEX
+#include<getpot.h>
 
 using namespace std;
 
@@ -53,7 +57,57 @@ namespace GRVY_gadd
 		"perform system benchmarking, identify performance outliers, and facilitate\n"
 		"cross-platform comparisons.\n\n");
     grvy_printf(GRVY_INFO,"OPTIONS:\n");
+    grvy_printf(GRVY_INFO,"  --help                  generate help message and exit\n");
+    grvy_printf(GRVY_INFO,"  --version               output version information and exit\n");
+    grvy_printf(GRVY_INFO,"  -q [ --quiet ]          suppress normal stdout messages\n");
+    grvy_printf(GRVY_INFO,"  -e [ --env ]            store runtime environment with timing\n");
+    grvy_printf(GRVY_INFO,"  -c [ --comment ]  arg   additional comment string for the measurement\n");
+    grvy_printf(GRVY_INFO,"  -m [ --machine ]  arg   machine name (default=local hostname)\n");
+    grvy_printf(GRVY_INFO,"  -j [ --jobid ]    arg   batch job identifier (default = -1)\n");
+    grvy_printf(GRVY_INFO,"  -p [ --numprocs ] arg   number of processors (default = 1)\n");
+    grvy_printf(GRVY_INFO,"  -r [ --revision ] arg   application/code revision (default = unknown)\n");
+    grvy_printf(GRVY_INFO,"  -f [ --flops ]    arg   measured FLOPs (default = 0.0)\n");
+    grvy_printf(GRVY_INFO,"\n");
+								    
     return;
+  }
+
+  void pop_argument(vector<string> &inputs,string arg)
+  {
+    for(size_t i=0;i<inputs.size();i++) // pop this arg from remaining inputs
+      if(inputs[i] == arg)
+	{
+	  grvy_printf(GRVY_DEBUG,"Erasing delimiter = %s\n",arg.c_str());
+	  inputs.erase(inputs.begin()+i);
+	}
+  }
+
+  // support routines to read values for optional command-line arguments
+  
+  void read_optional_argument(GRVYGetPot::GetPot &cl, const char *opt_text1, const char *opt_text2, 
+			      string &varname, vector<string> &arguments)
+  {
+    if(cl.search(2,opt_text1,opt_text2))
+      {
+	varname = cl.next(varname);
+	grvy_printf(GRVY_DEBUG,"User requested %s option = %s\n",opt_text1,varname.c_str());
+	pop_argument(arguments,varname);
+      }
+  }
+
+  template <typename T> void read_optional_argument(GRVYGetPot::GetPot &cl, 
+						    const char *opt_text1, const char *opt_text2, 
+						    T &varname, vector<string> &arguments)
+  {
+    if(cl.search(2,opt_text1,opt_text2))
+      {
+	varname = cl.next(varname);
+
+	if(grvy_log_getlevel() == GRVY_DEBUG)
+	  cout << "User requested " << opt_text1 << " = " << varname << endl;
+
+	pop_argument(arguments,boost::lexical_cast<string>(varname));
+      }
   }
 
   void parse_supported_options(int argc, char *argv[], char *env[], GRVY::GRVY_Timer_Class *gt)
@@ -74,71 +128,33 @@ namespace GRVY_gadd
     string revision = "unknown"; // default processor count
     double flops    = 0.0;	 // default FLOPs
     
-    // Define supported options for Boost
-    
-    namespace bo = boost::program_options;
-    
-    bo::options_description            visible;
-    bo::options_description            hidden;
-    bo::options_description            desc;
-    bo::variables_map                  vmap;
-    bo::positional_options_description p;
-    
-    visible.add_options()
-      ("help",                            "generate help message and exit")
-      ("version",                         "output version information and exit")
-      ("quiet,q",                         "suppress normal stdout messages")
-      ("env,e",                           "store runtime environment with timing")
-      ("comment,c", bo::value<string>(),  "additional comment string for the measurement")
-      ("machine,m", bo::value<string>(),  "machine name (default=local hostname)")
-      ("jobid,j",   bo::value<int>(),     "batch job identifier (default = -1)")
-      ("numprocs,p",bo::value<int>(),     "number of processors (default = 1)")
-      ("revision,r",bo::value<string>(),  "application/code revision (default = unknown)")
-      ("flops,f",   bo::value<double>(),  "measured FLOPs (default = 0.0)")
-      ;
-
-    hidden.add_options()
-      ("timing"    ,bo::value<double>(),  "timing")
-      ("name"      ,bo::value<string>(),  "name")
-      ("input-file",bo::value<string>(),  "input file")
-      ("debug",                           "verbose debugging output")
-      ;
-
-    desc.add(hidden).add(visible); // combined option set
-
-    p.add("timing"    , 1);	   // required measurement timing (secs)
-    p.add("name"      , 1);	   // required measurement name
-    p.add("input-file", 1);	   // required path to hdf5 storage file
-
     //-------------------
     // parse command line
     //-------------------
 
-    bo::parsed_options parsed = 
-      bo::command_line_parser(argc,argv).options(desc).positional(p).allow_unregistered().run();
+    GRVYGetPot::GetPot cl(argc,argv);
 
-    bo::store(parsed,vmap);
-    bo::notify(vmap);
 
-    if(vmap.count("version"))
+    if(cl.search("--version"))
       {
 	grvy_version_stdout();
 	return;
       }
 
-    if(vmap.count("help")  || !vmap.count("input-file") || !vmap.count("timing") || !vmap.count("name") )
+    if(cl.search(2,"--help","-h"))
       {
 	GRVY_gadd::summarize_usage();
-	cout << visible << "\n";
 	return;
       }
 
-    if(vmap.count("debug"))
+    vector<string> inputs = cl.nominus_vector();
+
+    if(cl.search("--debug"))
       {
 	grvy_log_setlevel(GRVY_DEBUG);
       }
 
-    if(vmap.count("quiet"))
+    if(cl.search(2,"--quiet","-q"))
       {
 	gt->SetOption("output_stdout",false);
 	grvy_log_setlevel(GRVY_ERROR);
@@ -146,51 +162,51 @@ namespace GRVY_gadd
 	grvy_printf(GRVY_DEBUG,"User requested --quiet option\n");
       }
 
-#if 1
-    if(vmap.count("env"))
+    if(cl.search(2,"--with-env","-e"))
       {
 	gt->SetOption("output_printenv",true);
 	grvy_printf(GRVY_DEBUG,"User requested --env option\n");
       }
-#endif
 
     // Optional arguments
 
     grvy_printf(GRVY_DEBUG,"\n%s: Parsing optional arguments:\n\n",__func__);
     GRVY_Hostenv_Class myenv;
 
-    machine    = GRVY::read_boost_option(vmap,"machine",   myenv.Hostname());
-    comment    = GRVY::read_boost_option(vmap,"comment",   comment);
-    jobId      = GRVY::read_boost_option(vmap,"jobid",     jobId);
-    numprocs   = GRVY::read_boost_option(vmap,"numprocs",  numprocs);
-    revision   = GRVY::read_boost_option(vmap,"revision",  revision);
-    flops      = GRVY::read_boost_option(vmap,"flops",     flops);
-    timing     = GRVY::read_boost_option(vmap,"timing",    timing);
+    read_optional_argument(cl,"--comment", "-c",comment, inputs);
+    read_optional_argument(cl,"--revision","-r",revision,inputs);
+    read_optional_argument(cl,"--machine", "-m",machine, inputs);
+    read_optional_argument(cl,"--jobId",   "-j",jobId,   inputs);
+    read_optional_argument(cl,"--numprocs","-p",numprocs,inputs);
+    read_optional_argument(cl,"--flops",   "-f",flops,   inputs);
 
     // Required arguments 
 
+    if(inputs.size() != 3)
+      {
+	GRVY_gadd::summarize_usage();
+	return;
+      } 
+    else
+      {
+	timing     = boost::lexical_cast<double>(inputs[0]);
+	name       = inputs[1];
+	input_file = inputs[2];
+      }
+
     grvy_printf(GRVY_DEBUG,"\n%s: Parsing required arguments:\n\n",__func__);
 
-    name       = GRVY::read_boost_option(vmap,"name",      name);
-    timing     = GRVY::read_boost_option(vmap,"timing",    timing);
-    input_file = GRVY::read_boost_option(vmap,"input-file",input_file);
+    // Error on unsupported options
 
-    // Erorr on unsupported options
+    vector<string> ufos = cl.unidentified_options();
 
-    vector<string> unknown = bo::collect_unrecognized(parsed.options,bo::exclude_positional);
-
-    if(unknown.size() > 0)
+    if(ufos.size() > 0)
       {
 	grvy_printf(GRVY_ERROR,"\n");
-
-	for(int i=0;i<unknown.size();i++)
-	  {
-	    grvy_printf(GRVY_ERROR,"%s: Unsupported command-line argument detected (%s)\n","[*] Error:",
-			unknown[i].c_str());
-	  }
-
+	for(size_t i = 0;i<ufos.size();i++)
+	  grvy_printf(GRVY_ERROR,"%s: Unsupported command-line argument detected (%s)\n","[*] Error",
+		    ufos[i].c_str());
 	GRVY_gadd::summarize_usage();
-	cout << visible << "\n";
 	exit(1);
       }
 

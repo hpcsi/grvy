@@ -11,14 +11,14 @@ perform system benchmarking, identify performance outliers, and facilitate
 cross-platform comparisons.
 
 OPTIONS:
-  --help                generate help message and exit
-  --version             output version information and exit
-  -q [ --quiet ]        suppress normal stdout messages
-  -e [ --env ]          store runtime environment with timing
-  -c [ --comment ] arg  additional comment string for the measurement
-  -m [ --machine ] arg  machine name (default=local hostname)
-  -j [ --jobid ] arg    batch job identifier (default = -1)
-  -p [ --numprocs ] arg number of processors (default = 1)
-  -r [ --revision ] arg application/code revision (default = unknown)
-  -f [ --flops ] arg    measured FLOPs (default = 0.0)
+  --help                  generate help message and exit
+  --version               output version information and exit
+  -q [ --quiet ]          suppress normal stdout messages
+  -e [ --env ]            store runtime environment with timing
+  -c [ --comment ]  arg   additional comment string for the measurement
+  -m [ --machine ]  arg   machine name (default=local hostname)
+  -j [ --jobid ]    arg   batch job identifier (default = -1)
+  -p [ --numprocs ] arg   number of processors (default = 1)
+  -r [ --revision ] arg   application/code revision (default = unknown)
+  -f [ --flops ]    arg   measured FLOPs (default = 0.0)
 
