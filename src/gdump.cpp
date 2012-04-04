@@ -163,7 +163,6 @@ namespace GRVY_gdump
 
     if(inputs.size() != 1)
       {
-	printf("size of raw inputs = %i\n",inputs.size());
 	GRVY_gdump::summarize_usage();
 	return;
       } 
