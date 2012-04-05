@@ -76,7 +76,7 @@ using namespace GRVY;
 
 typedef struct GRVY_Timer_Data {
   double timings[2];
-  accumulator_set <double,features<tag::mean,tag::count,tag::variance,tag::min> > stats;
+  accumulator_set <double,features<tag::mean,tag::count,tag::variance,tag::min,tag::max> > stats;
 } tTimer_Data;
 
 typedef struct minmax {
@@ -140,7 +140,8 @@ namespace GRVY {
 
     GRVY_Timer_Class *self;	       // back pointer to public class
 
-    accumulator_set <double,features<tag::mean,tag::count,tag::variance,tag::min> > stats_empty; // empty accumulator
+    accumulator_set <double,features<tag::mean,tag::count,tag::variance,
+				     tag::min,tag::max> > stats_empty; // empty accumulator
 
   private:
     bool new_performance_table;
@@ -467,7 +468,35 @@ namespace GRVY {
       }
   }
 
+double GRVY_Timer_Class:: StatsMin(string id)
+  {
+    _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
 
+    if ( index == m_pimpl->TimerMap.end() )
+      {
+	_GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id.c_str());
+	return -1.0;
+      }
+    else
+      {
+	return(boost::accumulators::min((index->second).stats));
+      }
+  }
+
+double GRVY_Timer_Class:: StatsMax(string id)
+  {
+    _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
+
+    if ( index == m_pimpl->TimerMap.end() )
+      {
+	_GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id.c_str());
+	return -1.0;
+      }
+    else
+      {
+	return(boost::accumulators::max((index->second).stats));
+      }
+  }
 
   double GRVY_Timer_Class:: ElapsedGlobal()
   {

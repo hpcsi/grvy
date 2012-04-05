@@ -143,6 +143,20 @@ double grvy_timer_stats_variance(const char *id)
   return(_GRVY_Timers->StatsVariance(id));
 }
 
+// grvy_timer_stat_min(): provides min value for a timer
+
+double grvy_timer_stats_min(const char *id)
+{
+  return(_GRVY_Timers->StatsMin(id));
+}
+
+// grvy_timer_stat_max(): provides min value for a timer
+
+double grvy_timer_stats_max(const char *id)
+{
+  return(_GRVY_Timers->StatsMax(id));
+}
+
 // grvy_summarize_hist_timing(): summarize and dump historical timing information to ascii files
 void grvy_summarize_hist_timing(const char *filename, const char *delimiter, const char *outdir)
 {

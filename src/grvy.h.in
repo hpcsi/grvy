@@ -384,6 +384,8 @@ extern "C" {
   extern    int grvy_timer_stats_count         (const char *id);
   extern double grvy_timer_stats_mean          (const char *id);
   extern double grvy_timer_stats_variance      (const char *id);
+  extern double grvy_timer_stats_min           (const char *id);
+  extern double grvy_timer_stats_max           (const char *id);
   extern   void grvy_timer_summarize           ();
   extern    int grvy_timer_set_summarize_width (const int maxwidth);
 
@@ -984,7 +986,9 @@ class GRVY_Timer_Class {
 
   size_t StatsCount       (std::string id);   // # of calls to timer (id)
   double StatsMean        (std::string id);   // mean time for timer (id)
-  double StatsVariance    (std::string id);   //  variance for timer (id)
+  double StatsVariance    (std::string id);   // variance for timer  (id)
+  double StatsMin         (std::string id);   // min value for timer (id)
+  double StatsMax         (std::string id);   // max value for timer (id)
 
   // ------------------------------------------------------------------------
   // Historical timing support - note there are two primary mechanisms for

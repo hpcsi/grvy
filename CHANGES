@@ -1,5 +1,7 @@
 Version 0.32 (In progress)
 
+  * updated potential timer inaccuracy warnings to only occur once during timer summarize()
+  * added new query functions for min/max timer values
   * fix for timer summarize() when no prior timer finalize() call was provided
   * added an "--enable-boost-headers-only" compile mode. This will disable 
     some functionality (grvy_copy_dir in particular), but allows for a GRVY
