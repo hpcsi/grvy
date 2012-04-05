@@ -134,7 +134,6 @@ namespace GRVY_gadd
 
     GRVYGetPot::GetPot cl(argc,argv);
 
-
     if(cl.search("--version"))
       {
 	grvy_version_stdout();
@@ -180,22 +179,6 @@ namespace GRVY_gadd
     read_optional_argument(cl,"--numprocs","-p",numprocs,inputs);
     read_optional_argument(cl,"--flops",   "-f",flops,   inputs);
 
-    // Required arguments 
-
-    if(inputs.size() != 3)
-      {
-	GRVY_gadd::summarize_usage();
-	return;
-      } 
-    else
-      {
-	timing     = boost::lexical_cast<double>(inputs[0]);
-	name       = inputs[1];
-	input_file = inputs[2];
-      }
-
-    grvy_printf(GRVY_DEBUG,"\n%s: Parsing required arguments:\n\n",__func__);
-
     // Error on unsupported options
 
     vector<string> ufos = cl.unidentified_options();
@@ -208,6 +191,22 @@ namespace GRVY_gadd
 		    ufos[i].c_str());
 	GRVY_gadd::summarize_usage();
 	exit(1);
+      }
+
+    // Required arguments 
+
+    grvy_printf(GRVY_DEBUG,"\n%s: Parsing required arguments:\n\n",__func__);
+
+    if(inputs.size() != 3)
+      {
+	GRVY_gadd::summarize_usage();
+	exit(1);
+      } 
+    else
+      {
+	timing     = boost::lexical_cast<double>(inputs[0]);
+	name       = inputs[1];
+	input_file = inputs[2];
       }
 
     // If we have the pleasure of making it this far, then we have the

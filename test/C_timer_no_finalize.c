@@ -62,7 +62,7 @@ int main()
   double call_mean = 0.0;
   double call_variance = 0.0;
 
-  grvy_log_setlevel(GRVY_ERROR);
+  //grvy_log_setlevel(GRVY_ERROR);
 
   /* Basic test (no embedded timers) */
 

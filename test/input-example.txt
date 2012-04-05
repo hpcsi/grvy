@@ -7,7 +7,7 @@
 # defined by the [section] syntax. You are allowed to have variables
 # of the same name so long as they are within unique section definitions.  
 # 
-# $Id: pecos-input.txt 1939 2009-03-24 15:17:23Z karl $
+# $Id$
 # ------------------------------------------------------------------------------
 
 #------------------------------------------

@@ -7,7 +7,8 @@ AM_FCFLAGS        = $(INCLUDES)
 AM_LDFLAGS        = ../src/libgrvy.la
 BUILT_SOURCES     = .license.stamp
 
-EXTRA_DIST        = init.sh finalize.sh diff_dir.sh version hostinfo gadd gdump \
+EXTRA_DIST        = init.sh finalize.sh diff_dir.sh version hostinfo \
+	            gadd.sh gadd_unknown_option.sh gadd_with_options.sh gdump \
 		    C_timer_expanded_width.sh C_wrapper_log_printf.sh  C_wrapper_scratch_dir.sh \
                     C_timer_std_width.sh C_wrapper_log.sh C_timer_no_finalize.sh \
 		    F_get_command_arguments.sh  F_timer.sh F_wrapper_check_file_path.sh F_wrapper_scratch_dir.sh \
@@ -292,7 +293,9 @@ endif
 TESTS                                           += version hostinfo
 
 if HDF5_ENABLED
-TESTS                                           += gadd
+TESTS                                           += gadd.sh
+TESTS                                           += gadd_unknown_option.sh
+TESTS                                           += gadd_with_options.sh
 TESTS                                           += gdump
 endif
 
@@ -314,5 +317,10 @@ TESTS += finalize.sh
 	for file in $(srcdir)/*.f90 $(srcdir)/*.F90 ; do \
 		$(top_srcdir)/src/common/lic_utils/update_license.pl \
 			--c2f_comment $(top_srcdir)/LICENSE $$file | tee -a $@ ;\
+	done
+
+	for file in $(srcdir)/*.sh ; do \
+		$(top_srcdir)/src/common/lic_utils/update_license.pl \
+			--c2sh_comment $(top_srcdir)/LICENSE $$file | tee -a $@ ;\
 	done
 	touch .license.stamp
