@@ -62,7 +62,7 @@ int main()
   double call_mean = 0.0;
   double call_variance = 0.0;
 
-  //  grvy_log_setlevel(GRVY_ERROR);
+  grvy_log_setlevel(GRVY_ERROR);
 
   /* Basic test (no embedded timers) */
 
@@ -71,9 +71,7 @@ int main()
   for(itest=0;itest<max_iters_fast;itest++)
     foo_fast();
 
-  grvy_log_setlevel(GRVY_INFO);
-
-  //grvy_timer_finalize();
+  // Note: purposefully not calling finalize here: make sure the library does this for us.
 
   call_count = grvy_timer_stats_count("foo_fast");
 
@@ -83,50 +81,6 @@ int main()
       grvy_printf(GRVY_ERROR,"  --> Found %i calls, expecting %i",call_count,max_iters_fast);
       return(1);
     }
-
-#if 0
-  /* Test with embedded timers */
-
-  boo_gtod_timing   = 0.0;
-
-  grvy_timer_reset();
-  grvy_timer_init("GRVY");
-  
-  for(itest=0;itest<num_repeat;itest++)
-    {
-      for(i=0;i<max_iters;i++)
-	foo();
-    }
-
-  grvy_timer_finalize();
-
-  call_count    = grvy_timer_stats_count("foo");
-  call_mean     = grvy_timer_stats_mean("boo");
-  call_variance = grvy_timer_stats_variance("boo");
-
-  //  grvy_boo_timing   = grvy_timer_elapsedseconds("boo");
-
-  if( call_count != num_repeat*max_iters )
-    {
-      grvy_printf(GRVY_ERROR,"Timer stat count mismatch for foo(%i calls)\n",call_count);
-      grvy_printf(GRVY_ERROR,"  --> Found %i calls, expecting %i",call_count,num_repeat*max_iters);
-      return(1);
-    }
-
-  double boo_gtod_mean = boo_gtod_timing/grvy_timer_stats_count("boo");
-
-  grvy_printf(GRVY_DEBUG,"call mean = %f\n",call_mean);
-  grvy_printf(GRVY_DEBUG,"gtod_mean = %f\n",boo_gtod_mean);
-
-  double diff = fabs(boo_gtod_mean - call_mean);
-
-  if( diff > Tolerance)
-    {
-      grvy_printf(GRVY_ERROR,"Potential mean value mismatch -> diff = %e (secs)\n",diff);
-      grvy_printf(GRVY_ERROR,"The test host could be overloaded or the timer stats may be incorrect\n");
-      return(1);
-    }
-#endif
 
   // make sure summarize funcion is accessible
 
