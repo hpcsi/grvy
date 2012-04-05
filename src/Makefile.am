@@ -44,8 +44,8 @@ if HDF5_ENABLED
   bin_PROGRAMS           += gdump 
   gdump_SOURCES           = gdump.cpp
   gdump_LDADD             = -L$(top_builddir)/src -lgrvy
-  gdump_DEPENDENCI        = libgrvy.la
- 
+  gdump_DEPENDENCIES      = libgrvy.la
+
   bin_PROGRAMS           += gadd
   gadd_SOURCES            = gadd.cpp
   gadd_LDADD              = -L$(top_builddir)/src -lgrvy
