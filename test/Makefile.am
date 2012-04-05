@@ -9,7 +9,7 @@ BUILT_SOURCES     = .license.stamp
 
 EXTRA_DIST        = init.sh finalize.sh diff_dir.sh version hostinfo gadd gdump \
 		    C_timer_expanded_width.sh C_wrapper_log_printf.sh  C_wrapper_scratch_dir.sh \
-                    C_timer_std_width.sh C_wrapper_log.sh \
+                    C_timer_std_width.sh C_wrapper_log.sh C_timer_no_finalize.sh \
 		    F_get_command_arguments.sh  F_timer.sh F_wrapper_check_file_path.sh F_wrapper_scratch_dir.sh \
 		    F_timer_expanded_width.sh  F_timer_std_width.sh F_wrapper_log.sh F_wrapper_unique_dir.sh \
 		    CXX_timer_expanded_width.sh CXX_timer_std_width.sh C_ocore.sh F_ocore.sh \
@@ -72,6 +72,10 @@ C_timer_expanded_width_SOURCES                  = C_timer_expanded_width.c
 TESTS                                           += C_timer_stats
 check_PROGRAMS                                  += C_timer_stats
 C_timer_stats_SOURCES                            = C_timer_stats.c
+
+TESTS                                           += C_timer_no_finalize.sh
+check_PROGRAMS                                  += C_timer_no_finalize
+C_timer_no_finalize_SOURCES                      = C_timer_no_finalize.c
 
 TESTS                                           += C_unique_dir
 check_PROGRAMS                                  += C_unique_dir
