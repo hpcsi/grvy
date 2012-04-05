@@ -1,5 +1,6 @@
 Version 0.32 (In progress)
- 
+
+  * fix for timer summarize() when no prior timer finalize() call was provided
   * added an "--enable-boost-headers-only" compile mode. This will disable 
     some functionality (grvy_copy_dir in particular), but allows for a GRVY
     build using Boost headers only
