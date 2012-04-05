@@ -122,7 +122,9 @@ namespace GRVY {
 			     int jobId, string code_revision, double flops, string filename, bool save_internal_timer );
 
     bool        initialized;            // initialized?
+    bool        finalized;		// finalized?
     double      timer_finalize;         // raw timer value at time of finalize()
+
     std::string timer_name;             // user name supplied for the timer
     int         num_begins;	        // number of active begin timers (used for callgraph determination)
     std::stack <std::string> callgraph; // callgraph to support embedded timers
@@ -142,6 +144,7 @@ namespace GRVY {
 
   private:
     bool new_performance_table;
+
   };
 
 } // matches namespace GRVY
@@ -153,6 +156,7 @@ namespace GRVY {
   GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
   {
     m_pimpl->initialized           = false;
+    m_pimpl->finalized             = false;
     m_pimpl->timer_finalize        = -1;
     m_pimpl->num_begins            = 0;	
     m_pimpl->beginTrigger          = false;
@@ -174,6 +178,7 @@ namespace GRVY {
     m_pimpl->options["output_comments"      ] = false;
     m_pimpl->options["output_printenv"      ] = false;
 
+
   }
 
   GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -192,6 +197,7 @@ namespace GRVY {
   void GRVY_Timer_Class::Finalize()
   {
     EndTimer(_GRVY_gtimer);
+    m_pimpl->finalized = true;
     return;
   }
 
@@ -535,6 +541,9 @@ namespace GRVY {
     _GRVY_Type_TimerMap2 :: iterator index,gindex;
 
     m_pimpl->VerifyInit();
+
+    if(!m_pimpl->finalized)
+      Finalize();
 
     // Was a global timing region defined via GRVY_timer_init() and
     // GRVY_timer_end()?  If so, use the total time to define runtime
