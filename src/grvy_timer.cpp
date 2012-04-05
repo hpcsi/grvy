@@ -76,7 +76,7 @@ using namespace GRVY;
 
 typedef struct GRVY_Timer_Data {
   double timings[2];
-  accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats;
+  accumulator_set <double,features<tag::mean,tag::count,tag::variance,tag::min> > stats;
 } tTimer_Data;
 
 typedef struct minmax {
@@ -140,7 +140,7 @@ namespace GRVY {
 
     GRVY_Timer_Class *self;	       // back pointer to public class
 
-    accumulator_set <double,features<tag::mean,tag::count,tag::variance> > stats_empty; // empty accumulator
+    accumulator_set <double,features<tag::mean,tag::count,tag::variance,tag::min> > stats_empty; // empty accumulator
 
   private:
     bool new_performance_table;
@@ -303,20 +303,9 @@ namespace GRVY {
 
 	increment = mytime - (index->second).timings[1];
 
-	// warn against potential measurements that are too small
 
-	if(!beginTrigger)
-	  {
-	    if( increment <= _GRVY_TIMER_THRESH )
-	      {
-		grvy_printf(GRVY_WARN,"Timer accuracy may be insufficient (%.30s) -> measured %le secs\n",
-			    id.c_str(),increment);
-	      }
-	  }
-	else
-	  {
-	    beginTrigger = false;
-	  }
+	if(beginTrigger)
+	  beginTrigger = false;
 
 	(index->second).timings[0] += increment;
 	(index->second).timings[1]  = -1.;
@@ -724,6 +713,24 @@ namespace GRVY {
 	grvy_printf(GRVY_INFO,"-");
 
     grvy_printf(GRVY_INFO,"\n\n");
+
+    // Warn against potential timer inaccuracy
+    bool small_time_found = false;
+
+    for(gindex=m_pimpl->TimerMap.begin(); gindex != m_pimpl->TimerMap.end(); ++gindex)
+      {
+	if( (boost::accumulators::count((gindex->second).stats) > 0) &&
+	    (boost::accumulators::min  ((gindex->second).stats) < _GRVY_TIMER_THRESH ) )
+	  {
+	    grvy_printf(GRVY_WARN,"[Warning]: Timer accuracy may be insufficient (%.30s) -> minimum measured =  %le secs\n",
+			gindex->first.c_str(),boost::accumulators::min((gindex->second).stats));
+	    small_time_found = true;
+	  }
+      }
+    
+    if(small_time_found)
+      grvy_printf(GRVY_INFO,"\n");
+
   }
 
   //--------------------------------------------------------------------
