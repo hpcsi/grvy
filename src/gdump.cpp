@@ -161,14 +161,6 @@ namespace GRVY_gdump
 	    }
       }
 
-    if(inputs.size() != 1)
-      {
-	GRVY_gdump::summarize_usage();
-	return;
-      } 
-    else
-      input_file = inputs[0];
-
     // error on unknown options....
 
     vector<string> ufos = cl.unidentified_options();
@@ -182,6 +174,18 @@ namespace GRVY_gdump
 	GRVY_gdump::summarize_usage();
 	exit(1);
       }
+
+    // Required arguments
+
+    if(inputs.size() != 1)
+      {
+	GRVY_gdump::summarize_usage();
+	exit(1);
+      } 
+    else
+      input_file = inputs[0];
+
+
 
     // If we have the pleasure of making it this far, then we have the
     // minimum required to query some performance data; fire in the hole...
