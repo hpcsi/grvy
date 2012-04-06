@@ -8,7 +8,7 @@ AM_LDFLAGS        = ../src/libgrvy.la
 BUILT_SOURCES     = .license.stamp
 
 EXTRA_DIST        = init.sh finalize.sh diff_dir.sh version hostinfo \
-	            gadd.sh gadd_unknown_option.sh gadd_with_options.sh \ 
+	            gadd.sh gadd_unknown_option.sh gadd_with_options.sh \
 	            gdump.sh gdump_unknown_options.sh gdump_with_options.sh  \
 		    C_timer_expanded_width.sh C_wrapper_log_printf.sh  C_wrapper_scratch_dir.sh \
                     C_timer_std_width.sh C_wrapper_log.sh C_timer_no_finalize.sh \
