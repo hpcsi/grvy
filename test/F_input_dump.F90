@@ -1,3 +1,4 @@
+!! -*-f90-*-
 !!-----------------------------------------------------------------------bl-
 !!--------------------------------------------------------------------------
 !! 
@@ -27,12 +28,23 @@
 !!--------------------------------------------------------------------------
 !!--------------------------------------------------------------------------
 
+!    freopen(tmp_string,"w",stdout);
+
+subroutine freopen (filename,mode,stream) bind (C)
+  use iso_c_binding
+  character (C_char),intent(in) :: filename(*)
+  character (C_char),intent(in) :: mode(*)
+  character (C_char),intent(in) :: stream(*)
+end subroutine freopen
+
 program main
   use grvy
+  use iso_c_binding
 #ifdef __INTEL_COMPILER
   use ifport
 #endif
   implicit none
+
   
   integer(4)     :: error, flag ! 1 for success, 0 for failure
   character*19   :: dir_template = "grvy-scratch-XXXXXX"
@@ -88,12 +100,14 @@ program main
 
   ! Verify stdout dump doesn't fail.
   
-!   open(6,file=dir_template//"/stdout")
+!    freopen(tmp_string,"w",stdout);
+!  call freopen("abcdefg"//C_NULL_CHAR,"w"//C_NULL_CHAR,"stdout"//C_NULL_CHAR)
 
-!   call grvy_input_fdump(flag)
-!   error=error*flag
-!   call grvy_input_fdump_delim("# ",flag)
-!   error=error*flag
+  call grvy_log_setlevel(GRVY_ERROR)
+  call grvy_input_fdump(flag)
+  error=error*flag
+  call grvy_input_fdump_delim("# ",flag)
+  error=error*flag
 
   ! ----- Close File // Error Handling -----  
   call grvy_input_fclose()
