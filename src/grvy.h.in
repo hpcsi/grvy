@@ -429,7 +429,7 @@ extern "C" {
   // Mode 2: Saving external user-provided global timing to historical repository
 
   extern    int grvy_timer_save_hist_ext     (double timing, const char *machinename,const char*experiment, 
-					      const char *comment,const char *filename);
+					      const char *comment,int num_procs, const char *filename);
 					      
   extern    int grvy_timer_save_hist_ext_exp (double timing, const char *machinename, const char*experiment, 
 					      const char *comment, int num_procs, int jobId, 

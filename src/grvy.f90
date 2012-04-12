@@ -437,16 +437,27 @@ module grvy
      end function grvy_timer_stats_variance
 
      subroutine  grvy_timer_save_hist_passthrough(experiment,comment,num_procs, &
-                                                  jobId,code_revision,filename) bind (C,name='grvy_timer_save_hist')
+                                                  filename) bind (C,name='grvy_timer_save_hist')
        use iso_c_binding
        implicit none
-       character(C_char),intent(in)         :: experiment(*)
-       character(C_char),intent(in)         :: comment(*)
-       integer  (C_int), intent(in), value  :: num_procs
-       integer  (C_int), intent(in), value  :: jobId
-       integer  (C_int), intent(in), value  :: code_revision
-       character(C_char),intent(in)         :: filename(*)
+       character(C_char),  intent(in)         :: experiment(*)
+       character(C_char),  intent(in)         :: comment(*)
+       integer  (C_int),   intent(in), value  :: num_procs
+       character(C_char),  intent(in)         :: filename(*)
      end subroutine grvy_timer_save_hist_passthrough
+
+     subroutine  grvy_timer_save_hist_passthrough_exp(experiment,comment,num_procs, jobId, code_revision, &
+                                                      flops,filename) bind (C,name='grvy_timer_save_hist_exp')
+       use iso_c_binding
+       implicit none
+       character(C_char),  intent(in)         :: experiment(*)
+       character(C_char),  intent(in)         :: comment(*)
+       integer  (C_int),   intent(in), value  :: num_procs
+       integer  (C_int),   intent(in), value  :: jobId
+       character(C_char),  intent(in)         :: code_revision(*)
+       real     (C_double),intent(in), value  :: flops
+       character(C_char),  intent(in)         :: filename(*)
+     end subroutine grvy_timer_save_hist_passthrough_exp
 
      ! -------------------
      ! MPI_Ocore Routines
@@ -1018,20 +1029,34 @@ end subroutine grvy_get_command_arguments
     return
   end subroutine grvy_input_fread_double_ivec
 
-  subroutine grvy_timer_save_hist(experiment,comment,num_procs,jobId,code_revision,filename)
+  subroutine grvy_timer_save_hist(experiment,comment,num_procs,filename)
     use iso_c_binding
     implicit none
-    character(len=*),intent(in)         :: experiment
-    character(len=*),intent(in)         :: comment
-    integer  (C_int),intent(in)         :: num_procs
-    integer  (C_int),intent(in)         :: jobId
-    integer  (C_int),intent(in)         :: code_revision
-    character(len=*),intent(in)         :: filename
+    character(len=*),   intent(in)      :: experiment
+    character(len=*),   intent(in)      :: comment
+    integer  (C_int),   intent(in)      :: num_procs
+    character(len=*),   intent(in)      :: filename
     
     call grvy_timer_save_hist_passthrough(experiment//C_NULL_CHAR,comment//C_NULL_CHAR, &
-         num_procs,jobId,code_revision,filename//C_NULL_CHAR)
+         num_procs,filename//C_NULL_CHAR)
     return
   end subroutine grvy_timer_save_hist
+
+  subroutine grvy_timer_save_hist_exp(experiment,comment,num_procs,jobId,code_revision,flops,filename)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: experiment
+    character(len=*),   intent(in)      :: comment
+    integer  (C_int),   intent(in)      :: num_procs
+    integer  (C_int),   intent(in)      :: jobId
+    character(len=*),   intent(in)      :: code_revision
+    real     (C_double),intent(in)      :: flops
+    character(len=*),   intent(in)      :: filename
+    
+    call grvy_timer_save_hist_passthrough_exp(experiment//C_NULL_CHAR,comment//C_NULL_CHAR, &
+         num_procs,jobId,code_revision//C_NULL_CHAR,flops,filename//C_NULL_CHAR)
+    return
+  end subroutine grvy_timer_save_hist_exp
 
   subroutine grvy_timer_set_summarize_width(value, return_flag)
     use iso_c_binding

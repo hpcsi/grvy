@@ -33,7 +33,8 @@
 #include<sys/time.h>
 #include<time.h>
 #include<math.h>
-#include <sys/time.h>
+#include<sys/time.h>
+#include<assert.h>
 
 double Foo_Sleep = 0.098 * 1.e6;
 double Bar_Sleep = 0.075 * 1.e6;
@@ -59,8 +60,10 @@ int main()
   double t1;
 
   int call_count;
-  double call_mean = 0.0;
+  double call_mean     = 0.0;
   double call_variance = 0.0;
+  double call_min      = 0.0;
+  double call_max      = 0.0;
 
   grvy_log_setlevel(GRVY_ERROR);
 
@@ -100,6 +103,8 @@ int main()
   call_count    = grvy_timer_stats_count("foo");
   call_mean     = grvy_timer_stats_mean("boo");
   call_variance = grvy_timer_stats_variance("boo");
+  call_min      = grvy_timer_stats_min("boo");
+  call_max      = grvy_timer_stats_max("boo");
 
   //  grvy_boo_timing   = grvy_timer_elapsedseconds("boo");
 
@@ -109,6 +114,9 @@ int main()
       grvy_printf(GRVY_ERROR,"  --> Found %i calls, expecting %i",call_count,num_repeat*max_iters);
       return(1);
     }
+
+  assert(call_min <= call_mean);
+  assert(call_max >= call_mean);
 
   double boo_gtod_mean = boo_gtod_timing/grvy_timer_stats_count("boo");
 
@@ -124,7 +132,7 @@ int main()
       return(1);
     }
 
-  // make sure summarize funcion is accessible
+  // make sure summarize function is accessible
 
   grvy_timer_summarize();
 

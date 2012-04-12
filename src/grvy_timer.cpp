@@ -1795,24 +1795,27 @@ double GRVY_Timer_Class:: StatsMax(string id)
 
 	SubTimer_PTable_V1 data_tmp;
 
-	for(index=TimerMap.begin(); index != TimerMap.end(); ++index)
+	if(save_internal_timers)
 	  {
-	    if(index->first != _GRVY_gtimer)
+	    for(index=TimerMap.begin(); index != TimerMap.end(); ++index)
 	      {
-
-		string timer_name = index->first;
-
-		data_tmp.timer_name  = timer_name.c_str();
-		data_tmp.measurement = self->ElapsedSeconds(index->first);
-		data_tmp.mean        = self->StatsMean     (index->first);
-		data_tmp.variance    = self->StatsVariance (index->first);
-		data_tmp.count       = self->StatsCount    (index->first);
-	    
-		subtimers.push_back(data_tmp);
+		if(index->first != _GRVY_gtimer)
+		  {
+		    
+		    string timer_name = index->first;
+		    
+		    data_tmp.timer_name  = timer_name.c_str();
+		    data_tmp.measurement = self->ElapsedSeconds(index->first);
+		    data_tmp.mean        = self->StatsMean     (index->first);
+		    data_tmp.variance    = self->StatsVariance (index->first);
+		    data_tmp.count       = self->StatsCount    (index->first);
+		    
+		    subtimers.push_back(data_tmp);
+		  }
 	      }
+	    
+	    assert(subtimers.size() == num_subtimers);
 	  }
-
-	assert(subtimers.size() == num_subtimers);
 
 	// ------------------------------------------------
 	// That was fun, now we can append the packet data
