@@ -54,7 +54,7 @@ program main
 
   dtime_global = dtime(timearray)
   
-  call grvy_timer_init('Fortran is the best!');
+  !call grvy_timer_init('Fortran is the best!');
   call grvy_timer(raw_grvy_timer1)
 
   ! Primary Iteration Loop 

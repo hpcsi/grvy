@@ -176,6 +176,10 @@ TESTS                                           += CXX_timer_expanded_width.sh
 check_PROGRAMS                                  += CXX_timer_expanded_width
 CXX_timer_expanded_width_SOURCES                 = C++_timer_expanded_width.cpp
 
+TESTS                                           += CXX_timer_no_init
+check_PROGRAMS                                  += CXX_timer_no_init
+CXX_timer_no_init_SOURCES                        = C++_timer_no_init.cpp
+
 if HDF5_ENABLED
 TESTS                                           += CXX_hdf_hist_timing
 check_PROGRAMS                                  += CXX_hdf_hist_timing

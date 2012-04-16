@@ -91,12 +91,16 @@ namespace GRVY {
 
   // Evil Globals Vars
 
+  //  std::auto_ptr<GRVY_Timer_Class> _GRVY_Timers;
+
 #ifdef _GRVY_GLOBAL_DEF
 
   GRVY_Log_Class    _GRVY_Log;                           // Log mechanism
   GLOBAL const char *_GRVY_gtimer  = "GRVY_Unassigned";  // default global timer key
 
-  GRVY_Timer_Class *_GRVY_Timers    = NULL;              // performance timer 
+  //GRVY_Timer_Class *_GRVY_Timers    = NULL;              // performance timer 
+  //  GRVY_Timer_Class *_GRVY_Timers    = NULL;              // performance timer 
+
   GRVY_MPI_Ocore_Class *_GRVY_Ocore = NULL;		 // MPI ramdisk for out-of-core methods
 
   GLOBAL double _GRVY_TIMER_THRESH       = 9.0e-8;      // low water mark for expected timer usage deltas        
@@ -107,7 +111,7 @@ namespace GRVY {
   GLOBAL GRVY_Log_Class _GRVY_Log;
   GLOBAL const char *_GRVY_gtimer;
 
-  GLOBAL GRVY_Timer_Class *_GRVY_Timers;
+  //  GLOBAL GRVY_Timer_Class *_GRVY_Timers;
   GLOBAL GRVY_MPI_Ocore_Class *_GRVY_Ocore;
   GLOBAL double _GRVY_TIMER_THRESH;
   GLOBAL double _GRVY_PERC_TOL;

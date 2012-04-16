@@ -38,8 +38,27 @@
 using namespace std;
 using namespace GRVY;
 
+// Utility function to create new timer class on 1st call for C
+// interface
+
+std::auto_ptr<GRVY_Timer_Class> _GRVY_Timers;
+
+namespace GRVY_Internal {
+  void verify_C_timer_allocated();
+}
+
+void GRVY_Internal::verify_C_timer_allocated()
+{
+
+  if(_GRVY_Timers.get() == NULL)
+    _GRVY_Timers.reset (new GRVY_Timer_Class());
+
+  return;
+}
+
 double grvy_timer ()
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return( _GRVY_Timers->RawTimer() );
 }
 
@@ -47,6 +66,7 @@ double grvy_timer ()
 
 void grvy_timer_begin(const char *id)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   _GRVY_Timers->BeginTimer(id);
   return;
 }
@@ -55,6 +75,7 @@ void grvy_timer_begin(const char *id)
 
 void grvy_timer_end(const char *id)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   _GRVY_Timers->EndTimer(id);
   return;
 }
@@ -63,6 +84,7 @@ void grvy_timer_end(const char *id)
 
 double grvy_timer_elapsedseconds(const char *id)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return( _GRVY_Timers->ElapsedSeconds(id) );
 }
 
@@ -70,6 +92,7 @@ double grvy_timer_elapsedseconds(const char *id)
 
 double grvy_timer_elapsed_global()
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return ( _GRVY_Timers->ElapsedGlobal() );
 }
 
@@ -78,11 +101,7 @@ double grvy_timer_elapsed_global()
 
 void grvy_timer_init(const char *id)
 {
-
-  // create new timer on 1st call
-
-  if(_GRVY_Timers == NULL)
-    _GRVY_Timers = new GRVY_Timer_Class();
+  GRVY_Internal::verify_C_timer_allocated();
 
   // initialize global timer region
 
@@ -95,6 +114,7 @@ void grvy_timer_init(const char *id)
 
 void grvy_timer_reset()
 {
+  GRVY_Internal::verify_C_timer_allocated();
   _GRVY_Timers->Reset();
   return;
 }
@@ -103,6 +123,7 @@ void grvy_timer_reset()
 
 void grvy_timer_finalize()
 {
+  GRVY_Internal::verify_C_timer_allocated();
   _GRVY_Timers->Finalize();
   return;
 }
@@ -111,6 +132,7 @@ void grvy_timer_finalize()
 
 void grvy_timer_summarize()
 {
+  GRVY_Internal::verify_C_timer_allocated();
   _GRVY_Timers->Summarize();
   return;
 }
@@ -119,6 +141,7 @@ void grvy_timer_summarize()
 
 int grvy_timer_set_summarize_width(const int maxwidth)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->SetSummarizeWidth(maxwidth));
 }
 
@@ -126,6 +149,7 @@ int grvy_timer_set_summarize_width(const int maxwidth)
 
 int grvy_timer_stats_count(const char *id)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->StatsCount(id));
 }
 
@@ -133,6 +157,7 @@ int grvy_timer_stats_count(const char *id)
 
 double grvy_timer_stats_mean(const char *id)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->StatsMean(id));
 }
 
@@ -140,6 +165,7 @@ double grvy_timer_stats_mean(const char *id)
 
 double grvy_timer_stats_variance(const char *id)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->StatsVariance(id));
 }
 
@@ -147,6 +173,7 @@ double grvy_timer_stats_variance(const char *id)
 
 double grvy_timer_stats_min(const char *id)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->StatsMin(id));
 }
 
@@ -154,12 +181,14 @@ double grvy_timer_stats_min(const char *id)
 
 double grvy_timer_stats_max(const char *id)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->StatsMax(id));
 }
 
 // grvy_summarize_hist_timing(): summarize and dump historical timing information to ascii files
 void grvy_summarize_hist_timing(const char *filename, const char *delimiter, const char *outdir)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->SummarizeHistTiming(filename,delimiter,outdir));
 }
 
@@ -167,6 +196,7 @@ void grvy_summarize_hist_timing(const char *filename, const char *delimiter, con
 
 int grvy_timer_save_hist(const char*experiment, const char *comment, int num_procs,const char *filename)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->SaveHistTiming(experiment,comment,num_procs,filename));
 }
 
@@ -176,6 +206,7 @@ int grvy_timer_save_hist_exp(const char*experiment, const char *comment,
 			     int num_procs, int jobId, const char *code_revision, double flops,
 			     const char *filename)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->SaveHistTiming(experiment,comment,num_procs,jobId,code_revision,flops,filename));
 }
 
@@ -184,6 +215,7 @@ int grvy_timer_save_hist_exp(const char*experiment, const char *comment,
 int grvy_timer_save_hist_ext(double timing, const char *machinename, const char*experiment, 
 			     const char *comment, int num_procs,const char *filename)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->SaveHistTiming(timing,machinename,experiment,comment,num_procs,filename));
 }
 
@@ -193,6 +225,7 @@ int grvy_timer_save_hist_ext_exp(double timing, const char *machinename, const c
 				 int num_procs, int jobId, const char *code_revision, double flops,
 				 const char *filename)
 {
+  GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->SaveHistTiming(timing,machinename,experiment,comment,num_procs,
 				      jobId,code_revision,flops,filename));
 }

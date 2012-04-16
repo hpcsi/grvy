@@ -121,7 +121,8 @@ namespace GRVY {
     int    SaveHistTiming   (double timing, string machinename, string experiment, string comment, int num_procs, 
 			     int jobId, string code_revision, double flops, string filename, bool save_internal_timer );
 
-    bool        initialized;            // initialized?
+    bool        initialized;            // user called initialize?
+    //bool        no_user_init;           // no user initialization - done under the covers by the library
     bool        finalized;		// finalized?
     double      timer_finalize;         // raw timer value at time of finalize()
 
@@ -157,6 +158,7 @@ namespace GRVY {
   GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
   {
     m_pimpl->initialized           = false;
+    //    m_pimpl->no_user_init          = true;
     m_pimpl->finalized             = false;
     m_pimpl->timer_finalize        = -1;
     m_pimpl->num_begins            = 0;	
@@ -179,7 +181,10 @@ namespace GRVY {
     m_pimpl->options["output_comments"      ] = false;
     m_pimpl->options["output_printenv"      ] = false;
 
-
+    // start global timer...
+   
+    BeginTimer(_GRVY_gtimer);
+    m_pimpl->timer_name = "GRVY Default";
   }
 
   GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -206,8 +211,10 @@ namespace GRVY {
   {
     if( !initialized )
       {
-	grvy_printf(GRVY_ERROR,"%s: timer uninitialized\n",__func__);
-	exit(1);
+	self->Init("GRVY Default");
+	grvy_printf(GRVY_DEBUG,"%s: initialzing timer calls for user\n",__func__);
+	//no_user_init = true;
+	//exit(1);
       }
   }
 
@@ -228,7 +235,7 @@ namespace GRVY {
 
     tTimer_Data Data;
 
-    //  VerifyInit();
+    VerifyInit();
 
     // ------------------
     // Get current time
@@ -365,8 +372,8 @@ namespace GRVY {
   {
     _GRVY_Type_TimerMap2 :: iterator index;
 
-    if(_GRVY_Timers == NULL)
-      return;
+    //    if(_GRVY_Timers == NULL)
+    //      return;
 
     if(!m_pimpl->initialized)
       return;
