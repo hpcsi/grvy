@@ -182,7 +182,7 @@ namespace GRVY {
     m_pimpl->options["output_printenv"      ] = false;
 
     // start global timer...
-   
+
     BeginTimer(_GRVY_gtimer);
     m_pimpl->timer_name = "GRVY Default";
   }
@@ -194,8 +194,28 @@ namespace GRVY {
 
   void GRVY_Timer_Class::Init(string name)
   {
+
+    // reset global timer (April 2012)
+    // 
+    // We now allow for the possibility that a user may forget to call
+    // the Init() routine; consequently,the global timer is initialized on
+    // construction; however, if a user does call Init(), we reset the
+    // global timer to measure from here forward
+
+    //Reset_Global_Timer();
+
+    if(!m_pimpl->initialized)
+      {
+	printf("hello before end\n");
+	EndTimer(_GRVY_gtimer);
+	printf("hello after end\n");
+      }
+
+    m_pimpl->TimerMap[_GRVY_gtimer].timings[0] = 0.0;
+    m_pimpl->TimerMap[_GRVY_gtimer].stats      = m_pimpl->stats_empty;
+
+    m_pimpl->timer_name  = name;
     m_pimpl->initialized = true;
-    m_pimpl->timer_name = name;
     BeginTimer(_GRVY_gtimer);
     return;
   }
@@ -211,7 +231,7 @@ namespace GRVY {
   {
     if( !initialized )
       {
-	self->Init("GRVY Default");
+	//self->Init("GRVY Default");
 	grvy_printf(GRVY_DEBUG,"%s: initialzing timer calls for user\n",__func__);
 	//no_user_init = true;
 	//exit(1);
@@ -311,7 +331,6 @@ namespace GRVY {
 
 	increment = mytime - (index->second).timings[1];
 
-
 	if(beginTrigger)
 	  beginTrigger = false;
 
@@ -368,15 +387,17 @@ namespace GRVY {
     return;
   }
 
-  void GRVY_Timer_Class:: Reset()
+  void GRVY_Timer_Class::Reset()
   {
     _GRVY_Type_TimerMap2 :: iterator index;
 
     //    if(_GRVY_Timers == NULL)
     //      return;
 
+#if 0
     if(!m_pimpl->initialized)
       return;
+#endif
 
     // Reset All timers
 
