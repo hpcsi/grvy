@@ -99,7 +99,7 @@ program main
 
   ! dump current results to a historical performance logfile
 
-  call grvy_timer_save_hist("F90-Example1","",1,-1,-1,"hist.h5")
+  call grvy_timer_save_hist("F90-Example1","",1,"hist.h5")
 
   stop
 end program main
