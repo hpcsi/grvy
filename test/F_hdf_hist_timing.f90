@@ -29,6 +29,9 @@
 
 program main
   use grvy
+#ifdef __INTEL_COMPILER
+  use ifport
+#endif
   implicit none
 
   real*8 :: do_work1
