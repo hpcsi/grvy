@@ -55,7 +55,7 @@ int main()
 
       grvy_timer_reset();
 
-      grvy_timer_init("GRVY Example Timing");
+      //grvy_timer_init("GRVY Example Timing");
       grvy_timer_begin("Main Program");
 
       for(i=0;i<Max_Iters;i++)

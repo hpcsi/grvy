@@ -184,7 +184,7 @@ namespace GRVY {
     // start global timer...
 
     BeginTimer(_GRVY_gtimer);
-    m_pimpl->timer_name = "GRVY Default";
+    m_pimpl->timer_name = "Performance Timings:";
   }
 
   GRVY_Timer_Class::~GRVY_Timer_Class()
@@ -202,20 +202,18 @@ namespace GRVY {
     // construction; however, if a user does call Init(), we reset the
     // global timer to measure from here forward
 
-    //Reset_Global_Timer();
-
     if(!m_pimpl->initialized)
       {
-	printf("hello before end\n");
-	EndTimer(_GRVY_gtimer);
-	printf("hello after end\n");
+	grvy_printf(GRVY_DEBUG,"No prior call to init() - resetting global timer\n");
+	m_pimpl->TimerMap.erase(_GRVY_gtimer);
+	m_pimpl->initialized = true;
       }
 
-    m_pimpl->TimerMap[_GRVY_gtimer].timings[0] = 0.0;
-    m_pimpl->TimerMap[_GRVY_gtimer].stats      = m_pimpl->stats_empty;
-
     m_pimpl->timer_name  = name;
-    m_pimpl->initialized = true;
+
+    // reset any other existing timers (only an issue if Init() is called multiple times
+
+    Reset();
     BeginTimer(_GRVY_gtimer);
     return;
   }
@@ -255,7 +253,7 @@ namespace GRVY {
 
     tTimer_Data Data;
 
-    VerifyInit();
+    //    VerifyInit();
 
     // ------------------
     // Get current time
@@ -393,6 +391,9 @@ namespace GRVY {
 
     //    if(_GRVY_Timers == NULL)
     //      return;
+
+    m_pimpl->num_begins            = 0;	
+    m_pimpl->beginTrigger          = false;
 
 #if 0
     if(!m_pimpl->initialized)
