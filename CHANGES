@@ -1,5 +1,7 @@
 Version 0.32 (In progress)
 
+  * fixed runtime crash for timers when init() function not called
+  * fixed timer_summarize() output when finalize() routine not called
   * updated potential timer inaccuracy warnings to only occur once during timer summarize()
   * added new query functions for min/max timer values
   * fix for timer summarize() when no prior timer finalize() call was provided
