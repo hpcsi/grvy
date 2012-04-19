@@ -139,7 +139,7 @@ if HDF5_ENABLED
 
   TESTS                                         += F_hdf_hist_timing
   check_PROGRAMS                                += F_hdf_hist_timing
-  F_hdf_hist_timing_SOURCES                      = F_hdf_hist_timing.f90
+  F_hdf_hist_timing_SOURCES                      = F_hdf_hist_timing.F90
   F_hdf_hist_timing_LDADD                        = ../src/libgrvyf.la
 
 endif
