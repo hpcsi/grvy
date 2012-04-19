@@ -35,13 +35,13 @@ TESTS += init.sh
 # C Tests
 #---------------
 
-TESTS                                         += C_input_read_variables
-check_PROGRAMS                                += C_input_read_variables
-C_input_read_variables_SOURCES                 = C_input.c C_examplefile.c examplefile.h
+TESTS                                          += C_input_read_variables
+check_PROGRAMS                                 += C_input_read_variables
+C_input_read_variables_SOURCES                  = C_input.c C_examplefile.c examplefile.h
 
-TESTS                                         += C_input_nofile_available
-check_PROGRAMS                                += C_input_nofile_available
-C_input_nofile_available_SOURCES               = C_input-nofile.c
+TESTS                                          += C_input_nofile_available
+check_PROGRAMS                                 += C_input_nofile_available
+C_input_nofile_available_SOURCES                = C_input-nofile.c
 
 TESTS                                          += C_input_read_missing_variable
 check_PROGRAMS                                 += C_input_read_missing_variable
@@ -71,84 +71,96 @@ TESTS                                          += C_timer_expanded_width.sh
 check_PROGRAMS                                 += C_timer_expanded_width
 C_timer_expanded_width_SOURCES                  = C_timer_expanded_width.c
 
-TESTS                                           += C_timer_stats
-check_PROGRAMS                                  += C_timer_stats
-C_timer_stats_SOURCES                            = C_timer_stats.c
+TESTS                                          += C_timer_stats
+check_PROGRAMS                                 += C_timer_stats
+C_timer_stats_SOURCES                           = C_timer_stats.c
 
-TESTS                                           += C_timer_no_finalize.sh
-check_PROGRAMS                                  += C_timer_no_finalize
-C_timer_no_finalize_SOURCES                      = C_timer_no_finalize.c
+TESTS                                          += C_timer_baseline
+check_PROGRAMS                                 += C_timer_baseline
+C_timer_baseline_SOURCES                       = C_timer_baseline.c
 
-TESTS                                           += C_unique_dir
-check_PROGRAMS                                  += C_unique_dir
-C_unique_dir_SOURCES                             = C_unique_dir.c
+TESTS                                          += C_timer_no_init
+check_PROGRAMS                                 += C_timer_no_init
+C_timer_no_init_SOURCES                         = C_timer_no_init.c
 
-TESTS                                           += C_wrapper_scratch_dir.sh
-check_PROGRAMS                                  += C_scratch_dir
-C_scratch_dir_SOURCES                            = C_scratch_dir.c
+TESTS                                          += C_timer_with_reset
+check_PROGRAMS                                 += C_timer_with_reset
+C_timer_with_reset_SOURCES                      = C_timer_with_reset.c
 
-TESTS                                           += C_math_isnan
-check_PROGRAMS                                  += C_math_isnan
-C_math_isnan_SOURCES                             = C_math-isnan.c
+TESTS                                          += C_timer_no_finalize.sh
+check_PROGRAMS                                 += C_timer_no_finalize
+C_timer_no_finalize_SOURCES                     = C_timer_no_finalize.c
 
-TESTS                                           += C_math_isinf
-check_PROGRAMS                                  += C_math_isinf
-C_math_isinf_SOURCES                             = C_math-isinf.c
+TESTS                                          += C_unique_dir
+check_PROGRAMS                                 += C_unique_dir
+C_unique_dir_SOURCES                            = C_unique_dir.c
 
-TESTS                                           += C_check_file_path
-check_PROGRAMS                                  += C_check_file_path
-C_check_file_path_SOURCES                        = C_check_file_path.c
+TESTS                                          += C_wrapper_scratch_dir.sh
+check_PROGRAMS                                 += C_scratch_dir
+C_scratch_dir_SOURCES                           = C_scratch_dir.c
+
+TESTS                                          += C_math_isnan
+check_PROGRAMS                                 += C_math_isnan
+C_math_isnan_SOURCES                            = C_math-isnan.c
+
+TESTS                                          += C_math_isinf
+check_PROGRAMS                                 += C_math_isinf
+C_math_isinf_SOURCES                            = C_math-isinf.c
+
+TESTS                                          += C_check_file_path
+check_PROGRAMS                                 += C_check_file_path
+C_check_file_path_SOURCES                       = C_check_file_path.c
 
 
 
-TESTS                                           += C_input_fdump
-check_PROGRAMS                                  += C_input_fdump
-C_input_fdump_SOURCES                            = C_input_dump.c C_examplefile.c examplefile.h
+TESTS                                          += C_input_fdump
+check_PROGRAMS                                 += C_input_fdump
+C_input_fdump_SOURCES                           = C_input_dump.c C_examplefile.c examplefile.h
 
-TESTS                                           += C_wrapper_log.sh
-check_PROGRAMS                                  += C_log
-C_log_SOURCES                                    = C_log.c
+TESTS                                          += C_wrapper_log.sh
+check_PROGRAMS                                 += C_log
+C_log_SOURCES                                   = C_log.c
 
-TESTS                                           += C_wrapper_log_printf.sh
-check_PROGRAMS                                  += C_log_printf
-C_log_printf_SOURCES                             = C_log_printf.c
+TESTS                                          += C_wrapper_log_printf.sh
+check_PROGRAMS                                 += C_log_printf
+C_log_printf_SOURCES                            = C_log_printf.c
 
-TESTS                                           += C_version
-check_PROGRAMS                                  += C_version
-C_version_SOURCES                                = C_version.c
+TESTS                                          += C_version
+check_PROGRAMS                                 += C_version
+C_version_SOURCES                               = C_version.c
 
-TESTS                                           += C_version_stdout
-check_PROGRAMS                                  += C_version_stdout
-C_version_stdout_SOURCES                         = C_version_stdout.c
+TESTS                                          += C_version_stdout
+check_PROGRAMS                                 += C_version_stdout
+C_version_stdout_SOURCES                        = C_version_stdout.c
 
 # Following tests rely on various Boost library linkage
 
 if LINK_BOOST_LIBS
 
-  TESTS                                         += C_check_copy_dir
-  check_PROGRAMS                                += C_check_copy_dir
-  C_check_copy_dir_SOURCES                       = C_check_copy_dir.c
+  TESTS                                        += C_check_copy_dir
+  check_PROGRAMS                               += C_check_copy_dir
+  C_check_copy_dir_SOURCES                      = C_check_copy_dir.c
 
 endif
 
 if HDF5_ENABLED
 
-  TESTS                                         += C_hdf_hist_timing
-  check_PROGRAMS                                += C_hdf_hist_timing
-  C_hdf_hist_timing_SOURCES                      = C_hdf_hist_timing.c
+  TESTS                                        += C_hdf_hist_timing
+  check_PROGRAMS                               += C_hdf_hist_timing
+  C_hdf_hist_timing_SOURCES                     = C_hdf_hist_timing.c
 
-  TESTS                                         += F_hdf_hist_timing
-  check_PROGRAMS                                += F_hdf_hist_timing
-  F_hdf_hist_timing_SOURCES                      = F_hdf_hist_timing.F90
-  F_hdf_hist_timing_LDADD                        = ../src/libgrvyf.la
+  TESTS                                        += F_hdf_hist_timing
+  check_PROGRAMS                               += F_hdf_hist_timing
+  F_hdf_hist_timing_SOURCES                     = F_hdf_hist_timing.F90
+  F_hdf_hist_timing_LDADD                       = ../src/libgrvyf.la
 
 endif
 
 if MPI_ENABLED
 
-  TESTS                                         += C_ocore.sh
-  check_PROGRAMS                                += C_ocore
-  C_ocore_SOURCES                                = C_ocore.c
+  TESTS                                        += C_ocore.sh
+  check_PROGRAMS                               += C_ocore
+  C_ocore_SOURCES                               = C_ocore.c
 
 endif
 
@@ -156,40 +168,40 @@ endif
 # C++ Tests
 #-----------------
 
-TESTS                                           += CXX_input
-check_PROGRAMS                                  += CXX_input
-CXX_input_SOURCES                                = C++_input.cpp C_examplefile.c examplefile.h
+TESTS                                          += CXX_input
+check_PROGRAMS                                 += CXX_input
+CXX_input_SOURCES                               = C++_input.cpp C_examplefile.c examplefile.h
 
-TESTS                                           += CXX_input_register_variables
-check_PROGRAMS                                  += CXX_input_register_variables
-CXX_input_register_variables_SOURCES             = C++_input-register.cpp C_examplefile.c examplefile.h
+TESTS                                          += CXX_input_register_variables
+check_PROGRAMS                                 += CXX_input_register_variables
+CXX_input_register_variables_SOURCES            = C++_input-register.cpp C_examplefile.c examplefile.h
 
-TESTS                                           += CXX_input_dump
-check_PROGRAMS                                  += CXX_input_dump
-CXX_input_dump_SOURCES                           = C++_input_dump.cpp C_examplefile.c examplefile.h
+TESTS                                          += CXX_input_dump
+check_PROGRAMS                                 += CXX_input_dump
+CXX_input_dump_SOURCES                          = C++_input_dump.cpp C_examplefile.c examplefile.h
 
-TESTS                                           += CXX_timer_std_width.sh
-check_PROGRAMS                                  += CXX_timer_std_width
-CXX_timer_std_width_SOURCES                      = C++_timer_std_width.cpp
+TESTS                                          += CXX_timer_std_width.sh
+check_PROGRAMS                                 += CXX_timer_std_width
+CXX_timer_std_width_SOURCES                     = C++_timer_std_width.cpp
 
-TESTS                                           += CXX_timer_expanded_width.sh
-check_PROGRAMS                                  += CXX_timer_expanded_width
-CXX_timer_expanded_width_SOURCES                 = C++_timer_expanded_width.cpp
+TESTS                                          += CXX_timer_expanded_width.sh
+check_PROGRAMS                                 += CXX_timer_expanded_width
+CXX_timer_expanded_width_SOURCES                = C++_timer_expanded_width.cpp
 
-TESTS                                           += CXX_timer_no_init
-check_PROGRAMS                                  += CXX_timer_no_init
-CXX_timer_no_init_SOURCES                        = C++_timer_no_init.cpp
+TESTS                                          += CXX_timer_no_init
+check_PROGRAMS                                 += CXX_timer_no_init
+CXX_timer_no_init_SOURCES                       = C++_timer_no_init.cpp
 
 if HDF5_ENABLED
-TESTS                                           += CXX_hdf_hist_timing
-check_PROGRAMS                                  += CXX_hdf_hist_timing
-CXX_hdf_hist_timing_SOURCES                      = C++_hdf_hist_timing.cpp 
+TESTS                                          += CXX_hdf_hist_timing
+check_PROGRAMS                                 += CXX_hdf_hist_timing
+CXX_hdf_hist_timing_SOURCES                     = C++_hdf_hist_timing.cpp 
 endif
 
 if MPI_ENABLED
-TESTS                                           +=  CXX_ocore.sh
-check_PROGRAMS                                  +=  CXX_ocore
-CXX_ocore_SOURCES                                =  C++_ocore.cpp
+TESTS                                          +=  CXX_ocore.sh
+check_PROGRAMS                                 +=  CXX_ocore
+CXX_ocore_SOURCES                               =  C++_ocore.cpp
 endif
 
 #-----------------
