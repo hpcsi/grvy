@@ -195,26 +195,14 @@ namespace GRVY {
   void GRVY_Timer_Class::Init(string name)
   {
 
-    // reset global timer (April 2012)
-    // 
-    // We now allow for the possibility that a user may forget to call
-    // the Init() routine; consequently,the global timer is initialized on
-    // construction; however, if a user does call Init(), we reset the
-    // global timer to measure from here forward
-
     if(!m_pimpl->initialized)
-      {
-	grvy_printf(GRVY_DEBUG,"No prior call to init() - resetting global timer\n");
-	m_pimpl->TimerMap.erase(_GRVY_gtimer);
-	m_pimpl->initialized = true;
-      }
+      m_pimpl->initialized = true;
 
     m_pimpl->timer_name  = name;
 
     // reset any other existing timers (only an issue if Init() is called multiple times
 
     Reset();
-    BeginTimer(_GRVY_gtimer);
     return;
   }
 
@@ -389,24 +377,20 @@ namespace GRVY {
   {
     _GRVY_Type_TimerMap2 :: iterator index;
 
-    //    if(_GRVY_Timers == NULL)
-    //      return;
-
     m_pimpl->num_begins            = 0;	
     m_pimpl->beginTrigger          = false;
 
-#if 0
-    if(!m_pimpl->initialized)
-      return;
-#endif
-
-    // Reset All timers
+    // Reset all currently defined timers
 
     for(index=m_pimpl->TimerMap.begin(); index != m_pimpl->TimerMap.end(); ++index)
       {
 	(index->second).timings[0] = 0.0;                  // reset raw timing info
 	(index->second).stats      = m_pimpl->stats_empty; // reset accumulator (no reset in Boost currently)
       }
+
+    // Restart global timer
+
+    BeginTimer(_GRVY_gtimer);
 
     return;
   }
