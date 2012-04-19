@@ -48,14 +48,14 @@ int main()
   int i,itest;
   int num_repeat = 2;
 
+  grvy_timer_init("GRVY Example Timing");
+
   /* Primary Iteration Loop */
 
   for(itest=0;itest<num_repeat;itest++)
     {
 
       grvy_timer_reset();
-
-      //grvy_timer_init("GRVY Example Timing");
       grvy_timer_begin("Main Program");
 
       for(i=0;i<Max_Iters;i++)
