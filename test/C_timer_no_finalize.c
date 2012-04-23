@@ -30,60 +30,91 @@
 #include<grvy.h>
 #include<stdio.h>
 #include<unistd.h>
-#include<sys/time.h>
-#include<time.h>
+#include<stdlib.h>
 #include<math.h>
-#include <sys/time.h>
 
-double Foo_Sleep = 0.098 * 1.e6;
-double Bar_Sleep = 0.075 * 1.e6;
-double boo_Sleep = 0.23 * 1.e6;
+const double Foo_Sleep = 0.03 * 1.e6;
+const double Bar_Sleep = 0.05 * 1.e6;
+const double Boo_Sleep = 0.1  * 1.e6;
+const double Max_Iters = 3;
 
-double Tolerance = 5e-4;	/* a coarse-grained check to compare against gettimeofday() */
+const double Rel_TOL   = 0.1;	// tolerance (coarse-grained for potentially busy test hosts)
 
-void foo();
-void foo_fast();
-void bar();
-void boo();
+void   foo();
+void   bar();
+void   boo();
+double vette_relative_diff(char *id, double expected);
 
-struct timeval tv;
-double boo_gtod_timing   = 0.0;
 
 int main()
 {
 
   int i,itest;
-  int num_repeat   = 2;
-  int max_iters = 3;
-  int max_iters_fast = 313;
-  double t1;
+  int num_repeat = 2;
 
-  int call_count;
-  double call_mean = 0.0;
-  double call_variance = 0.0;
+  // Purposefully not calling grvy_timer_init()....
 
-  //grvy_log_setlevel(GRVY_ERROR);
-
-  /* Basic test (no embedded timers) */
-
-  grvy_timer_init("GRVY");
-
-  for(itest=0;itest<max_iters_fast;itest++)
-    foo_fast();
-
-  // Note: purposefully not calling finalize here: make sure the library does this for us.
-
-  call_count = grvy_timer_stats_count("foo_fast");
-
-  if( call_count != max_iters_fast )
+  /* Do some work - note that foo() includes calls to other
+   * routines to test embedded timer capability.  */
+  
+  for(itest=0;itest<num_repeat;itest++)
     {
-      grvy_printf(GRVY_ERROR,"Timer stat count mismatch for foo_fast\n");
-      grvy_printf(GRVY_ERROR,"  --> Found %i calls, expecting %i",call_count,max_iters_fast);
-      return(1);
+      for(i=0;i<Max_Iters;i++)
+	foo();
     }
 
-  // make sure summarize funcion is accessible
+  // Purposfeully not calling grvy_timer_finalize();
+  grvy_timer_summarize();
 
+  double Boo_expected = Boo_Sleep*Max_Iters*num_repeat/1.e6;
+  double Bar_expected = Bar_Sleep*Max_Iters*num_repeat/1.e6;
+  double Foo_expected = Foo_Sleep*Max_Iters*num_repeat/1.e6;
+  double total_expected = Boo_expected + Bar_expected + Foo_expected;
+
+  grvy_printf(GRVY_DEBUG,"Expected time for boo = %e secs\n",Boo_expected);
+  grvy_printf(GRVY_DEBUG,"Expected time for bar = %e secs\n",Bar_expected);
+  grvy_printf(GRVY_DEBUG,"Expected time for foo = %e secs\n",Foo_expected);
+
+  /* Timer values reasonable? */
+
+  vette_relative_diff("boo",Boo_expected);
+  vette_relative_diff("bar",Bar_expected);
+  vette_relative_diff("foo",Foo_expected);
+
+  /* Total time reasonable? */
+
+  double total_time = grvy_timer_elapsed_global();
+  printf("total_time = %f\n",total_time);
+
+  if(total_time <= 0.0)
+    exit(1);
+
+  if(fabs(total_time - total_expected)/total_expected > Rel_TOL)
+    {
+      grvy_printf(GRVY_ERROR,"Global timer mismatch - test host may be overloaded\n");
+      exit(1);
+    }
+
+  /* Unassigned timer reasonable? */
+
+  double unassigned = total_time - ( grvy_timer_elapsedseconds("foo") + 
+				     grvy_timer_elapsedseconds("boo") + 
+				     grvy_timer_elapsedseconds("bar") );
+
+  if(unassigned <= 0.0)
+    exit(1);
+  
+  if(unassigned > 1e-3)
+    {
+      grvy_printf(GRVY_ERROR,"Unassigned timer mismatch - test host may be overloaded\n");
+      grvy_printf(GRVY_ERROR,"--> Unaccounted time = %e\n",unassigned);
+      exit(1);
+    }
+
+
+  usleep(100*Foo_Sleep);
+  total_time = grvy_timer_elapsed_global();
+  printf("total_time = %f\n",total_time);
   grvy_timer_summarize();
 
   return 0;
@@ -96,18 +127,6 @@ void foo()
 
   usleep(Foo_Sleep);
   bar();
-
-  grvy_timer_end(__func__);
-  return;
-}
-
-void foo_fast()
-{
-  static int i=0;
-
-  grvy_timer_begin(__func__);
-
-  i++;
 
   grvy_timer_end(__func__);
   return;
@@ -128,20 +147,32 @@ void bar()
 
 void boo()
 {
-  static double t1;
-
-  gettimeofday(&tv,NULL);
-  t1 =  ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec);
-
   grvy_timer_begin(__func__);
 
-  usleep(boo_Sleep);
+  usleep(Boo_Sleep);
 
   grvy_timer_end(__func__);
 
-  gettimeofday(&tv,NULL);
-  boo_gtod_timing +=   ((double) tv.tv_sec) + 1.e-6*((double) tv.tv_usec) - t1;
-
   return;
     
+}
+
+double vette_relative_diff(char *id,double expected)
+{
+  double measured = grvy_timer_elapsedseconds(id);
+
+  if(measured <= 0.0)
+    {
+      grvy_printf(GRVY_ERROR,"Elapsed time should be > 0 (%s)\n",id);
+      exit(1);
+    }
+
+  if(fabs(measured-expected)/expected > Rel_TOL)
+    {
+      grvy_printf(GRVY_INFO,"Timer mismatch - test host may be overloaded\n");
+      grvy_printf(GRVY_INFO,"  --> Measured      = %e\n",measured);
+      grvy_printf(GRVY_INFO,"  --> Expected      = %e\n",expected);
+      grvy_printf(GRVY_INFO,"  --> Relative Diff = %e (%)\n",fabs(measured-expected)/expected);
+    }
+
 }

@@ -52,6 +52,8 @@ int main()
   int i,itest;
   int num_repeat = 2;
 
+  // Purposefully not calling grvy_timer_init()....
+
   /* Do some work - note that foo() includes calls to other
    * routines to test embedded timer capability.  */
   
