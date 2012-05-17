@@ -1,7 +1,7 @@
 # -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.61)
+AC_PREREQ(2.68)
 AC_INIT(grvy, 0.32.0, karl@ices.utexas.edu)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADER(config_grvy.h)
@@ -76,18 +76,18 @@ AC_ARG_ENABLE(boost-headers-only, AC_HELP_STRING([--enable-boost-headers-only],
 				  [boost_header_only=yes],[boost_header_only=no])
 				  
 AC_LANG([C++])
-BOOST_REQUIRE([1.46])
 
 if test "x$boost_header_only" != "xyes";then
-
+   BOOST_REQUIRE([1.48])
    BOOST_MATH
    #BOOST_REGEX
    #BOOST_PROGRAM_OPTIONS
-   BOOST_FILESYSTEM('')
+   #BOOST_FILESYSTEM('')
    BOOST_FILESYSTEM
    BOOST_SYSTEM
    #BOOST_ASIO
 else
+   BOOST_REQUIRE([1.46])
    BOOST_HEADER_ONLY=1
    AC_DEFINE(BOOST_HEADER_ONLY,1,[Define if using a header-only build for Boost])
 fi
