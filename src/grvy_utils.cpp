@@ -189,6 +189,8 @@ namespace GRVY {
   extern "C" int grvy_copy_dir(const char *from_dir, const char *to_dir)
   {
 
+
+
 #ifdef HAVE_BOOST_FILESYSTEM_PATH_HPP
     boost::filesystem::path source_dir(from_dir);
     boost::filesystem::path dest_dir  (to_dir);
@@ -238,6 +240,19 @@ namespace GRVY {
 	  }
       }
 
+    // ks (5/17/12): slight kludge for boost::filesystem; strange runtime errors 
+    // can be obtained when LC_ALL is not set to "C"; see example relevant discussion at
+    // 
+    // https://svn.boost.org/trac/boost/ticket/5928
+
+    char *lc_original;
+    char *lc_setting = getenv("LC_ALL");
+
+    if(lc_setting != NULL)
+      lc_original = strdup(lc_setting);
+
+    setenv("LC_ALL","C",1);
+
     // now we have a target dir, copy over contents recursively
 
     for ( boost::filesystem::recursive_directory_iterator end, dir(from_dir);dir != end; ++dir )
@@ -251,8 +266,6 @@ namespace GRVY {
 	grvy_printf(GRVY_DEBUG,"\n%s: copying %s to %s\n",__func__,dir->path().string().c_str(),
 		    target.c_str());
 
-
-	
 	copy(dir->path(),target,ec);
 
 	if(ec)
@@ -288,6 +301,13 @@ namespace GRVY {
 	grvy_printf(GRVY_DEBUG,"%s: done with copy\n",__func__);
       }
 
+    // restore original environment
+
+    if(lc_setting != NULL)
+      setenv("LC_ALL",lc_original,1);
+    else
+      unsetenv("LC_ALL");
+      
     return(0);
 
 #else
