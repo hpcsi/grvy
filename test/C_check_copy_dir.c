@@ -39,10 +39,16 @@
 int main(int argc, char **argv)
 {
   int flag = 1;
-  char template[]   = "tmpdir-XXXXXX";
-  char template2[]  = "tmpdir-XXXXXX";
-  char *input_dir   = getenv("GRVY_INPUT_EXAMPLE_DIR");
+  char template   [] = "tmpdir-XXXXXX";
+  char template2  [] = "tmpdir-XXXXXX";
+  char default_dir[] = "./";
+
   char tmp_string[1024];
+
+  char *input_dir   = getenv("GRVY_INPUT_EXAMPLE_DIR");
+
+  if(input_dir == NULL)
+    input_dir = default_dir;
 
   /* Silence info/warn/error messages */
 
