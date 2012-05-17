@@ -945,7 +945,7 @@ QHG_LOCATION           =
 # top of each HTML page. The value NO (the default) enables the index and 
 # the value YES disables it.
 
-DISABLE_INDEX          = NO
+DISABLE_INDEX          = YES
 
 # This tag can be used to set the number of enum values (range [1..20]) 
 # that doxygen will group on one line in the generated HTML documentation.
@@ -967,7 +967,8 @@ ENUM_VALUES_PER_LINE   = 4
 # releases of Doxygen, the values YES and NO are equivalent to FRAME and NONE 
 # respectively.
 
-GENERATE_TREEVIEW      = NONE
+#GENERATE_TREEVIEW      = NONE
+GENERATE_TREEVIEW      = NO
 
 # If the treeview is enabled (see GENERATE_TREEVIEW) then this tag can be 
 # used to set the initial width (in pixels) of the frame in which the tree 
