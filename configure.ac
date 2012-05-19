@@ -78,7 +78,7 @@ AC_ARG_ENABLE(boost-headers-only, AC_HELP_STRING([--enable-boost-headers-only],
 AC_LANG([C++])
 
 if test "x$boost_header_only" != "xyes";then
-   BOOST_REQUIRE([1.48])
+   BOOST_REQUIRE([1.46])
    BOOST_MATH
    #BOOST_REGEX
    #BOOST_PROGRAM_OPTIONS
