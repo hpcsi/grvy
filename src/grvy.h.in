@@ -157,6 +157,8 @@ extern "C" {
    * Various illustrative examples demonstrating functionality of the
    * library are provided in the top-level \e examples/ directory. A specific
    * C example using the input parsing routines is \ref CinputExample "input.c".
+   * 
+   * <hr>
    */
 
   /** 
@@ -413,36 +415,84 @@ extern "C" {
   /** \defgroup Ctimer Performance Timer Utilities 
    *  \ingroup Capi
    *
-   * \brief Routines for measuring runtime performance of specific
-   * (nested) code sections for performance analysis, statistical
-   * analysis, and historical runtime logging.
+   * \brief This section presents available C routines for measuring
+   * runtime performance of specific code sections to aid in overall
+   * performance/statistical analysis, and to maintain historical
+   * performance records as application codes evolve or across
+   * alternate compute platforms.  Individual code timers are defined
+   * based on begin/end demarcation around the desired code snippet to
+   * measure along with a unique user-provided id string. Note that
+   * individual timers can be nested and the library will report
+   * exclusive timing of the innermost timers. Various options are
+   * provided to interrogate timer measurements, statistics, and
+   * relative timer comparisons. A convenient use of these routines is
+   * to define timers around various important work constructs within
+   * your application and use the grvy_timer_summarize() function to
+   * obtain a concise summary of the runtime performance, variability,
+   * and relative wallclock comparisions. Example output using this
+   * approach is shown below:
+   *
+   *  \code 
+   *  -----------------------------------------------------------------------------------------------
+   *  GRVY Example Timing - Performance Timings:              |      Mean      Variance       Count
+   *  --> foo                 : 3.01008e+00 secs ( 64.1013 %) | [8.58307e-07  8.18545e-14         10]
+   *  --> boo                 : 1.17512e+00 secs ( 25.0247 %) | [1.17512e-01  1.33016e-07         10]
+   *  --> bar                 : 5.09656e-01 secs ( 10.8534 %) | [2.31266e-06  1.78545e-12         10]
+   *  --> Main Program        : 9.40084e-04 secs (  0.0200 %) | [9.53674e-07  0.00000e+00          1]
+   *  --> GRVY_Unassigned     : 2.83718e-05 secs (  0.0006 %)
+   *
+   *  Total Measured Time = 4.69582e+00 secs (100.0000 %)
+   *  -----------------------------------------------------------------------------------------------
+   *  \endcode
+   * <hr>
    */
 
   /**
    * \ingroup Ctimer
-   * \name Performance Timer - Initialization and timer definitions:
+   * \name Performance Timer - Initialization and Timer Demarcation:
    *
-   * The following routines provide support for enabling wall-clock
-   * performance timings of specific code regions. Individual timers
-   * are delineated by a unique id. Individual timers can be nested
-   * and the library will report exclusive timing of the innermost
-   * timers.
+   * The following routines provide support for defining one or more
+   * wall-clock timers around specific code regions. Individual timers are
+   * delineated by a unique \e id.  In addition to timing specific code
+   * regions identified with begin/end calls, the library also
+   * tracks the total application time from when the timing library
+   * was first initialized.
    */
 
   /** \ingroup Ctimer
    * @{
    */
 
-  /** Basic wallclock timer
+  /** \brief Initialize timer library with a \e description string
+      which initiates the global timing process (the description
+      string is used to customize grvy_timer_summarize() output). Note
+      that you are not required to call this function prior to
+      defining specific timers.  If you do not specificaly call
+      grvy_timer_init(), then the global timer will begin on the first
+      call to grvy_timer_begin() (and a default description string
+      will be defined).
+   */
+
+  extern   void grvy_timer_init                (const char *description);
+
+  /** \brief Identify beginning of code section to time with unique \e id string. */
+  extern   void grvy_timer_begin               (const char *id);
+
+  /** \brief Identify end of code section to time with a matching \e id string. */
+  extern   void grvy_timer_end                 (const char *id);
+
+  /** \brief Resets all actively defined timers (accumulated time and
+   *  calling statistics are reinitialized). */
+  extern   void grvy_timer_reset               ();
+
+  /** \brief Finalize global timing process - stops the active global timer */
+  extern   void grvy_timer_finalize            ();
+
+  /** \brief Basic wallclock timer which provides the time since epoch in seconds.
    * \return time since epoch in seconds
    */
 
   extern double grvy_timer                     ();
-  extern   void grvy_timer_init                (const char *id);
-  extern   void grvy_timer_reset               ();
-  extern   void grvy_timer_finalize            ();
-  extern   void grvy_timer_begin               (const char *id);
-  extern   void grvy_timer_end                 (const char *id);
 
   /** @} */
 
@@ -451,24 +501,48 @@ extern "C" {
    * \name Performance Timer - Query Tools:
    *
    * The following routines allow for the querying of defined
-   * performance timers to obtain the elapsed time (in seconds) or
-   * various timer statistics (number of timer calls, mean, and
-   * variance). 
+   * performance timers.
    */
 
   /**
    * \ingroup Ctimer
    * @{ */
 
+  /** \brief Returns total elapsed time (in seconds) for defined timer \e id */
   extern double grvy_timer_elapsedseconds      (const char *id);
+  /** \brief Returns total elapsed time (in seconds) for the global timer */
   extern double grvy_timer_elapsed_global      ();
+  /** \brief Returns the total number of timer calls for defined timer \e id */
   extern    int grvy_timer_stats_count         (const char *id);
+  /** \brief Returns the mean value (in seconds) for defined timer \e id */
   extern double grvy_timer_stats_mean          (const char *id);
+  /** \brief Returns the variance for defined timer \e id */
   extern double grvy_timer_stats_variance      (const char *id);
+  /** \brief Returns the minimum measured timing (in seconds) for defined timer \e id */
   extern double grvy_timer_stats_min           (const char *id);
+  /** \brief Returns the largest measured timing (in seconds) for defined timer \e id */
   extern double grvy_timer_stats_max           (const char *id);
+
+
+  /** \brief 
+   *  Print a concise summary of all defined timers to
+   *  stdout. This routine shows the relative runtime percentages
+   *  between all defined timers along with statistics for each
+   *  timer. Global time that is not associated with any
+   *  user-defined timers is associated with an unassigned timer
+   *  (GRVY_Unassigned).
+  */
+
   extern   void grvy_timer_summarize           ();
-  extern    int grvy_timer_set_summarize_width (const int maxwidth);
+
+  /** \brief Set max allowed width of grvy_timer_summarize()
+  * output. The normal default is to limit output width to 120
+  * characters which can truncate long \e description strings provided
+  * to grvy_timer_init().  This routine can be used to customize
+  * the max output width as desired.
+  */
+
+  int grvy_timer_set_summarize_width (const int maxwidth);
 
   /** @} */
 
