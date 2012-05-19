@@ -1,7 +1,9 @@
 Version 0.32 (In progress)
 
+  * significantly expanded online documentation
+  * bug fix for embedded timers sometimes reporting incorrect mean/variance values
   * updated autotools bootstrapping mechanism to use autoreconf
-  * increased minimum autoconf requirement to v2.68
+  * increased minimum autoconf requirement to v2.65
   * fixed runtime crash for timers when init() function not called
   * fixed timer_summarize() output when finalize() routine not called
   * updated potential timer inaccuracy warnings to only occur once during timer summarize()
