@@ -65,7 +65,8 @@ bin/ directory of a local libGRVY installation),
 </ul>
 
 \section licence License
-Copyright (C) 2008,2009,2010,2011,2012 The PECOS Development Team
+Copyright (C) 2008,2009,2010,2011,2012 The PECOS Development Team.\n
+
 \copydoc LicenseLGPL
 
 \section acknowledgements Acknowledgments
