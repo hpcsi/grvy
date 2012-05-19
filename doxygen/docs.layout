@@ -131,12 +131,13 @@
   <group>
     <briefdescription visible="no"/>
     <detaileddescription title=""/>
-    <groupgraph visible="$GROUP_GRAPHS"/>
+    <!--groupgraph visible="$GROUP_GRAPHS"/ -->
+    <groupgraph visible="no"/>
     <memberdecl>
       <classes visible="yes" title=""/>
       <namespaces visible="yes" title=""/>
       <dirs visible="yes" title=""/>
-      <nestedgroups visible="yes" title=""/>
+      <nestedgroups visible="no" title=""/>
       <files visible="yes" title=""/>
       <defines title=""/>
       <typedefs title=""/>

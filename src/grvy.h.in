@@ -76,20 +76,27 @@ extern "C" {
 
   /** @defgroup Capi C API
    *
-   * \brief This page provides a link to all of the C style functions which
-   * are available in libGRVY (grouped by functionality). To access
+   * \brief This page provides links to all of the C style utilities which
+   * are available in libGRVY (organized by functionality). To access
    * these routines from C/C++, make sure to \#include <grvy.h> within
    * your source code files. Unless specified otherwise, functions
    * which have an integer return value return "0" upon success (and
    * the primary exception to this rule is with a subset of the Input
    * Parsing routines).
-   *
-   * Click on one of the boxes to see more details on the routines
-   * available for each utility. Alternatively, if you prefer to see
-   * all of the available routines as part of the C API on a single page, refer to the
-   * header file, grvy.h directly.
    * 
-   * <hr>
+   * Click on one of the links below to see more details on the routines
+   * available for each utility. Alternatively, if you prefer to see
+   * all of the available routines as part of the C API on a single
+   * page, refer to the header file, grvy.h directly.
+   *
+   * \li \ref Cinput
+   * \li \ref Ctimer
+   * \li \ref Cmath
+   * \li \ref Clog
+   * \li \ref Cmisc
+   * \li \ref Cocore
+   * \li \ref Cversioning
+   *
    */
 
   //-----------------------------------------------------------------
@@ -136,10 +143,18 @@ extern "C" {
    * \defgroup Cinput Input Parsing
    * @ingroup Capi
    *
-   * \brief Routines for accessing input parameters from a libGRVY
-   * style input file. See the \ref inputFile "example input file" for
-   * more information on the file format.
+   * \brief This section presents available C routines for accessing
+   * input parameters from a libGRVY style input file. See the \ref
+   * inputFile "example input file" for more information on the file
+   * format. Unless specified otherwise, functions which have an
+   * integer return value return "0" upon success. The primary
+   * exception to this rule is with the read() routines.  All
+   * grvy_input_fread_() routines return 1 on success and 0 on failure.
+   * This return behavior is intended as a convenience for
+   * applications to check input file parsing errors over consecutive
+   * reads via multiplicative operations.
    *
+   * Pointer to relevant examples are here.
    */
 
   /** 
@@ -147,10 +162,9 @@ extern "C" {
    * \name Input Parsing - File open/close:
    *
    * Routines for accessing input parameters from a libGRVY style
-   * input file. Note that an input file must be open prior to reading
+   * input file. Note that an input file must be opened prior to reading
    * any keyword/value pairs or performing input file dump
-   * operations. See the \ref inputFile "example input file" for more
-   * information on the file format.
+   * operations. 
    *
    */
 
@@ -243,7 +257,12 @@ extern "C" {
 
    extern int grvy_input_fread_double        (const char* keyword, double *value);
 
-   /** \brief Read a single input character string \e value corresponding to the \e keyword path
+   /** \brief Read a single input character string \e value
+    * corresponding to the \e keyword path.  For convenience, libGRVY
+    * will allocate memory for the the character string based on the
+    * size of the string present in the input file (including null
+    * terminator). 
+    *
     *  \param keyword input keyword path
     *  \param corresponding value in input file
     */
@@ -256,36 +275,72 @@ extern "C" {
    * \ingroup Cinput
    * \name Input Parsing - Read vector values:
    *
-   * The following routines are used to read vector valued input values
-   * for common intrinsic datatypes given a desired keyword character
-   * string (keyword).  
+   * The following routines are used to read vector valued input
+   * values for common intrinsic datatypes given a desired keyword
+   * character string (\e keyword).  If successful, the resulting data
+   * is stored in the array \e values.
    */
 
   /** \ingroup Cinput
    * @{
    */
 
-  extern int grvy_input_fread_int_vec       (const char* keyword, int *value,    int nelems);
-  extern int grvy_input_fread_float_vec     (const char* keyword, float *value,  int nelems);
-  extern int grvy_input_fread_double_vec    (const char* keyword, double *value, int nelems);
-  extern int grvy_input_fread_char_ivec     (const char* keyword, char **value,  int elem);
+  /** \brief Read an integer array of size \e nelems corresponding to
+   * the \e keyword path.
+   */
+
+  extern int grvy_input_fread_int_vec       (const char* keyword, int *values,    int nelems);
+
+  /** \brief Read a float array of size \e nelems corresponding to
+   * the \e keyword path.
+   */
+
+  extern int grvy_input_fread_float_vec     (const char* keyword, float *values,  int nelems);
+
+  /** \brief Read a double array of size \e nelems corresponding to
+   * the \e keyword path.
+   */
+
+  extern int grvy_input_fread_double_vec    (const char* keyword, double *values, int nelems);
+
+  /** \brief Read a character array of size \e nelems corresponding to
+   * the \e keyword path.
+   */
+
+  extern int grvy_input_fread_char_ivec     (const char* keyword, char **values,  int elem);
+
 
   /** @} */  
 
   /** \ingroup Cinput
    *  \name Input Parsing - Read ith vector values:
    *
-   * The following routines are used to read the ith entry (entry) of
-   * vector valued input values for common intrinsic datatypes given a
-   * desired keyword character string (keyword).  
+   * The following routines are used to read the ith entry (\e elem)
+   * of vector valued input values for common intrinsic datatypes
+   * given a desired keyword character string (\e keyword). If
+   * successful, the resulting data is stored in \e value.
    */
 
   /** \ingroup Cinput
    * @{
    */
 
+  /** \brief Read the ith entry (\e elem) from an array of integers
+      corresponding to the \e keyword path.
+   */
+
   extern int grvy_input_fread_int_ivec      (const char* keyword, int *value,    int elem);
+
+  /** \brief Read the ith entry (\e elem) from an array of doubles 
+      corresponding to the \e keyword path.
+   */
+
   extern int grvy_input_fread_float_ivec    (const char* keyword, float *value,  int elem);
+
+  /** \brief Read the ith entry (\e elem) from an array of doubles
+      corresponding to the \e keyword path.
+   */
+
   extern int grvy_input_fread_double_ivec   (const char* keyword, double *value, int elem);
 
   /** @} */
@@ -295,8 +350,8 @@ extern "C" {
    * \name Input Parsing  - Default value registration:
    *
    * The following routines provide a mechanism to register a default
-   * value with the input parsing mechanism. If a particular keyword
-   * (var) has a registered default value and is subsequently queried
+   * value with the input parsing mechanism. If a particular \e keyword
+   * has a registered default value and is subsequently queried
    * with an input file which does not contain the keyword, the
    * registered default value will be returned instead. A convenient
    * use for these registration functions is to provide sensible
@@ -308,20 +363,44 @@ extern "C" {
    * @{
    */
 
-  /* \brief Register default integer value */
+  /** \brief Register default integer \e value corresponding to the \e keyword path. */
+  extern int grvy_input_register_int        (const char *keyword,     int value);
 
-  extern int grvy_input_register_int        (const char *var,     int value);
+  /** \brief Register default float \e value corresponding to the \e keyword path. */
+  extern int grvy_input_register_float      (const char *keyword,   float value);
 
-  /* \brief Register default float value */
+  /** \brief Register default double \e value corresponding to the \e keyword path. */
+  extern int grvy_input_register_double     (const char *keyword,  double value);
 
-  extern int grvy_input_register_float      (const char *var,   float value);
-  extern int grvy_input_register_double     (const char *var,  double value);
-  extern int grvy_input_register_char       (const char *var,   char *value);
+  /** \brief Register default character string \e value corresponding to the \e keyword path. */
+  extern int grvy_input_register_char       (const char *keyword,   char *value);
 
-  extern int grvy_input_register_get_int    (const char *var,    int *value);
-  extern int grvy_input_register_get_float  (const char *var,  float *value);
-  extern int grvy_input_register_get_double (const char *var, double *value);
-  extern int grvy_input_register_get_char   (const char *var,  char **value);
+  /** @} */
+
+  /** 
+   * \ingroup Cinput 
+   * \name Input Parsing  - Default registration query:
+   *
+   * The following routines can be used to query the current hashed
+   * values of any keyword variables which have been registered
+   * previously.
+   */
+
+  /** \ingroup Cinput
+   * @{
+   */
+
+   /** \brief Retrieve registered default integer \e value corresponding to the \e keyword path. */
+  extern int grvy_input_register_get_int    (const char *keyword,    int *value);
+
+  /** \brief Retrieve registered default float \e value corresponding to the \e keyword path. */
+  extern int grvy_input_register_get_float  (const char *keyword,  float *value);
+
+  /** \brief Retrieve registered default double \e value corresponding to the \e keyword path. */
+  extern int grvy_input_register_get_double (const char *keyword, double *value);
+
+  /** \brief Retrieve registered default character string \e value corresponding to the \e keyword path. */
+  extern int grvy_input_register_get_char   (const char *keyword,  char **value);
 
   /** @} */
 

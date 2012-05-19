@@ -18,17 +18,19 @@ follows:
 
 <ul>
 <li>a flexible method for
-parsing ascii-files input files (with backwards-compatibility support)
+parsing keyword driven input files (with backwards-compatibility support)
 <li>a performance timing mechanism to provide a simple
 summary of individual code section performance along with basic
 statistics
 <li> an HDF5 based historical performance mechanism for logging 
 application performance over time on various compute resources
 <li> a simple priority-based logging mechanism to control application messages
+<li> utilities for offloading out-of-core read/write operations to a
+pool of distributed shared-memory nodes using MPI for data transfer
 <li> miscellaneous file handling and math utilities
 </ul>
 
-Thanks for your interest in libGRVY. To aid in usage, this manual is
+To aid in usage, this document is
 further divided into the following subsections:
 
 <ul>
