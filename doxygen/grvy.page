@@ -103,59 +103,63 @@ double precision values as \e 1.2345e6 as opposed to \e 1.2345d6.
 
 */
 
-/*! \page installation Installation/Linkage
+/*! \page installation Installation and Linkage
 
 libGRVY uses the GNU autotools suite (autoconf, automake, and libtool)
 for its development build system.  This system is popular among the
 Linux development community and provides a familiar build environment
-for end users.  
+for end users. The three basic steps of the autotools process are:
 
-To build libGRVY starting from a release distribution, untar the distribution and
-enter the top-level directory:
+- \ref Configuration
+- \ref Build
+- \ref Installation  
+
+These installation steps are discussed in more detail below followed
+by information on how to \ref Linkage "link" against the library once installed.  To
+initiate the build process starting from a release distribution, you
+should first untar the distribution and enter the top-level directory:
 
 <div class="fragment"><pre class="fragment">
 \> tar xvfz grvy-$(VERSION).tar.gz
 \> cd grvy-$(VERSION)/            
 </pre></div>
 
-<h2> External Software Dependencies</h2>
+<b>External Software Dependencies:</b>
 
-\li <a href="http://www.boost.org/">Boost C++ library </a> (required)
+\li <a href="http://www.boost.org/">Boost C++ library </a> (\b required)
 \li <a href="http://www.hdfgroup.org/HDF5/">HDF5 library </a> (optional)
 \li <a href="http://www.hdfgroup.org/HDF5/">MPI library </a> (optional)
 
+The minimum software required to build libGRVY is a local copy of the
+Boost library. Note that you can choose to build libGRVY against a \a
+header-only version of Boost or a full library installation. A build
+using the header-only version will disable some miscellaneous libGRVY
+functionality which leverages Boost libraries (grvy_copy_dir(), in
+particular).  Additional library functionality can be enabled via
+linkage to optional HDF and MPI libraries.
 
-Note that the minimum software required to build libGRVY is a local
-copy of the <a href="http://www.boost.org/">Boost</a> library. You can
-choose to build libGRVY with a \a header-only version of Boost or a
-full library installation. A build using the header-only version will
-disable some miscellaneous libGRVY functionality which leverages Boost
-libraries. In particular the grvy_copy_dir() routine which can be used
-to recursively copy a directory tree will be disabled as it leverages
-the boost::filesystem library.
+<hr>
 
-<h2>Configuration Options</h2>
+\anchor Configuration <h2>Configuration </h2> 
 
 If Boost is installed and available within your default login
 environment, then libGRVY should automatically configure against the
 available installation.  If, however, your Boost installation is in a
-non-standard location, use the <tt>--with-boost</tt> option to specify
+non-standard location, use the \c "--with-boost" option to specify
 the location.
 
-Since libGRVY provides a Fortran interface, a valid Fortran90 compiler is
-also required.  To date, libGRVY has been successfully tested with \e
-gfortran and the Intel \e ifort compilers.  The configuration step
+Since libGRVY provides a Fortran interface, a valid Fortran90 compiler
+is also required.  To date, libGRVY has been successfully tested with
+\e gfortran and the Intel \e ifort compilers.  The configuration step
 will look for available compilers in the user environment but as with
 any \e autoconf based configuration, these can be overridden with
-command line arguments (by setting \c CXX, \c FC, and \c F77
-appropriately).
+command line arguments (by setting \c CXX, \c CC, and \c FC
+appropriately).  For full documentation on available configuration
+options, run \c "configure --help".  The examples below highlight
+common configuration examples:
 
-<b>Installation Directory</b>: Use the <tt>--prefix</tt> option to
-specify your desired top-level installation directory for GRVY.  The
-examples below all configure libGRVY to be installed in the user's ~/bin/grvy
-directory.
-
-<em>Configure with Boost from default login environment:</em> <br>
+<em>Configure with Boost from default login environment (and request
+installation in user's ~/bin/grvy directory):</em> <br>
 
 \code > ./configure --prefix=$HOME/bin/grvy \endcode
 
@@ -163,23 +167,36 @@ directory.
 
 \code > ./configure --prefix=$HOME/bin/grvy --with-boost=$MY_BOOST_DIR/boost-1.37.0 \endcode
 
-<em>Or, configure with specific compilers:</em>        <br>
+<em>Or, configure with specific Intel compilers:</em>        <br>
 
-\code > ./configure CXX=g++ FC=ifort --prefix=$HOME/bin/grvy \endcode
+\code > ./configure CXX=icpc CC=icc FC=ifort --prefix=$HOME/bin/grvy \endcode
 
-<h2> Library Build </h2>
+<em>Or, configure for Boost header-only compilation:</em>        <br>
 
-Once configured, issue a <tt>make</tt> to build the software. If successful, this
-will build the libGRVY library (static and dynamic versions) and several
+\code > ./configure --prefix=$HOME/bin/grvy --enable-boost-headers-only\endcode
+
+<em>Or, enable optional functionality requiring MPI:</em>        <br>
+
+\code > ./configure --prefix=$HOME/bin/grvy --enable-mpi\endcode
+
+<em>Or, enable optional functionality requiring HDF5:</em>        <br>
+
+\code > ./configure --prefix=$HOME/bin/grvy --with-hdf5=$MY_HDF5_DIR/bin/hdf5-1.8.4\endcode
+
+\anchor Build <h2> Build </h2>
+
+Once configured, issue a \c "make" to build the software. If successful, this
+will build the libGRVY library (static and dynamic versions) along with relevant binaries and several
 examples.
 
 \code > make \endcode
 
 <b> Verifying the build:</b> To verify that the software is working
 properly, a test option is provided to run a short suite of
-functionality tests against the local build.  To run, issue a <tt>make
-check</tt> to run the tests.  If successfull, output similar to the
-following will be generated.
+functionality tests against the local build.  To run, issue a \c "make
+check" to initiate the tests.  If successful, output similar to the
+following will be generated (the exact number of tests will vary depending on
+version and configuration options):
 
 \code
  > make check
@@ -192,39 +209,78 @@ PASS: C_input_nofile_available
 PASS: C_input_read_missing_variable
 PASS: C_input_register_variables
 PASS: C_input_register_read_missing_variable
+PASS: C_input_dos_newlines
+PASS: C_timer_sum
+PASS: C_timer_std_width.sh
+PASS: C_timer_expanded_width.sh
+PASS: C_timer_stats
+PASS: C_timer_baseline
+PASS: C_timer_no_init
+PASS: C_timer_with_reset
+PASS: C_timer_no_finalize.sh
+PASS: C_unique_dir
+PASS: C_wrapper_scratch_dir.sh
 PASS: C_math_isnan
 PASS: C_math_isinf
 PASS: C_check_file_path
-PASS: C_unique_dir
-PASS: C_wrapper_scratch_dir.sh
 PASS: C_input_fdump
 PASS: C_wrapper_log.sh
 PASS: C_wrapper_log_printf.sh
-PASS: F_wrapper_check_file_path.sh
+PASS: C_version
+PASS: C_version_stdout
+PASS: C_check_copy_dir
+PASS: C_hdf_hist_timing
+PASS: F_hdf_hist_timing
+PASS: CXX_input
+PASS: CXX_input_register_variables
+PASS: CXX_input_dump
+PASS: CXX_timer_std_width.sh
+PASS: CXX_timer_expanded_width.sh
+PASS: CXX_timer_no_init
+PASS: CXX_hdf_hist_timing
 PASS: F_wrapper_unique_dir.sh
 PASS: F_wrapper_scratch_dir.sh
-PASS: F_wrapper_log.sh
 PASS: F_math
+PASS: F_wrapper_check_file_path.sh
+PASS: F_wrapper_log.sh
 PASS: F_input_read_variables
 PASS: F_input_nofile_available
 PASS: F_input_read_missing_variable
 PASS: F_input_register_variables
 PASS: F_input_read_bigstring
+PASS: F_input_dump.sh
+PASS: F_timer.sh
+PASS: F_timer_std_width.sh
+PASS: F_timer_expanded_width.sh
+PASS: F_version
+PASS: F_get_command_arguments.sh
+PASS: F_check_copy_dir
 -------------------------------------------------------
-Finalizing GRVY Tests, have a snazzy day
+Standalone Binaries
 -------------------------------------------------------
-
+PASS: version
+PASS: hostinfo
+PASS: gadd.sh
+PASS: gadd_unknown_option.sh
+PASS: gadd_with_options.sh
+PASS: gdump.sh
+PASS: gdump_unknown_options.sh
+PASS: gdump_with_options.sh
+-------------------------------------------------------
+Finalizing GRVY Tests, have a snazzy day 
+-------------------------------------------------------
+ 
 PASS: finalize.sh
 ===================
-All 25 tests passed
+All 61 tests passed
 ===================
 \endcode
 
-<h2> Installation </h2>
+\anchor Installation <h2> Installation </h2>
 
-After the build is complete, issue a <tt>make install</tt> to install
-the library.  The installation will consist of three top-level
-directories housing the library, include files, and
+After the build is complete, issue a \c "make install" to install
+the library.  The installation will consist of four top-level
+directories housing the library, binaries, include files, and
 example files.  An example of the top-level directories after
 installation is shown below:
 
@@ -234,20 +290,22 @@ Top-level libGRVY installation directory:
 
 \code
  > ls $HOME/bin/grvy/
- examples/  include/  lib/
+ bin/ examples/  include/  lib/
 \endcode
 
-<h2>Library Linkage</h2>
 
-To link an external C/C++ or Fortran application with the library, the
-\c include directory must be added to the compilers include search
-path in order to access the grvy.h header file (or for Fortran, the \c
-lib directory should be added to access the pre-compiled
-grvy F90 module).  The \c lib directory should also be added
-to the linker search path along with a request to link against the
-libGRVY library.  Several example link steps are provided below.  These
-examples assume that the libGRVY library has been successfully built and
-installed previously in the users's ~/bin/grvy directory:
+\anchor Linkage <h2>Library Linkage</h2>
+
+To link an external C/C++ or Fortran application with an installed
+version of the library, the \c include directory must be added to the
+compilers include search path in order to access the grvy.h header
+file (or for Fortran, the \c lib directory should be added to access
+the pre-compiled grvy F90 module).  The \c lib directory should also
+be added to the linker search path along with a request to link
+against the libGRVY library (and the Fortran interface for F90
+applications).  Several example link steps are provided below.  These
+examples assume that the libGRVY library has been successfully built
+and installed previously in the users's ~/bin/grvy directory:
 
 <h3>C/C++ Example</h3>
 
@@ -255,13 +313,13 @@ installed previously in the users's ~/bin/grvy directory:
 
 <h3>Fortran Example</h3>
 
-\code > $(FC) -I$HOME/bin/grvy/lib app.f90 -L$HOME/bin/grvy/lib -lgrvy \endcode
+\code > $(FC) -I$HOME/bin/grvy/lib app.f90 -L$HOME/bin/grvy/lib -lgrvy -lgrvyf \endcode
 
 To embed the dynamic library search path for the libGRVY library
 directly into the application executable, use an additional linker
 option as follows:
 
-<h3>C/C++ Example</h3>
+<h3>C/C++ Example (with embedded rpath)</h3>
 
 \code > $(CC) -I$HOME/bin/grvy/include app.c -L$HOME/bin/grvy/lib \
          -Wl,-rpath,$HOME/bin/grvy/lib -lgrvy \endcode
