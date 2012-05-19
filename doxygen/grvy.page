@@ -65,7 +65,7 @@ bin/ directory of a local libGRVY installation),
 </ul>
 
 \section licence License
-Copyright (C) 2008,2009,2010 The PECOS Development Team
+Copyright (C) 2008,2009,2010,2011,2012 The PECOS Development Team
 \copydoc LicenseLGPL
 
 \section acknowledgements Acknowledgments
@@ -111,21 +111,36 @@ Linux development community and provides a familiar build environment
 for end users.  
 
 To build libGRVY starting from a release distribution, untar the distribution and
-enter the top-level directory.
+enter the top-level directory:
 
 <div class="fragment"><pre class="fragment">
- > tar xvfz grvy-$(VERSION).tar.gz
- > cd grvy-$(VERSION)/            
+\> tar xvfz grvy-$(VERSION).tar.gz
+\> cd grvy-$(VERSION)/            
 </pre></div>
 
-<h2>Configuration Requirements</h2>
+<h2> External Software Dependencies</h2>
 
-libGRVY requires that the <a href="http://www.boost.org/">Boost C++
-library</a> be available locally. If Boost is installed and available
-within your default login environment, then libGRVY should automatically configure
-against the available installation.  If, however, your Boost
-installation is in a non-standard location, use
-the <tt>--with-boost</tt> option to specify the location.
+\li <a href="http://www.boost.org/">Boost C++ library </a> (required)
+\li <a href="http://www.hdfgroup.org/HDF5/">HDF5 library </a> (optional)
+\li <a href="http://www.hdfgroup.org/HDF5/">MPI library </a> (optional)
+
+
+Note that the minimum software required to build libGRVY is a local
+copy of the <a href="http://www.boost.org/">Boost</a> library. You can
+choose to build libGRVY with a \a header-only version of Boost or a
+full library installation. A build using the header-only version will
+disable some miscellaneous libGRVY functionality which leverages Boost
+libraries. In particular the grvy_copy_dir() routine which can be used
+to recursively copy a directory tree will be disabled as it leverages
+the boost::filesystem library.
+
+<h2>Configuration Options</h2>
+
+If Boost is installed and available within your default login
+environment, then libGRVY should automatically configure against the
+available installation.  If, however, your Boost installation is in a
+non-standard location, use the <tt>--with-boost</tt> option to specify
+the location.
 
 Since libGRVY provides a Fortran interface, a valid Fortran90 compiler is
 also required.  To date, libGRVY has been successfully tested with \e
