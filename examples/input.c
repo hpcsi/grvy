@@ -61,9 +61,9 @@ int main(int argc, char **argv)
   if(grvy_input_fread_char("gridfile",&gridfile))
     printf("--> %-10s = %s\n","gridfile",gridfile);
 
-  /* Note that GRVY will allocate memory for the
-   * string; if you are a purist and want to cleanup, you should
-   * call free() when done with the variable */
+  /* Note that for convenience, libGRVY will allocate memory for the
+   * string based on the size of the string found in the input file;
+   * you should call free() when done with the variable. */
 
   free(gridfile);
 

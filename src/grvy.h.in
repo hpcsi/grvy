@@ -154,7 +154,9 @@ extern "C" {
    * applications to check input file parsing errors over consecutive
    * reads via multiplicative operations.
    *
-   * Pointer to relevant examples are here.
+   * Various illustrative examples demonstrating functionality of the
+   * library are provided in the top-level \e examples/ directory. A specific
+   * C example using the input parsing routines is \ref CinputExample "input.c".
    */
 
   /** 

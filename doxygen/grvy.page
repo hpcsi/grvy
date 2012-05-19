@@ -79,6 +79,19 @@ Copyright (C) 2008,2009,2010,2011,2012 The PECOS Development Team.\n
 
  */
 
+/*! \page CinputExample Input Parsing Example using C API 
+
+An illustrative code example in C using the input parsing API is shown
+below (and is also available in the \e examples directory from a
+top-level install). This C example is configured to parse the example
+pecos-input.txt file shown \ref inputFile "here" and uses many of the available
+parsing routines including a demonstration of default value
+registration.
+
+\includelineno input.c
+
+*/
+
 /*! \page inputFile Example libGRVY Input File
 
 This is an example input file for use with the libGRVY parsing mechanism.
