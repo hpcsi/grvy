@@ -126,9 +126,11 @@ should first untar the distribution and enter the top-level directory:
 
 <b>External Software Dependencies:</b>
 
-\li <a href="http://www.boost.org/">Boost C++ library </a> (\b required)
-\li <a href="http://www.hdfgroup.org/HDF5/">HDF5 library </a> (optional)
-\li <a href="http://www.hdfgroup.org/HDF5/">MPI library </a> (optional)
+\li <a href="http://www.boost.org/">Boost C++ library </a>  -> \b required
+\li <a href="http://www.hdfgroup.org/HDF5/">HDF5 library</a> -> \em optional
+\li MPI library (e.g. <a href="http://mvapich.cse.ohio-state.edu/overview/mvapich2/"> MVAPICH2</a>, 
+    <a href="http://www.open-mpi.org/"> OpenMPI</a>, 
+    <a href="http://www.mcs.anl.gov/research/projects/mpich2/"> MPICH2</a>)  -> \em optional
 
 The minimum software required to build libGRVY is a local copy of the
 Boost library. Note that you can choose to build libGRVY against a \a
