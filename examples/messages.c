@@ -53,7 +53,7 @@ int main()
   grvy_log_setlevel(GRVY_DEBUG);
   post_log_messages();
 
-  /* Set priorty to warning */
+  /* Set priority to warning */
 
   printf("\nMessages with warn output setting\n\n");
   grvy_log_setlevel(GRVY_WARN);

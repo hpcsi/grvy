@@ -762,8 +762,8 @@ extern "C" {
 
   /** \cond */
 
-  /* Available logging priorities; roughly mimics syslog priority levels but with
-   * fewer options. Also provides a NOLOG option to disable all log messages. 
+  /* Available logging priorities; roughly mimics syslog priority levels.
+   * Also provides a NOLOG option to disable all log messages. 
    */
 
   typedef enum {GRVY_NOLOG  =  -1,
@@ -781,7 +781,7 @@ extern "C" {
    * \ingroup Clog
    * \name Logging Utilities
    *
-   * Logging utilities.
+   * Logging utilities. Note that the default logging priority is set to GRVY_ERROR.
    */
 
   /** \ingroup Clog
@@ -795,14 +795,6 @@ extern "C" {
   extern void grvy_log_setmask            (int loglevel, const char *delimiter);
   /** \brief Post log message at \e loglevel priority using printf() style formatting */
   extern  int grvy_printf                 (int loglevel, const char *format,...);
-
-#if 0
-  extern void grvy_log                    (int loglevel, const char *mesg);
-  extern void grvy_log_int                (int loglevel, const char *func, const char *mesg, int var);
-  extern void grvy_log_float              (int loglevel, const char *func, const char *mesg, float var);
-  extern void grvy_log_double             (int loglevel, const char *func, const char *mesg, double var);
-  extern void grvy_log_char               (int loglevel, const char *func, const char *mesg, const char *char_item);
-#endif
 
   /** @} */
 

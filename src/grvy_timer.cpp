@@ -74,15 +74,12 @@ using namespace GRVY;
 // Individual timer data structure
 //--------------------------------
 
-//typedef accumulator_set <double,features<tag::mean,tag::variance,tag::count> > perf_stats;
 typedef accumulator_set <double,features<tag::mean,tag::count,tag::variance,tag::min,tag::max> > perf_stats;
 
 typedef struct GRVY_Timer_Data {
   double timings[2];
   double accumulated;
-  bool timer_was_paused;
-  accumulator_set <double,features<tag::mean,tag::count,tag::variance,tag::min,tag::max> > stats;
-  //perf_stats stats;
+  perf_stats stats;
 } tTimer_Data;
 
 typedef struct minmax {
@@ -106,8 +103,8 @@ namespace GRVY {
    ~GRVY_Timer_ClassImp    () {}
 		         
     void   VerifyInit      ();
-    void   BeginTimer      (std::string, bool); 
-    void   EndTimer        (std::string, bool);
+    void   BeginTimer      (std::string); 
+    void   EndTimer        (std::string);
 
     void   PauseTimer      (std::string id); 
     void   ResumeTimer     (std::string id); 
@@ -132,14 +129,12 @@ namespace GRVY {
 			     int jobId, string code_revision, double flops, string filename, bool save_internal_timer );
 
     bool        initialized;            // user called initialize?
-    //bool        no_user_init;           // no user initialization - done under the covers by the library
     bool        finalized;		// finalized?
     double      timer_finalize;         // raw timer value at time of finalize()
 
     std::string timer_name;             // user name supplied for the timer
     int         num_begins;	        // number of active begin timers (used for callgraph determination)
     std::stack <std::string> callgraph; // callgraph to support embedded timers
-    bool        beginTrigger;           // a trigger used for embedded timers
     _GRVY_Type_TimerMap2     TimerMap;  // map used to store performance timers for each defined key
 
     std::map<std::string,bool> options; // runtime options
@@ -148,11 +143,9 @@ namespace GRVY {
     double default_flops;
     string default_revision;
     size_t max_stdout_width;	       // max output width for timer information
+    perf_stats stats_empty;            // empty accumulator
 
     GRVY_Timer_Class *self;	       // back pointer to public class
-
-    accumulator_set <double,features<tag::mean,tag::count,tag::variance,
-				     tag::min,tag::max> > stats_empty; // empty accumulator
 
   private:
     bool new_performance_table;
@@ -168,11 +161,9 @@ namespace GRVY {
   GRVY_Timer_Class::GRVY_Timer_Class() :m_pimpl(new GRVY_Timer_ClassImp() )
   {
     m_pimpl->initialized           = false;
-    //    m_pimpl->no_user_init          = true;
     m_pimpl->finalized             = false;
     m_pimpl->timer_finalize        = -1;
     m_pimpl->num_begins            = 0;	
-    m_pimpl->beginTrigger          = false;
     m_pimpl->self                  = this;
 
     // default historical timing values
@@ -236,15 +227,15 @@ namespace GRVY {
 
   void GRVY_Timer_Class::BeginTimer (std::string id)
   {
-    return(m_pimpl->BeginTimer(id,false));
+    return(m_pimpl->BeginTimer(id));
   }
 
   void GRVY_Timer_Class::EndTimer (std::string id)
   {
-    return(m_pimpl->EndTimer(id,false));
+    return(m_pimpl->EndTimer(id));
   }
 
-  void GRVY_Timer_Class::GRVY_Timer_ClassImp::BeginTimer (std::string id, bool embeddedFlag)
+  void GRVY_Timer_Class::GRVY_Timer_ClassImp::BeginTimer (std::string id)
   {
     double mytime;
     _GRVY_Type_TimerMap2 :: iterator index;
@@ -262,33 +253,20 @@ namespace GRVY {
     // 
     // Maintain callgraph for embedded timers; note that we detect an
     // embedded timer when num_begins exceeds a value of 2 as we
-    // always have one global catch-all timer created during the init()
-    // process.  When we detect an embedded timer, we use the
-    // callgraph information to automatically Pause the surrounding
-    // timer. Since the EndTimer routine will have to do the opposite
-    // to restart the timer, an embeddedFlag is used to distinguish
-    // embedded begin/end calls from normal entries.
+    // always have one global catch-all timer created during the
+    // init() process.  When we detect an embedded timer, we use the
+    // callgraph information to automatically PauseTimer() the
+    // surrounding timer. The callgraph information will also be used
+    // to restart the outer timer once the nested timer calls Endtimer().
     // ----------------------------------------------------------------
 
-    if(!embeddedFlag)
-      {
-	num_begins++; 
-
-	if(num_begins > 2)
-	  {
-	    //grvy_printf(GRVY_INFO,"begin: ending previous timer %s (newtimer = %s)\n",callgraph.top().c_str(),
-	    // id.c_str());
-
-	    PauseTimer(callgraph.top());
-	    //EndTimer(callgraph.top().c_str(),true);
-	  }
-	
-	if(num_begins > callgraph.size())
-	  {
-	    callgraph.push(id);
-	    //grvy_printf(GRVY_DEBUG,"begin: num_begins = %i (%s)\n",num_begins,id.c_str());
-	  }
-      }
+    num_begins++; 
+    
+    if(num_begins > 2)
+      PauseTimer(callgraph.top());
+    
+    if(num_begins > callgraph.size())
+      callgraph.push(id);
 
     // Is this the first call for this id?
 
@@ -296,16 +274,16 @@ namespace GRVY {
 
     if ( index == TimerMap.end() )
       {
-	Data.timings[0]  = 0.0;	                       // stores accumulated time
-	Data.timings[1]  = mytime;                     // stores latest timestamp
-	Data.accumulated = 0.0;			       // storage for accumulated time (used
-                                                       // when a timer is paused due to presence of nested timer)
+	Data.timings[0]  = 0.0;	                    // stores accumulated time
+	Data.timings[1]  = mytime;                  // stores latest timestamp
+	Data.accumulated = 0.0;			    // storage for accumulated time (used
+                                                    // when a timer is paused due to presence of nested timer)
 	TimerMap[id] = Data;
       }
     else
       {
-	(index->second).timings[1]  = mytime;          // stores latest timestamp
-	(index->second).accumulated = 0.0;             // nullify any accumulations
+	(index->second).timings[1]  = mytime;       // stores latest timestamp
+	(index->second).accumulated = 0.0;          // nullify any accumulations
       }
   
   } 
@@ -326,15 +304,7 @@ namespace GRVY {
 
     double increment = mytime - (index->second).timings[1];
 
-    //grvy_printf(GRVY_DEBU,"Pausing timer %s\n",index->first.c_str());
-
     (index->second).accumulated += increment;
-
-    // flag that this timer encoutered a pause so we know to query the
-    // accumulated amount on the final Endtimer() call.
-
-    if( !(index->second).timer_was_paused )
-      (index->second).timer_was_paused = true;
 
     return;
   }
@@ -350,14 +320,14 @@ namespace GRVY {
   {
     _GRVY_Type_TimerMap2::iterator index = TimerMap.find(id);
 
-    (index->second).timings[1] = RawTimer();          // stores latest timestamp
+    (index->second).timings[1] = RawTimer(); // stores latest timestamp
 
     //grvy_printf(GRVY_DEBUG,"Resuming timer %s\n",index->first.c_str());
 
     return;
   }
 
-  void GRVY_Timer_Class::GRVY_Timer_ClassImp::EndTimer (string id, bool embeddedFlag)
+  void GRVY_Timer_Class::GRVY_Timer_ClassImp::EndTimer (string id)
   {
     double      mytime, increment;
     tTimer_Data Data;
@@ -380,61 +350,31 @@ namespace GRVY {
 
 	increment = (mytime - (index->second).timings[1]) + (index->second).accumulated;
 
-	if(beginTrigger)
-	  beginTrigger = false;
-
 	(index->second).timings[0] += increment;
 	(index->second).timings[1]  = -1.;
 
-	//double total_accumulated = increment + (index->second).accumulated;
-
 	(index->second).stats(increment);
-
-	// TODO: with support for embedded timers, we need to retool
-	// the boost accumulators a bit.  In order to not over-count
-	// the timer calls, we have to avoid calling the accumulator
-	// when this is an embedded closure; however, we will lose
-	// some of the statistics coverage -> probably going to have
-	// to switch to an increment value which is accumulated until
-	// the final endtimer.
-
-	//printf("inside endtimer: increment = %f  timer = %s (flag = %i)\n",increment,id.c_str(),
-	//embeddedFlag);
-
-	if(!embeddedFlag)
-	  {
-	    //printf("--> saving increment = %f for timer %s\n",increment,id.c_str());
-	    //(index->second).stats(increment);
-	  }
 
 	// ----------------------------------------------------------------
 	// Embedded Timer Support:
 	// 
-	// Pop curent timer off the callgraph stack and restart
+	// Pop curent timer off the callgraph stack and resume
 	// surrounding timer if necessary.
 	// ----------------------------------------------------------------
 
-	if(!embeddedFlag)
-	  {
+	//Ginfo("end: popping id %s (size = %i)\n",callgraph.top().c_str(),callgraph.size());
+	//Ginfo("end: num_begins = %i\n",num_begins);
+	
+	if(callgraph.size() >= 1)
+	  callgraph.pop();
+	else
+	  grvy_printf(GRVY_ERROR,"GRVY (%s): no callgraph left for %s\n",__func__,id.c_str());
 
-	    //Ginfo("end: popping id %s (size = %i)\n",callgraph.top().c_str(),callgraph.size());
-	    //Ginfo("end: num_begins = %i\n",num_begins);
+	if(num_begins > 2)
+	  ResumeTimer(callgraph.top());
+	
+	num_begins--;
 
-	    if(callgraph.size() >= 1)
-	      callgraph.pop();
-	    else
-	      grvy_printf(GRVY_ERROR,"GRVY (%s): no callgraph left for %s\n",__func__,id.c_str());
-
-	    if(num_begins > 2)
-	      {
-		ResumeTimer(callgraph.top());
-		//BeginTimer(callgraph.top().c_str(),true);
-		beginTrigger = true;
-		//Ginfo("end: re-beginning timer for %s\n",callgraph.top().c_str());
-	      }
-
-	    num_begins--;
-	  }
       }
 
     // Store the latest raw timer snapshot for the global timer region
@@ -452,7 +392,6 @@ namespace GRVY {
     _GRVY_Type_TimerMap2 :: iterator index;
 
     m_pimpl->num_begins            = 0;	
-    m_pimpl->beginTrigger          = false;
 
     // Reset all currently defined timers
 

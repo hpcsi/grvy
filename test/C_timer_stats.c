@@ -40,7 +40,8 @@ double Foo_Sleep = 0.098 * 1.e6;
 double Bar_Sleep = 0.075 * 1.e6;
 double boo_Sleep = 0.23 * 1.e6;
 
-double Tolerance = 5e-4;	/* a coarse-grained check to compare against gettimeofday() */
+const double Tolerance = 5e-4;	/* a coarse-grained abs tolerance to compare against gettimeofday() */
+const double Rtol = .05;	/* a coarse-grained relatlve percentage tolerace                    */
 
 void foo();
 void foo_fast();
@@ -54,9 +55,9 @@ int main()
 {
 
   int i,itest;
-  int num_repeat   = 2;
-  int max_iters = 3;
-  int max_iters_fast = 313;
+  const int num_repeat   = 2;
+  const int max_iters = 3;
+  const int max_iters_fast = 313;
   double t1;
 
   int call_count;
@@ -106,14 +107,14 @@ int main()
   call_min      = grvy_timer_stats_min("boo");
   call_max      = grvy_timer_stats_max("boo");
 
-  //  grvy_boo_timing   = grvy_timer_elapsedseconds("boo");
-
   if( call_count != num_repeat*max_iters )
     {
       grvy_printf(GRVY_ERROR,"Timer stat count mismatch for foo(%i calls)\n",call_count);
       grvy_printf(GRVY_ERROR,"  --> Found %i calls, expecting %i",call_count,num_repeat*max_iters);
       return(1);
     }
+
+  /* sanity check on min/max */
 
   assert(call_min <= call_mean);
   assert(call_max >= call_mean);
@@ -127,10 +128,38 @@ int main()
 
   if( diff > Tolerance)
     {
-      grvy_printf(GRVY_ERROR,"Potential mean value mismatch -> diff = %e (secs)\n",diff);
+      grvy_printf(GRVY_ERROR,"Potential mean value mismatch -> diff = %e (secs).\n",diff);
+      grvy_printf(GRVY_ERROR,"The test host could be overloaded or the timer stats may be incorrect.\n");
+      return(1);
+    }
+
+  /* sanity check on mean value */
+
+  double approx_elapsed_foo = grvy_timer_stats_mean("foo")*grvy_timer_stats_count("foo");
+  double approx_elapsed_boo = grvy_timer_stats_mean("boo")*grvy_timer_stats_count("boo");
+  double approx_elapsed_bar = grvy_timer_stats_mean("bar")*grvy_timer_stats_count("bar");
+
+  if(fabs(approx_elapsed_foo - grvy_timer_elapsedseconds("foo"))/approx_elapsed_foo > Rtol)
+    {
+      grvy_printf(GRVY_ERROR,"Potential mean value statistic inconsistency\n");
       grvy_printf(GRVY_ERROR,"The test host could be overloaded or the timer stats may be incorrect\n");
       return(1);
     }
+
+  if(fabs(approx_elapsed_boo - grvy_timer_elapsedseconds("boo"))/approx_elapsed_boo > Rtol)
+    {
+      grvy_printf(GRVY_ERROR,"Potential mean value statistic inconsistency\n");
+      grvy_printf(GRVY_ERROR,"The test host could be overloaded or the timer stats may be incorrect\n");
+      return(1);
+    }
+  
+  if(fabs(approx_elapsed_bar - grvy_timer_elapsedseconds("bar"))/approx_elapsed_bar > Rtol)
+    {
+      grvy_printf(GRVY_ERROR,"Potential mean value statistic inconsistency\n");
+      grvy_printf(GRVY_ERROR,"The test host could be overloaded or the timer stats may be incorrect\n");
+      return(1);
+    }
+  
 
   // make sure summarize function is accessible
 
