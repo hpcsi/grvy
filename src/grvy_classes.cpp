@@ -37,11 +37,11 @@
 
 // We use our own namespace for GetPot to avoid collisions if we're
 // linked against a different version
-#define GETPOT_NAMESPACE GRVYGetPot
+//#define GETPOT_NAMESPACE GRVYGetPot
 
 // And we don't support threaded GetPot usage yet
-#define GETPOT_DISABLE_MUTEX
-#include "getpot.h"
+//#define GETPOT_DISABLE_MUTEX
+//#include "getpot.h"
 
 namespace GRVY {
 

@@ -1103,6 +1103,7 @@ class GRVY_Input_Class {
 
  public:
   GRVY_Input_Class  ();
+ ~GRVY_Input_Class  ();
 
   /** 
    * \ingroup CXXinput

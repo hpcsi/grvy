@@ -39,6 +39,16 @@
 
 #include <boost/algorithm/string.hpp>
 
+// We use our own namespace for GetPot to avoid collisions if we're
+// linked against a different version
+
+#define GETPOT_NAMESPACE GRVYGetPot
+
+// And we don't support threaded GetPot usage yet
+
+#define GETPOT_DISABLE_MUTEX
+#include "getpot.h"
+
 using namespace std;
 using namespace GRVY;
 
@@ -98,7 +108,6 @@ namespace GRVY {
     GRVY_Timer_Class *self;	       // back pointer to public class
     
   private:
-    
 
   };
 
@@ -140,14 +149,14 @@ namespace GRVY {
       return 1;
   }
 
+  //  int GRVY_Input_Class::Open(const char *filename)
+  //  {
+  //    return(m_pimpl->Open(filename));
+  //  }
+
   int GRVY_Input_Class::Open(const char *filename)
   {
-    return(m_pimpl->Open(filename));
-  }
-
-  int GRVY_Input_Class::GRVY_Input_ClassImp::Open(const char *filename)
-  {
-    if(initialized)
+    if(m_pimpl->initialized)
       {
 	_GRVY_message(GRVY_ERROR,__func__,"close previous input file first prior to opening new input file -> ",
 		      filename);
@@ -168,7 +177,6 @@ namespace GRVY {
       }
     else
       {
-
 	int tmpchar;
 	
 	while((tmpchar = getc(fp)) != EOF) {
@@ -185,17 +193,16 @@ namespace GRVY {
 	fclose(fp);
       }
 
-    ifile = new GETPOT_NAMESPACE::GetPot(filename,comment_start,comment_end);
+    m_pimpl->ifile = new GETPOT_NAMESPACE::GetPot(filename,m_pimpl->comment_start,m_pimpl->comment_end);
 
-    if(ifile->size() <= 1)
+    if(m_pimpl->ifile->size() <= 1)
       {
 	_GRVY_message(GRVY_ERROR,__func__,"non-existent or empty file -> ",filename);
 	return 0;
       }
     else
       {
-	initialized=1;
-
+	m_pimpl->initialized=true;
 	return 1;
       }
   }
@@ -325,22 +332,22 @@ namespace GRVY {
     return(Read_Var_iVec( var,value,elem,m_pimpl->Get_Default(*value)));
   }
 
-  template<> int GRVY_Input_Class::Get_Default<int>(int var)
+  template<> int GRVY_Input_Class::GRVY_Input_ClassImp::Get_Default<int>(int var)
   {
     return(Int_Def);
   }
 
-  template <> float GRVY_Input_Class::Get_Default<float>(float)
+  template <> float GRVY_Input_Class::GRVY_Input_ClassImp::Get_Default<float>(float)
   {
     return(Float_Def);
   }
 
-  template <> double GRVY_Input_Class::Get_Default<double>(double)
+  template <> double GRVY_Input_Class::GRVY_Input_ClassImp::Get_Default<double>(double)
   {
     return(Double_Def);
   }
 
-  template <> std::string GRVY_Input_Class::Get_Default<std::string>(std::string)
+  template <> std::string GRVY_Input_Class::GRVY_Input_ClassImp::Get_Default<std::string>(std::string)
   {
     return(String_Def);
   }
@@ -356,7 +363,7 @@ namespace GRVY {
 	Register_Var(var,Var_Def);
       }
 
-    *value = m_pimpl->(*ifile)(var,Var_Def);
+    *value = (*m_pimpl->ifile)(var,Var_Def);
 
     if(*value == Var_Def)
       {
@@ -386,7 +393,7 @@ namespace GRVY {
 
     for(i=0;i<nelems;i++)
       {
-	value[i] = m_pimpl->(*ifile)(var,Var_Def,i);
+	value[i] = (*m_pimpl->ifile)(var,Var_Def,i);
 
 	if(value[i] == Var_Def)
 	  {
@@ -409,7 +416,7 @@ namespace GRVY {
 
     if(! m_pimpl->VerifyInit()) return 0;
 
-    *value = m_pimpl->(*ifile)(var,Var_Def,elem);
+    *value = (*m_pimpl->ifile)(var,Var_Def,elem);
 
     if(*value == Var_Def)
       {
@@ -426,21 +433,21 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Read_Var(const char *var, std::string *value)
   {
-    return(Read_Var(var,value,String_Def) );
+    return(Read_Var(var,value,m_pimpl->String_Def) );
   }
 
   int GRVY_Input_Class:: Read_Var(const char *var, std::string *value, std::string Var_Def)
   {
 
-    if(! VerifyInit()) return 0;
+    if(! m_pimpl->VerifyInit()) return 0;
 
-    if(Var_Def != Get_Default(Var_Def) )
+    if(Var_Def != m_pimpl->Get_Default(Var_Def) )
       {
 	grvy_printf(GRVY_DEBUG,"Registering user-supplied default value for %s\n",var);
 	Register_Var(var,Var_Def);
       }
   
-    *value = (*ifile)(var,Var_Def.c_str());
+    *value = (*m_pimpl->ifile)(var,Var_Def.c_str());
 
     if( *value == Var_Def )
       {
@@ -461,11 +468,11 @@ namespace GRVY {
   {
     int i;
 
-    if(! VerifyInit()) return 0;
+    if(! m_pimpl->VerifyInit()) return 0;
 
-    *value = (*ifile)(var,String_Def.c_str(),elem);
+    *value = (*m_pimpl->ifile)(var,m_pimpl->String_Def.c_str(),elem);
 
-    if(*value == String_Def)
+    if(*value == m_pimpl->String_Def)
       {
 	_GRVY_message(GRVY_ERROR,"fread_ivec_string","Unable to query variable -> ",var);
 	return 0;
@@ -482,14 +489,14 @@ namespace GRVY {
   int GRVY_Input_Class:: Read_Var(const char *var, bool *value, bool Var_Def)
   {
 
-    if(! VerifyInit()) return 0;
+    if( !m_pimpl->VerifyInit() ) return 0;
 
     // All boolean queries must supply a default so let's register them.
 
     grvy_printf(GRVY_DEBUG,"Registering user-supplied default bool value for %s\n",var);
     Register_Var(var,Var_Def);
   
-    *value = (*ifile)(var,Var_Def);
+    *value = (*m_pimpl->ifile)(var,Var_Def);
 
     return 1;
   }
@@ -502,13 +509,13 @@ namespace GRVY {
   {
     std::string tstring;
 
-    if(! VerifyInit()) return 0;
+    if( !m_pimpl->VerifyInit() ) return 0;
   
-    tstring = (*ifile)(var,Char_Def);
+    tstring = (*m_pimpl->ifile)(var,Char_Def);
     *value = (char *) malloc(tstring.length()*sizeof(char)+1);
     strcpy(value[0],tstring.c_str());
 
-    if(strcmp(*value,Char_Def) == 0)
+    if(strcmp(*value,m_pimpl->Char_Def) == 0)
       {
 
 	if( !Get_Var(var,value) )
@@ -528,13 +535,13 @@ namespace GRVY {
   {
     std::string tstring;
 
-    if(! VerifyInit()) return 0;
+    if( ! m_pimpl->VerifyInit() ) return 0;
   
-    tstring = (*ifile)(var,Char_Def,elem);
+    tstring = (*m_pimpl->ifile)(var,Char_Def,elem);
     *value = (char *) malloc(tstring.length()*sizeof(char)+1);
     strcpy(value[0],tstring.c_str());
 
-    if(strcmp(*value,Char_Def) == 0)
+    if(strcmp(*value,m_pimpl->Char_Def) == 0)
       {
 	_GRVY_message(GRVY_ERROR,"fread_char_ivec","Unable to query variable -> ",var);
 	return 0;
@@ -549,37 +556,37 @@ namespace GRVY {
 
   void GRVY_Input_Class:: Register_Var (const char *varname, int var)
   {
-    default_ints[varname] = var;
+    m_pimpl->default_ints[varname] = var;
     return;
   }
 
   void GRVY_Input_Class:: Register_Var (const char *varname, float var)
   {
-    default_floats[varname] = var;
+    m_pimpl->default_floats[varname] = var;
     return;
   }
 
   void GRVY_Input_Class:: Register_Var (const char *varname, double var)
   {
-    default_doubles[varname] = var;
+    m_pimpl->default_doubles[varname] = var;
     return;
   }
 
   void GRVY_Input_Class:: Register_Var (const char *varname, const char *var)
   {
-    default_strings[varname] = var;
+    m_pimpl->default_strings[varname] = var;
     return;
   }
 
   void GRVY_Input_Class:: Register_Var (const char *varname, std::string var)
   {
-    default_strings[varname] = var;
+    m_pimpl->default_strings[varname] = var;
     return;
   }
 
   void GRVY_Input_Class:: Register_Var (const char *varname, bool var)
   {
-    default_bools[varname] = var;
+    m_pimpl->default_bools[varname] = var;
     return;
   }
 
@@ -587,9 +594,9 @@ namespace GRVY {
   {
     std::map<std::string, int > :: const_iterator index;
   
-    index = default_ints.find(varname);
+    index = m_pimpl->default_ints.find(varname);
 
-    if( index == default_ints.end() )
+    if( index == m_pimpl->default_ints.end() )
       {
 	_GRVY_message(GRVY_INFO,"register_get","No registered variable named",varname);
 	return(0);
@@ -606,9 +613,9 @@ namespace GRVY {
   {
     std::map<std::string, float > :: const_iterator index;
   
-    index = default_floats.find(varname);
+    index = m_pimpl->default_floats.find(varname);
 
-    if( index == default_floats.end() )
+    if( index == m_pimpl->default_floats.end() )
       {
 	_GRVY_message(GRVY_INFO,"register_get","No registered variable named",varname);
 	return(0);
@@ -625,9 +632,9 @@ namespace GRVY {
   {
     std::map<std::string, double > :: const_iterator index;
   
-    index = default_doubles.find(varname);
+    index = m_pimpl->default_doubles.find(varname);
 
-    if( index == default_doubles.end() )
+    if( index == m_pimpl->default_doubles.end() )
       {
 	_GRVY_message(GRVY_INFO,"register_get","No registered variable named",varname);
 	return(0);
@@ -645,9 +652,9 @@ namespace GRVY {
     std::map<std::string, std::string > :: const_iterator index;
     std::string tstring;
   
-    index = default_strings.find(varname);
+    index = m_pimpl->default_strings.find(varname);
 
-    if( index == default_strings.end() )
+    if( index == m_pimpl->default_strings.end() )
       {
 	_GRVY_message(GRVY_INFO,"register_get","No registered variable named",varname);
 	return(0);
@@ -665,9 +672,9 @@ namespace GRVY {
   {
     std::map<std::string, std::string > :: const_iterator index;
   
-    index = default_strings.find(varname);
+    index = m_pimpl->default_strings.find(varname);
 
-    if( index == default_strings.end() )
+    if( index == m_pimpl->default_strings.end() )
       {
 	_GRVY_message(GRVY_INFO,"register_get","No registered variable named",varname);
 	return(0);
