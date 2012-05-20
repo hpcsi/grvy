@@ -76,13 +76,12 @@ namespace GRVY {
     GRVY_Input_ClassImp    () {}
    ~GRVY_Input_ClassImp    () {}
 
-    void Initialize   ();
+    //void Initialize   ();
     int  VerifyInit   ();
     void PrintRegVars  (const char *prefix);
 
-    GRVYGetPot::GetPot* ifile;        // input file
-    //short int           initialized;  // input file initialized?
-    bool initialized;     	// input file initialized?
+    GRVYGetPot::GetPot* ifile;    // input file
+    bool initialized;     	  // input file initialized?
 
     // Registry Maps
 

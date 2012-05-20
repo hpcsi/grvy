@@ -1128,9 +1128,6 @@ class GRVY_Input_Class {
 
   /** @} */
 
-  //void Initialize   ();
-  //  int  VerifyInit   ();
-
   void MsgToggle    (int flag);
 
   /** \ingroup CXXinput
@@ -1154,8 +1151,10 @@ class GRVY_Input_Class {
 
   /** \brief Dump input file settings to stdout. */
   int  Fdump        ();
+
   /** \brief Dump input file settings to stdout prefixed by a delimiter */
   int  Fdump        (const char *prefix);
+
   /** \brief Dump input file settings to an open file with a provided prefix delimiter */
   int  Fdump        (const char *prefix, const char *filename);
 
@@ -1216,31 +1215,6 @@ class GRVY_Input_Class {
   class GRVY_Input_ClassImp       ;           // forward declaration to Input class implementation
   std::auto_ptr<GRVY_Input_ClassImp> m_pimpl; // pointer to implementation
 
-#if 0
-  GRVYGetPot::GetPot* ifile;          // input file
-  short int           initialized;    // input file initialized?
-
-  // Registry Maps
-
-  std::map<std::string, int         > default_ints;
-  std::map<std::string, float       > default_floats;
-  std::map<std::string, double      > default_doubles;
-  std::map<std::string, bool        > default_bools;
-  std::map<std::string, std::string > default_strings;
-
-  // GetPot Defaults
-
-  float  Float_Def;
-  double Double_Def;
-  int    Int_Def;
-  long   Long_Def;
-  std::string String_Def;
-  const char  *Char_Def;
-  const char  *comment_start;
-  const char  *comment_end;
-
-  template <typename T> T Get_Default   (T);
-#endif
 };
 
   /** @} */  
