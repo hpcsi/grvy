@@ -1,3 +1,6 @@
+# $Id$
+
+
 h_sources                 = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h \
 	                    grvy_env.h grvy_ptable.h grvy_mpi.h
 cc_sources                = grvy_input.cpp grvy_input_interface.cpp grvy_classes.cpp                \
