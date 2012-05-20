@@ -17,7 +17,7 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.32.0
     some functionality (grvy_copy_dir in particular), but allows for a GRVY
     build using Boost headers only
   * minimum Boost version required updated to 1.46 when building with Boost headers only
-  * minimum Boost version required updated to 1.48 when linking against Boost libs
+  * minimum Boost version required updated to 1.47 when linking against Boost libs
   * removed dependency on Boost program_options library
   * removed dependency on Boost regex library
   * added runtime option to dump individual read/write statistics for MPI ocore  
