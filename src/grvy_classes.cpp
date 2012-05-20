@@ -109,8 +109,10 @@ namespace GRVY {
   // GRVY_Input_Class:: Member Functions
   //-------------------------------------
 
+#if 0
   GRVY_Input_Class::GRVY_Input_Class()   // default constructor
   {
+
     Float_Def     = -9999999.0f;
     Double_Def    = -9999999.0e1;
     Int_Def       = -9999999;
@@ -121,7 +123,10 @@ namespace GRVY {
     comment_end   = "\n";
 
     initialized   = 0;
+
   }
+
+#endif
 
   // Moved clean up of ifile to Close
 
@@ -132,6 +137,7 @@ namespace GRVY {
   }
 #endif
 
+#if 0
   int GRVY_Input_Class:: VerifyInit()
   {
     if(!initialized)
@@ -143,7 +149,9 @@ namespace GRVY {
       return 1;
 
   }
+#endif
 
+#if 0
   int GRVY_Input_Class:: Open(const char *filename)
   {
     if(initialized)
@@ -198,7 +206,9 @@ namespace GRVY {
 	return 1;
       }
   }
+#endif
 
+#if 0
   int GRVY_Input_Class:: Close()
   {
     if(initialized)
@@ -246,6 +256,9 @@ namespace GRVY {
     return 1;
   }
 
+#endif
+
+#if 0
   void GRVY_Input_Class::PrintRegVars(const char *prefix)
   {
 
@@ -275,6 +288,9 @@ namespace GRVY {
     std::cout << std::endl;
   }
 
+#endif
+
+#if 0
   void GRVY_Input_Class:: MsgToggle(int flag)
   {
     if(flag == 0)
@@ -288,7 +304,9 @@ namespace GRVY {
 
     return;
   }
+#endif
 
+#if 0
   //--------------
   // Scalar Reads
   //--------------
@@ -372,10 +390,13 @@ namespace GRVY {
     return 1;
   }
 
+#endif
+
   //--------------
   // Array Reads
   //--------------
 
+#if 0
   template <typename T> int GRVY_Input_Class:: Read_Var_Vec(const char *var, T *value, int nelems,T Var_Def)
   {
     int i;
@@ -395,6 +416,7 @@ namespace GRVY {
  
     return 1;
   }
+
 
   //-------------------------
   // ith Element Array Reads
@@ -417,6 +439,9 @@ namespace GRVY {
     return 1;
   } 
 
+#endif
+
+#if 0
   //------------------------
   // C++ String Reads
   //------------------------
@@ -676,6 +701,10 @@ namespace GRVY {
       }
   }
 
+#endif
+
+
+#if 0
   //------------------------------
   // Supported Function Templates
   //------------------------------
@@ -721,7 +750,7 @@ namespace GRVY {
   template int GRVY_Input_Class::Read_Var_iVec <double>  (const char *var, double *value, int elem,  double Var_Def);
 
 
-
+#endif
 
   //-------------------------------------
   // GRVY_Math_Class:: Member Functions

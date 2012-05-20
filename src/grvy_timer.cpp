@@ -89,7 +89,6 @@ typedef struct minmax {
 
 typedef std::map <std::string, GRVY_Timer_Data > _GRVY_Type_TimerMap2;
 
-
 //-------------------------------------------------------
 // private implementation class definition for GRVY_Timer
 //-------------------------------------------------------

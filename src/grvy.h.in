@@ -1027,9 +1027,20 @@ extern "C" {
    *
    */
 
-
 #ifdef __cplusplus
 }
+
+/// @defgroup CXXapi C++ API
+/// 
+/// \brief This page provides links to all of the C++ utilities which
+/// are available in libGRVY (organized by functionality). To access
+/// these routines from C++, make sure to \#include <grvy.h> within
+/// your source code files. Unless specified otherwise, functions
+/// which have an integer return value return "0" upon success (and
+/// the primary exception to this rule is with a subset of the Input
+/// Parsing routines).
+/// 
+/// \li \ref CXXinput
 
 //--------------------------
 // C++ GRVY Interfaces
@@ -1052,24 +1063,102 @@ namespace GRVYGetPot
 // Input Parsing Class
 //--------------------
 
+  /// 
+  /// \defgroup CXXinput Input Parsing
+  /// @ingroup CXXapi
+  ///
+  /// \brief This section presents available C++ routines for accessing
+  /// input parameters from a libGRVY style input file. See the \ref
+  /// inputFile "example input file" for more information on the file
+  /// format. Unless specified otherwise, functions which have an
+  /// integer return value return "0" upon success. The primary
+  /// exception to this rule is with the read() routines.  All
+  /// grvy_input_fread_() routines return 1 on success and 0 on failure.
+  /// This return behavior is intended as a convenience for
+  /// applications to check input file parsing errors over consecutive
+  /// reads via multiplicative operations.
+  ///
+  /// <b> Code Example:</b> A specific C example using the input parsing
+  /// routines is available \ref CinputExample "input.c".
+  /// 
+  /// <hr>
+
+ 
+
 namespace GRVY {
 
   void GRVY_version_stdout();
   int  GRVY_get_numeric_version();
 
+ /** 
+   * \ingroup CXXinput
+   * @{
+   */
+
+  /** \brief 
+   * Input Parsing Class 
+   */
+
 class GRVY_Input_Class {
 
  public:
   GRVY_Input_Class  ();
-  void Initialize   ();
-  int  VerifyInit   ();
+
+  /** 
+   * \ingroup CXXinput
+   * \name Input Parsing - File open/close:
+   *
+   * Class member functions for accessing input parameters from a libGRVY style
+   * input file. Note that an input file must be opened prior to reading
+   * any keyword/value pairs or performing input file dump
+   * operations. 
+   */
+
+  /**
+   * \ingroup CXXinput
+   * @{ 
+   */
+
+  /// \brief open \e filename for parsing
   int  Open         (const char *filename);
+
+  /// \brief close previously opened input file.
   int  Close        ();
+
+  /** @} */
+
+  //void Initialize   ();
+  //  int  VerifyInit   ();
+
   void MsgToggle    (int flag);
 
+  /** \ingroup CXXinput
+   *  \name Input Parsing - Dump input file contents:
+   * 
+   * The following member functions are used to dump the entire
+   * contents of a parsed libGRVY style input file to stdout or to an
+   * ASCII file (note that all comments within the original input file
+   * are stripped). The prefix variable can be used to include an
+   * additional delimiter which prepends each line of the output. Note
+   * that an input file must be open prior to reading any performing
+   * input file dump operations. These routines are normally used to
+   * save all relevant input parameters in the application output for
+   * future traceability and repeatability.
+   *
+   */
+
+  /** \ingroup CXXinput
+   * @{
+   */
+
+  /** \brief Dump input file settings to stdout. */
   int  Fdump        ();
+  /** \brief Dump input file settings to stdout prefixed by a delimiter */
   int  Fdump        (const char *prefix);
+  /** \brief Dump input file settings to an open file with a provided prefix delimiter */
   int  Fdump        (const char *prefix, const char *filename);
+
+  /** @} */
 
   // Numerical Read Functions
 
@@ -1123,6 +1212,10 @@ class GRVY_Input_Class {
   void PrintRegVars  (const char *prefix);
 
  private:
+  class GRVY_Input_ClassImp       ;           // forward declaration to Input class implementation
+  std::auto_ptr<GRVY_Input_ClassImp> m_pimpl; // pointer to implementation
+
+#if 0
   GRVYGetPot::GetPot* ifile;          // input file
   short int           initialized;    // input file initialized?
 
@@ -1146,7 +1239,10 @@ class GRVY_Input_Class {
   const char  *comment_end;
 
   template <typename T> T Get_Default   (T);
+#endif
 };
+
+  /** @} */  
 
 //--------------------------
 // Performance Timing Class
