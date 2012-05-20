@@ -553,12 +553,21 @@ extern "C" {
    * \ingroup Ctimer
    * \name Performance Timing - Historical Logging:
    *
+   * These routines provide support to store measured runtime
+   * performance into an HDF5 file for logging purposes (this
+   * functionality requires HDF5 library linkage during the libGRVY
+   * configuration phase). Results are stored on a per-machine basis
+   * and are appended to the HDF5 file with timestamps to document
+   * historical performance over time.  Stored results can be
+   * retrieved using the API below or via standalone executables
+   * installed with libGRVY.
+   * 
    * There are two primary modes for saving historical performance
    * data:
    * 
    * <b>Mode 1</b>: you are using the grvy_timer_* class of routines to
    *         define individual sections to monitor and want to save
-   *         the global runtime measurement and all individually
+   *         the global runtime measurement along with all individually
    *         defined subtimers.
    * 
    * <b>Mode 2</b>: you are using other means to profile the application code
@@ -569,6 +578,7 @@ extern "C" {
    * In both modes, standard and expanded (exp) calling sequences are supported
    * with the expanded version allowing additional optional runtime
    * documentation (e.g. flops, code revision) to be provided.
+   * 
    */
   
   // Mode 1: Saving internal GRVY timer values to historical repository
@@ -577,25 +587,37 @@ extern "C" {
    * @{
    */
 
-  extern    int grvy_timer_save_hist         (const char*experiment, const char *comment, 
+  /** \brief Save current libGRVY timing results to HDF file for logging. */
+  extern    int grvy_timer_save_hist         (const char *experiment_name, const char *comment, 
 					      int num_procs, const char *filename);
-						
-  extern    int grvy_timer_save_hist_exp     (const char*experiment, const char *comment, 
-					      int num_procs, int jobId, const char *code_revision, double flops,
-					      const char *filename);
 
+  /** \brief Save current libGRVY timing results to HDF file for logging (expanded version). */	
+				
+  extern    int grvy_timer_save_hist_exp     (const char *experiment_name, const char *comment, 
+					      int num_procs, int jobId, const char *code_revision, 
+					      double flops, const char *filename);
+					      
   // Mode 2: Saving external user-provided global timing to historical repository
+
+  /** \brief Save a single \e timing result to HDF file for logging. */	
 
   extern    int grvy_timer_save_hist_ext     (double timing, const char *machinename,const char*experiment, 
 					      const char *comment,int num_procs, const char *filename);
+
+  /** \brief Save a single \e timing result to HDF file for logging (expanded version).. */	
 					      
   extern    int grvy_timer_save_hist_ext_exp (double timing, const char *machinename, const char*experiment, 
 					      const char *comment, int num_procs, int jobId, 
 					      const char *code_revision, double flops, const char *filename);
 
-  // Summarize and dump historical timing information to ascii files
+  /** \brief Summarize and dump historical timing information to ascii
+   * files from logged results stored previously in \e
+   * filename. Timing data is dumped to files individual on a per-machine basis in the \e
+   * outdir directory using the provided \e delimiter.
+   */
 
-  void grvy_summarize_hist_timing            (const char *filename, const char *delimiter, const char *outdir);
+  void grvy_summarize_hist_timing            (const char *filename, const char *delimiter, 
+					      const char *outdir);
 
   /** @} */
 
