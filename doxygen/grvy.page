@@ -86,7 +86,6 @@ parsing routines including a demonstration of default value
 registration.
 
 \include input.c
-
 */
 
 /*! \page CtimerExample Performance Timing Example using C API 
@@ -97,7 +96,13 @@ top-level install).  This example illustrates basic timer usage
 (including the use of nested timers).
 
 \include timer.c
+*/
 
+/*! \page CloggingExample Logging Example using C API 
+
+An illustrative code example in C using available priority-based logging routines.
+
+\include messages.c
 */
 
 /*! \page inputFile Example libGRVY Input File

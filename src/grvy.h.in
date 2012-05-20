@@ -155,7 +155,7 @@ extern "C" {
    * reads via multiplicative operations.
    *
    * <b> Code Example:</b> A specific C example using the input parsing
-   * routines is \ref CinputExample "input.c".
+   * routines is available \ref CinputExample "input.c".
    * 
    * <hr>
    */
@@ -702,7 +702,7 @@ extern "C" {
   //-----------------------------------------------------------------
 
   /** 
-   * \defgroup Cmath Floating-Point Utilities 
+   * \defgroup Cmath Floating-Point Math Utilities 
    * \ingroup  Capi
    * 
    * \brief Routines for detecting floating-point errors.
@@ -712,18 +712,23 @@ extern "C" {
    * \ingroup Cmath
    * \name Floating-Point Utilities
    *
-   * Routines for detecting floating-point errors.
+   * Routines for detecting floating-point errors. Return value is set
+   * to 1 if the input \value matches the requested floating point
+   * exception.
    */
 
   /** \ingroup Cmath
    * @{ 
    */
 
-  extern int grvy_double_isnan            (double *val);
-  extern int grvy_double_isinf            (double *val);
-
-  extern int grvy_float_isnan             (float  *val);
-  extern int grvy_float_isinf             (float  *val);
+  /** \brief Check if input double \e value is not a number (NaN) */
+  extern int grvy_double_isnan            (double *value);
+  /** \brief Check if input double \e value is infinite (Inf) */
+  extern int grvy_double_isinf            (double *vauel);
+  /** \brief Check if input float \e value is not a number (NaN) */
+  extern int grvy_float_isnan             (float  *value);
+  /** \brief Check if input float \e value is infinite (Inf) */
+  extern int grvy_float_isinf             (float  *value);
 
   /** @} */
 
@@ -735,11 +740,11 @@ extern "C" {
    * \defgroup Clog Logging Utilities
    * \ingroup Capi
    *
-   * \brief The following routines provide a priority-based printf
-   * sytle logging mechanism to control application messages. A set of
-   * default priority definitions are provided to define messages at
-   * various priority levels. Available priority levels are as
-   * follows:
+   * \brief This section highlights available C logging routines that
+   * provide a priority-based printf style logging mechanism to
+   * control application messages.  A set of default priority
+   * definitions are provided to define messages at various priority
+   * levels. Available priority levels are enumerated as follows:
    *
    * - GRVY_NOLOG
    * - GRVY_FATAL
@@ -749,6 +754,10 @@ extern "C" {
    * - GRVY_DEBUG
    * - GRVY_ALL
    *
+   * <b> Code Example:</b> A specific C example illustrating priority logging usage
+   * is available in \ref CloggingExample "messages.c".
+   * 
+   * <hr>
    */
 
   /** \cond */
@@ -772,22 +781,28 @@ extern "C" {
    * \ingroup Clog
    * \name Logging Utilities
    *
-   * The following routines provide a priority-based printf
-   * sytle logging mechanism to control application messages.
+   * Logging utilities.
    */
 
   /** \ingroup Clog
    * @{ */
 
+  /** \brief Set current logging priority level */
   extern void grvy_log_setlevel           (int priority);
+  /** \brief Get current logging priority level */
   extern int  grvy_log_getlevel           ();
+  /** \brief Set logging mask \e delimiter which prepends messages of \e loglevel priority */
   extern void grvy_log_setmask            (int loglevel, const char *delimiter);
-  extern void grvy_log                    (int loglevel, const char *mesg);
+  /** \brief Post log message at \e loglevel priority using printf() style formatting */
   extern  int grvy_printf                 (int loglevel, const char *format,...);
+
+#if 0
+  extern void grvy_log                    (int loglevel, const char *mesg);
   extern void grvy_log_int                (int loglevel, const char *func, const char *mesg, int var);
   extern void grvy_log_float              (int loglevel, const char *func, const char *mesg, float var);
   extern void grvy_log_double             (int loglevel, const char *func, const char *mesg, double var);
   extern void grvy_log_char               (int loglevel, const char *func, const char *mesg, const char *char_item);
+#endif
 
   /** @} */
 

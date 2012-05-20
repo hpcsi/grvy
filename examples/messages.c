@@ -32,11 +32,11 @@
 
 void post_log_messages()
 {
-  grvy_log(GRVY_FATAL,"This is a fatal message");
-  grvy_log(GRVY_ERROR,"This is an error message");
-  grvy_log(GRVY_WARN, "This is a warning message");
-  grvy_log(GRVY_INFO, "This is an informational message");
-  grvy_log(GRVY_DEBUG,"This is a debug message");
+  grvy_printf(GRVY_FATAL,"This is a fatal message\n");
+  grvy_printf(GRVY_ERROR,"This is an error message\n");
+  grvy_printf(GRVY_WARN, "This is a warning message\n");
+  grvy_printf(GRVY_INFO, "This is an informational message\n");
+  grvy_printf(GRVY_DEBUG,"This is a debug message\n");
 }
 
 int main()
@@ -45,22 +45,21 @@ int main()
   printf("\nMessages with default setting\n\n");
   post_log_messages();
 
-  /* above will not include debug messages by default; now increasing
-   * to debug mode to get all messages. */
+  /* The above will not include debug messages by default; now
+     increasing loglevel to debug mode to get all messages. */
 
   printf("\nMessages with debug output setting\n\n");
 
   grvy_log_setlevel(GRVY_DEBUG);
   post_log_messages();
 
-  /* above will not include debug messages by default; now increasing
-   * to debug mode to get all messages. */
+  /* Set priorty to warning */
 
   printf("\nMessages with warn output setting\n\n");
   grvy_log_setlevel(GRVY_WARN);
   post_log_messages();
 
-  // Provide application specific message delimiters
+  /* Provide application specific message delimiters (they will prepend logging output) */
 
   printf("\nMessages with custom delimiters\n\n");
 
@@ -74,11 +73,11 @@ int main()
 
   post_log_messages();
 
-  // Exmample of printf style messages 
+  /* Additional printf style logging example */
 
   printf("\nC printf-style messages\n\n");
 
-  grvy_printf(GRVY_INFO,"An informational message, the answer is %i\n",42);
+  grvy_printf(GRVY_INFO,"An informational message, the answer is %i.\n",42);
 
   return 0;
 }
