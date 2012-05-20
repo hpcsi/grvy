@@ -52,13 +52,19 @@
 using namespace std;
 using namespace GRVY;
 
-// GetPot constants
+namespace GRVY_Internal {
 
-const float     Float_Def = -9999999.0f;
-const double   Double_Def = -9999999.0e1;
-const int         Int_Def = -9999999;
-const long       Long_Def = -9999999;
-const char*      Char_Def = "unknown";
+  // GetPot-related constants (used to decide if we do not have a
+  // default value)
+
+  const float     Float_Def = -9999999.0f;
+  const double   Double_Def = -9999999.0e1;
+  const int         Int_Def = -9999999;
+  const long       Long_Def = -9999999;
+  const char*      Char_Def = "unknown";
+
+  const std::string  String_Def("unknown");
+}
 
 static GRVY_Input_Class _GRVY_Input;     // input class
 
@@ -76,9 +82,8 @@ namespace GRVY {
     GRVY_Input_ClassImp    () {}
    ~GRVY_Input_ClassImp    () {}
 
-    //void Initialize   ();
-    int  VerifyInit   ();
-    void PrintRegVars  (const char *prefix);
+    int  VerifyInit        ();
+    void PrintRegVars      (const char *prefix);
 
     GRVYGetPot::GetPot* ifile;    // input file
     bool initialized;     	  // input file initialized?
@@ -93,18 +98,12 @@ namespace GRVY {
     
     // GetPot Defaults
     
-    float  Float_Def;
-    double Double_Def;
-    int    Int_Def;
-    long   Long_Def;
-    std::string String_Def;
-    const char  *Char_Def;
     const char  *comment_start;
     const char  *comment_end;
     
     template <typename T> T Get_Default   (T);
     
-    GRVY_Timer_Class *self;	       // back pointer to public class
+    GRVY_Timer_Class *self;	  // back pointer to public class
     
   private:
 
@@ -120,15 +119,8 @@ namespace GRVY {
   
   GRVY_Input_Class::GRVY_Input_Class() :m_pimpl(new GRVY_Input_ClassImp() )
   {
-    m_pimpl->Float_Def     = -9999999.0f;
-    m_pimpl->Double_Def    = -9999999.0e1;
-    m_pimpl->Int_Def       = -9999999;
-    m_pimpl->Long_Def      = -9999999;
-    m_pimpl->Char_Def      = "unknown";
-    m_pimpl->String_Def    = "unknown";
     m_pimpl->comment_start = "#";
     m_pimpl->comment_end   = "\n";
-
     m_pimpl->initialized   = false;
   }
 
@@ -147,11 +139,6 @@ namespace GRVY {
     else
       return 1;
   }
-
-  //  int GRVY_Input_Class::Open(const char *filename)
-  //  {
-  //    return(m_pimpl->Open(filename));
-  //  }
 
   int GRVY_Input_Class::Open(const char *filename)
   {
@@ -333,22 +320,22 @@ namespace GRVY {
 
   template<> int GRVY_Input_Class::GRVY_Input_ClassImp::Get_Default<int>(int var)
   {
-    return(Int_Def);
+    return(GRVY_Internal::Int_Def);
   }
 
   template <> float GRVY_Input_Class::GRVY_Input_ClassImp::Get_Default<float>(float)
   {
-    return(Float_Def);
+    return(GRVY_Internal::Float_Def);
   }
 
   template <> double GRVY_Input_Class::GRVY_Input_ClassImp::Get_Default<double>(double)
   {
-    return(Double_Def);
+    return(GRVY_Internal::Double_Def);
   }
 
   template <> std::string GRVY_Input_Class::GRVY_Input_ClassImp::Get_Default<std::string>(std::string)
   {
-    return(String_Def);
+    return(GRVY_Internal::String_Def);
   }
 
 
@@ -432,7 +419,7 @@ namespace GRVY {
 
   int GRVY_Input_Class:: Read_Var(const char *var, std::string *value)
   {
-    return(Read_Var(var,value,m_pimpl->String_Def) );
+    return(Read_Var(var,value,GRVY_Internal::String_Def) );
   }
 
   int GRVY_Input_Class:: Read_Var(const char *var, std::string *value, std::string Var_Def)
@@ -469,9 +456,9 @@ namespace GRVY {
 
     if(! m_pimpl->VerifyInit()) return 0;
 
-    *value = (*m_pimpl->ifile)(var,m_pimpl->String_Def.c_str(),elem);
+    *value = (*m_pimpl->ifile)(var,GRVY_Internal::String_Def.c_str(),elem);
 
-    if(*value == m_pimpl->String_Def)
+    if(*value == GRVY_Internal::String_Def)
       {
 	_GRVY_message(GRVY_ERROR,"fread_ivec_string","Unable to query variable -> ",var);
 	return 0;
@@ -510,11 +497,11 @@ namespace GRVY {
 
     if( !m_pimpl->VerifyInit() ) return 0;
   
-    tstring = (*m_pimpl->ifile)(var,Char_Def);
+    tstring = (*m_pimpl->ifile)(var,GRVY_Internal::Char_Def);
     *value = (char *) malloc(tstring.length()*sizeof(char)+1);
     strcpy(value[0],tstring.c_str());
 
-    if(strcmp(*value,m_pimpl->Char_Def) == 0)
+    if(strcmp(*value,GRVY_Internal::Char_Def) == 0)
       {
 
 	if( !Get_Var(var,value) )
@@ -536,11 +523,11 @@ namespace GRVY {
 
     if( ! m_pimpl->VerifyInit() ) return 0;
   
-    tstring = (*m_pimpl->ifile)(var,Char_Def,elem);
+    tstring = (*m_pimpl->ifile)(var,GRVY_Internal::Char_Def,elem);
     *value = (char *) malloc(tstring.length()*sizeof(char)+1);
     strcpy(value[0],tstring.c_str());
 
-    if(strcmp(*value,m_pimpl->Char_Def) == 0)
+    if(strcmp(*value,GRVY_Internal::Char_Def) == 0)
       {
 	_GRVY_message(GRVY_ERROR,"fread_char_ivec","Unable to query variable -> ",var);
 	return 0;
@@ -776,22 +763,22 @@ extern "C" int grvy_input_fclose()
 
 extern "C" int grvy_input_fread_float(const char *var,float *value)
 {
-  return( _GRVY_Input.Read_Var(var,value,Float_Def) );
+  return( _GRVY_Input.Read_Var(var,value,GRVY_Internal::Float_Def) );
 }
 
 extern "C" int grvy_input_fread_float_vec(const char *var,float *value,int nelems)
 {
-  return( _GRVY_Input.Read_Var_Vec(var,value,nelems,Float_Def) );
+  return( _GRVY_Input.Read_Var_Vec(var,value,nelems,GRVY_Internal::Float_Def) );
 }
 
 extern "C" int grvy_input_fread_float_ivec(const char *var,float *value,int elem)
 {
-  return( _GRVY_Input.Read_Var_iVec(var,value,elem,Float_Def) );
+  return( _GRVY_Input.Read_Var_iVec(var,value,elem,GRVY_Internal::Float_Def) );
 }
 
 extern "C" int grvy_input_fread_double(const char *var,double *value)
 {
-  return( _GRVY_Input.Read_Var(var,value,Double_Def) );
+  return( _GRVY_Input.Read_Var(var,value,GRVY_Internal::Double_Def) );
 }
 
 extern "C" int grvy_input_fread_logical_from_int(const char *var,int *value, int default_value)
@@ -806,27 +793,27 @@ extern "C" int grvy_input_fread_logical_from_int(const char *var,int *value, int
 
 extern "C" int grvy_input_fread_double_vec(const char *var,double *value,int nelems)
 {
-  return( _GRVY_Input.Read_Var_Vec(var,value,nelems,Double_Def) );
+  return( _GRVY_Input.Read_Var_Vec(var,value,nelems,GRVY_Internal::Double_Def) );
 }
 
 extern "C" int grvy_input_fread_double_ivec(const char *var,double *value,int elem)
 {
-  return( _GRVY_Input.Read_Var_iVec(var,value,elem,Double_Def) );
+  return( _GRVY_Input.Read_Var_iVec(var,value,elem,GRVY_Internal::Double_Def) );
 }
 
 extern "C" int grvy_input_fread_int(const char *var,int *value)
 {
-  return( _GRVY_Input.Read_Var(var,value,Int_Def) );
+  return( _GRVY_Input.Read_Var(var,value,GRVY_Internal::Int_Def) );
 }
 
 extern "C" int grvy_input_fread_int_vec(const char *var,int *value,int nelems)
 {
-  return( _GRVY_Input.Read_Var_Vec(var,value,nelems,Int_Def) );
+  return( _GRVY_Input.Read_Var_Vec(var,value,nelems,GRVY_Internal::Int_Def) );
 }
 
 extern "C" int grvy_input_fread_int_ivec(const char *var,int *value,int elem)
 {
-  return( _GRVY_Input.Read_Var_iVec(var,value,elem,Int_Def) );
+  return( _GRVY_Input.Read_Var_iVec(var,value,elem,GRVY_Internal::Int_Def) );
 }
 
 extern "C" int grvy_input_fread_char(const char *var, char **value)

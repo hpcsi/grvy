@@ -1063,27 +1063,25 @@ namespace GRVYGetPot
 // Input Parsing Class
 //--------------------
 
-  /// 
-  /// \defgroup CXXinput Input Parsing
-  /// @ingroup CXXapi
-  ///
-  /// \brief This section presents available C++ routines for accessing
-  /// input parameters from a libGRVY style input file. See the \ref
-  /// inputFile "example input file" for more information on the file
-  /// format. Unless specified otherwise, functions which have an
-  /// integer return value return "0" upon success. The primary
-  /// exception to this rule is with the read() routines.  All
-  /// grvy_input_fread_() routines return 1 on success and 0 on failure.
-  /// This return behavior is intended as a convenience for
-  /// applications to check input file parsing errors over consecutive
-  /// reads via multiplicative operations.
-  ///
-  /// <b> Code Example:</b> A specific C example using the input parsing
-  /// routines is available \ref CinputExample "input.c".
-  /// 
-  /// <hr>
-
- 
+/// 
+/// \defgroup CXXinput Input Parsing
+/// @ingroup CXXapi
+///
+/// \brief This section presents available C++ routines for accessing
+/// input parameters from a libGRVY style input file. See the \ref
+/// inputFile "example input file" for more information on the file
+/// format. Unless specified otherwise, functions which have an
+/// integer return value return "0" upon success. The primary
+/// exception to this rule is with the read() routines.  All
+/// grvy_input_fread_() routines return 1 on success and 0 on failure.
+/// This return behavior is intended as a convenience for
+/// applications to check input file parsing errors over consecutive
+/// reads via multiplicative operations.
+///
+/// <b> Code Example:</b> A specific C example using the input parsing
+/// routines is available \ref CinputExample "input.cpp".
+/// 
+/// <hr>
 
 namespace GRVY {
 
