@@ -50,6 +50,22 @@
 
 #include<boost/math/special_functions.hpp>
 
+#if 0
+namespace GRVY_Internal {
+
+  // GetPot-related constants (used to decide if we do not have a
+  // default value)
+
+  const static float     Float_Def = -9999999.0f;
+  const static double   Double_Def = -9999999.0e1;
+  const static int         Int_Def = -9999999;
+  const static long       Long_Def = -9999999;
+  const static char*      Char_Def = "unknown";
+
+  const static std::string  String_Def("unknown");
+}
+#endif
+
 namespace GRVY {
 
 //--------------------------
