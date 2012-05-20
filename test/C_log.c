@@ -114,11 +114,11 @@ int main(int argc, char **argv)
 
 void post_log_messages()
 {
-  grvy_log(GRVY_FATAL,"a fine fatal message"    );
-  grvy_log(GRVY_ERROR,"an astute error message" );
-  grvy_log(GRVY_WARN, "a fabulous warn message");
-  grvy_log(GRVY_INFO, "a useful info message"  );
-  grvy_log(GRVY_DEBUG,"a clever debug message"  );
+  grvy_printf(GRVY_FATAL,"a fine fatal message\n"    );
+  grvy_printf(GRVY_ERROR,"an astute error message\n" );
+  grvy_printf(GRVY_WARN, "a fabulous warn message\n" );
+  grvy_printf(GRVY_INFO, "a useful info message\n"   );
+  grvy_printf(GRVY_DEBUG,"a clever debug message\n"  );
 
   return;
 }
