@@ -154,9 +154,8 @@ extern "C" {
    * applications to check input file parsing errors over consecutive
    * reads via multiplicative operations.
    *
-   * Various illustrative examples demonstrating functionality of the
-   * library are provided in the top-level \e examples/ directory. A specific
-   * C example using the input parsing routines is \ref CinputExample "input.c".
+   * <b> Code Example:</b> A specific C example using the input parsing
+   * routines is \ref CinputExample "input.c".
    * 
    * <hr>
    */
@@ -444,6 +443,10 @@ extern "C" {
    *     Total Measured Time = 4.69626e+00 secs (100.0000 %)
    * -----------------------------------------------------------------------------------------------
    *  \endcode
+   *
+   * <b> Code Example</b>: A specific C example using the performance timing
+   * routines is available in \ref CtimerExample "timer.c".
+   *
    * <hr>
    */
 

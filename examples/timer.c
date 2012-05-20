@@ -21,7 +21,7 @@
 //
 //-----------------------------------------------------------------------el-
 //
-// timer_sum.c: Example illustrating performance timing via libGRVY.
+// timer.c: Simple example illustrating performance timing via libGRVY.
 //
 // $Id$
 //--------------------------------------------------------------------------
@@ -33,10 +33,10 @@
 #include<sys/time.h>
 #include<time.h>
 
-double Foo_Sleep = 0.3 * 1.e6;
-double Bar_Sleep = 0.05 * 1.e6;
-double Boo_Sleep = 0.1167 * 1.e6;
-double Max_Iters = 10;
+const double Foo_Sleep = 0.3 * 1.e6;
+const double Bar_Sleep = 0.05 * 1.e6;
+const double Boo_Sleep = 0.1167 * 1.e6;
+const    int Max_Iters = 10;
 
 void foo();
 void bar();
@@ -46,38 +46,72 @@ int main()
 {
 
   int i,itest;
-  int num_repeat = 2;
+  const int num_repeat = 2;
+
+  /* Initialize the timing library - the global timer will be
+     initialized with this call */
 
   grvy_timer_init("GRVY Example Timing");
 
-  /* Primary Iteration Loop */
+  /* Outer Test Loop */
 
   for(itest=0;itest<num_repeat;itest++)
     {
 
-      grvy_timer_reset();
+      /* Reset the timer to mearure performance timing for each test
+	 loop iteration  */
+
+      if(itest > 0)
+	grvy_timer_reset();
+
+      /* Define the beginning of the overall code portion to be monitored */
+
       grvy_timer_begin("Main Program");
+
+      /* Primary Iteration Work Loop */
 
       for(i=0;i<Max_Iters;i++)
 	{
-
-	  /* Define the beginning of the overall portion to be monitored */
-	  
 	  printf("Main iteration loop = %i\n",i);
-
 	  foo();
-
 	}
+
+      /* Finalize the main program timer */
 
       grvy_timer_end("Main Program");
       grvy_timer_finalize();
+
+      /* Print performance summary to stdout */
+
       grvy_timer_summarize();
 
     }
 
+  /* Query individual timers directly - results will match that shown
+     in grvy_timer_summarize() routine */
 
-  //  grvy_timer_finalize();
-  //  grvy_timer_summarize();
+  printf("Querying individual timers:\n");
+
+  printf("\tbar: %10.5e secs\n",grvy_timer_elapsedseconds("bar"));
+  printf("\tfoo: %10.5e secs\n",grvy_timer_elapsedseconds("foo"));
+  printf("\tboo: %10.5e secs\n",grvy_timer_elapsedseconds("boo"));
+
+  printf("\nQuerying global timer elapsed time:\n");
+  printf("\tElapsed global time = %10.5e secs\n",grvy_timer_elapsed_global());
+
+  printf("\nQuerying individual stats for timer \"bar\"\n");
+  printf("\tbar (   count): %i\n",grvy_timer_stats_count   ("bar"));
+  printf("\tbar (    mean): %e\n",grvy_timer_stats_mean    ("bar"));
+  printf("\tbar (variance): %e\n",grvy_timer_stats_variance("bar"));
+  printf("\tbar (     min): %e\n",grvy_timer_stats_min     ("bar"));
+  printf("\tbar (     max): %e\n",grvy_timer_stats_max     ("bar"));
+
+  /* save measured timing to historical performance DB (required
+     optional HDF library linkage) */
+
+  const int num_procs = 1;
+
+  grvy_timer_save_hist("C-Example1","My clever comment",num_procs,"hist.h5");
 
   return 0;
 }
@@ -85,22 +119,31 @@ int main()
 
 void foo()
 {
-  grvy_timer_begin(__func__);
+  /* Mark the beginning of new timer */
+
+  grvy_timer_begin("foo");
 
   usleep(Foo_Sleep);
   bar();
 
-  grvy_timer_end(__func__);
+  /* Mark the end of the timer */
+
+  grvy_timer_end("foo");
+
   return;
     
 }
 
 void bar()
 {
+  /* Mark the beginning of new timer (use macro for function name) */
+
   grvy_timer_begin(__func__);
 
   usleep(Bar_Sleep);
   boo();
+
+  /* Mark the end of the timer */
 
   grvy_timer_end(__func__);
 
@@ -111,9 +154,13 @@ void bar()
 
 void boo()
 {
+  /* Mark the beginning of new timer */
+
   grvy_timer_begin(__func__);
 
   usleep(Boo_Sleep);
+
+  /* Mark the end of the timer */
 
   grvy_timer_end(__func__);
 

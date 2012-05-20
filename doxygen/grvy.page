@@ -37,15 +37,12 @@ further divided into the following subsections:
 <!-- <li> \subpage model "Library Overview" -->
 <li> \subpage installation
 <li> \subpage apiC "C/C++ Interface (old doxygen)"
-<li> \ref Capi "C API (new doxygen)"
+<li> \ref Capi "C API"
 <li> \subpage apiF "Fortran Interface"
 <li> <a href="http://buildbot.ices.utexas.edu/docs/buildbot/hpct/docs/html/lcov/build/src/index.html">Buildbot Coverage</a>
 </ul>
 
 <!-- <li> <a href="lcov/index.html">Code Coverage Analysis</a> -->
-
-<!-- \subpage inputFile  Example Input File -->
-
 
 <!-- \subpage apiF Fortran API -->
 <!-- \subpage examples Examples -->
@@ -88,7 +85,18 @@ pecos-input.txt file shown \ref inputFile "here" and uses many of the available
 parsing routines including a demonstration of default value
 registration.
 
-\includelineno input.c
+\include input.c
+
+*/
+
+/*! \page CtimerExample Performance Timing Example using C API 
+
+An illustrative code example in C using the performance timer API is
+shown below (and is also available in the \e examples directory from a
+top-level install).  This example illustrates basic timer usage
+(including the use of nested timers).
+
+\include timer.c
 
 */
 
