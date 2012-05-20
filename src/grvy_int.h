@@ -36,24 +36,7 @@
 #include<string>
 #include<grvy.h>
 
-//#ifdef HAVE_MPI
-//#include "mpi.h"
-//#endif
-
 #include <boost/program_options.hpp>
-
-// #ifdef HAVE_MPI
-
-// // Request OpenMPI to ignore C++ bindings (necessary so we can also
-// // link C code against libgrvy)
-
-// #define OMPI_SKIP_MPICXX
-
-// #include<mpi.h>
-
-// #undef OMPI_SKIP_MPICXX
-
-// #endif
 
 namespace GRVY {
 
@@ -91,15 +74,10 @@ namespace GRVY {
 
   // Evil Globals Vars
 
-  //  std::auto_ptr<GRVY_Timer_Class> _GRVY_Timers;
-
 #ifdef _GRVY_GLOBAL_DEF
 
   GRVY_Log_Class    _GRVY_Log;                           // Log mechanism
   GLOBAL const char *_GRVY_gtimer  = "GRVY_Unassigned";  // default global timer key
-
-  //GRVY_Timer_Class *_GRVY_Timers    = NULL;              // performance timer 
-  //  GRVY_Timer_Class *_GRVY_Timers    = NULL;              // performance timer 
 
   GRVY_MPI_Ocore_Class *_GRVY_Ocore = NULL;		 // MPI ramdisk for out-of-core methods
 
@@ -111,7 +89,6 @@ namespace GRVY {
   GLOBAL GRVY_Log_Class _GRVY_Log;
   GLOBAL const char *_GRVY_gtimer;
 
-  //  GLOBAL GRVY_Timer_Class *_GRVY_Timers;
   GLOBAL GRVY_MPI_Ocore_Class *_GRVY_Ocore;
   GLOBAL double _GRVY_TIMER_THRESH;
   GLOBAL double _GRVY_PERC_TOL;
