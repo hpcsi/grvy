@@ -36,13 +36,13 @@ further divided into the following subsections:
 <ul>
 <!-- <li> \subpage model "Library Overview" -->
 <li> \subpage installation
-<li> \subpage apiC "C/C++ Interface (old doxygen)"
 <li> \ref Capi "C API"
 <li> \ref CXXapi "C++ API"
 <li> \subpage apiF "Fortran Interface"
 <li> <a href="http://buildbot.ices.utexas.edu/docs/buildbot/hpct/docs/html/lcov/build/src/index.html">Buildbot Coverage</a>
 </ul>
 
+<!-- <li> \subpage apiC "C/C++ Interface (old doxygen)" -->
 <!-- <li> <a href="lcov/index.html">Code Coverage Analysis</a> -->
 
 <!-- \subpage apiF Fortran API -->
@@ -87,6 +87,18 @@ parsing routines including a demonstration of default value
 registration.
 
 \include input.c
+*/
+
+/*! \page CXXinputExample Input Parsing Example using C++ API 
+
+An illustrative code example in C++ using the input parsing API is shown
+below (and is also available in the \e examples directory from a
+top-level install). This C++ example is configured to parse the example
+pecos-input.txt file shown \ref inputFile "here" and uses many of the available
+parsing routines including a demonstration of default value
+registration.
+
+\include cpp-input.cpp
 */
 
 /*! \page CtimerExample Performance Timing Example using C API 

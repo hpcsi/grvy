@@ -155,8 +155,7 @@ extern "C" {
    * reads via multiplicative operations.
    *
    * <b> Code Example:</b> A specific C example using the input parsing
-   * routines is available \ref CinputExample "input.c".
-   * 
+   * routines is available in \ref CinputExample "input.c".
    * <hr>
    */
 
@@ -1039,7 +1038,7 @@ extern "C" {
 /// which have an integer return value return "0" upon success (and
 /// the primary exception to this rule is with a subset of the Input
 /// Parsing routines).
-/// 
+///
 /// \li \ref CXXinput
 
 //--------------------------
@@ -1078,10 +1077,17 @@ namespace GRVYGetPot
 /// applications to check input file parsing errors over consecutive
 /// reads via multiplicative operations.
 ///
-/// <b> Code Example:</b> A specific C example using the input parsing
-/// routines is available \ref CinputExample "input.cpp".
+/// \b Namespace: All libGRVY C++ classes are contained with the GRVY namespace. 
+///
+/// <b>Class Name:</b> GRVY::GRVY_Input_Class
+///
+/// <b> Code Example:</b> A specific C++ example using the input parsing
+/// routines is available in \ref CXXinputExample "cpp-input.cpp".
 /// 
 /// <hr>
+
+// \namespace GRVY 
+// \brief Namespace containing all libGRVY classes.
 
 namespace GRVY {
 
@@ -1093,8 +1099,8 @@ namespace GRVY {
    * @{
    */
 
-  /** \brief 
-   * Input Parsing Class 
+  /* \brief Input Parsing Class 
+   * Is this cool or what.  I don't want it to get shortened.
    */
 
 class GRVY_Input_Class {
@@ -1105,7 +1111,7 @@ class GRVY_Input_Class {
 
   /** 
    * \ingroup CXXinput
-   * \name Input Parsing - File open/close:
+   * \name File open/close:
    *
    * Class member functions for accessing input parameters from a libGRVY style
    * input file. Note that an input file must be opened prior to reading
@@ -1129,17 +1135,17 @@ class GRVY_Input_Class {
   void MsgToggle    (int flag);
 
   /** \ingroup CXXinput
-   *  \name Input Parsing - Dump input file contents:
+   *  \name Dump input file contents:
    * 
    * The following member functions are used to dump the entire
-   * contents of a parsed libGRVY style input file to stdout or to an
-   * ASCII file (note that all comments within the original input file
-   * are stripped). The prefix variable can be used to include an
-   * additional delimiter which prepends each line of the output. Note
-   * that an input file must be open prior to reading any performing
-   * input file dump operations. These routines are normally used to
-   * save all relevant input parameters in the application output for
-   * future traceability and repeatability.
+   * contents of a parsed libGRVY style input file to stdout or
+   * appended to an ASCII file (note that all comments within the
+   * original input file are stripped). The prefix variable can be
+   * used to include an additional delimiter which prepends each line
+   * of the output. Note that an input file must be open prior to
+   * reading any performing input file dump operations. These routines
+   * are normally used to save all relevant input parameters in the
+   * application output for future traceability and repeatability.
    *
    */
 
@@ -1158,56 +1164,134 @@ class GRVY_Input_Class {
 
   /** @} */
 
-  // Numerical Read Functions
+  /** \ingroup CXXinput
+   *  \name Read scalar values
+   * 
+   * The following member functions are used to read a scalar input \e
+   * value associated with the \e keyword string. The \e keyword can
+   * be provided as a string or const char* pointer. If desired, a \e
+   * vardef argument can be included which provides a default value
+   * for the scalar if the requested \e keyword is not present in the
+   * input file.. Alternatively, you can use the Register_Var family
+   * of functions to provide default values.  Supported numeric template 
+   * datatypes include int, float, and double.
+   */
 
-  template <typename T> int Read_Var      (std::string var, T *value );
-  template <typename T> int Read_Var_Vec  (std::string var, T *value, int nelems);
-  template <typename T> int Read_Var_iVec (std::string var, T *value, int elem);
+  /** \ingroup CXXinput
+   * @{
+   */
 
-  template <typename T> int Read_Var      (std::string var, T *value, T vardef);
-  template <typename T> int Read_Var_Vec  (std::string var, T *value, int nelems, T vardef);
-  template <typename T> int Read_Var_iVec (std::string var, T *value, int elem,   T vardef);
+  template <typename T> int Read_Var      (std::string keyword, T *value );           ///< Scalar read
+  template <typename T> int Read_Var      (std::string keyword, T *value, T vardef);  ///< Scalar read with default
 
-  template <typename T> int Read_Var      (const char *var, T *value );
-  template <typename T> int Read_Var_Vec  (const char *var, T *value, int nelems);
-  template <typename T> int Read_Var_iVec (const char *var, T *value, int elem);
+  template <typename T> int Read_Var      (const char *keyword, T *value );           ///< Scalar read
+  template <typename T> int Read_Var      (const char *keyword, T *value, T vardef);  ///< Scalar read with default
 
-  template <typename T> int Read_Var      (const char *var, T *value, T vardef);
-  template <typename T> int Read_Var_Vec  (const char *var, T *value, int nelems, T vardef);
-  template <typename T> int Read_Var_iVec (const char *var, T *value, int elem,   T vardef);
+  // String reads
 
-  // Character String Read Functions
-
-  int Read_Var                            (const char *var, char **value);
-  int Read_Var_iVec                       (const char *var, char **value, int elem);
-
-  // String Read Functions
-
-  int Read_Var                            (const char *var, std::string *value);
-  int Read_Var                            (const char *var, std::string *value, std::string vardef);
-  int Read_Var_iVec                       (const char *var, std::string *value, int elem);
+  int Read_Var                            (const char *keyword, std::string *value);                     ///< Scalar
+  int Read_Var                            (const char *keyword, std::string *value, std::string vardef); ///< Scalar 
 
   // Bool Read Functions
 
-  int Read_Var                            (const char *var, bool *value, bool vardef);
-  int Read_Var                            (std::string var, bool *value, bool vardef);
+  int Read_Var                            (const char *var, bool *value, bool vardef); ///< Scalar
+  int Read_Var                            (std::string var, bool *value, bool vardef); ///< Scalar
 
-  // Default Variable Registration Functions
+  /** @} */
 
-  void Register_Var  (const char *varname, int     var);
-  void Register_Var  (const char *varname, float   var);
-  void Register_Var  (const char *varname, double  var);
-  void Register_Var  (const char *varname, bool    var);
-  void Register_Var  (const char *varname, const char  *var);
-  void Register_Var  (const char *varname, std::string  var);
+  /** \ingroup CXXinput
+   *  \name Read vector values 
+   * 
+   * The following member functions are used to read vector valued
+   * input values for common intrinsic datatypes given a desired
+   * \e keyword. If successful, the resulting
+   * data is stored in the array values.
+   */
 
-  int  Get_Var       (const char *varname, int    *var);
-  int  Get_Var       (const char *varname, float  *var);
-  int  Get_Var       (const char *varname, double *var);
-  int  Get_Var       (const char *varname, char  **var);
-  int  Get_Var       (const char *varname, std::string *var);
+  /** \ingroup CXXinput
+   * @{
+   */
 
-  void PrintRegVars  (const char *prefix);
+  template <typename T> int Read_Var_Vec  (std::string keyword, T *values, int nelems);            ///< Vec
+  template <typename T> int Read_Var_Vec  (const char *keyword, T *values, int nelems);		   ///< Vec
+  template <typename T> int Read_Var_Vec  (std::string keyword, T *values, int nelems, T vardef);  ///< Vec
+  template <typename T> int Read_Var_Vec  (const char *keyword, T *values, int nelems, T vardef);  ///< Vec
+
+  /** @} */
+
+  /** \ingroup CXXinput
+   *  \name Read ith vector value 
+   * 
+   * The following member functions are used to read the ith entry (\e elem) of 
+   * vector valued input values for common intrinsic datatypes given a desired 
+   * keyword. If successful, the resulting
+   * data is stored in \e value.
+   */
+
+  /** \ingroup CXXinput
+   * @{
+   */
+
+  template <typename T> int Read_Var_iVec (std::string keyword, T *value, int elem);               ///< iVec
+  template <typename T> int Read_Var_iVec (const char *keyword, T *value, int elem);		   ///< iVec
+  template <typename T> int Read_Var_iVec (std::string keyword, T *value, int elem,   T vardef);   ///< iVec
+  template <typename T> int Read_Var_iVec (const char *keyword, T *value, int elem,   T vardef);   ///< iVec
+
+  // Character String Read Functions
+
+  int Read_Var_iVec                       (const char *keyword, char **value, int elem);           ///<iVec
+  int Read_Var_iVec                       (const char *keyword, std::string *value, int elem);     ///<iVec
+
+  /** @} */
+
+  /** \ingroup CXXinput
+   *  \name Default value registration:
+   * 
+   * The following member functions provide a mechanism to register a
+   * default value with the input parsing mechanism. If a particular
+   * \e keyword has a registered default value and is subsequently
+   * queried with an input file which does not contain the keyword,
+   * the registered default value will be returned instead. A
+   * convenient use for these registration functions is to provide
+   * sensible defaults to newly added input keywords which are not
+   * present in older input file revisions.
+   */
+
+  /** \ingroup CXXinput
+   * @{
+   */
+
+  void Register_Var  (const char *keyword, int     var);           ///< Register_Var
+  void Register_Var  (const char *keyword, float   var);	   ///< Register_Var
+  void Register_Var  (const char *keyword, double  var);	   ///< Register_Var
+  void Register_Var  (const char *keyword, bool    var);	   ///< Register_Var
+  void Register_Var  (const char *keyword, const char  *var);	   ///< Register_Var
+  void Register_Var  (const char *keyword, std::string  var);      ///< Register_Var
+
+  /** @} */
+
+  /** 
+   * \ingroup CXXinput 
+   * \name Default registration query:
+   *
+   * The following member functions can be used to query the current
+   * hashed values of any keyword variables which have been registered
+   * previously.
+   */
+
+  /** \ingroup CXXinput
+   * @{
+   */
+
+  int  Get_Var       (const char *keyword, int    *value);       ///< Get_Var
+  int  Get_Var       (const char *keyword, float  *value);	 ///< Get_Var
+  int  Get_Var       (const char *keyword, double *value);	 ///< Get_Var
+  int  Get_Var       (const char *keyword, char  **value);	 ///< Get_Var
+  int  Get_Var       (const char *keyword, std::string *value);  ///< Get_Var
+
+  void PrintRegVars  (const char *prefix); ///< Print
+
+  /** @} */
 
  private:
   class GRVY_Input_ClassImp       ;           // forward declaration to Input class implementation
