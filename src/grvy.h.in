@@ -1040,6 +1040,7 @@ extern "C" {
 /// Parsing routines).
 ///
 /// \li \ref CXXinput
+/// \li \ref CXXtimer
 
 //--------------------------
 // C++ GRVY Interfaces
@@ -1299,11 +1300,50 @@ class GRVY_Input_Class {
 
 };
 
-  /** @} */  
+  /* @} */  
 
 //--------------------------
 // Performance Timing Class
 //--------------------------
+
+  /** \defgroup CXXtimer Performance Timer Utilities 
+   *  \ingroup CXXapi
+   *
+   * \brief This section presents the C++ class for measuring
+   * runtime performance of specific code sections to aid in overall
+   * performance/statistical analysis, and to maintain historical
+   * performance records as application codes evolve or across
+   * alternate compute platforms.  Individual code timers are defined
+   * based on BeginTimer/EndTimer demarcation around the desired code snippet to
+   * measure along with a unique user-provided id string. Note that
+   * individual timers can be nested and the library will report
+   * exclusive timing of the innermost timers. Various options are
+   * provided to interrogate timer measurements, statistics, and
+   * relative timer comparisons. A convenient use of these routines is
+   * to define timers around various important work constructs within
+   * your application and use the Summarize() function to
+   * obtain a concise summary of the runtime performance, variability,
+   * and relative wallclock comparisions. Example output using this
+   * approach is shown below:
+   *
+   *  \code 
+   * -----------------------------------------------------------------------------------------------
+   * GRVY Example Timing - Performance Timings:              |      Mean      Variance       Count
+   * --> foo                 : 3.00978e+00 secs ( 64.0889 %) | [3.00978e-01  2.70727e-08         10]
+   * --> boo                 : 1.17648e+00 secs ( 25.0513 %) | [1.17648e-01  2.35981e-08         10]
+   * --> bar                 : 5.09513e-01 secs ( 10.8493 %) | [5.09513e-02  5.02795e-08         10]
+   * --> Main Program        : 4.48704e-04 secs (  0.0096 %) | [4.48704e-04  0.00000e+00          1]
+   * --> GRVY_Unassigned     : 4.02927e-05 secs (  0.0009 %)
+   * 
+   *     Total Measured Time = 4.69626e+00 secs (100.0000 %)
+   * -----------------------------------------------------------------------------------------------
+   *  \endcode
+   *
+   * <b> Code Example</b>: A specific C++ example using the performance timing
+   * routines is available in \ref CtimerExample "timer.c".
+   *
+   * <hr>
+   */
 
 class GRVY_Timer_Class {
 
@@ -1311,10 +1351,28 @@ class GRVY_Timer_Class {
   GRVY_Timer_Class        (); 
  ~GRVY_Timer_Class        ();
 
-  void   Init             (std::string name); // intialize global timing process
-  void   BeginTimer       (std::string id);   // starts local timer
-  void   EndTimer         (std::string id);   // ends local timer
-  void   Finalize         ();                 // ends global timer
+  /**
+   * \ingroup CXXtimer
+   * \name Performance Timer - Initialization and Timer Demarcation:
+   *
+   * The following member functions provide support for defining one or more
+   * wall-clock timers around specific code regions. Individual timers are
+   * delineated by a unique \e id.  In addition to timing specific code
+   * regions identified with begin/end calls, the library also
+   * tracks the total application time from when the timing library
+   * was first initialized.
+   */
+
+  /** \ingroup CXXtimer
+   * @{
+   */
+
+  void   Init             (std::string name); ///<  intialize global timing process
+  void   BeginTimer       (std::string id);   ///<  starts local timer
+  void   EndTimer         (std::string id);   ///<  ends local timer
+  void   Finalize         ();                 ///<  ends global timer
+
+  /** @} */
   
   double ElapsedSeconds   (std::string id);   // return elapsed time for specifc timer id
   double ElapsedGlobal    ();		      // return elapsed time since Init()
