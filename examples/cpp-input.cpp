@@ -43,7 +43,6 @@ int main(int argc, char **argv)
   double reyn, mach, temp;
   float aoa,A[3];
   int   iter_max,turbulent, ikoomie;
-  //  char *key1, *key2;
   bool restart;
   std::string GridFile, RestartFile;
   std::string Key1, Key2;
@@ -82,7 +81,6 @@ int main(int argc, char **argv)
   if( iparse.Read_Var("gridfile",&GridFile) )
     cout << "--> gridfile    = " << GridFile << endl;
 
-  //  if( iparse.Read_Var("restart",&restart,false) )
   std::string restart_flag("restart");
 
   if( iparse.Read_Var(restart_flag,&restart,false) )
@@ -114,8 +112,8 @@ int main(int argc, char **argv)
   if( iparse.Read_Var("koomie",&ikoomie) )
     printf("--> %-11s = %i\n","koomie",ikoomie);
 
-  // Disable error messages if you want to control them yourself If
-  // you query the unknown variable again, stdout should be quiet
+  // Disable error messages if you want to control them yourself. If
+  // you now query the unknown variable again, stdout should be quiet
 
   grvy_printf(GRVY_INFO,"Switching to silent message mode...\n");
   grvy_log_setlevel(GRVY_NOLOG);

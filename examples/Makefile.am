@@ -20,11 +20,11 @@ LIBS                    = -L$(top_builddir)/src -lgrvy
 BUILT_SOURCES           = .license.stamp
 CLEANFILES              = .license.stamp *.gcno *.gcda
 
-example_PROGRAMS        = input timer check_dir inputf timer_sumf messages timer cpp-example \
+example_PROGRAMS        = input timer check_dir inputf timer_sumf messages timer cpp-input \
 	                  hdf5_access cpp-timer 
 
 input_SOURCES           = input.c
-cpp_example_SOURCES     = cpp-example.cpp
+cpp_input_SOURCES       = cpp-input.cpp
 hdf5_access_SOURCES     = hdf5_access.cpp
 
 inputf_SOURCES          = inputf.f90
