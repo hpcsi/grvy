@@ -1188,9 +1188,10 @@ class GRVY_Input_Class {
   template <typename T> int Read_Var      (const char *keyword, T *value );           ///< Scalar read
   template <typename T> int Read_Var      (const char *keyword, T *value, T vardef);  ///< Scalar read with default
 
-  // String reads
+  // Character string reads
 
   int Read_Var                            (const char *keyword, std::string *value);                     ///< Scalar
+  int Read_Var                            (const char *keyword, char **value);                           ///< Scalar
   int Read_Var                            (const char *keyword, std::string *value, std::string vardef); ///< Scalar 
 
   // Bool Read Functions
