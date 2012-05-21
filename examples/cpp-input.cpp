@@ -21,7 +21,7 @@
 //
 //-----------------------------------------------------------------------el-
 //
-// cpp-example.cpp: Simple usage examples in C++.
+// Simple usage example illustrating input file parsing in C++.
 //
 // $Id$
 //--------------------------------------------------------------------------

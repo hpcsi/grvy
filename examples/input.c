@@ -21,7 +21,7 @@
 //
 //-----------------------------------------------------------------------el-
 //
-// input.c: Example illustrating basic input file parsing via libGRVY.
+// C example illustrating basic input file parsing via libGRVY.
 //
 // $Id$
 //--------------------------------------------------------------------------
