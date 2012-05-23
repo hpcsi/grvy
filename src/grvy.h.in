@@ -105,7 +105,8 @@ extern "C" {
 
   /**
    * @defgroup Cversioning Runtime Versioning Information
-   * @ingroup Capi
+   * @ingroup Capi 
+   * @ingroup CXXapi 
    * 
    * \brief Obtain libGRVY runtime versioning information.
    */
@@ -659,7 +660,7 @@ extern "C" {
    * \name MPI Out-of-Core - Read/Write:
    *
    * Routines to read and write blocks of data to remote memory pools
-   * for standards intrinsic datatypes.
+   * for standard intrinsic datatypes.
    *
    */
 
@@ -682,7 +683,7 @@ extern "C" {
    * \name MPI Out-of-Core - Record retreival:
    * 
    * Routines to query the state of an existing remote out-of-core
-   * memory pool and read the next available record.  These routies
+   * memory pool and read the next available record.  These routines
    * are primarily used to save the state to disk.
    */
 
@@ -800,6 +801,7 @@ extern "C" {
   /** 
    * \defgroup Cmisc Miscellaneous File Path Utilities
    * \ingroup Capi
+   * \ingroup CXXapi
    * 
    * \brief I/O utilities for file path interaction.
    */
@@ -1041,6 +1043,9 @@ extern "C" {
 ///
 /// \li \ref CXXinput
 /// \li \ref CXXtimer
+/// \li \ref CXXocore
+/// \li \ref Cmisc
+/// \li \ref Cversioning
 
 //--------------------------
 // C++ GRVY Interfaces
@@ -1101,7 +1106,7 @@ namespace GRVY {
    */
 
   /* \brief Input Parsing Class 
-   * Is this cool or what.  I don't want it to get shortened.
+   * 
    */
 
 class GRVY_Input_Class {
@@ -1340,8 +1345,12 @@ class GRVY_Input_Class {
    * -----------------------------------------------------------------------------------------------
    *  \endcode
    *
+   * \b Namespace: All libGRVY C++ classes are contained with the GRVY namespace. 
+   *
+   * <b>Class Name:</b> GRVY::GRVY_Timer_Class
+   *
    * <b> Code Example</b>: A specific C++ example using the performance timing
-   * routines is available in \ref CtimerExample "timer.c".
+   * routines is available in \ref CXXtimerExample "cpp-timer.cpp".
    *
    * <hr>
    */
@@ -1421,9 +1430,9 @@ class GRVY_Timer_Class {
    * There are two primary modes for saving historical performance
    * data:
    * 
-   * <b>Mode 1</b>: you are using the grvy_timer_* class of routines to
-   *         define individual sections to monitor and want to save
-   *         the global runtime measurement along with all individually
+   * <b>Mode 1</b>: you are using the GRVY_Timer_Class to define
+   *         individual sections to monitor and want to save the
+   *         global runtime measurement along with all individually
    *         defined subtimers.
    * 
    * <b>Mode 2</b>: you are using other means to profile the application code
@@ -1477,15 +1486,43 @@ private:
 
 };
 
-//--------------------------
-// MPI Out-of-Core Class
-//--------------------------
+  //--------------------------
+  // MPI Out-of-Core Class
+  //--------------------------
+
+  /** \defgroup CXXocore MPI Out-of-Core Utilities 
+   *  \ingroup CXXapi
+   *
+   * \brief This section presents the C++ class which provides support
+   * to offload out-of-core read/write operations to a pool of
+   * distributed shared-memory nodes using MPI for data transfer.  An
+   * additional level of indirection can be enabled to offload
+   * less-frequently accessed data to one or more disk-based files.
+   */
+
+  /** 
+   * \ingroup CXXocore
+   * @{
+   */
+
 
 class GRVY_MPI_Ocore_Class {
 
 public:
   GRVY_MPI_Ocore_Class(); 
  ~GRVY_MPI_Ocore_Class();
+
+  /** 
+   * \ingroup CXXocore
+   * \name Initialization and runtime queries:
+   *
+   * Member functions to initialize/finalize out-of-core suport
+   * (requires MPI enabled libGRVY build) and runtime utilities.
+   */
+
+  /** \ingroup CXXocore 
+   * @{ 
+   */
 
   int    Initialize   (std::string inputfile);
   void   Finalize     ();
@@ -1494,14 +1531,48 @@ public:
   bool   isEnabled    ();	// is MPI Ocore enabled? (can be controlled via input file)
   int    Blocksize    ();       // Ocore blocksize
 
+  /** @} */
+
   // Read/Write Functions
+
+  /** @}
+   *
+   * \ingroup Cocore 
+   * \name Read/Write:
+   *
+   * Member functions to read and write blocks of data to remote
+   * memory pools for standard intrinsic datatypes. Supported template
+   * \e data types include ints, floats, doubles, and long longs.
+   *
+   */
+
+  /** \ingroup CXXocore
+   * @{
+   */
 
   template <typename T> int Write (size_t offset,T *data );
   template <typename T> int Read  (size_t offset,T *data );
 
+  /** @} */
+
   // Record retrieval/removal
 
+  /** @}
+   * \ingroup CXXocore
+   * \name Record retreival:
+   * 
+   * Member function to query the state of an existing remote out-of-core
+   * memory pool and read the next available record.  These routines
+   * are primarily used to save the state to disk.  Supported template
+   * \e data types include ints, floats, doubles, and long longs.
+   */
+
+  /** \ingroup CXXocore
+   * @{ */
+
   template <typename T> size_t PopRecord (T *data );
+
+  /** @} */
 
 private:
   class GRVY_MPI_Ocore_ClassImp;		  // forward declaration to Ocore implementation

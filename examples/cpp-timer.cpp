@@ -58,27 +58,35 @@ int main()
   int i,itest;
   int num_repeat = 2;
 
-  // Primary Iteration Loop 
+  // Initialize the timing library - the global timer will be
+  // initialized with this call.
+
+  gt.Init("GRVY Example Timing");
+
+  // Outer Test Loop
 
   for(itest=0;itest<num_repeat;itest++)
     {
 
-      gt.Init("GRVY Example Timing");
+      /* Define the beginning of the overall portion to be monitored */
       gt.BeginTimer("Main Program");
 
       for(i=0;i<Max_Iters;i++)
 	{
-
-	  /* Define the beginning of the overall portion to be monitored */
-	  
 	  grvy_printf(GRVY_INFO,"Main iteration loop = %i\n",i);
 	  foo();
-
 	}
+
+      // Finalize the main program timer
 
       gt.EndTimer("Main Program");
       gt.Finalize();
+
+      // Print performance summary to stdout 
+
       gt.Summarize();
+
+      // Reset timers for next iteration
       gt.Reset();
     }
 

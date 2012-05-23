@@ -111,6 +111,16 @@ top-level install).  This example illustrates basic timer usage
 \include timer.c
 */
 
+/*! \page CXXtimerExample Performance Timing Example using C++ API 
+
+An illustrative code example in C++ using the performance timer API is
+shown below (and is also available in the \e examples directory from a
+top-level install).  This example illustrates basic timer usage
+(including the use of nested timers).
+
+\include cpp-timer.cpp
+*/
+
 /*! \page CloggingExample Logging Example using C API 
 
 An illustrative code example in C using available priority-based logging routines.
