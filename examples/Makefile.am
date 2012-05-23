@@ -1,8 +1,8 @@
 exampledir              = @prefix@/examples
 example_DATA            = input.c inputf.f90 pecos-input.txt \
-		       	  timer.c timer_sumf.f90
+		       	  timer.c timerf.f90
 EXTRA_DIST	        = input.c inputf.f90 pecos-input.txt \
-		    	  timer.c timer_sumf.f90 messages.c .license.stamp
+		    	  timer.c timerf.f90 messages.c .license.stamp
 
 #INCLUDES                = -I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_builddir)/src/common/getpot
 INCLUDES                = -I$(top_srcdir)/src -I$(top_builddir)/src 
@@ -20,7 +20,7 @@ LIBS                    = -L$(top_builddir)/src -lgrvy
 BUILT_SOURCES           = .license.stamp
 CLEANFILES              = .license.stamp *.gcno *.gcda
 
-example_PROGRAMS        = input timer check_dir inputf timer_sumf messages timer cpp-input \
+example_PROGRAMS        = input timer check_dir inputf timerf messages timer cpp-input \
 	                  hdf5_access cpp-timer 
 
 input_SOURCES           = input.c
@@ -34,9 +34,9 @@ inputf_LDADD            = ../src/libgrvyf.la
 timer_SOURCES           = timer.c
 cpp_timer_SOURCES       = cpp-timer.cpp
 
-timer_sumf_SOURCES      = timer_sumf.f90
-timer_sumf_LIBTOOLFLAGS = --tag=FC
-timer_sumf_LDADD        = ../src/libgrvyf.la
+timerf_SOURCES          = timerf.f90
+timerf_LIBTOOLFLAGS     = --tag=FC
+timerf_LDADD            = ../src/libgrvyf.la
 
 check_dir_SOURCES       = check_dir.c
 messages_SOURCES        = messages.c

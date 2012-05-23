@@ -21,7 +21,7 @@
 //
 //-----------------------------------------------------------------------el-
 //
-// timer.c: Simple example illustrating performance timing via libGRVY.
+// Simple example illustrating performance timing via libGRVY.
 //
 // $Id$
 //--------------------------------------------------------------------------

@@ -21,7 +21,7 @@
 !!
 !!-----------------------------------------------------------------------el-
 !!
-!! timer_sumf.f90: Fortran example illustrating performance timing.
+!! Fortran example illustrating performance timing via libGRVY..
 !!
 !! $Id$
 !!--------------------------------------------------------------------------
@@ -29,27 +29,30 @@
 
 program main
   use grvy
+  implicit none
 
-  integer :: Foo_Sleep = 1
-  integer :: Bar_Sleep = 2
-  integer :: Boo_Sleep = 3
-  integer :: Max_Iters = 2
-  real*8  :: igot,igot2
+  integer   :: Foo_Sleep = 1
+  integer   :: Bar_Sleep = 2
+  integer   :: Boo_Sleep = 3
+  integer   :: Max_Iters = 2
+  integer   :: i
+  real*8    :: igot,igot2
   character :: timestring*50 = ''
-
-  integer i
 
   call grvy_asci_time(timestring)
 
   write(*,'(a,a26)') 'Run on: ',trim(timestring)
 
-  ! Primary Iteration Loop 
+  ! Initialize the timing library - the global timer will be
+  ! initialized with this call
+
+  call grvy_timer_init('Fortran is the best!');
+
+  ! Outer Test Loop
 
   do i = 1,Max_Iters
 
      ! Define the beginning of the overall portion to be monitored
-
-     call grvy_timer_init('Fortran is the best!');
 
      print*,'Main iteration loop = ',i
      
@@ -60,24 +63,28 @@ program main
 
      call bar(Bar_Sleep)
      call boo(Boo_Sleep)
-     
-     call grvy_timer_finalize()
-     
+
   enddo
+
+  ! Finalize the main program timer 
+
+  call grvy_timer_finalize()     
+
+  ! Print performance summary to stdout 
 
   call grvy_timer_summarize()
 
   print*,' '
   print*,'Expecting ',Max_Iters*(Foo_Sleep+Boo_Sleep+Bar_Sleep),' secs '
 
-  ! example use of timer directly
+  ! Example use of timer directly
   
   call grvy_timer(igot)
   call sleep(1)
   call grvy_timer(igot2)
 
   print*,' '
-  print*,'Measured ',igot2-igot,' secs (expected 1.0)'
+  print*,'Measured ',igot2-igot,' secs (expected approximately 1.0)'
 
   call grvy_timer_elapsed_global(igot)
   print*,' '
@@ -97,7 +104,7 @@ program main
   write(*,'(1x,"foo-mean:     ",es12.5)') grvy_timer_stats_mean     ("foo")
   write(*,'(1x,"foo-variance: ",es12.5)') grvy_timer_stats_variance ("foo")
 
-  ! dump current results to a historical performance logfile
+  ! Dump current results to a historical performance logfile
 
   call grvy_timer_save_hist("F90-Example1","",1,"hist.h5")
 
