@@ -29,7 +29,10 @@
 
 program main
   use grvy
+  implicit none
+
   integer              :: flag
+  integer              :: error
   real                 :: reyn
   real*8               :: magicval         
   integer              :: iter_max
@@ -101,7 +104,6 @@ program main
 
   call grvy_log_setlevel(GRVY_NOLOG)
   call grvy_input_fread_int("koomie",iter_max,flag)
-
 
 
 stop

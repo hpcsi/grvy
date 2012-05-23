@@ -29,7 +29,7 @@
 
 !> \file
 
-!> @defgroup Fapi Fortran Library Interface
+!> @defgroup Fapi Fortran API
 !!
 !! \brief This page provides a link to all of the Fortran functions which
 !! are available in libGRVY (grouped by functionality). 
@@ -45,10 +45,28 @@
 !! value return "0" upon success (and the primary exception to this
 !! rule is with a subset of the Input Parsing routines).
 !!
-!! Click on one of the boxes to see more details on the routines
-!! available for each utility. Alternatively, if you prefer to see all
-!! of the available routines as part of the Fortran API on a single
-!! page, refer to the F90 interface definitions in grvy.f90 directly.
+!! Note: the F90 auto-documentation is currently undergoing a
+!! refactoriztion. The majority of the interface is provided using the
+!! iso_c_binding capability in the newer Fortran standerd and thus,
+!! the API is similar to the C API.
+!! 
+!! During the transition, please consult the Fortran examples provided in
+!! the top-level \e examples directory. For convenience, several
+!! of these examples are accessible below:
+!!
+!! \li \ref F90inputExample "inputf.f90" - input parsing example
+!! \li \ref F90timerExample "timerf.f90" - performance timing example
+!! \li \ref F90mathExample  "math.f90"   - floating point test example
+
+!
+! Click on one of the links to see more details on the routines
+! available for each utility. 
+! 
+! \li \ref Fversioning
+!
+! Alternatively, if you prefer to see all
+! of the available routines as part of the Fortran API on a single
+! page, refer to the F90 interface definitions in grvy.f90 directly.
 
 module grvy
 
@@ -65,24 +83,19 @@ module grvy
      !! \brief Obtain libGRVY runtime versioning information.
 
      !>
-     !! \ingroup Fversioning
-     !! \name Versioning Routines:
-     !! 
-     !! Obtain libGRVY runtime versioning information.
-
-     !>
      !! \ingroup Fversioning 
      !! @{
      
-     !> Echo library versioning and configuration information to stdout
+     !> \brief Echo library versioning and configuration information to stdout222
 
      subroutine grvy_version_stdout() bind (C)
        use iso_c_binding
        implicit none
      end subroutine grvy_version_stdout
 
-     !> Obtain numeric library version 
-     !! \return running version
+     !> \brief Obtain numeric library version 
+
+     ! \return running version
 
      integer (C_int) function grvy_get_numeric_version() bind (C)
        use iso_c_binding
