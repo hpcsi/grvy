@@ -1374,6 +1374,18 @@ class GRVY_Timer_Class {
   void   Finalize         ();                 ///<  ends global timer
 
   /** @} */
+
+  /**
+   * \ingroup CXXtimer
+   * \name Performance Timer - Query Tools:
+   *
+   * The following member functions allow for the querying of defined
+   * performance timers.
+   */
+
+  /**
+   * \ingroup CXXtimer
+   * @{ */
   
   double ElapsedSeconds   (std::string id);   // return elapsed time for specifc timer id
   double ElapsedGlobal    ();		      // return elapsed time since Init()
@@ -1389,23 +1401,45 @@ class GRVY_Timer_Class {
   double StatsMin         (std::string id);   // min value for timer (id)
   double StatsMax         (std::string id);   // max value for timer (id)
 
-  // ------------------------------------------------------------------------
-  // Historical timing support - note there are two primary mechanisms for
-  // saving performance data: 
-  // 
-  // Mode 1: you are using the GRVY_Timer_Class to define individual
-  //         sections to monitor and want to save the global runtime
-  //         measurement and all individual subtimers
-  // 
-  // Mode 2: you are using other means to profile the application code
-  //         and want to save a single global timing value. Routines
-  //         for this mode are distinguished by the presence of an
-  //         extra "timing" argument in the calling sequence.
-  // 
-  // In both modes, "short" and "long" calling sequences are supported
-  // with the long version allowing additional optional runtime
-  // documentation (e.g. flops, code revision) to be provided.
-  // ------------------------------------------------------------------------
+
+
+  /** @} */
+
+  /**
+   * \ingroup CXXtimer
+   * \name Performance Timing - Historical Logging:
+   *
+   * These member functions provide support to store measured runtime
+   * performance into an HDF5 file for logging purposes (this
+   * functionality requires HDF5 library linkage during the libGRVY
+   * configuration phase). Results are stored on a per-machine basis
+   * and are appended to the HDF5 file with timestamps to document
+   * historical performance over time.  Stored results can be
+   * retrieved using the API below or via standalone executables
+   * installed with libGRVY.
+   * 
+   * There are two primary modes for saving historical performance
+   * data:
+   * 
+   * <b>Mode 1</b>: you are using the grvy_timer_* class of routines to
+   *         define individual sections to monitor and want to save
+   *         the global runtime measurement along with all individually
+   *         defined subtimers.
+   * 
+   * <b>Mode 2</b>: you are using other means to profile the application code
+   *         and want to save a single global timing value. Routines
+   *         for this mode are distinguished by the presence of an
+   *         extra "timing" argument in the calling sequence.
+   * 
+   * In both modes, standard and expanded (exp) calling sequences are supported
+   * with the expanded version allowing additional optional runtime
+   * documentation (e.g. flops, code revision) to be provided.
+   * 
+   */
+
+  /** \ingroup CXXtimer
+   * @{
+   */
 
   // Mode 1: Saving internal GRVY timer values to historical repository
 
@@ -1429,6 +1463,9 @@ class GRVY_Timer_Class {
   // ---------------
 
   void SummarizeHistTiming (std::string filename,   std::string delimiter, std::string outdir);
+
+  /** @} */
+
 
   // Class options 
 
