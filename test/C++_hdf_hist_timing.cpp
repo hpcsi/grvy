@@ -31,6 +31,7 @@
 #include<cmath>
 #include<cstdlib>
 #include<iostream>
+#include<unistd.h>
 #include<grvy.h>
 
 using namespace GRVY;
