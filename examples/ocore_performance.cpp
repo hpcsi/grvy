@@ -46,7 +46,7 @@ bool verify_data(int offset,int size, double *data)
     {
       if(fabs(data[i] - 1.0*offset*i) > 1.0e-15)
 	{
-	  printf("verification error: expecting %e, found %e (index=%i)\n",1.0*offset*i,data[i],i);
+	  grvy_printf(GRVY_ERROR,"verification error: expecting %e, found %e (index=%i)\n",1.0*offset*i,data[i],i);
 	  return false;
 	}
     }    

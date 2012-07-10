@@ -1,3 +1,8 @@
+Version 0.32 (10 July 2012)
+https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.32.1
+
+  * enable support for MPI build with Intel 13.0 compilers
+
 
 Version 0.32 (22 May 2012)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.32.0
