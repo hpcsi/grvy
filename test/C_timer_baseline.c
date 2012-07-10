@@ -43,7 +43,7 @@ const double Rel_TOL   = 0.1;	// tolerance (coarse-grained for potentially busy 
 void   foo();
 void   bar();
 void   boo();
-double vette_relative_diff(char *id, double expected);
+void   vette_relative_diff(char *id, double expected);
 
 
 int main()
@@ -150,7 +150,7 @@ void boo()
     
 }
 
-double vette_relative_diff(char *id,double expected)
+void vette_relative_diff(char *id,double expected)
 {
   double measured = grvy_timer_elapsedseconds(id);
 
