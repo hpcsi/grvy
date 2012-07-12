@@ -14,7 +14,7 @@ EXTRA_DIST        = init.sh finalize.sh diff_dir.sh version hostinfo \
                     C_timer_std_width.sh C_wrapper_log.sh C_timer_no_finalize.sh F_input_dump.sh \
 		    F_get_command_arguments.sh  F_timer.sh F_wrapper_check_file_path.sh F_wrapper_scratch_dir.sh \
 		    F_timer_expanded_width.sh  F_timer_std_width.sh F_wrapper_log.sh F_wrapper_unique_dir.sh \
-		    CXX_timer_expanded_width.sh CXX_timer_std_width.sh C_ocore.sh F_ocore.sh \
+		    CXX_timer_expanded_width.sh CXX_timer_std_width.sh CXX_ocore.sh C_ocore.sh F_ocore.sh \
 		    input-example.txt ref_files .license.stamp
 
 CLEANFILES        = .license.stamp *.gcno *.gcda .hostinfo
