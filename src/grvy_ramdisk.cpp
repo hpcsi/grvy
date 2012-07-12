@@ -1080,14 +1080,18 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
 	
 	// \todo: allow for non-fixed size pool
 
-	grvy_printf(debug,"%s (%5i): Attempting allocation of %i records\n",prefix,mpi_rank,blocksize);
+	grvy_printf(debug,"%s (%5i): Attempting allocation of %i records\n",prefix,mpi_rank,max_num_records);
 #if 1
 	try 
 	  {
 	    vector<double> data(blocksize);
+
+	    pool.reserve(max_num_records);
 	    
 	    for(int i=0;i<max_num_records;i++)
-	      pool.push_back(data);
+	      {
+		pool.push_back(data);
+	      }
 
 	    if(use_disk_overflow)
 	      data_tmp = new double[blocksize];
