@@ -87,24 +87,39 @@ int main()
 
     }
 
-  /* Query individual timers directly - results will match that shown
-     in grvy_timer_summarize() routine */
+  /* Query timers directly - results should match those
+     shown in grvy_timer_summarize() routine */
 
-  printf("Querying individual timers:\n");
-
-  printf("\tbar: %10.5e secs\n",grvy_timer_elapsedseconds("bar"));
-  printf("\tfoo: %10.5e secs\n",grvy_timer_elapsedseconds("foo"));
-  printf("\tboo: %10.5e secs\n",grvy_timer_elapsedseconds("boo"));
-
-  printf("\nQuerying global timer elapsed time:\n");
+  printf("Querying global timer elapsed time:\n");
   printf("\tElapsed global time = %10.5e secs\n",grvy_timer_elapsed_global());
 
-  printf("\nQuerying individual stats for timer \"bar\"\n");
+  printf("\nQuerying individual timers (exclusive values):\n");
+
+  printf("\tfoo: %10.5e secs\n",grvy_timer_elapsedseconds("foo"));
+  printf("\tbar: %10.5e secs\n",grvy_timer_elapsedseconds("bar"));
+  printf("\tboo: %10.5e secs\n",grvy_timer_elapsedseconds("boo"));
+
+  printf("\nQuerying individual stats for timer \"bar\" (exclusive values)\n");
   printf("\tbar (   count): %i\n",grvy_timer_stats_count   ("bar"));
   printf("\tbar (    mean): %e\n",grvy_timer_stats_mean    ("bar"));
   printf("\tbar (variance): %e\n",grvy_timer_stats_variance("bar"));
   printf("\tbar (     min): %e\n",grvy_timer_stats_min     ("bar"));
   printf("\tbar (     max): %e\n",grvy_timer_stats_max     ("bar"));
+
+  /* The above provide exclusive timing statistics, but you can also
+     query inclusive measurements as well */
+
+  printf("\nQuerying individual timers (inclusive values):\n");
+
+  printf("\tfoo: %10.5e secs\n",grvy_timer_elapsedseconds_inc("foo"));
+  printf("\tbar: %10.5e secs\n",grvy_timer_elapsedseconds_inc("bar"));
+  printf("\tboo: %10.5e secs\n",grvy_timer_elapsedseconds_inc("boo"));
+
+  printf("\nQuerying individual stats for timer \"foo\" (inclusive values)\n");
+  printf("\tbar (    mean): %e\n",grvy_timer_stats_mean_inc    ("foo"));
+  printf("\tbar (variance): %e\n",grvy_timer_stats_variance_inc("foo"));
+  printf("\tbar (     min): %e\n",grvy_timer_stats_min_inc     ("foo"));
+  printf("\tbar (     max): %e\n",grvy_timer_stats_max_inc     ("foo"));
 
   /* save measured timing to historical performance DB (required
      optional HDF library linkage) */

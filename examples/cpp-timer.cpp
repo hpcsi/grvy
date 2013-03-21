@@ -68,7 +68,11 @@ int main()
   for(itest=0;itest<num_repeat;itest++)
     {
 
-      /* Define the beginning of the overall portion to be monitored */
+      if(itest > 0)
+	gt.Reset();
+      
+      // Define the beginning of the overall portion to be monitored 
+
       gt.BeginTimer("Main Program");
 
       for(i=0;i<Max_Iters;i++)
@@ -85,10 +89,41 @@ int main()
       // Print performance summary to stdout 
 
       gt.Summarize();
-
-      // Reset timers for next iteration
-      gt.Reset();
     }
+
+  // Query timers directly - results should match those shown in
+  // grvy_timer_summarize() routine 
+
+  printf("Querying global timer elapsed time:\n");
+  grvy_printf(GRVY_INFO,"\tElapsed global time = %10.5e secs\n",gt.ElapsedGlobal());
+
+  grvy_printf(GRVY_INFO,"\nQuerying individual timers (exclusive values):\n");
+
+  grvy_printf(GRVY_INFO,"\tfoo: %10.5e secs\n",gt.ElapsedSeconds("foo"));
+  grvy_printf(GRVY_INFO,"\tbar: %10.5e secs\n",gt.ElapsedSeconds("bar"));
+  grvy_printf(GRVY_INFO,"\tboo: %10.5e secs\n",gt.ElapsedSeconds("boo"));
+
+  grvy_printf(GRVY_INFO,"\nQuerying individual stats for timer \"bar\" (exclusive values)\n");
+  grvy_printf(GRVY_INFO,"\tbar (   count): %i\n",gt.StatsCount   ("bar"));
+  grvy_printf(GRVY_INFO,"\tbar (    mean): %e\n",gt.StatsMean    ("bar"));
+  grvy_printf(GRVY_INFO,"\tbar (variance): %e\n",gt.StatsVariance("bar"));
+  grvy_printf(GRVY_INFO,"\tbar (     min): %e\n",gt.StatsMin     ("bar"));
+  grvy_printf(GRVY_INFO,"\tbar (     max): %e\n",gt.StatsMax     ("bar"));
+
+  // The above provides exclusive timing statistics, but you can also
+  // query inclusive measurements as well
+
+  grvy_printf(GRVY_INFO,"\nQuerying individual timers (inclusive values):\n");
+
+  grvy_printf(GRVY_INFO,"\tfoo: %10.5e secs\n",gt.ElapsedSeconds_inc("foo"));
+  grvy_printf(GRVY_INFO,"\tbar: %10.5e secs\n",gt.ElapsedSeconds_inc("bar"));
+  grvy_printf(GRVY_INFO,"\tboo: %10.5e secs\n",gt.ElapsedSeconds_inc("boo"));
+
+  grvy_printf(GRVY_INFO,"\nQuerying individual stats for timer \"foo\" (inclusive values)\n");
+  grvy_printf(GRVY_INFO,"\tbar (    mean): %e\n",gt.StatsMean_inc    ("foo"));
+  grvy_printf(GRVY_INFO,"\tbar (variance): %e\n",gt.StatsVariance_inc("foo"));
+  grvy_printf(GRVY_INFO,"\tbar (     min): %e\n",gt.StatsMin_inc     ("foo"));
+  grvy_printf(GRVY_INFO,"\tbar (     max): %e\n",gt.StatsMax_inc     ("foo"));
 
   return 0;
 }

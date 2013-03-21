@@ -80,12 +80,20 @@ void grvy_timer_end(const char *id)
   return;
 }
 
-// grvy_timer_elapsedseconds(): Get seconds spent between ..._begin, ..._end
+// grvy_timer_elapsedseconds(): Get (exclusive) seconds spent between ..._begin, ..._end
 
 double grvy_timer_elapsedseconds(const char *id)
 {
   GRVY_Internal::verify_C_timer_allocated();
   return( _GRVY_Timers->ElapsedSeconds(id) );
+}
+
+// grvy_timer_elapsedseconds(): Get (inclusive) seconds spent between ..._begin, ..._end
+
+double grvy_timer_elapsedseconds_inc(const char *id)
+{
+  GRVY_Internal::verify_C_timer_allocated();
+  return( _GRVY_Timers->ElapsedSeconds_inc(id) );
 }
 
 // grvy_timer_elapsed_global: provides elapsed time since first init() call
@@ -161,12 +169,28 @@ double grvy_timer_stats_mean(const char *id)
   return(_GRVY_Timers->StatsMean(id));
 }
 
+// grvy_timer_stat_mean(): provides mean (inclusive) timing for a timer
+
+double grvy_timer_stats_mean_inc(const char *id)
+{
+  GRVY_Internal::verify_C_timer_allocated();
+  return(_GRVY_Timers->StatsMean_inc(id));
+}
+
 // grvy_timer_stat_variance(): provides variance for a timer
 
 double grvy_timer_stats_variance(const char *id)
 {
   GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->StatsVariance(id));
+}
+
+// grvy_timer_stat_variance(): provides (inclusive) variance for a timer
+
+double grvy_timer_stats_variance_inc(const char *id)
+{
+  GRVY_Internal::verify_C_timer_allocated();
+  return(_GRVY_Timers->StatsVariance_inc(id));
 }
 
 // grvy_timer_stat_min(): provides min value for a timer
@@ -177,12 +201,28 @@ double grvy_timer_stats_min(const char *id)
   return(_GRVY_Timers->StatsMin(id));
 }
 
+// grvy_timer_stat_min(): provides (inclusive) min value for a timer
+
+double grvy_timer_stats_min_inc(const char *id)
+{
+  GRVY_Internal::verify_C_timer_allocated();
+  return(_GRVY_Timers->StatsMin_inc(id));
+}
+
 // grvy_timer_stat_max(): provides min value for a timer
 
 double grvy_timer_stats_max(const char *id)
 {
   GRVY_Internal::verify_C_timer_allocated();
   return(_GRVY_Timers->StatsMax(id));
+}
+
+// grvy_timer_stat_max(): provides (inclusive) min value for a timer
+
+double grvy_timer_stats_max_inc(const char *id)
+{
+  GRVY_Internal::verify_C_timer_allocated();
+  return(_GRVY_Timers->StatsMax_inc(id));
 }
 
 // grvy_summarize_hist_timing(): summarize and dump historical timing information to ascii files

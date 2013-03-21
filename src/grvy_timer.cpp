@@ -77,9 +77,9 @@ using namespace GRVY;
 typedef accumulator_set <double,features<tag::mean,tag::count,tag::variance,tag::min,tag::max> > perf_stats;
 
 typedef struct GRVY_Timer_Data {
-  double timings[2];		// data for exclusive timings
+  double timings[2];		// data for exclusive timing measurements
+  double timings_inc[2];	// data for inclusive timing measurements
   double accumulated;		// exclusive accumulated time for embedded timer
-  double inclusive;		// data for inclusive timings
   perf_stats stats;		// for exclusive data statistics
   perf_stats stats_inc;		// for inclusive data statistics
 } tTimer_Data;
@@ -281,16 +281,19 @@ namespace GRVY {
       {
 	Data.timings[0]     = 0.0;	            // storage for accumulated time (exclusive)
 	Data.timings[1]     = mytime;               // storage for latest timestamp
-	Data.inclusive      = mytime;               // beginning timestamp (used for inclusive timings)
+	
+	Data.timings_inc[0] = 0.0;                  // storage for accumulated time (inclusive)
+	Data.timings_inc[1] = mytime;               // timestamp at timer begin
+
 	Data.accumulated    = 0.0;		    // storage for accumulated time (used
                                                     // when a timer is paused due to presence of nested timer)
 	TimerMap[id] = Data;
       }
     else
       {
-	(index->second).timings[1]  = mytime;       // stores latest timestamp (used for exclusive timings)
-	(index->second).accumulated = 0.0;          // nullify any accumulations
-	(index->second).inclusive   = mytime;       // stores latest timestamp (used for inclusive timings)
+	(index->second).timings[1]      = mytime;    // stores latest timestamp (used for exclusive timings)
+	(index->second).timings_inc[1]  = mytime;    // stores latest timestamp (used for inclusive timings)
+	(index->second).accumulated     = 0.0;       // nullify any accumulations
       }
   
   } 
@@ -362,11 +365,12 @@ namespace GRVY {
 	(index->second).timings[1]  = -1.;
 	(index->second).stats(increment);
 
-	// inclusive timing measurement
+	// update inclusive timing measurements
 
-	inclusive_increment = mytime - (index->second).inclusive;
+	inclusive_increment = mytime - (index->second).timings_inc[1];
 
-	(index->second).inclusive += inclusive_increment;
+	(index->second).timings_inc[0] += inclusive_increment; 
+	(index->second).timings_inc[1]  = -1.;
 	(index->second).stats_inc(inclusive_increment);
 
 	// ----------------------------------------------------------------
@@ -411,8 +415,10 @@ namespace GRVY {
 
     for(index=m_pimpl->TimerMap.begin(); index != m_pimpl->TimerMap.end(); ++index)
       {
-	(index->second).timings[0] = 0.0;                  // reset raw timing info
-	(index->second).stats      = m_pimpl->stats_empty; // reset accumulator (no reset in Boost currently)
+	(index->second).timings[0]     = 0.0;                  // reset raw timing info
+	(index->second).timings_inc[0] = 0.0;                  // reset raw timing info
+	(index->second).stats          = m_pimpl->stats_empty; // reset accumulator (no reset in Boost currently)
+	(index->second).stats_inc      = m_pimpl->stats_empty; // reset inclusive timer accumulator 
       }
 
     // Restart global timer
@@ -581,7 +587,7 @@ namespace GRVY {
       if(exclusive)
 	elapsedseconds = (index->second).timings[0];
       else
-	elapsedseconds = (index->second).inclusive;
+	elapsedseconds = (index->second).timings_inc[0];
       }
 
     return elapsedseconds;
