@@ -106,7 +106,7 @@ int main()
   printf("\tbar (     min): %e\n",grvy_timer_stats_min     ("bar"));
   printf("\tbar (     max): %e\n",grvy_timer_stats_max     ("bar"));
 
-  /* The above provide exclusive timing statistics, but you can also
+  /* The above provides exclusive timing statistics, but you can also
      query inclusive measurements as well */
 
   printf("\nQuerying individual timers (inclusive values):\n");
