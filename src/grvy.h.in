@@ -501,41 +501,27 @@ extern "C" {
 
   /**
    * \ingroup Ctimer
-   * \name Performance Timer - Query Tools:
+   * \name Performance Timer - Global Timing Summary:
    *
-   * The following routines allow for the querying of defined
-   * performance timers.
+   * The following routines are useful for summarizing the measured
+   * performance timings for all defined timers and the global runtime.
    */
 
   /**
    * \ingroup Ctimer
    * @{ */
 
-  /** \brief Returns total elapsed time (in seconds) for defined timer \e id */
-  extern double grvy_timer_elapsedseconds      (const char *id);
   /** \brief Returns total elapsed time (in seconds) for the global timer */
   extern double grvy_timer_elapsed_global      ();
-  /** \brief Returns the total number of timer calls for defined timer \e id */
-  extern    int grvy_timer_stats_count         (const char *id);
-  /** \brief Returns the mean value (in seconds) for defined timer \e id */
-  extern double grvy_timer_stats_mean          (const char *id);
-  /** \brief Returns the variance for defined timer \e id */
-  extern double grvy_timer_stats_variance      (const char *id);
-  /** \brief Returns the minimum measured timing (in seconds) for defined timer \e id */
-  extern double grvy_timer_stats_min           (const char *id);
-  /** \brief Returns the largest measured timing (in seconds) for defined timer \e id */
-  extern double grvy_timer_stats_max           (const char *id);
 
-
-  /** \brief 
-   *  Print a concise summary of all defined timers to
+  /** \brief Print a concise summary of all defined timers to
    *  stdout. This routine shows the relative runtime percentages
    *  between all defined timers along with statistics for each
-   *  timer. Global time that is not associated with any
-   *  user-defined timers is associated with an unassigned timer
-   *  (GRVY_Unassigned).
+   *  timer. Global time that is not associated with any user-defined
+   *  timers is associated with an unassigned timer
+   *  (GRVY_Unassigned). Example output from this routine is shown at
+   *  the top of this page.
   */
-
   extern   void grvy_timer_summarize           ();
 
   /** \brief Set max allowed width of grvy_timer_summarize()
@@ -544,8 +530,65 @@ extern "C" {
   * to grvy_timer_init().  This routine can be used to customize
   * the max output width as desired.
   */
-
   int grvy_timer_set_summarize_width (const int maxwidth);
+
+  /** @} */
+
+  /**
+   * \ingroup Ctimer
+   * \name Performance Timer - Individual Timer Query Tools (exclusive timings):
+   *
+   * The following routines allow for the querying of defined
+   * performance timers. Note that, except for the global timer, these
+   * routines provide \a exclusive timing measurements (ie. they do not
+   * include runtime contributions from any embedded timers).
+   */
+
+  /**
+   * \ingroup Ctimer
+   * @{ */
+
+  /** \brief Returns total (exclusive) elapsed time (in seconds) for defined timer \e id */
+  extern double grvy_timer_elapsedseconds      (const char *id);
+  /** \brief Returns the mean (exclusive) value (in seconds) for defined timer \e id */
+  extern double grvy_timer_stats_mean          (const char *id);
+  /** \brief Returns the variance (exclusive) for defined timer \e id */
+  extern double grvy_timer_stats_variance      (const char *id);
+  /** \brief Returns the minimum (exclusive) measured timing (in seconds) for defined timer \e id */
+  extern double grvy_timer_stats_min           (const char *id);
+  /** \brief Returns the largest (exclusive) measured timing (in seconds) for defined timer \e id */
+  extern double grvy_timer_stats_max           (const char *id);
+  /** \brief Returns the total number of timer calls for defined timer \e id */
+  extern    int grvy_timer_stats_count         (const char *id);
+
+  /** @} */
+
+  /**
+   * \ingroup Ctimer
+   * \name Performance Timer - Individual Query Tools (inclusive timings):
+   *
+   * The following routines also allow for the querying of defined
+   * performance timers. These are similar to the timing utilities
+   * above, except these versions provide \a inclusive timing
+   * measurements (ie. they provide wallclock measurements between the
+   * begin/end of each timer, including the time associated with any
+   * embedded timers).
+   */
+
+  /**
+   * \ingroup Ctimer
+   * @{ */
+
+  /** \brief Returns total (inclusive) elapsed time (in seconds) for defined timer \e id */
+  extern double grvy_timer_elapsedseconds_inc  (const char *id);
+  /** \brief Returns the mean (inclusive) value (in seconds) for defined timer \e id */
+  extern double grvy_timer_stats_mean_inc      (const char *id);
+  /** \brief Returns the variance (inclusive) for defined timer \e id */
+  extern double grvy_timer_stats_variance_inc  (const char *id);
+  /** \brief Returns the minimum (inclusive) measured timing (in seconds) for defined timer \e id */
+  extern double grvy_timer_stats_min_inc       (const char *id);
+  /** \brief Returns the largest (inclusive) measured timing (in seconds) for defined timer \e id */
+  extern double grvy_timer_stats_max_inc       (const char *id);
 
   /** @} */
 
