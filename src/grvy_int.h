@@ -242,6 +242,10 @@ namespace GRVY {
     return digits;
   }
 
+  // Supported timer statistics
+
+  enum {TIMER_MEAN, TIMER_VARIANCE, TIMER_MIN, TIMER_MAX };
+
 } // end namespace GRVY
 
 

@@ -565,7 +565,7 @@ extern "C" {
 
   /**
    * \ingroup Ctimer
-   * \name Performance Timer - Individual Query Tools (inclusive timings):
+   * \name Performance Timer - Individual Timer Query Tools (inclusive timings):
    *
    * The following routines also allow for the querying of defined
    * performance timers. These are similar to the timing utilities
@@ -1453,7 +1453,13 @@ class GRVY_Timer_Class {
   double StatsMin         (std::string id);   // min value for timer (id)
   double StatsMax         (std::string id);   // max value for timer (id)
 
+  /* Inclusive timing routines */
 
+  double ElapsedSeconds_inc(std::string id);  // return elapsed time for specifc timer id
+  double StatsMean_inc     (std::string id);  // mean time for timer (id)
+  double StatsVariance_inc (std::string id);  // variance for timer  (id)
+  double StatsMin_inc      (std::string id);  // min value for timer (id)
+  double StatsMax_inc      (std::string id);  // max value for timer (id)
 
   /** @} */
 

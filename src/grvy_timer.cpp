@@ -77,9 +77,11 @@ using namespace GRVY;
 typedef accumulator_set <double,features<tag::mean,tag::count,tag::variance,tag::min,tag::max> > perf_stats;
 
 typedef struct GRVY_Timer_Data {
-  double timings[2];
-  double accumulated;
-  perf_stats stats;
+  double timings[2];		// data for exclusive timings
+  double accumulated;		// exclusive accumulated time for embedded timer
+  double inclusive;		// data for inclusive timings
+  perf_stats stats;		// for exclusive data statistics
+  perf_stats stats_inc;		// for inclusive data statistics
 } tTimer_Data;
 
 typedef struct minmax {
@@ -111,6 +113,10 @@ namespace GRVY {
     double RawTimer        ();
 
     void   AddEllipsis     (std::string &);
+    double ElapsedSeconds  (std::string id, bool exclusive);
+
+    double Stats_Exclusive (std::string id, int STAT);
+    double Stats_Inclusive (std::string id, int STAT);
 
 #ifdef HAVE_HDF5
     hid_t  CreateHistType   (int version); 
@@ -247,7 +253,7 @@ namespace GRVY {
 
     mytime = RawTimer();
 
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------------
     // Embedded Timer Support:
     // 
     // Maintain callgraph for embedded timers; note that we detect an
@@ -257,7 +263,7 @@ namespace GRVY {
     // callgraph information to automatically PauseTimer() the
     // surrounding timer. The callgraph information will also be used
     // to restart the outer timer once the nested timer calls Endtimer().
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------------
 
     num_begins++; 
     
@@ -273,16 +279,18 @@ namespace GRVY {
 
     if ( index == TimerMap.end() )
       {
-	Data.timings[0]  = 0.0;	                    // stores accumulated time
-	Data.timings[1]  = mytime;                  // stores latest timestamp
-	Data.accumulated = 0.0;			    // storage for accumulated time (used
+	Data.timings[0]     = 0.0;	            // storage for accumulated time (exclusive)
+	Data.timings[1]     = mytime;               // storage for latest timestamp
+	Data.inclusive      = mytime;               // beginning timestamp (used for inclusive timings)
+	Data.accumulated    = 0.0;		    // storage for accumulated time (used
                                                     // when a timer is paused due to presence of nested timer)
 	TimerMap[id] = Data;
       }
     else
       {
-	(index->second).timings[1]  = mytime;       // stores latest timestamp
+	(index->second).timings[1]  = mytime;       // stores latest timestamp (used for exclusive timings)
 	(index->second).accumulated = 0.0;          // nullify any accumulations
+	(index->second).inclusive   = mytime;       // stores latest timestamp (used for inclusive timings)
       }
   
   } 
@@ -329,6 +337,7 @@ namespace GRVY {
   void GRVY_Timer_Class::GRVY_Timer_ClassImp::EndTimer (string id)
   {
     double      mytime, increment;
+    double      inclusive_increment;
     tTimer_Data Data;
 
     _GRVY_Type_TimerMap2 :: iterator index;
@@ -349,10 +358,16 @@ namespace GRVY {
 
 	increment = (mytime - (index->second).timings[1]) + (index->second).accumulated;
 
-	(index->second).timings[0] += increment;
+	(index->second).timings[0] += increment; // exclusiving timing
 	(index->second).timings[1]  = -1.;
-
 	(index->second).stats(increment);
+
+	// inclusive timing measurement
+
+	inclusive_increment = mytime - (index->second).inclusive;
+
+	(index->second).inclusive += inclusive_increment;
+	(index->second).stats_inc(inclusive_increment);
 
 	// ----------------------------------------------------------------
 	// Embedded Timer Support:
@@ -430,25 +445,11 @@ namespace GRVY {
     return(t1);
   }
 
-  double GRVY_Timer_Class:: ElapsedSeconds(string id)
-  {
-    double elapsedseconds = 0.0;
+  // ----------------------------------------
+  // Timer count statistics
+  // ----------------------------------------
 
-    m_pimpl->VerifyInit();
-
-    _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
-
-    if ( index == m_pimpl->TimerMap.end() )
-      _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",id.c_str());
-    else if( (index->second).timings[1] != -1)
-      _GRVY_message(GRVY_ERROR,__func__,"Timer still active for",id.c_str());
-    else
-      elapsedseconds = (index->second).timings[0];
-
-    return elapsedseconds;
-  }
-
-  size_t GRVY_Timer_Class:: StatsCount(string id)
+  size_t GRVY_Timer_Class::StatsCount(string id)
   {
     _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
 
@@ -463,64 +464,127 @@ namespace GRVY {
       }
   }
 
-  double GRVY_Timer_Class:: StatsMean(string id)
-  {
-    _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
+  // ----------------------------------------
+  // Wrappers for Exclusive Timer Properties
+  // ----------------------------------------
 
-    if ( index == m_pimpl->TimerMap.end() )
+  double GRVY_Timer_Class:: ElapsedSeconds   (string id)  { return(m_pimpl->ElapsedSeconds(id,true)); }
+
+  double GRVY_Timer_Class:: StatsMean        (string id)  { return(m_pimpl->Stats_Exclusive(id,TIMER_MEAN    )); }
+  double GRVY_Timer_Class:: StatsVariance    (string id)  { return(m_pimpl->Stats_Exclusive(id,TIMER_VARIANCE)); }
+  double GRVY_Timer_Class:: StatsMin         (string id)  { return(m_pimpl->Stats_Exclusive(id,TIMER_MIN     )); }
+  double GRVY_Timer_Class:: StatsMax         (string id)  { return(m_pimpl->Stats_Exclusive(id,TIMER_MAX     )); }
+
+  // ----------------------------------------
+  // Wrappers for Inclusive Timer Properties
+  // ----------------------------------------
+
+  double GRVY_Timer_Class:: ElapsedSeconds_inc(string id)  { return(m_pimpl->ElapsedSeconds(id,false)); }
+
+  double GRVY_Timer_Class:: StatsMean_inc     (string id)  { return(m_pimpl->Stats_Inclusive(id,TIMER_MEAN    )); }
+  double GRVY_Timer_Class:: StatsVariance_inc (string id)  { return(m_pimpl->Stats_Inclusive(id,TIMER_VARIANCE)); }
+  double GRVY_Timer_Class:: StatsMin_inc      (string id)  { return(m_pimpl->Stats_Inclusive(id,TIMER_MIN     )); }
+  double GRVY_Timer_Class:: StatsMax_inc      (string id)  { return(m_pimpl->Stats_Inclusive(id,TIMER_MAX     )); }
+
+  // ------------------------------------------------------
+  // Support Function to Recall Exclusive Timer Statistics
+  // ------------------------------------------------------
+
+  double GRVY_Timer_Class::GRVY_Timer_ClassImp::Stats_Exclusive(string id, int STAT)
+  {
+    _GRVY_Type_TimerMap2 :: const_iterator index = TimerMap.find(id);
+
+    if ( index == TimerMap.end() )
       {
 	_GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id.c_str());
 	return -1.0;
       }
     else
       {
-	return(boost::accumulators::mean((index->second).stats));
+	switch(STAT)
+	  {
+	  case TIMER_MEAN:
+	    return(boost::accumulators::mean((index->second).stats));
+	    break;
+	  case TIMER_VARIANCE:
+	    return(boost::accumulators::variance((index->second).stats));
+	    break;
+	  case TIMER_MIN:
+	    return(boost::accumulators::min((index->second).stats));
+	    break;
+	  case TIMER_MAX:
+	    return(boost::accumulators::max((index->second).stats));
+	    break;
+	  default:
+	    _GRVY_message(GRVY_ERROR,__func__,"Unsupported stat requested for",id.c_str());
+	    return(-1.0);
+	  }
+
       }
   }
 
-  double GRVY_Timer_Class:: StatsVariance(string id)
-  {
-    _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
+  // ------------------------------------------------------
+  // Support Function to Recall Inclusive Timer Statistics
+  // ------------------------------------------------------
 
-    if ( index == m_pimpl->TimerMap.end() )
+  double GRVY_Timer_Class::GRVY_Timer_ClassImp::Stats_Inclusive(string id, int STAT)
+  {
+    _GRVY_Type_TimerMap2 :: const_iterator index = TimerMap.find(id);
+
+    if ( index == TimerMap.end() )
       {
 	_GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id.c_str());
 	return -1.0;
       }
     else
       {
-	return(boost::accumulators::variance((index->second).stats));
+	switch(STAT)
+	  {
+	  case TIMER_MEAN:
+	    return(boost::accumulators::mean((index->second).stats_inc));
+	    break;
+	  case TIMER_VARIANCE:
+	    return(boost::accumulators::variance((index->second).stats_inc));
+	    break;
+	  case TIMER_MIN:
+	    return(boost::accumulators::min((index->second).stats_inc));
+	    break;
+	  case TIMER_MAX:
+	    return(boost::accumulators::max((index->second).stats_inc));
+	    break;
+	  default:
+	    _GRVY_message(GRVY_ERROR,__func__,"Unsupported stat requested for",id.c_str());
+	    return(-1.0);
+	  }
+
       }
   }
 
-double GRVY_Timer_Class:: StatsMin(string id)
-  {
-    _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
+  // ------------------------------------------------------
+  // Support Function to Recall elapsed time for a timer
+  // ------------------------------------------------------
 
-    if ( index == m_pimpl->TimerMap.end() )
-      {
-	_GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id.c_str());
-	return -1.0;
-      }
+  double GRVY_Timer_Class::GRVY_Timer_ClassImp::ElapsedSeconds(string id,bool exclusive)
+  {
+    double elapsedseconds = 0.0;
+
+    VerifyInit();
+
+    _GRVY_Type_TimerMap2 :: const_iterator index = TimerMap.find(id);
+
+    if ( index == TimerMap.end() )
+      _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",id.c_str());
+    else if( (index->second).timings[1] > 0. )
+      _GRVY_message(GRVY_ERROR,__func__,"Timer still active for",id.c_str());
     else
       {
-	return(boost::accumulators::min((index->second).stats));
+      if(exclusive)
+	elapsedseconds = (index->second).timings[0];
+      else
+	elapsedseconds = (index->second).inclusive;
       }
-  }
 
-double GRVY_Timer_Class:: StatsMax(string id)
-  {
-    _GRVY_Type_TimerMap2 :: const_iterator index = m_pimpl->TimerMap.find(id);
-
-    if ( index == m_pimpl->TimerMap.end() )
-      {
-	_GRVY_message(GRVY_ERROR,__func__,"No stats data available for",id.c_str());
-	return -1.0;
-      }
-    else
-      {
-	return(boost::accumulators::max((index->second).stats));
-      }
+    return elapsedseconds;
   }
 
   double GRVY_Timer_Class:: ElapsedGlobal()
@@ -536,9 +600,9 @@ double GRVY_Timer_Class:: StatsMax(string id)
 
     if ( index == m_pimpl->TimerMap.end() )
       _GRVY_message(GRVY_ERROR,__func__,"No timer data available for",_GRVY_gtimer);
-    else if( (index->second).timings[1] != -1)     // inside active timer
+    else if( (index->second).timings[1] > 0.)     // inside active timer
       elapsedseconds = mytime - (index->second).timings[1];
-    else if( (index->second).timings[1] == -1)     // outside active timer
+    else                                             // outside active timer
       elapsedseconds = (index->second).timings[0];
 
     // if we are being called after a finalize(), include the elapsed
