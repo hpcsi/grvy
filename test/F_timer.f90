@@ -55,7 +55,7 @@ program main
   dtime_global = dtime(timearray)
   
   !call grvy_timer_init('Fortran is the best!');
-  call grvy_timer(raw_grvy_timer1)
+  raw_grvy_timer1 = grvy_timer()
 
   ! Primary Iteration Loop 
 
@@ -70,9 +70,9 @@ program main
 
   call grvy_timer_finalize()
 
-  call grvy_timer(raw_grvy_timer2)
+  raw_grvy_timer2 = grvy_timer()
 
-  call grvy_timer_elapsed_global(grvy_total_timing);
+  grvy_total_timing = grvy_timer_elapsed_global()
   dtime_global = dtime(timearray)
 
   grvy_work1_timing = grvy_timer_elapsedseconds("work1")
@@ -94,6 +94,9 @@ program main
   call_mean  = grvy_timer_stats_variance("work1")
 
   if (call_count .ne. Max_Iters)then
+     print*,'Incorrect count stat detected'
+     print*,' Max_Iters = ',Max_iters
+     print*,' Measured  = ',call_count
      call exit(1)
   endif
 
@@ -124,6 +127,7 @@ program main
 end program main
 
 real*8 function do_work1()
+  use grvy
   integer :: i
   real*8  :: temp
 
@@ -143,7 +147,7 @@ real*8 function do_work1()
 end function do_work1
 
 subroutine do_work2()
-
+  use grvy
   integer :: i
   real*8  :: temp
 

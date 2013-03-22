@@ -366,6 +366,36 @@ module grvy
      ! Timing Routines
      ! ---------------
 
+     real (C_double) function grvy_timer_elapsedseconds_passthrough(id) bind (C,name='grvy_timer_elapsedseconds')
+       use iso_c_binding
+       implicit none
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_elapsedseconds_passthrough
+
+     real (C_double) function grvy_timer_elapsedseconds_inc_passthrough(id) bind (C,name='grvy_timer_elapsedseconds_inc')
+       use iso_c_binding
+       implicit none
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_elapsedseconds_inc_passthrough
+
+     subroutine grvy_timer_begin_passthrough(id) bind (C,name='grvy_timer_begin')
+       use iso_c_binding
+       implicit none
+       character (C_char),intent(in) :: id(*) !< timer name
+     end subroutine grvy_timer_begin_passthrough
+
+     subroutine grvy_timer_end_passthrough(id) bind (C,name='grvy_timer_end')
+       use iso_c_binding
+       implicit none
+       character (C_char),intent(in) :: id(*) !< timer name
+     end subroutine grvy_timer_end_passthrough
+
+     subroutine grvy_timer_init_passthrough(description) bind (C,name='grvy_timer_init')
+       use iso_c_binding
+       implicit none
+       character (C_char),intent(in) :: description(*) !< description
+     end subroutine grvy_timer_init_passthrough
+
      subroutine grvy_timer_finalize() bind (C)
        use iso_c_binding
        implicit none
@@ -388,66 +418,75 @@ module grvy
        integer   (C_int), value, intent(in)  :: value
      end function grvy_timer_set_summarize_width_passthrough
 
-!     subroutine grvy_timer_set_summarize_width(value, return_flag)
-!       use iso_c_binding
-!       implicit none
-!       integer  (C_int), value, intent(in)  :: value
-!       integer  (C_int), intent(inout)      :: return_flag
-!
-!       return_flag = grvy_timer_set_summarize_width_passthrough(value)
-!     end subroutine grvy_timer_set_summarize_width
-!
-     subroutine grvy_asci_time(timestring)
+     real (C_double) function grvy_timer() bind(C,name='grvy_timer')
+       use iso_c_binding
        implicit none
-       character :: timestring
+     end function grvy_timer
+
+     real (C_double) function grvy_timer_elapsed_global() bind(C,name='grvy_timer_elapsed_global')
+       use iso_c_binding
+       implicit none
+     end function grvy_timer_elapsed_global
+
+     subroutine grvy_asci_time(timestring) bind(C,name='grvy_asci_time_fortran')
+       use iso_c_binding
+       implicit none
+       character (C_char),intent(in) :: timestring(*) 
      end subroutine grvy_asci_time
 
-     subroutine grvy_timer(value)
+     integer (C_int) function grvy_timer_stats_count_passthrough(id) bind(C,name='grvy_timer_stats_count')
+       use iso_c_binding
        implicit none
-       real*8 :: value
-     end subroutine grvy_timer
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_stats_count_passthrough
 
-     subroutine grvy_timer_init(id)
+     real (C_double) function grvy_timer_stats_mean_passthrough(id) bind(C,name='grvy_timer_stats_mean')
+       use iso_c_binding
        implicit none
-       character :: id
-     end subroutine grvy_timer_init
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_stats_mean_passthrough
 
-     subroutine grvy_timer_begin(id)
+     real (C_double) function grvy_timer_stats_variance_passthrough(id) bind(C,name='grvy_timer_stats_variance')
+       use iso_c_binding
        implicit none
-       character :: id
-     end subroutine grvy_timer_begin
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_stats_variance_passthrough
 
-     subroutine grvy_timer_end(id)
+     real (C_double) function grvy_timer_stats_min_passthrough(id) bind(C,name='grvy_timer_stats_min')
+       use iso_c_binding
        implicit none
-       character :: id
-     end subroutine grvy_timer_end
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_stats_min_passthrough
 
-
-
-     subroutine grvy_timer_elapsed_global(value)
+     real (C_double) function grvy_timer_stats_max_passthrough(id) bind(C,name='grvy_timer_stats_max')
+       use iso_c_binding
        implicit none
-       real*8 :: value
-     end subroutine grvy_timer_elapsed_global
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_stats_max_passthrough
 
-     real*8 function grvy_timer_elapsedseconds(id)
+     real (C_double) function grvy_timer_stats_mean_inc_passthrough(id) bind(C,name='grvy_timer_stats_mean_inc')
+       use iso_c_binding
        implicit none
-       character :: id
-     end function grvy_timer_elapsedseconds
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_stats_mean_inc_passthrough
 
-     integer function grvy_timer_stats_count(id)
+     real (C_double) function grvy_timer_stats_variance_inc_passthrough(id) bind(C,name='grvy_timer_stats_variance_inc')
+       use iso_c_binding
        implicit none
-       character :: id
-     end function grvy_timer_stats_count
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_stats_variance_inc_passthrough
 
-     real*8 function grvy_timer_stats_mean(id)
+     real (C_double) function grvy_timer_stats_min_inc_passthrough(id) bind(C,name='grvy_timer_stats_min_inc')
+       use iso_c_binding
        implicit none
-       character :: id
-     end function grvy_timer_stats_mean
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_stats_min_inc_passthrough
 
-     real*8 function grvy_timer_stats_variance(id)
+     real (C_double) function grvy_timer_stats_max_inc_passthrough(id) bind(C,name='grvy_timer_stats_max_inc')
+       use iso_c_binding
        implicit none
-       character :: id
-     end function grvy_timer_stats_variance
+       character (C_char),intent(in) :: id(*) !< timer name
+     end function grvy_timer_stats_max_inc_passthrough
 
      subroutine  grvy_timer_save_hist_passthrough(experiment,comment,num_procs, &
                                                   filename) bind (C,name='grvy_timer_save_hist')
@@ -630,9 +669,7 @@ module grvy
      integer (C_int) function grvy_create_scratch_dir_passthrough(name_template) bind (C,name='grvy_create_scratch_dir')
        use iso_c_binding
        implicit none
-       !!!character(len=*),intent(inout)      :: name_template
        character (C_char),intent(in)     :: name_template(*) 
-!       character (C_char),intent(inout)     :: name_template(*) 
      end function grvy_create_scratch_dir_passthrough
 
      ! ---------------
@@ -1042,6 +1079,135 @@ end subroutine grvy_get_command_arguments
     return
   end subroutine grvy_input_fread_double_ivec
 
+  ! ----------------
+  ! Timer wrappers
+  ! ----------------
+
+  real*8 function grvy_timer_elapsedseconds(id) 
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_elapsedseconds = grvy_timer_elapsedseconds_passthrough(id//C_NULL_CHAR)
+    return
+  end function grvy_timer_elapsedseconds
+
+  real*8 function grvy_timer_elapsedseconds_inc(id) 
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_elapsedseconds_inc = grvy_timer_elapsedseconds_inc_passthrough(id//C_NULL_CHAR)
+    return
+  end function grvy_timer_elapsedseconds_inc
+
+  subroutine grvy_timer_begin(id) 
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    call grvy_timer_begin_passthrough(id//C_NULL_CHAR)
+    return
+  end subroutine grvy_timer_begin
+  
+  subroutine grvy_timer_end(id) 
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    call grvy_timer_end_passthrough(id//C_NULL_CHAR)
+    return
+  end subroutine grvy_timer_end
+  
+  subroutine grvy_timer_init(description) 
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: description !< description
+    
+    call grvy_timer_init_passthrough(description//C_NULL_CHAR)
+    return
+  end subroutine grvy_timer_init
+  
+  integer function grvy_timer_stats_count(id)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_stats_count = grvy_timer_stats_count_passthrough(id//C_NULL_CHAR)
+  end function grvy_timer_stats_count
+  
+  real*8 function grvy_timer_stats_mean(id)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_stats_mean = grvy_timer_stats_mean_passthrough(id//C_NULL_CHAR)
+    return
+  end function grvy_timer_stats_mean
+  
+  real*8 function grvy_timer_stats_variance(id)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_stats_variance = grvy_timer_stats_variance_passthrough(id//C_NULL_CHAR)
+    return
+  end function grvy_timer_stats_variance
+
+  real*8 function grvy_timer_stats_min(id)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_stats_min = grvy_timer_stats_min_passthrough(id//C_NULL_CHAR)
+    return
+  end function grvy_timer_stats_min
+
+  real*8 function grvy_timer_stats_max(id)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_stats_max = grvy_timer_stats_max_passthrough(id//C_NULL_CHAR)
+    return
+  end function grvy_timer_stats_max
+
+  real*8 function grvy_timer_stats_mean_inc(id)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_stats_mean_inc = grvy_timer_stats_mean_inc_passthrough(id//C_NULL_CHAR)
+    return
+  end function grvy_timer_stats_mean_inc
+  
+  real*8 function grvy_timer_stats_variance_inc(id)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_stats_variance_inc = grvy_timer_stats_variance_inc_passthrough(id//C_NULL_CHAR)
+    return
+  end function grvy_timer_stats_variance_inc
+
+  real*8 function grvy_timer_stats_min_inc(id)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_stats_min_inc = grvy_timer_stats_min_inc_passthrough(id//C_NULL_CHAR)
+    return
+  end function grvy_timer_stats_min_inc
+
+  real*8 function grvy_timer_stats_max_inc(id)
+    use iso_c_binding
+    implicit none
+    character(len=*),   intent(in)      :: id         !< timer keyword
+    
+    grvy_timer_stats_max_inc = grvy_timer_stats_max_inc_passthrough(id//C_NULL_CHAR)
+    return
+  end function grvy_timer_stats_max_inc
+
   subroutine grvy_timer_save_hist(experiment,comment,num_procs,filename)
     use iso_c_binding
     implicit none
@@ -1201,53 +1367,5 @@ end subroutine grvy_get_command_arguments
     return_flag = grvy_ocore_init_passthrough(filename//C_NULL_CHAR,blocksize)
     return
   end subroutine grvy_ocore_init
-
-!   subroutine grvy_ocore_write_int4(record_id,data,return_flag)
-!     use iso_c_binding
-!     implicit none
-
-!     integer  (C_size_t),intent(in)       :: record_id   !< Record identifier
-!     real     (C_int),   intent(out)      :: data(*)     !< Block of data to store (number of elements = blocksize)
-!     integer  (C_int),   intent(inout)    :: return_flag !< Return flag
-    
-!     return_flag = grvy_ocore_write_int4_passthrough(record_id,data)
-!     return
-!   end subroutine grvy_ocore_write_int4
-
-!   subroutine grvy_ocore_write_int8(record_id,data,return_flag)
-!     use iso_c_binding
-!     implicit none
-
-!     integer  (C_size_t),   intent(in)     :: record_id   !< Record identifier
-!     integer  (C_long_long),intent(inout)  :: data(*)     !< Block of data to store (number of elements = blocksize)
-!     integer  (C_int),      intent(inout)  :: return_flag !< Return flag
-
-!     return_flag = grvy_ocore_write_int8_passthrough(record_id,data)
-!     return
-!   end subroutine grvy_ocore_write_int8
-
-!   subroutine grvy_ocore_read_int4(record_id,data,return_flag)
-!     use iso_c_binding
-!     implicit none
-
-!     integer  (C_size_t),intent(in)        :: record_id   !< Record identifier
-!     real     (C_int),   intent(out)       :: data(*)     !< Block of data to store (number of elements = blocksize)
-!     integer  (C_int),   intent(inout)     :: return_flag !< Return flag
-    
-!     return_flag = grvy_ocore_read_int4_passthrough(record_id,data)
-!     return
-!   end subroutine grvy_ocore_read_int4
-
-!   subroutine grvy_ocore_read_int8(record_id,data,return_flag)
-!     use iso_c_binding
-!     implicit none
-
-!     integer  (C_size_t),   intent(in)     :: record_id   !< Record identifier
-!     integer  (C_long_long),intent(out)    :: data(*)     !< Block of data to store (number of elements = blocksize)
-!     integer  (C_int),      intent(inout)  :: return_flag !< Return flag
-    
-!     return_flag = grvy_ocore_read_int8_passthrough(record_id,data)
-!     return
-!   end subroutine grvy_ocore_read_int8
   
 end module grvy

@@ -1,9 +1,13 @@
-Version 0.32.1 (13 July 2012)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.32.1
+Version 0.33 (March 2013 - In Progress)
 
+  * migrated additional portions of Fortran interface to use iso_c_bindings 
+  * addition of new timer utiliites which provide inclusive timing measurements
+  * small API changes to Fortran timer interface: several subroutines
+    are now functions to match their C counterparts. The affected routines are:
+      -> grvy_timer()
+      -> grvy_timer_elapsed_global()
   * enable support for MPI build with Intel 13.0 compilers
   * pre-allocate large memory pools for Ocore
-
 
 Version 0.32 (22 May 2012)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.32.0

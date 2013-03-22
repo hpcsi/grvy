@@ -41,7 +41,7 @@ program main
 
   call grvy_log_setlevel(GRVY_INFO)
 
-  call grvy_timer_init('GRVY - a really long string to test that the max width is correctly capped.');
+  call grvy_timer_init('GRVY - a really long string to test that the max width is correctly capped.')
 
   ! Primary Iteration Loop 
 
@@ -70,6 +70,7 @@ program main
 end program main
 
 real*8 function do_work1()
+  use grvy
   integer :: i
   real*8  :: temp
 
@@ -89,7 +90,7 @@ real*8 function do_work1()
 end function do_work1
 
 real*8 function do_work2()
-
+  use grvy
   integer               :: i
   real*8                :: temp
 

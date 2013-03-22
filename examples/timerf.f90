@@ -58,7 +58,7 @@ program main
      
      call foo(Foo_Sleep)
 
-     call grvy_timer_elapsed_global(igot)
+     igot = grvy_timer_elapsed_global()
      print*,'Elapsed time since global init is: ',igot
 
      call bar(Bar_Sleep)
@@ -78,15 +78,15 @@ program main
   print*,'Expecting ',Max_Iters*(Foo_Sleep+Boo_Sleep+Bar_Sleep),' secs '
 
   ! Example use of timer directly
-  
-  call grvy_timer(igot)
+
+  igot = grvy_timer()
   call sleep(1)
-  call grvy_timer(igot2)
+  igot2 = grvy_timer()
 
   print*,' '
   print*,'Measured ',igot2-igot,' secs (expected approximately 1.0)'
 
-  call grvy_timer_elapsed_global(igot)
+  igot = grvy_timer_elapsed_global()
   print*,' '
   print*,'The total elapsed time since init is: ',igot
 
@@ -103,6 +103,28 @@ program main
   write(*,'(1x,"foo-count:    ",i3)')     grvy_timer_stats_count    ("foo")
   write(*,'(1x,"foo-mean:     ",es12.5)') grvy_timer_stats_mean     ("foo")
   write(*,'(1x,"foo-variance: ",es12.5)') grvy_timer_stats_variance ("foo")
+  write(*,'(1x,"foo-min:      ",es12.5)') grvy_timer_stats_min      ("foo")
+  write(*,'(1x,"foo-max:      ",es12.5)') grvy_timer_stats_max      ("foo")
+
+  ! The above queries provide eclusive timing statistics, but you can
+  ! also query inclusive measurements as well
+
+  print*,' '
+  print*,'Query individual timers (inclusive values)'
+
+  write(*,'(1x,"boo: ",es12.5," secs")') grvy_timer_elapsedseconds_inc("boo")
+  write(*,'(1x,"bar: ",es12.5," secs")') grvy_timer_elapsedseconds_inc("bar")
+  write(*,'(1x,"foo: ",es12.5," secs")') grvy_timer_elapsedseconds_inc("foo")
+
+  print*,' '
+  print*,'Query individual timer stats (inclusive values for boo)'
+
+  write(*,'(1x,"boo-mean:     ",es12.5)') grvy_timer_stats_mean_inc    ("boo")
+  write(*,'(1x,"boo-variance: ",es12.5)') grvy_timer_stats_variance_inc("boo")
+  write(*,'(1x,"boo-min:      ",es12.5)') grvy_timer_stats_min_inc     ("boo")
+  write(*,'(1x,"boo-max:      ",es12.5)') grvy_timer_stats_max_inc     ("boo")
+
+
 
   ! Dump current results to a historical performance logfile
 
@@ -113,6 +135,7 @@ end program main
 
 
 subroutine foo(isleep)
+  use grvy
   integer isleep
   
   call grvy_timer_begin('foo');
@@ -123,6 +146,7 @@ subroutine foo(isleep)
 end subroutine foo
     
 subroutine bar(isleep)
+  use grvy
   integer isleep
 
   call grvy_timer_begin('bar');
@@ -133,6 +157,7 @@ subroutine bar(isleep)
 end subroutine bar
 
 subroutine boo(isleep)
+  use grvy
   integer isleep
 
   call grvy_timer_begin('boo');

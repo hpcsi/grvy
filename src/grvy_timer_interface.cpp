@@ -271,10 +271,13 @@ int grvy_timer_save_hist_ext_exp(double timing, const char *machinename, const c
 }
 
 //-----------------------------------------------------------------
-//                     Fortran Interfaces
+// grvy_asci_time_fortran
+// 
+// C/C++ folks can call asctime directly, but let's give the 
+// Fortran folks a convenience utility
 //-----------------------------------------------------------------
 
-extern "C" void grvy_asci_time_(char *timestring,int _namelen) {
+extern "C" void grvy_asci_time_fortran(char *timestring) {
   struct tm *ptr;
   time_t tm;
 
@@ -285,89 +288,7 @@ extern "C" void grvy_asci_time_(char *timestring,int _namelen) {
   // that in the copy.
 
   strncpy(timestring,asctime(ptr),strlen(asctime(ptr)) - 1);
-
   return;
-}
-
-extern "C" void grvy_timer_init_(char *id,int _namelen) {
-  char *name = grvy_f2c_char(id,_namelen);
-  grvy_timer_init(name);
-
-  delete[] name;
-}
-
-extern "C" void grvy_timer_begin_(char *id,int _namelen)
-{
-  char *name = grvy_f2c_char(id,_namelen);
-  grvy_timer_begin(name);
-
-  delete[] name;
-  return;
-}
-
-extern "C" void grvy_timer_end_(char *id,int _namelen)
-{
-  char *name = grvy_f2c_char(id,_namelen);
-  grvy_timer_end(name);
-
-  delete[] name;
-  return;
-}
-
-extern "C" void grvy_timer_(double *value)
-{
-  *value = grvy_timer();
-  return;
-}
-
-extern "C" void grvy_timer_elapsed_global_(double *value)
-{
-  *value = grvy_timer_elapsed_global();
-  return;
-}
-
-extern "C" double grvy_timer_elapsedseconds_(char *id, int _namelen)
-{
-  double elapsed_time;
-  char *name = grvy_f2c_char(id,_namelen);
-  
-  elapsed_time = grvy_timer_elapsedseconds(name);
-
-  delete[] name;
-  return(elapsed_time);
-}
-
-extern "C" int grvy_timer_stats_count_(char *id, int _namelen)
-{
-  int result;
-  char *name = grvy_f2c_char(id,_namelen);
-  
-  result = grvy_timer_stats_count(name);
-
-  delete[] name;
-  return(result);
-}
-
-extern "C" double grvy_timer_stats_mean_(char *id, int _namelen)
-{
-  double result;
-  char *name = grvy_f2c_char(id,_namelen);
-  
-  result = grvy_timer_stats_mean(name);
-
-  delete[] name;
-  return(result);
-}
-
-extern "C" double grvy_timer_stats_variance_(char *id, int _namelen)
-{
-  double result;
-  char *name = grvy_f2c_char(id,_namelen);
-  
-  result = grvy_timer_stats_variance(name);
-
-  delete[] name;
-  return(result);
 }
 
 

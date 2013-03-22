@@ -67,6 +67,7 @@ program main
 end program main
 
 real*8 function do_work1()
+  use grvy
   integer :: i
   real*8  :: temp
 
@@ -86,7 +87,7 @@ real*8 function do_work1()
 end function do_work1
 
 real*8 function do_work2()
-
+  use grvy
   integer               :: i
   real*8                :: temp
 
