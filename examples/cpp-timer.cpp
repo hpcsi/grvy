@@ -94,7 +94,7 @@ int main()
   // Query timers directly - results should match those shown in
   // grvy_timer_summarize() routine 
 
-  printf("Querying global timer elapsed time:\n");
+  grvy_printf(GRVY_INFO,"Querying global timer elapsed time:\n");
   grvy_printf(GRVY_INFO,"\tElapsed global time = %10.5e secs\n",gt.ElapsedGlobal());
 
   grvy_printf(GRVY_INFO,"\nQuerying individual timers (exclusive values):\n");
