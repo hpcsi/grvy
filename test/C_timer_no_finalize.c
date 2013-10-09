@@ -33,9 +33,9 @@
 #include<stdlib.h>
 #include<math.h>
 
-const double Foo_Sleep = 0.03 * 1.e6;
-const double Bar_Sleep = 0.05 * 1.e6;
-const double Boo_Sleep = 0.1  * 1.e6;
+const double Foo_Sleep = 0.04 * 1.e6;
+const double Bar_Sleep = 0.03 * 1.e6;
+const double Boo_Sleep = 0.15 * 1.e6;
 const double Max_Iters = 3;
 
 const double Rel_TOL   = 0.1;	// tolerance (coarse-grained for potentially busy test hosts)
@@ -63,7 +63,7 @@ int main()
 	foo();
     }
 
-  // Purposfeully not calling grvy_timer_finalize();
+  // Purposefully not calling grvy_timer_finalize();
   grvy_timer_summarize();
 
   double Boo_expected = Boo_Sleep*Max_Iters*num_repeat/1.e6;
@@ -84,16 +84,17 @@ int main()
   /* Total time reasonable? */
 
   double total_time = grvy_timer_elapsed_global();
-  printf("total_time = %f\n",total_time);
-
-  if(total_time <= 0.0)
-    exit(1);
 
   if(fabs(total_time - total_expected)/total_expected > Rel_TOL)
     {
       grvy_printf(GRVY_ERROR,"Global timer mismatch - test host may be overloaded\n");
       exit(1);
     }
+
+  printf("total_time = %f\n",total_time);
+
+  if(total_time <= 0.0)
+    exit(1);
 
   /* Unassigned timer reasonable? */
 
@@ -104,13 +105,12 @@ int main()
   if(unassigned <= 0.0)
     exit(1);
   
-  if(unassigned > 1e-3)
+  if(unassigned > 5e-3)
     {
       grvy_printf(GRVY_ERROR,"Unassigned timer mismatch - test host may be overloaded\n");
       grvy_printf(GRVY_ERROR,"--> Unaccounted time = %e\n",unassigned);
       exit(1);
     }
-
 
   usleep(100*Foo_Sleep);
   total_time = grvy_timer_elapsed_global();
