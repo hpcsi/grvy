@@ -1,9 +1,8 @@
 SUBDIRS           =
-INCLUDES          = -I$(top_srcdir)/src -I$(top_builddir)/src
-AM_CFLAGS         = $(INCLUDES)
-AM_CPPFLAGS       = $(INCLUDES) 
-AM_F77FLAGS       = $(INCLUDES)
-AM_FCFLAGS        = $(INCLUDES)
+AM_CPPFLAGS       = -I$(top_srcdir)/src -I$(top_builddir)/src
+AM_CFLAGS         = $(AM_CPPFLAGS)
+AM_F77FLAGS       = $(AM_CPPFLAGS)
+AM_FCFLAGS        = $(AM_CPPFLAGS)
 AM_LDFLAGS        = ../src/libgrvy.la
 BUILT_SOURCES     = .license.stamp
 
