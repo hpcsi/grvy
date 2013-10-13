@@ -61,6 +61,22 @@ namespace GRVY {
 	std::cout << "C++ Config   = " << GRVY_CXX << " " << GRVY_CXXFLAGS << std::endl;
 	std::cout << "F90 Config   = " << GRVY_FC  << " " << GRVY_FCFLAGS  << std::endl;
 	std::cout << "--------------------------------------------------------" << std::endl;
+
+	std::cout << "Optional Library Support:" << std::endl;
+
+#ifdef  HAVE_HDF5
+	std::cout << "--> HDF5 enabled = yes" << std::endl;
+#else
+	std::cout << "--> HDF5 enabled = no" << std::endl;
+#endif
+
+#ifdef  HAVE_MPI
+	std::cout << "--> MPI enabled  = yes" << std::endl;
+#else
+	std::cout << "--> MPI enabled  = no" << std::endl;
+#endif
+
+	std::cout << "--------------------------------------------------------" << std::endl;
       }
   }
 
