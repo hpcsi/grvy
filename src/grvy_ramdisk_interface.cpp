@@ -38,7 +38,7 @@
 using namespace std;
 using namespace GRVY;
 
-int grvy_ocore_init(const char *input_file)
+int grvy_ocore_init(const char *input_file, MPI_Comm COMM)
 {
   // create new timer on 1st call
 
@@ -47,7 +47,7 @@ int grvy_ocore_init(const char *input_file)
 
   // initialize 
 
-  return(_GRVY_Ocore->Initialize(input_file));
+  return(_GRVY_Ocore->Initialize(input_file,COMM));
 }
 
 // grvy_ocore_finalize(): Finalize MPI ocore and dump statistics

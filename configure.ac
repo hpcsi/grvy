@@ -55,6 +55,7 @@ if test "x$enable_mpi" = "xyes"; then
 fi
 
 AM_CONDITIONAL(MPI_ENABLED,test x$HAVE_MPI = x1)
+AC_SUBST(HAVE_MPI)
 
 #---------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.

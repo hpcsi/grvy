@@ -71,6 +71,13 @@ extern "C" {
 
 #define GRVY_FC             "@FC@"
 #define GRVY_FCFLAGS        "@FCFLAGS@"
+#define GRVY_MPI_ENABLED    @HAVE_MPI@
+
+#if GRVY_MPI_ENABLED == 1
+#define OMPI_SKIP_MPICXX
+#include <mpi.h>
+#endif
+
 
 /** \endcond */
 
@@ -668,6 +675,8 @@ extern "C" {
   // MPI Out-of-Core Utilities
   //-----------------------------------------------------------------
 
+#ifdef GRVY_MPI_ENABLED
+
   /** \defgroup Cocore MPI Out-of-Core Utilities 
    *  \ingroup Capi
    *
@@ -688,8 +697,9 @@ extern "C" {
   /** \ingroup Cocore 
    * @{ 
    */
-      
-  extern    int grvy_ocore_init                (const char *input_file);
+
+  extern    int grvy_ocore_split_comm          (MPI_Comm GLOB_COMM, MPI_Comm WORK_COMM, MPI_Comm OCORE_COMM, int mode);
+  extern    int grvy_ocore_init                (const char *input_file, MPI_Comm COMM);
   extern   void grvy_ocore_finalize            ();
 
   extern    int grvy_ocore_master              ();
@@ -736,7 +746,9 @@ extern "C" {
   extern size_t grvy_ocore_pop_record_float         (        float *data);
   extern size_t grvy_ocore_pop_record_double        (       double *data);
   extern size_t grvy_ocore_pop_record_int           (          int *data);
-  extern size_t grvy_ocore_pop_record_int64          (long long int *data);
+  extern size_t grvy_ocore_pop_record_int64         (long long int *data);
+
+#endif
 
   /** @} */
 					      
@@ -1554,6 +1566,7 @@ private:
    * @{
    */
 
+#ifdef GRVY_MPI_ENABLED
 
 class GRVY_MPI_Ocore_Class {
 
@@ -1573,7 +1586,7 @@ public:
    * @{ 
    */
 
-  int    Initialize   (std::string inputfile);
+  int    Initialize   (std::string inputfile, MPI_Comm COMM);
   void   Finalize     ();
   size_t NumActive    ();	// number of currently active records
   bool   isMaster     ();	// is the calling task the ocore master?
@@ -1627,6 +1640,8 @@ private:
   class GRVY_MPI_Ocore_ClassImp;		  // forward declaration to Ocore implementation
   std::auto_ptr<GRVY_MPI_Ocore_ClassImp> m_pimpl; // pointer to implementation
 };
+
+#endif
 
 //--------------------
 // HDF5 Utility Class

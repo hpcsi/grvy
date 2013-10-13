@@ -117,7 +117,7 @@ public:
  ~GRVY_MPI_Ocore_ClassImp () {}
   
 #ifdef HAVE_MPI
-  int    Initialize       (string input_file  );
+  int    Initialize       (string input_file, MPI_Comm COMM);
   int    AssignOwnership  (size_t sparse_index);
   int    DumptoDisk       ();
   size_t GetFreeRecord    (size_t sparse_index);
@@ -168,7 +168,7 @@ public:
   map<size_t,MPI_Ocore_owners> rank_map;  // map for rank 0 to identify which child rank owns the data
   double* data_tmp;		          // temporary buffer for disk_overflow block storage
   
-  MPI_Comm MYCOMM;			  // MPI communicator for ocore activity (comm_world)
+  MPI_Comm MYCOMM;			  // MPI communicator for ocore activity (provided by user)
   MPI_Comm MPI_COMM_OCORE;		  // MPI communicator with task 0 removed
   
   GRVY_MPI_Ocore_Class *self;	          // back pointer to public class
@@ -219,13 +219,16 @@ GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class() :m_pimpl(new GRVY_MPI_Ocore_ClassIm
   //--------------------------
   // MPI setup/initialization
   //--------------------------
-  
+
+#if 0  
   m_pimpl->MYCOMM                = MPI_COMM_WORLD;
+#endif
   m_pimpl->distrib_rank          = 0;
   
   int initialized;
   int init_argc = 1;
-  
+
+#if 0  
   MPI_Initialized(&initialized);
   
   if(!initialized)
@@ -246,6 +249,7 @@ GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class() :m_pimpl(new GRVY_MPI_Ocore_ClassIm
       m_pimpl->use_mpi_ocore = false;
       grvy_printf(info,"%s: Disabling MPI_ocore - more than 1 MPI task is required\n",prefix);
     }
+#endif
   
   // set default options for ocore
   
@@ -254,6 +258,7 @@ GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class() :m_pimpl(new GRVY_MPI_Ocore_ClassIm
 
   // create convenience communicator for Ocore tasks
 
+#if 0
   MPI_Group group_world;
   MPI_Group group_ocore;
     
@@ -263,6 +268,7 @@ GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class() :m_pimpl(new GRVY_MPI_Ocore_ClassIm
   assert(MPI_Group_excl(group_world,1,excl_ranks,&group_ocore) == MPI_SUCCESS);
 
   MPI_Comm_create(MPI_COMM_WORLD,group_ocore,&m_pimpl->MPI_COMM_OCORE);
+#endif
 
 }
 
@@ -271,9 +277,9 @@ GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
   // using auto_ptr for proper cleanup
 }
 
-int GRVY_MPI_Ocore_Class::Initialize(string input_file)
+int GRVY_MPI_Ocore_Class::Initialize(string input_file, MPI_Comm COMM)
 {
-  return(m_pimpl->Initialize(input_file));
+  return(m_pimpl->Initialize(input_file,COMM));
 }
 
 // ---------------------------------------------------------------------------------------
@@ -866,10 +872,45 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Read_f
   // Initialize(): Initialize data structures for MPI Ocore
   // ---------------------------------------------------------------------------------------
 
-  int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file)
+int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file, MPI_Comm COMM)
   {
 
     if(!use_mpi_ocore) return 1;
+
+  //--------------------------
+  // MPI setup/initialization
+  //--------------------------
+
+    MYCOMM = COMM;
+
+    int init_argc = 1;
+    int initialized;
+
+    MPI_Initialized(&initialized);
+    
+    if(!initialized)
+      {
+	grvy_printf(debug,"%s: Performing MPI_Init()\n",prefix);
+	MPI_Init(&init_argc,NULL);
+	mpi_initialized_by_ocore = true;
+      }
+  
+    MPI_Comm_size(MYCOMM,&mpi_nprocs);
+    MPI_Comm_rank(MYCOMM,&mpi_rank);
+  
+    if(mpi_rank == 0)
+      master = true;
+
+    // verify that there is more than 1 global MPI task
+
+    int numRanksGlobal;
+    MPI_Comm_rank(MPI_COMM_WORLD,&numRanksGlobal);
+  
+    if(numRanksGlobal == 1)
+      {
+	use_mpi_ocore = false;
+	grvy_printf(info,"%s: Disabling MPI_ocore - more than 1 MPI task is required\n",prefix);
+      }
 
     // Initialize timer
     
@@ -1464,7 +1505,7 @@ GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
 
 } // end namespace grvy
 
-int    GRVY_MPI_Ocore_Class::Initialize(string input_file) { return 0; }
+int    GRVY_MPI_Ocore_Class::Initialize(string input_file, MPI_Comm COMM) { return 0; }
 
 size_t GRVY_MPI_Ocore_Class::NumActive () { return 0;     }
 int    GRVY_MPI_Ocore_Class::Blocksize () { return 0;     }

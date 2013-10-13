@@ -32,6 +32,7 @@
 #include<assert.h>
 #include<math.h>
 #include<stdio.h>
+#include<stdlib.h>
 
 void init_data(int offset,int size, double *data)
 {
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
   const int blocksize = 8192;
   int i;
 
-  assert( grvy_ocore_init("mpi_ocore.input") == 0);
+  assert( grvy_ocore_init("mpi_ocore.input",MPI_COMM_WORLD) == 0);
 
   if(grvy_ocore_master())
     {
