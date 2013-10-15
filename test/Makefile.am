@@ -14,7 +14,7 @@ EXTRA_DIST        = init.sh finalize.sh diff_dir.sh version hostinfo \
 		    F_get_command_arguments.sh  F_timer.sh F_wrapper_check_file_path.sh F_wrapper_scratch_dir.sh \
 		    F_timer_expanded_width.sh  F_timer_std_width.sh F_wrapper_log.sh F_wrapper_unique_dir.sh \
 		    CXX_timer_expanded_width.sh CXX_timer_std_width.sh CXX_ocore.sh C_ocore.sh F_ocore.sh \
-		    input-example.txt ref_files .license.stamp
+		    input-example.txt mpi_ocore.input  ref_files .license.stamp
 
 CLEANFILES        = .license.stamp *.gcno *.gcda .hostinfo
 TESTS             = # Append below
@@ -159,7 +159,7 @@ if MPI_ENABLED
 
   TESTS                                        += C_ocore.sh
   check_PROGRAMS                               += C_ocore
-  C_ocore_SOURCES                               = C_ocore.c
+  C_ocore_SOURCES                               = C_ocore.c C_examplefile.c examplefile.h
 
 endif
 
@@ -200,7 +200,7 @@ endif
 if MPI_ENABLED
 TESTS                                          +=  CXX_ocore.sh
 check_PROGRAMS                                 +=  CXX_ocore
-CXX_ocore_SOURCES                               =  C++_ocore.cpp
+CXX_ocore_SOURCES                               =  C++_ocore.cpp C_examplefile.c examplefile.h
 endif
 
 #-----------------
