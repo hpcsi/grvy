@@ -515,7 +515,6 @@ module grvy
      ! MPI_Ocore Routines
      ! -------------------
 
-!!!     integer (C_int) function grvy_ocore_init_passthrough(filename,blocksize) bind (C,name='grvy_ocore_init')
      integer (C_int) function grvy_ocore_init_passthrough(filename,num_ocore_tasks,COMM_GLOBAL) &
           bind (C,name='grvy_ocore_init_fortran')
        use iso_c_binding
@@ -524,7 +523,6 @@ module grvy
        character (C_char),intent(in)        :: filename(*)     !< Ocore input filename (parsed using libGRVY)
        integer   (C_int), intent(in),value  :: num_ocore_tasks !< Number of Ocore tasks
        integer   (C_int), intent(in),value  :: COMM_GLOBAL     !< Global communicator
-!!!       integer   (C_int), intent(in),value  :: blocksize   !< Number of elements per each record block
 
      end function grvy_ocore_init_passthrough
 
