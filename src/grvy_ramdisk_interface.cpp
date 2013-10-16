@@ -35,19 +35,41 @@
 #include<grvy.h>
 #include<string>
 
+// OPTIONAL Module - Only available with MPI
+
+#ifdef HAVE_MPI
+
 using namespace std;
 using namespace GRVY;
 
-int grvy_ocore_init(const char *input_file, MPI_Comm COMM)
+int grvy_ocore_init(const char *input_file, int num_ocore_tasks, MPI_Comm GLOB_COMM)
 {
-  // create new timer on 1st call
+  // create new Ocore object on 1st call
 
   if(_GRVY_Ocore == NULL)
     _GRVY_Ocore = new GRVY_MPI_Ocore_Class();
 
   // initialize 
 
-  return(_GRVY_Ocore->Initialize(input_file,COMM));
+  return(_GRVY_Ocore->Initialize(input_file,num_ocore_tasks,GLOB_COMM));
+}
+
+int grvy_ocore_init_fortran(const char *input_file, int num_ocore_tasks, int GLOB_COMM_Fortran)
+{
+  MPI_Comm GLOB_COMM_C;
+
+  // create new Ocore object on first call
+
+  if(_GRVY_Ocore == NULL)
+    _GRVY_Ocore = new GRVY_MPI_Ocore_Class();
+
+  // Convert fortran communicator to C
+
+  GLOB_COMM_C = MPI_Comm_f2c(GLOB_COMM_Fortran);
+
+  // initialize 
+
+  return(_GRVY_Ocore->Initialize(input_file,num_ocore_tasks,GLOB_COMM_C));
 }
 
 // grvy_ocore_finalize(): Finalize MPI ocore and dump statistics
@@ -112,3 +134,5 @@ size_t grvy_ocore_pop_record_float        (       float  *data) { return(_GRVY_O
 size_t grvy_ocore_pop_record_double       (       double *data) { return(_GRVY_Ocore->PopRecord(data)); }
 size_t grvy_ocore_pop_record_int          (          int *data) { return(_GRVY_Ocore->PopRecord(data)); }
 size_t grvy_ocore_pop_record_int64        (long long int *data) { return(_GRVY_Ocore->PopRecord(data)); }
+
+#endif

@@ -675,7 +675,7 @@ extern "C" {
   // MPI Out-of-Core Utilities
   //-----------------------------------------------------------------
 
-#ifdef GRVY_MPI_ENABLED
+#if GRVY_MPI_ENABLED == 1
 
   /** \defgroup Cocore MPI Out-of-Core Utilities 
    *  \ingroup Capi
@@ -698,8 +698,9 @@ extern "C" {
    * @{ 
    */
 
-  extern    int grvy_ocore_split_comm          (MPI_Comm GLOB_COMM, MPI_Comm WORK_COMM, MPI_Comm OCORE_COMM, int mode);
-  extern    int grvy_ocore_init                (const char *input_file, MPI_Comm COMM);
+  //  extern    int grvy_ocore_split_comm          (MPI_Comm GLOB_COMM, MPI_Comm WORK_COMM, MPI_Comm OCORE_COMM, int mode);
+  extern    int grvy_ocore_init                (const char *input_file, int num_ocore_tasks, MPI_Comm GLOB_COMM);
+  extern    int grvy_ocore_init_fortran        (const char *input_file, int num_ocore_tasks, int GLOB_COMM_COMM);
   extern   void grvy_ocore_finalize            ();
 
   extern    int grvy_ocore_master              ();
@@ -1566,7 +1567,7 @@ private:
    * @{
    */
 
-#ifdef GRVY_MPI_ENABLED
+
 
 class GRVY_MPI_Ocore_Class {
 
@@ -1574,6 +1575,7 @@ public:
   GRVY_MPI_Ocore_Class(); 
  ~GRVY_MPI_Ocore_Class();
 
+#if GRVY_MPI_ENABLED == 1
   /** 
    * \ingroup CXXocore
    * \name Initialization and runtime queries:
@@ -1586,10 +1588,10 @@ public:
    * @{ 
    */
 
-  int    Initialize   (std::string inputfile, MPI_Comm COMM);
+  int    Initialize   (std::string inputfile, int num_ocore_tasks, MPI_Comm GLOB_COMM);
   void   Finalize     ();
   size_t NumActive    ();	// number of currently active records
-  bool   isMaster     ();	// is the calling task the ocore master?
+  bool   isMaster     ();	// is the calling task the master task (in GLOB_COMM)?
   bool   isEnabled    ();	// is MPI Ocore enabled? (can be controlled via input file)
   int    Blocksize    ();       // Ocore blocksize
 
@@ -1634,6 +1636,8 @@ public:
 
   template <typename T> size_t PopRecord (T *data );
 
+#endif
+
   /** @} */
 
 private:
@@ -1641,7 +1645,7 @@ private:
   std::auto_ptr<GRVY_MPI_Ocore_ClassImp> m_pimpl; // pointer to implementation
 };
 
-#endif
+
 
 //--------------------
 // HDF5 Utility Class

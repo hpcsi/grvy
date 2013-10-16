@@ -515,12 +515,16 @@ module grvy
      ! MPI_Ocore Routines
      ! -------------------
 
-     integer (C_int) function grvy_ocore_init_passthrough(filename,blocksize) bind (C,name='grvy_ocore_init')
+!!!     integer (C_int) function grvy_ocore_init_passthrough(filename,blocksize) bind (C,name='grvy_ocore_init')
+     integer (C_int) function grvy_ocore_init_passthrough(filename,num_ocore_tasks,COMM_GLOBAL) &
+          bind (C,name='grvy_ocore_init_fortran')
        use iso_c_binding
        implicit none
 
-       character (C_char),intent(in)        :: filename(*) !< Ocore input filename (parsed using libGRVY)
-       integer   (C_int), intent(in),value  :: blocksize   !< Number of elements per each record block
+       character (C_char),intent(in)        :: filename(*)     !< Ocore input filename (parsed using libGRVY)
+       integer   (C_int), intent(in),value  :: num_ocore_tasks !< Number of Ocore tasks
+       integer   (C_int), intent(in),value  :: COMM_GLOBAL     !< Global communicator
+!!!       integer   (C_int), intent(in),value  :: blocksize   !< Number of elements per each record block
 
      end function grvy_ocore_init_passthrough
 
@@ -1357,14 +1361,17 @@ end subroutine grvy_get_command_arguments
   ! Ocore wrappers
   ! ----------------
   
-  subroutine grvy_ocore_init(filename,blocksize,return_flag)
+  subroutine grvy_ocore_init(filename,num_ocore_tasks,COMM_GLOBAL,return_flag)
     use iso_c_binding
     implicit none
+
     character(len=*),intent(in)         :: filename
-    integer  (C_int),intent(in)         :: blocksize
+    integer  (C_int),intent(in)         :: num_ocore_tasks
+    integer  (C_int),intent(in)         :: COMM_GLOBAL
     integer  (C_int),intent(inout)      :: return_flag
-    
-    return_flag = grvy_ocore_init_passthrough(filename//C_NULL_CHAR,blocksize)
+
+    return_flag = grvy_ocore_init_passthrough(filename//C_NULL_CHAR,num_ocore_tasks,COMM_GLOBAL)
+
     return
   end subroutine grvy_ocore_init
   

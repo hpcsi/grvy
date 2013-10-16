@@ -92,7 +92,6 @@ namespace GRVY {
   GLOBAL GRVY_MPI_Ocore_Class *_GRVY_Ocore;
   GLOBAL double _GRVY_TIMER_THRESH;
   GLOBAL double _GRVY_PERC_TOL;
-
 #endif
 
   // Macro Defines
