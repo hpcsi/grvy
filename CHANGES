@@ -7,7 +7,9 @@ Version 0.33 (March 2013 - In Progress)
       -> grvy_timer()
       -> grvy_timer_elapsed_global()
   * enable support for MPI build with Intel 13.0 compilers
-  * pre-allocate large memory pools for Ocore
+  * Ocore API updated to require input MPI communicator and number of Ocore tasks
+  * Ocore memory pools are now pre-allocated
+  * added Ocore support for multtiple MPI worker tasks and various performance optimizations
 
 Version 0.32 (22 May 2012)
 https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.32.0
@@ -30,7 +32,7 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.32.0
   * minimum Boost version required updated to 1.47 when linking against Boost libs
   * removed dependency on Boost program_options library
   * removed dependency on Boost regex library
-  * added runtime option to dump individual read/write statistics for MPI ocore  
+  * added runtime option to dump individual read/write statistics for MPI Ocore  
   * addition of grvy_input_fread_logical() function for parsing logicals in F90
   * addition of grvy_copy_dir() function which recursively copies
     contents of existing directory to a new directory

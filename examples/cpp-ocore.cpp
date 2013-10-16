@@ -65,10 +65,31 @@ int main(int argc, char *argv[])
   const int blocksize = 8192;
 
   GRVY_MPI_Ocore_Class ocore;
+  MPI_Comm WORK_COMM;
+  MPI_Comm OCORE_COMM;
 
-  assert(ocore.Initialize(inputfile) == 0); 
+  int globRank, globProcs;
+  const int numWorkers = 1;
 
-  if( ocore.isMaster() )
+  grvy_log_setlevel(GRVY_DEBUG);
+
+  MPI_Init(&argc,NULL);
+  MPI_Comm_size(MPI_COMM_WORLD, &globProcs);
+  MPI_Comm_rank(MPI_COMM_WORLD, &globRank);
+
+  if(globProcs <= 1)
+    {
+      grvy_printf(GRVY_ERROR,"\nThis example requires at least 2 MPI tasks...exiting\n\n");
+      MPI_Finalize();
+      return 0;
+    }
+
+  MPI_Barrier(MPI_COMM_WORLD);
+
+  assert(ocore.Initialize(inputfile,2,MPI_COMM_WORLD) == 0); 
+
+  //  if( ocore.isMaster() )
+  if(globRank == 0)
     {
       double data[blocksize];
 
@@ -108,6 +129,9 @@ int main(int argc, char *argv[])
     }
 
   ocore.Finalize();
+  MPI_Finalize();
+
+  return(0);
 
 }
 

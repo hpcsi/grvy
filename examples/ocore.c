@@ -64,11 +64,15 @@ void zero_data(int offset, int size, double *data)
 int main(int argc, char *argv[])
 {
   const int blocksize = 8192;
+  int globRank;
   int i;
 
-  assert( grvy_ocore_init("mpi_ocore.input") == 0);
 
-  if(grvy_ocore_master())
+  assert( grvy_ocore_init("mpi_ocore.input",1,MPI_COMM_WORLD) == 0);
+
+  MPI_Comm_rank(MPI_COMM_WORLD, &globRank);
+
+  if(globRank == 0)
     {
       double data[blocksize];
 
@@ -98,6 +102,7 @@ int main(int argc, char *argv[])
     }
 
   grvy_ocore_finalize();
+
 }
 
 

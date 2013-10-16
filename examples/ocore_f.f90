@@ -30,6 +30,7 @@
 program main
   use grvy
   implicit none
+  include 'mpif.h'
 
   integer,parameter   :: blocksize = 8192; ! number of elements per ocore record
   real*8              :: data(blocksize)   ! individual data record
@@ -40,11 +41,14 @@ program main
   integer*8           :: pool_size
   integer             :: verify_data 
 
+  call MPI_Init(ierr)
+
   ! Initialize MPI-based Ocore ramdisk (myfile is a GRVY-style
   ! input file with optional Ocore controls). blocksize is the number
   ! of elements in each record and is constant. 
 
-  call grvy_ocore_init("mpi_ocore.input",blocksize,ierr)
+  !!!call grvy_ocore_init("mpi_ocore.input",blocksize,ierr)
+  call grvy_ocore_init("mpi_ocore.input",1,MPI_COMM_WORLD,ierr)
 
   if(ierr .ne. 0)then
      print*,'Unable to initialize GRVY Ocore'
@@ -94,7 +98,8 @@ program main
 
    endif
 
-  call grvy_ocore_finalize();
+  call grvy_ocore_finalize()
+  call MPI_Finalize(ierr)
 
   stop
 end program main

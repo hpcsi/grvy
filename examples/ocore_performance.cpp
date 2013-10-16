@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 
   gt.Init("Ocore Performance");
 
-  assert(ocore.Initialize(inputfile) == 0); 
+  assert(ocore.Initialize(inputfile,1,MPI_COMM_WORLD) == 0); 
 
   if( ocore.isMaster() )
     {
