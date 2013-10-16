@@ -67,9 +67,9 @@ int main(int argc, char **argv)
 
   /* Initialize/read the file */
 
-  input_example_file_path = build_example_file_path();
+  input_example_file_path = build_example_file_path("input-example.txt");
   flag *= iparse.Open(input_example_file_path);
-  free(input_example_file_path);
+  //free(input_example_file_path);
 
   /* Read specific variables and echo locally */
 
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
   /* Note that GRVY will allocate memory for char * strings;
    * you should call free() when done with the variable */
 
-  free(gridfile);
+  //free(gridfile);
 
   // Read from the solver section...
 

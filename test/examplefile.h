@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-char * build_example_file_path();
+char * build_example_file_path(char *filename);
 
 #ifdef __cplusplus
 }

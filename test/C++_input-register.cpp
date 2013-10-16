@@ -89,7 +89,7 @@ int main(int argc, char **argv)
   dgot=-1.;
   sgot=NULL;
 
-  input_example_file_path = build_example_file_path();
+  input_example_file_path = build_example_file_path("input-example.txt");
   flag *= iparse.Open(input_example_file_path);
   free(input_example_file_path);
 

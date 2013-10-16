@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
   /* Initialize/read the file */
 
-  input_example_file_path = build_example_file_path();
+  input_example_file_path = build_example_file_path("input-example.txt");
   flag *= iparse.Open(input_example_file_path);
   free(input_example_file_path);
 

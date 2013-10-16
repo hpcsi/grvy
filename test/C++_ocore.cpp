@@ -31,6 +31,7 @@
 #include<assert.h>
 #include<math.h>
 #include<cstdlib>
+#include "examplefile.h"
 
 using namespace std;
 using namespace GRVY;
@@ -62,12 +63,14 @@ void zero_data(int offset, int size, double *data)
 
 int main(int argc, char *argv[])
 {
-  string inputfile("mpi_ocore.input");
+  //string inputfile("mpi_ocore.input");
+  char * ocore_filename;
   const int blocksize = 8192;
 
   GRVY_MPI_Ocore_Class ocore;
 
-  assert(ocore.Initialize(inputfile,MPI_COMM_WORLD) == 0); 
+  ocore_filename = build_example_file_path("mpi_ocore.input");
+  assert(ocore.Initialize(ocore_filename,1,MPI_COMM_WORLD) == 0); 
 
   if( ocore.isMaster() )
     {

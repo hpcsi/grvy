@@ -33,6 +33,7 @@
 #include<math.h>
 #include<stdio.h>
 #include<stdlib.h>
+#include "examplefile.h"
 
 void init_data(int offset,int size, double *data)
 {
@@ -65,9 +66,11 @@ void zero_data(int offset, int size, double *data)
 int main(int argc, char *argv[])
 {
   const int blocksize = 8192;
+  char * ocore_filename;
   int i;
 
-  assert( grvy_ocore_init("mpi_ocore.input",MPI_COMM_WORLD) == 0);
+  ocore_filename = build_example_file_path("mpi_ocore.input");
+  assert( grvy_ocore_init(ocore_filename,1,MPI_COMM_WORLD) == 0);
 
   if(grvy_ocore_master())
     {
