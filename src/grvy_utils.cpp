@@ -351,7 +351,7 @@ namespace GRVY {
     
     if (_grvy_create_scratch_dir_paths.empty())
       {
-	if (status = atexit(_GRVY_create_scratch_dir_atexit_handler))
+	if ( (status = atexit(_GRVY_create_scratch_dir_atexit_handler)) )
 	  {
 	    free(name_copy);
 	    return status;
