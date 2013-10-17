@@ -268,20 +268,6 @@ namespace GRVY {
     std::cout << std::endl;
   }
 
-  void GRVY_Input_Class::MsgToggle(int flag)
-  {
-    if(flag == 0)
-      {
-	_GRVY_Log.change_priority(GRVY_NOLOG);
-      }
-    else
-      {
-	_GRVY_Log.change_priority(GRVY_INFO);
-      }
-
-    return;
-  }
-
   //--------------
   // Scalar Reads
   //--------------
