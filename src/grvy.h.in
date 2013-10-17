@@ -1194,8 +1194,6 @@ class GRVY_Input_Class {
 
   /** @} */
 
-  void MsgToggle    (int flag);
-
   /** \ingroup CXXinput
    *  \name Dump input file contents:
    * 
@@ -1592,6 +1590,8 @@ public:
   void   Finalize     ();
   size_t NumActive    ();	// number of currently active records
   bool   isMaster     ();	// is the calling task the master task (in GLOB_COMM)?
+  bool   isWorkTask   ();       // is the calling task a worker task used by application (in GLOB_COMM)?
+  bool   isOcoreTask  ();       // is the calling task used by Ocore (in GLOB_COMM)?
   bool   isEnabled    ();	// is MPI Ocore enabled? (can be controlled via input file)
   int    Blocksize    ();       // Ocore blocksize
 

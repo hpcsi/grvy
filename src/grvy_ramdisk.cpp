@@ -74,10 +74,13 @@ typedef struct MPI_Ocore_owners {
 
 } MPI_Ocore_owners;
 
+typedef pair <int,size_t> SparseKey; // combines sending rank and sparse index
+
 struct NodePriority
 {
     size_t priority;		// record priority (based on read access frequency)
-    size_t global_index;	// sparse storage index 
+  //size_t global_index;	// sparse storage index 
+    SparseKey key;	        // sparse storage key
     size_t ocore_index;	        // ocore data index
 }; 
 
@@ -128,8 +131,10 @@ public:
   int    AssignOwnership  (size_t sparse_index);
   int    DumptoDisk       ();
   size_t GetFreeRecord    (size_t sparse_index);
-  int    PullData         (size_t sparse_index);
-  int    StoreData        (size_t sparse_index, bool new_data);
+  int    PullData         (SparseKey key);
+  //int    PullData         (size_t sparse_index);
+  //int    StoreData        (size_t sparse_index, bool new_data);
+  int    StoreData        (SparseKey key, bool new_data);
 
   template <typename T> int Read_from_Pool (int mpi_task, size_t sparse_index,T *data);
   template <typename T> int  Write_to_Pool (int mpi_task, bool new_data, size_t sparse_index,T *data);
@@ -178,13 +183,14 @@ public:
   int num_empty_reads;	                  // number of empty reads encountered
   
   vector< vector <double>  > pool;        // raw data pool storage
-  map<size_t,MPI_Ocore_datagram> smap;    // sparse data map (sparse user indices -> contiguous pool indices)
+  //map<size_t,MPI_Ocore_datagram> smap;    // sparse data map (sparse user indices -> contiguous pool indices)
+  map<SparseKey,MPI_Ocore_datagram> smap; // sparse data map (sparse user indices -> contiguous pool indices)
   map<size_t,MPI_Ocore_owners> rank_map;  // map for rank 0 to identify which child rank owns the data
   double* data_tmp;		          // temporary buffer for disk_overflow block storage
   
-  //  MPI_Comm MYCOMM;			  // MPI communicator for ocore activity (provided by user)
   MPI_Comm MPI_COMM_GLOBAL;               // Global MPI communicator
   MPI_Comm MPI_COMM_OCORE;		  // Dedicated Ocore communicator (subset of GLOBAL)
+  MPI_Comm MPI_COMM_WORK;		  // Application work communicator (subset of GLOBAL)
   
   GRVY_MPI_Ocore_Class *self;	          // back pointer to public class
   
@@ -304,6 +310,12 @@ void GRVY_MPI_Ocore_Class::Finalize()
 {
   if(!m_pimpl->use_mpi_ocore) return;
 
+  // Include barrier here to ensure all worker tasks have completed any
+  // oustanding requests prior to tearing down
+
+  if(m_pimpl->isWorkTask_)
+    MPI_Barrier(m_pimpl->MPI_COMM_WORK);
+
   int hbuf[4];
   
   if(m_pimpl->isGlobalMaster_)
@@ -395,10 +407,7 @@ template <typename T> int GRVY_MPI_Ocore_Class::Write(size_t offset, T *data)
       rank_owner = it->second.data_hostId;
     }
 
-  //assert(rank_owner >= 0 && rank_owner < m_pimpl->mpi_nprocs );
-  //assert(rank_owner >= 0 && rank_owner < m_pimpl->numOcoreTasks_ );
-  
-  grvy_printf(debug,"%s: Writing data for offset %i to task %i\n",prefix,offset,rank_owner);
+  grvy_printf(debug,"%s (%5i): Writing data for offset %i to task %i\n",prefix,m_pimpl->mpi_rank_global,offset,rank_owner);
   
   return(m_pimpl->Write_to_Pool(rank_owner,new_data,offset,data));
 }
@@ -463,6 +472,18 @@ template <typename T> int GRVY_MPI_Ocore_Class::Read(size_t offset, T *data)
 bool GRVY_MPI_Ocore_Class::isMaster() { return(m_pimpl->isGlobalMaster_); }
 
 // ---------------------------------------------------------------------------------------
+// isWorkTask(): is calling process a worker task used by application
+// ---------------------------------------------------------------------------------------
+
+bool GRVY_MPI_Ocore_Class::isWorkTask() { return(m_pimpl->isWorkTask_); }
+
+// ---------------------------------------------------------------------------------------
+// isOcoreTask(): is calling process used by Ocore for offload
+// ---------------------------------------------------------------------------------------
+
+bool GRVY_MPI_Ocore_Class::isOcoreTask() { return(m_pimpl->isOcoreTask_); }
+
+// ---------------------------------------------------------------------------------------
 // isEnabled(): is MPI_Ocore enabled (controlled via input file)
 // ---------------------------------------------------------------------------------------
 
@@ -496,11 +517,14 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PollForWork()
   // 
   //  hbuf(0) -> next message type: (WRITE,UPDATE,READ,EXIT)
   //  hbuf(1) -> message destination
-  //  hbuf(2) -> storage offset
+  //  hbuf(2) -> storage offset (sparse index)
   //  hbuf(3) -> message size
   // ---------------------------------------------------------
   
   //assert(mpi_rank > 0);
+
+  MPI_Status status;
+  int sendingRank;
   
   grvy_printf(debug,"%s (%5i): Child task entering polling mode\n",prefix,mpi_rank);
   
@@ -508,13 +532,11 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PollForWork()
     {
       // get next item of work from rank 0 (distributed to all tasks)
 
-
-      MPI_Status status;
-
 #if 0
       MPI_Bcast(hbuf,4,MPI_INTEGER,0,MPI_COMM_GLOBAL);
 #else
       MPI_Recv(hbuf,4,MPI_INTEGER,MPI_ANY_SOURCE,TAG_HEADER,MPI_COMM_GLOBAL,&status);
+      sendingRank = status.MPI_SOURCE;
 #endif
       
       // Based on received header buffer, decide what to do next
@@ -525,10 +547,13 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PollForWork()
 	case OCORE_WRITE_NEW:		
 	  if(mpi_rank_global == hbuf[1] )
 	    {
-	      grvy_printf(debug,"\n%s (%5i): Polling -> NEW write request received\n",prefix,mpi_rank_global);
+	      grvy_printf(debug,"\n%s (%5i): Polling -> NEW write request received (from rank %i)\n",
+			  prefix,mpi_rank_global,sendingRank);
 	      
 	      bool new_data = true;
-	      StoreData(hbuf[2],new_data);
+	      SparseKey key (sendingRank,hbuf[2]);
+	      StoreData(key,new_data);
+	      //StoreData(hbuf[2],new_data);
 	    }
 	  break;
 	case OCORE_UPDATE_OLD: 
@@ -537,14 +562,18 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PollForWork()
 	      grvy_printf(debug,"\n%s (%5i): Polling -> UPDATE write request received\n",prefix,mpi_rank);
 	      
 	      bool new_data = false;
-	      StoreData(hbuf[2],new_data);
+	      SparseKey key (sendingRank,hbuf[2]);
+	      StoreData(key,new_data);
+	      //StoreData(hbuf[2],new_data);
 	    }
 	  break;
 	case OCORE_READ:
 	  if(mpi_rank_global == hbuf[1] )
 	    {
 	      grvy_printf(debug,"\n%s (%5i): polling -> READ request received\n",prefix,mpi_rank);
-	      PullData(hbuf[2]);
+	      //PullData(hbuf[2]);
+	      SparseKey key (sendingRank,hbuf[2]);
+	      PullData(key);
 	    }
 	  break;
 	case OCORE_EXIT:		// exit: task 0 has requested us to finish
@@ -568,7 +597,8 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::DumpStatistics(std::string s
 {
   FILE *fp; 
 
-  map<size_t,MPI_Ocore_datagram> :: iterator it;   
+  //map<size_t,MPI_Ocore_datagram> :: iterator it;   
+  map<SparseKey,MPI_Ocore_datagram> :: iterator it;   
 
   // Simple header 
 
@@ -609,7 +639,7 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::DumpStatistics(std::string s
 	    }
 	  
 	  for(it = smap.begin(); it != smap.end(); it++)
-	    fprintf(fp,"%12li %12li %12li %9i %7i\n",it->first,it->second.write_count,it->second.read_count,
+	    fprintf(fp,"%12li %12li %12li %9i %7i\n",it->first.second,it->second.write_count,it->second.read_count,
 		    mpi_rank,it->second.in_mem);
 	  
 	  fclose(fp);
@@ -638,6 +668,9 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Summarize()
   
   size_t total_written;
   size_t total_read;
+
+  //total_written    = ptimer.StatsCount("write_to_pool" );
+  //total_read       = ptimer.StatsCount("read_from_pool");
   
   if(isGlobalMaster_)
     {
@@ -826,9 +859,8 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Write_
     
     // Notify children of upcoming write request
 
-    grvy_printf(debug,"%s (%5i): Performing mpi_bcast to prep rank %i\n",prefix,mpi_rank_global,dest_task);
-
 #if 0
+    grvy_printf(debug,"%s (%5i): Performing mpi_bcast to prep rank %i\n",prefix,mpi_rank_global,dest_task);
     MPI_Bcast(hbuf,4,MPI_INTEGER,0,MPI_COMM_GLOBAL);
 #else
     MPI_Send(hbuf,4,MPI_INTEGER,dest_task,TAG_HEADER,MPI_COMM_GLOBAL);
@@ -836,7 +868,7 @@ template <typename T> int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Write_
 
     // Perform the write (sync for now)
 
-    grvy_printf(debug,"%s (%5i): Performing mpi_send to rank %i\n",prefix,mpi_rank,dest_task);
+    grvy_printf(debug,"%s (%5i): Performing mpi_send to rank %i\n",prefix,mpi_rank_global,dest_task);
 
     //MPI_Send(data,blocksize,MPI_DOUBLE,dest_task,sendtag,MYCOMM);
     MPI_Send(data,blocksize,GRVY_Internal::Get_MPI_Type(data[0]),dest_task,sendtag,MPI_COMM_GLOBAL);
@@ -1010,6 +1042,7 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file,
 
     MPI_Group group_global;
     MPI_Group group_ocore;
+    MPI_Group group_work;
 
     int incl_ranks[numOcoreTasks_];
     startingRank_ = mpi_nprocs_global - numOcoreTasks_;
@@ -1021,7 +1054,10 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file,
 
     MPI_Barrier(MPI_COMM_GLOBAL);
     assert(MPI_Group_incl(group_global,numOcoreTasks_,incl_ranks,&group_ocore) == MPI_SUCCESS);
+    assert(MPI_Group_excl(group_global,numOcoreTasks_,incl_ranks,&group_work)  == MPI_SUCCESS);
+
     MPI_Comm_create(MPI_COMM_GLOBAL,group_ocore,&MPI_COMM_OCORE);
+    MPI_Comm_create(MPI_COMM_GLOBAL,group_work,&MPI_COMM_WORK);
 
     if(mpi_rank_global >= startingRank_)
       isOcoreTask_ = true;
@@ -1236,12 +1272,12 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file,
 		    Abort();
 		  }
 
-		grvy_printf(info,"\n%s (%5i): File-based scratch space created for ocore overflow\n",prefix,mpi_rank);
-		grvy_printf(info,"%s (%5i): --> local scratch file = %s\n\n",prefix,mpi_rank,tmpfile.c_str());
+		grvy_printf(info,"\n%s (%5i): File-based scratch space created for ocore overflow\n",prefix,mpi_rank_global);
+		grvy_printf(info,"%s (%5i): --> local scratch file = %s\n\n",prefix,mpi_rank_global,tmpfile.c_str());
 	      }
 	  }
 	else
-	  grvy_printf(info,"\n%s(%5i): File-based scratch space disabled for ocore overflow\n",prefix,mpi_rank);
+	  grvy_printf(info,"\n%s(%5i): File-based scratch space disabled for ocore overflow\n",prefix,mpi_rank_global);
 
 	// -------------------------------
 	// allocation for raw storage pool
@@ -1316,7 +1352,6 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file,
     
     MPI_Ocore_owners owner;
 
-    //owner.data_hostId = distrib_rank;
     owner.data_hostId = distrib_rank + startingRank_;
     
     distrib_rank++;
@@ -1324,8 +1359,6 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file,
     if(distrib_rank == numOcoreTasks_)
       distrib_rank = 0;
 
-    ////printf("koomie distrib_rank = %i (nprocs = %i)\n",distrib_rank,mpi_nprocs);
-   
     try {
       rank_map[sparse_index] = owner;
     }
@@ -1341,21 +1374,21 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Initialize(string input_file,
 	Abort();	    
       }
 
-    grvy_printf(debug,"\n%s: Assigned task ownership for new record %i to task %i\n",prefix,sparse_index,
-		owner.data_hostId);
+    grvy_printf(debug,"\n%s (%5i): Assigned task ownership for new record %i to task %i\n",prefix,mpi_rank_global,
+		sparse_index,owner.data_hostId);
 
-    //return(distrib_rank+startingRank_);
     return(owner.data_hostId);
   }
 
 // ---------------------------------------------------------------------------------------
-// StoreData(): Recv and store ocore data from rank 0
+// StoreData(): Recv and store ocore data from worker task
 // ---------------------------------------------------------------------------------------
 
-int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::StoreData(size_t sparse_index, bool new_data)
+int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::StoreData(SparseKey key, bool new_data)
 {
 
   MPI_Status status;
+  int sendingRank = key.first;
 
   if(!initialized)
     {
@@ -1365,7 +1398,8 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::StoreData(size_t sparse_index
 
   assert(mpi_rank_global > 0);
 
-  map<size_t,MPI_Ocore_datagram>:: iterator it = smap.find(sparse_index);
+  //map<size_t,MPI_Ocore_datagram>:: iterator it = smap.find(sparse_index);
+  map<SparseKey,MPI_Ocore_datagram>:: iterator it = smap.find(key);
   size_t offset;
   bool   in_mem;
 
@@ -1374,7 +1408,8 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::StoreData(size_t sparse_index
 
       MPI_Ocore_datagram datagram;	
       datagram.in_mem      = true;
-      datagram.index       = GetFreeRecord(sparse_index);
+      //datagram.index       = GetFreeRecord(sparse_index);
+      datagram.index       = GetFreeRecord(key.second);
       datagram.write_count = 1;
       datagram.read_count  = 0;
 
@@ -1382,7 +1417,8 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::StoreData(size_t sparse_index
       in_mem               = true;
 
       try {
-	smap[sparse_index] = datagram;
+	//smap[sparse_index] = datagram;
+	smap[key] = datagram;
       }
 
       catch(const std::bad_alloc& ex) 
@@ -1399,23 +1435,30 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::StoreData(size_t sparse_index
     }
   else
     {
-      offset = smap[sparse_index].index;
-      in_mem = smap[sparse_index].in_mem;
+      //offset = smap[sparse_index].index;
+      //in_mem = smap[sparse_index].in_mem;
 
-      smap[sparse_index].write_count++;
+      //smap[sparse_index].write_count++;
+
+      offset = smap[key].index;
+      in_mem = smap[key].in_mem;
+
+      smap[key].write_count++;
     }
 
-  grvy_printf(debug,"%s (%5i): Prepping to recv data (user index %i -> ocore index %i)\n",prefix,mpi_rank,
-	      sparse_index,offset);
+  grvy_printf(debug,"%s (%5i): Prepping to recv data (user index %i -> ocore index %i)\n",prefix,mpi_rank_global,
+	      key.second,offset);
 
   if(in_mem)			// save record in ramdisk
     {
-      MPI_Recv(&pool[offset][0],blocksize,MPI_DOUBLE,0,sendtag,MPI_COMM_GLOBAL,&status);
-      grvy_printf(debug,"%s (%5i): Data received into memory pool\n",prefix,mpi_rank);
+      //MPI_Recv(&pool[offset][0],blocksize,MPI_DOUBLE,0,sendtag,MPI_COMM_GLOBAL,&status);
+      MPI_Recv(&pool[offset][0],blocksize,MPI_DOUBLE,sendingRank,sendtag,MPI_COMM_GLOBAL,&status);
+      grvy_printf(debug,"%s (%5i): Data received into memory pool (id=%li)\n",prefix,mpi_rank_global,key.second);
     }
   else			// save record to disk
     {
-      MPI_Recv(data_tmp,blocksize,MPI_DOUBLE,0,sendtag,MPI_COMM_GLOBAL,&status);
+      MPI_Recv(data_tmp,blocksize,MPI_DOUBLE,sendingRank,sendtag,MPI_COMM_GLOBAL,&status);
+      //MPI_Recv(data_tmp,blocksize,MPI_DOUBLE,0,sendtag,MPI_COMM_GLOBAL,&status);
 
       ptimer.BeginTimer("write_to_disk");
 
@@ -1426,7 +1469,7 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::StoreData(size_t sparse_index
 
       ptimer.EndTimer("write_to_disk");
 
-      grvy_printf(debug,"%s (%5i): Data received into disk pool\n",prefix,mpi_rank);
+      grvy_printf(debug,"%s (%5i): Data received into disk pool\n",prefix,mpi_rank_global);
     }
     
   return(0);
@@ -1436,10 +1479,12 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::StoreData(size_t sparse_index
 // PullData(): Read and send ocore data record to rank 0
 // ---------------------------------------------------------------------------------------
 
-int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PullData(size_t sparse_index)
+//int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PullData(size_t sparse_index)
+int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PullData(SparseKey key)
 {
 
   MPI_Status status;
+  int destinationHost = key.first;
 
   grvy_printf(debug,"%s (%5i): Entering PullData()\n",prefix,mpi_rank_global);
 
@@ -1451,21 +1496,25 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PullData(size_t sparse_index
 
   //assert(mpi_rank > 0);
 
-  map<size_t,MPI_Ocore_datagram>:: iterator it = smap.find(sparse_index);
+  //map<size_t,MPI_Ocore_datagram>:: iterator it = smap.find(sparse_index);
+  map<SparseKey,MPI_Ocore_datagram>:: iterator it = smap.find(key);
 
   assert(it != smap.end());
 
   size_t offset = it->second.index;
   bool   in_mem = it->second.in_mem;
 
-  smap[sparse_index].read_count++;
+
+  //smap[sparse_index].read_count++;
+  smap[key].read_count++;
 
   grvy_printf(debug,"%s (%5i): Prepping to send data (user index %i -> ocore index %i)\n",prefix,mpi_rank,
-	      sparse_index,offset);
+	      key.second,offset);
 
   if(in_mem)		// record in ramdisk
     {
-      MPI_Send(&pool[offset][0],blocksize,MPI_DOUBLE,0,recvtag,MPI_COMM_GLOBAL);
+      //MPI_Send(&pool[offset][0],blocksize,MPI_DOUBLE,0,recvtag,MPI_COMM_GLOBAL);
+      MPI_Send(&pool[offset][0],blocksize,MPI_DOUBLE,destinationHost,recvtag,MPI_COMM_GLOBAL);
     }
   else			// record on disk, read first prior to sending
     {
@@ -1478,7 +1527,8 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PullData(size_t sparse_index
 
       ptimer.EndTimer("read_from_disk");
 
-      MPI_Send(data_tmp,blocksize,MPI_DOUBLE,0,recvtag,MPI_COMM_GLOBAL);
+      //MPI_Send(data_tmp,blocksize,MPI_DOUBLE,0,recvtag,MPI_COMM_GLOBAL);
+      MPI_Send(data_tmp,blocksize,MPI_DOUBLE,destinationHost,recvtag,MPI_COMM_GLOBAL);
 
     }
     
@@ -1500,7 +1550,8 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: DumptoDisk()
 
   priority_queue< NodePriority,vector<NodePriority>, ComparePriority> q;
 
-  map<size_t,MPI_Ocore_datagram> :: iterator it;   
+  //map<size_t,MPI_Ocore_datagram> :: iterator it;   
+  map<SparseKey,MPI_Ocore_datagram> :: iterator it;   
 
   for(it = smap.begin(); it != smap.end(); it++)
     {
@@ -1510,7 +1561,8 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: DumptoDisk()
       NodePriority node;
 
       node.priority     = it->second.read_count;
-      node.global_index = it->first;
+      //node.global_index = it->first.second;
+      node.key          = it->first;
       node.ocore_index  = it->second.index;
 
       q.push(node);
@@ -1537,8 +1589,11 @@ int GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: DumptoDisk()
 
       // mark record as residing on disk and save local disk index
 
-      smap[q.top().global_index].in_mem  = false;
-      smap[q.top().global_index].index   = disk_index;
+      smap[q.top().key].in_mem  = false;
+      smap[q.top().key].index   = disk_index;
+
+      //      smap[q.top().global_index].in_mem  = false;
+      //      smap[q.top().global_index].index   = disk_index;
 
       // flag the now-unoccupied record
 
