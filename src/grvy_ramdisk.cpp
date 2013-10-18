@@ -79,7 +79,6 @@ typedef pair <int,size_t> SparseKey; // combines sending rank and sparse index
 struct NodePriority
 {
     size_t priority;		// record priority (based on read access frequency)
-  //size_t global_index;	// sparse storage index 
     SparseKey key;	        // sparse storage key
     size_t ocore_index;	        // ocore data index
 }; 
@@ -132,8 +131,6 @@ public:
   int    DumptoDisk       ();
   size_t GetFreeRecord    (size_t sparse_index);
   int    PullData         (SparseKey key);
-  //int    PullData         (size_t sparse_index);
-  //int    StoreData        (size_t sparse_index, bool new_data);
   int    StoreData        (SparseKey key, bool new_data);
 
   template <typename T> int Read_from_Pool (int mpi_task, size_t sparse_index,T *data);
@@ -183,7 +180,6 @@ public:
   int num_empty_reads;	                  // number of empty reads encountered
   
   vector< vector <double>  > pool;        // raw data pool storage
-  //map<size_t,MPI_Ocore_datagram> smap;    // sparse data map (sparse user indices -> contiguous pool indices)
   map<SparseKey,MPI_Ocore_datagram> smap; // sparse data map (sparse user indices -> contiguous pool indices)
   map<size_t,MPI_Ocore_owners> rank_map;  // map for rank 0 to identify which child rank owns the data
   double* data_tmp;		          // temporary buffer for disk_overflow block storage
@@ -240,11 +236,6 @@ GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class() :m_pimpl(new GRVY_MPI_Ocore_ClassIm
   m_pimpl->distrib_rank             = 0;
   m_pimpl->self                     = this;
   
-  // set default options for ocore
-  
-  //    m_pimpl->options["output_stdout"        ] = true;
-  //    m_pimpl->options["output_totaltimer_raw"] = true;
-
 }
 
 GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
@@ -252,14 +243,7 @@ GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
   // using auto_ptr for proper cleanup
 }
 
-#if 0
-int GRVY_MPI_Ocore_Class::SplitComm(MPI_Comm GLOB_COMM, MPI_Comm &WORK_COMM, MPI_Comm &OCORE_COMM, int numWork, int mode)
-{
-  return(m_pimpl->SplitComm(GLOB_COMM,WORK_COMM,OCORE_COMM,numWork,mode));
-}
-#endif
-
-  int GRVY_MPI_Ocore_Class::Initialize(string input_file, int num_ocore_tasks, MPI_Comm GLOB_COMM)
+int GRVY_MPI_Ocore_Class::Initialize(string input_file, int num_ocore_tasks, MPI_Comm GLOB_COMM)
 {
   return(m_pimpl->Initialize(input_file,num_ocore_tasks,GLOB_COMM));
 }
@@ -341,7 +325,6 @@ void GRVY_MPI_Ocore_Class::Finalize()
 
 #endif
 
-  fflush(NULL);
   MPI_Barrier(m_pimpl->MPI_COMM_GLOBAL);
   
   // Close temporary ramdisk overflow files and storage
@@ -553,7 +536,6 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PollForWork()
 	      bool new_data = true;
 	      SparseKey key (sendingRank,hbuf[2]);
 	      StoreData(key,new_data);
-	      //StoreData(hbuf[2],new_data);
 	    }
 	  break;
 	case OCORE_UPDATE_OLD: 
@@ -564,14 +546,12 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: PollForWork()
 	      bool new_data = false;
 	      SparseKey key (sendingRank,hbuf[2]);
 	      StoreData(key,new_data);
-	      //StoreData(hbuf[2],new_data);
 	    }
 	  break;
 	case OCORE_READ:
 	  if(mpi_rank_global == hbuf[1] )
 	    {
 	      grvy_printf(debug,"\n%s (%5i): polling -> READ request received\n",prefix,mpi_rank);
-	      //PullData(hbuf[2]);
 	      SparseKey key (sendingRank,hbuf[2]);
 	      PullData(key);
 	    }
@@ -597,7 +577,6 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::DumpStatistics(std::string s
 {
   FILE *fp; 
 
-  //map<size_t,MPI_Ocore_datagram> :: iterator it;   
   map<SparseKey,MPI_Ocore_datagram> :: iterator it;   
 
   // Simple header 
@@ -669,13 +648,19 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Summarize()
   size_t total_written;
   size_t total_read;
 
-  //total_written    = ptimer.StatsCount("write_to_pool" );
-  //total_read       = ptimer.StatsCount("read_from_pool");
+  if(isWorkTask_)
+    {
+      int total_written_local = ptimer.StatsCount("write_to_pool" );
+      int total_read_local    = ptimer.StatsCount("read_from_pool");
+      
+      MPI_Reduce(&total_written_local,&total_written,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORK);
+      MPI_Reduce(&total_read_local,   &total_read,   1,MPI_INT,MPI_SUM,0,MPI_COMM_WORK);
+    }
   
   if(isGlobalMaster_)
     {
-      total_written    = ptimer.StatsCount("write_to_pool" );
-      total_read       = ptimer.StatsCount("read_from_pool");
+      //total_written    = ptimer.StatsCount("write_to_pool" );
+      //total_read       = ptimer.StatsCount("read_from_pool");
 
       double aggr_write_speed = 0.0;
       double aggr_read_speed  = 0.0;
@@ -779,7 +764,11 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp::Summarize()
 	  grvy_printf(info,"%s:   --> %9i of %9i total write transactions were disk based (%5.2f %)\n",prefix,
 		      sum_disk_writes,total_written,100.0*sum_disk_writes/total_written);
 	  grvy_printf(info,"%s:   --> %9i of %9i total read  transactions were disk based (%5.2f %)\n",prefix,
-		      sum_disk_reads,total_read,100.0*sum_disk_reads/total_read);
+		      sum_disk_reads,total_read,100.0*(1.0*sum_disk_reads/total_read));
+
+	  printf("sum_disk_reads = %i\n",sum_disk_reads);
+	  printf("total_read     = %i\n",total_read);
+	  printf("ratio = %f\n",100.0*sum_disk_reads/total_read);
 			
 	}
       else
