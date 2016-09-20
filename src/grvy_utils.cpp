@@ -225,7 +225,7 @@ namespace GRVY {
 
     if(boost::filesystem::is_directory(dest_dir))
       {
-	if(!is_empty(dest_dir))
+	if(!boost::filesystem::is_empty(dest_dir))
 	  {
 	    grvy_printf(GRVY_ERROR,"%s: %s target directory exists but is not empty\n",__func__,to_dir);
 	    return(1);
