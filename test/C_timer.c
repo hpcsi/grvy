@@ -39,7 +39,7 @@ double Foo_Sleep = 0.098 * 1.e6;
 double Bar_Sleep = 0.075 * 1.e6;
 double boo_Sleep = 0.23  * 1.e6;
 double Max_Iters = 3;
-double Tolerance = 5e-4;	/* a coarse-grained check to compare against gettimeofday() */
+double Tolerance = 2e-3;	/* a coarse-grained check to compare against gettimeofday() */
 
 void foo();
 void bar();
