@@ -84,10 +84,10 @@ typedef struct GRVY_Timer_Data {
   perf_stats stats_inc;		// for inclusive data statistics
 } tTimer_Data;
 
-typedef struct minmax {
+typedef struct grvy_minmax {
   double value;
   size_t index;
-} minmax;
+} grvy_minmax;
 
 typedef std::map <std::string, GRVY_Timer_Data > _GRVY_Type_TimerMap2;
 
@@ -1192,8 +1192,8 @@ namespace GRVY {
 	hid_t timers_type = m_pimpl->CreateHistType(Ptable_Version);
        	hid_t     tableId = h5.m_pimpl->PTableOpen(machine,"PTable");
 
-	map<string,minmax> max_vals;
-	map<string,minmax> min_vals;
+	map<string,grvy_minmax> max_vals;
+	map<string,grvy_minmax> min_vals;
 
 	int max_revision_width = 0; 	// column width variables for pretty-printing
 	int max_index_width    = 0;
