@@ -74,6 +74,9 @@ extern "C" {
 #define GRVY_MPI_ENABLED    @HAVE_MPI@
 
 #if GRVY_MPI_ENABLED == 1
+// MPI implementations try to include C++ code via mpi.h unless you
+// tell them not to; this breaks when we do it in an extern "C" block.
+#define MPICH_SKIP_MPICXX
 #define OMPI_SKIP_MPICXX
 #include <mpi.h>
 #endif
