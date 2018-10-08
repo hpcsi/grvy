@@ -33,7 +33,7 @@ echo Build user.................... : $USER
 echo Build host.................... : $BUILD_HOST
 echo Configure date................ : $BUILD_DATE
 echo Build architecture............ : $BUILD_ARCH
-echo SVN revision number........... : $BUILD_VERSION
+echo Git revision number........... : $BUILD_VERSION
 echo
 if test "$BOOST_HEADER_ONLY" = "1"; then
      echo Boost Configuration - Header only build requested
