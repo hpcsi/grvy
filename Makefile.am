@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-ACLOCAL_AMFLAGS = -I m4 -I m4/common
+ACLOCAL_AMFLAGS = -I m4 
 SUBDIRS          = src examples test doxygen
 DISTDIRS         = src examples
 EXTRA_DIST       = CHANGES AUTHORS COPYING LICENSE dist_version 
@@ -60,9 +60,9 @@ endif
 # Revision control support for external distribution
 # --------------------------------------------------
 
-if SVN_CHECKOUT
+if GIT_CHECKOUT
 dist_version: FORCE
-	@SVN_REVISION@ > $(top_srcdir)/dist_version
+	@GIT_REVISION@ > $(top_srcdir)/dist_version
 
 FORCE:
 endif
