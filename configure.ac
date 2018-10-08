@@ -101,7 +101,7 @@ AC_CACHE_SAVE
 # Checks for libraries.
 #----------------------
 
-AX_PATH_HDF5_NEW(1.8.0,no)
+AX_PATH_HDF5(1.8.0,no)
 
 #----------------------------------
 # Enable quadrature rule generation
