@@ -5,11 +5,8 @@
 # particular, if a ".in" version of an input src file exists, the .in
 # version will be updated in favor of named src file.
 # 
-# Originally: August 2010 (ks)
+# Originally: August 2010 (karl@ices.utexas.edu)
 # --------------------------------------------------------------------
-# $Id: update_license.pl 29234 2012-04-05 16:38:55Z karl $
-# --------------------------------------------------------------------
-
 
 #use warnings;
 use File::Compare;
