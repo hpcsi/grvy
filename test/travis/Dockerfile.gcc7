@@ -5,7 +5,7 @@ FROM centos:latest
 MAINTAINER Karl W. Schulz <karl@ices.utexas.edu>
 
 # Define a user
-RUN useradd -m test
+RUN useradd -u 2000 -m test
 
 RUN sed -i 's/enabled=1/enabled=0/' /etc/yum/pluginconf.d/fastestmirror.conf
 
