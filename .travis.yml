@@ -7,12 +7,10 @@ services:
 before_install:
   - docker pull koomietx/grvy-gcc7-test:v1.0
   - docker ps -a
-#  - docker run koomietx/grvy-gcc7-test:v1.0 /bin/bash -c "ls -a"
-#  - docker run koomietx/grvy-gcc7-test:v1.0 /bin/bash -l -c "module list"
   - export DOCKER_RUN="docker run -v ${TRAVIS_BUILD_DIR}:/home/test/ koomietx/grvy-gcc7-test:v1.0"
 
 script:
-  - ${DOCKER_RUN} /bin/bash -l -c "module load boost && ./bootstrap && ./configure && make -j 4"
+  - ${DOCKER_RUN} /bin/bash -l -c "module load boost && ./bootstrap && ./configure && make -j 4 && make check"
 
 notifications:
   email: false
