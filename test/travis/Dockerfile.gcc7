@@ -21,6 +21,6 @@ RUN yum -y install lmod-defaults-gnu7-openmpi3-ohpc
 RUN yum -y install doxygen
 
 # User to run as
-WORKDIR /home/karl/host/Dropbox/classes/2018/cse380/git/instructor/
+WORKDIR /home/test
 RUN echo "docker-grvygcc" > /home/test/.container
 USER test

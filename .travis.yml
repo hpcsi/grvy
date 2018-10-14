@@ -7,6 +7,6 @@ services:
 before_install:
   - docker pull koomietx/grvy-gcc7-test:v1.0
   - docker ps -a
-  - docker run koomietx/grvy-gcc7-test:v1.0 -c "ls"
+  - docker run koomietx/grvy-gcc7-test:v1.0 -c "/bin/ls"
 script:
   - ls
