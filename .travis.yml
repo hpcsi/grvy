@@ -9,17 +9,13 @@ before_install:
   - docker ps -a
   - docker run koomietx/grvy-gcc7-test:v1.0 /bin/bash -c "ls -a"
   - docker run koomietx/grvy-gcc7-test:v1.0 /bin/bash -l -c "module list"
+  - export DOCKER_RUN="docker run -v ${TRAVIS_BUILD_DIR}:/home/test/ koomietx/grvy-gcc-7-test:v1.0"
 
 script:
   - echo $SHELL
   - uname -a
   - pwd
-  - gcc --version
-  - . /etc/profile.d/lmod.sh
-  - which module
-  - ./bootstrap
-  - module load boost
-  - ./configure
+  - ${DOCKER_RUN} module list
 
 notifications:
   email: false
