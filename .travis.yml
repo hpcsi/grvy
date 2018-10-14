@@ -11,8 +11,11 @@ before_install:
   - docker run koomietx/grvy-gcc7-test:v1.0 /bin/bash -l -c "module list"
 
 script:
+  - echo $SHELL
+  - which module
   - ./bootstrap
   - module load boost
   - ./configure
 
-
+notifications:
+  email: false
