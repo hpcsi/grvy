@@ -1,6 +1,3 @@
----
-### libGRVY
----
 ![libGRVY](https://raw.githubusercontent.com/hpcsi/grvy/master/doxygen/images/grvy-small.png)
 
 [![Build Status](https://travis-ci.org/hpcsi/grvy.svg?branch=master)](https://travis-ci.org/hpcsi/grvy)
