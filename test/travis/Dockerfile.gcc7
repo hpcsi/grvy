@@ -20,7 +20,7 @@ RUN yum -y install boost-gnu7-openmpi3-ohpc
 RUN yum -y install lmod-defaults-gnu7-openmpi3-ohpc
 RUN yum -y install doxygen
 
-COPY test.sh /home/test
+COPY --chown=test test.sh /home/test
 
 # User to run as
 WORKDIR /home/test
