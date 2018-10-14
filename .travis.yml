@@ -13,8 +13,8 @@ before_install:
 
 script:
   - echo $SHELL
-  - uname -a
-  - pwd
+  - ${DOCKER_RUN} /bin/bash -c "uname -a"
+  - ${DOCKER_RUN} /bin/bash -c "pwd"
   - ${DOCKER_RUN} /bin/bash -c "ls -la"
   - ${DOCKER_RUN} /bin/bash -c "./test.sh"
 
