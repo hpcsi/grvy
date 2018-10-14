@@ -13,6 +13,7 @@ before_install:
 
 script:
   - ${DOCKER_RUN} /bin/bash -l -c "ld -ld ."
+  - ${DOCKER_RUN} /bin/bash -l -c "ld -la"
   - ${DOCKER_RUN} /bin/bash -l -c "touch foo"
   - ${DOCKER_RUN} /bin/bash -l -c "./bootstrap"
 #  - ${DOCKER_RUN} /bin/bash -c "pwd"
