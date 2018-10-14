@@ -1,0 +1,26 @@
+# Pull the latest image of CentOS from the Docker repo
+FROM centos:latest
+
+# Creator
+MAINTAINER Karl W. Schulz <karl@ices.utexas.edu>
+
+# Define a user
+RUN useradd -m test
+
+RUN sed -i 's/enabled=1/enabled=0/' /etc/yum/pluginconf.d/fastestmirror.conf
+
+# enable OpenHPC repository 
+RUN yum install -y  http://build.openhpc.community/OpenHPC:/1.3/CentOS_7/x86_64/ohpc-release-1.3-1.el7.x86_64.rpm
+
+# Add some packages
+RUN yum -y install make which git
+RUN yum -y install ohpc-autotools
+RUN yum -y install gnu7-compilers-ohpc
+RUN yum -y install boost-gnu7-openmpi3-ohpc
+RUN yum -y install lmod-defaults-gnu7-openmpi3-ohpc
+RUN yum -y install doxygen
+
+# User to run as
+WORKDIR /home/karl/host/Dropbox/classes/2018/cse380/git/instructor/
+RUN echo "docker-grvygcc" > /home/test/.container
+USER ktest
