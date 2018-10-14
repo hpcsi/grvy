@@ -12,6 +12,7 @@ before_install:
   - export DOCKER_RUN="docker run -v ${TRAVIS_BUILD_DIR}:/home/test/ koomietx/grvy-gcc7-test:v1.0"
 
 script:
+  - ${DOCKER_RUN} /bin/bash -l -c "touch foo"
   - ${DOCKER_RUN} /bin/bash -l -c "./bootstrap"
 #  - ${DOCKER_RUN} /bin/bash -c "pwd"
 #  - ${DOCKER_RUN} /bin/bash -c "ls -la"
