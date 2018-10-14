@@ -15,7 +15,7 @@ script:
   - echo $SHELL
   - uname -a
   - pwd
-  - ${DOCKER_RUN} test.sh
+  - ${DOCKER_RUN} ./test.sh
 
 notifications:
   email: false
