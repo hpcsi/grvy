@@ -12,6 +12,7 @@ before_install:
 
 script:
   - echo $SHELL
+  - gcc --version
   - . /etc/profile.d/lmod.sh
   - which module
   - ./bootstrap
