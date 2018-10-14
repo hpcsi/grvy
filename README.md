@@ -2,6 +2,8 @@
 ### libGRVY
 ---
 
+[![Build Status](https://travis-ci.org/hpcsi/grvy.svg?branch=master)](https://travis-ci.org/hpcsi/grvy)
+
 The GRVY Toolkit is a utility library used to house various support
 functions often required for application development of
 high-performance, scientific applications. The library is written in
