@@ -12,6 +12,7 @@ before_install:
 
 script:
   - echo $SHELL
+  - uname -a
   - gcc --version
   - . /etc/profile.d/lmod.sh
   - which module
