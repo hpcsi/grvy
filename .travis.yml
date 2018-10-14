@@ -12,5 +12,5 @@ before_install:
 jobs: 
   include:
     - stage: build
-    script ./bootstrap
+    script: ./bootstrap
 
