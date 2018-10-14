@@ -12,6 +12,7 @@ before_install:
 
 script:
   - echo $SHELL
+  - . /etc/profile.d/lmod.sh
   - which module
   - ./bootstrap
   - module load boost
