@@ -23,4 +23,4 @@ RUN yum -y install doxygen
 # User to run as
 WORKDIR /home/karl/host/Dropbox/classes/2018/cse380/git/instructor/
 RUN echo "docker-grvygcc" > /home/test/.container
-USER ktest
+USER test
