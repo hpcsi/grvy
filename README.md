@@ -19,4 +19,5 @@ functionality provided by the library is categorized as follows:
   messages
 * utilities for offloading out-of-core read/write operations to a pool
   of distributed shared-memory nodes using MPI for data transfer
-  miscellaneous * file handling and math utilities
+  miscellaneous 
+* file handling and math utilities
