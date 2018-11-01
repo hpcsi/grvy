@@ -1,4 +1,3 @@
-# $Id$
 
 
 h_sources                 = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h \

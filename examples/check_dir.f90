@@ -25,7 +25,6 @@
 !! check_dir.f90: Example illustrating creation of parent directories for 
 !!                output files via libGRVY via Fortran.
 !!
-!! $Id$
 !!--------------------------------------------------------------------------
 !!--------------------------------------------------------------------------
 

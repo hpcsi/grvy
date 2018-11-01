@@ -25,7 +25,6 @@
 # 
 #  Regression/Test Suite for libGRVY.
 # 
-#  $Id$
 # --------------------------------------------------------------------------
 
 EXE=F_input_dump

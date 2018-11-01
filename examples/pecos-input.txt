@@ -7,7 +7,6 @@
 # the [section] syntax. You are allowed to have variables of the same
 # name so long as they are within unique section definitions.
 # 
-# $Id$
 # ------------------------------------------------------------------------------
 
 #------------------------------------------

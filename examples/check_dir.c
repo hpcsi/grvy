@@ -25,7 +25,6 @@
 // check_dir.c: Example illustrating creation of parent directories for 
 //              output files via libGRVY in C.
 //
-// $Id$
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
