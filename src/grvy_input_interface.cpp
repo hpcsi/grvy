@@ -56,7 +56,7 @@ namespace GRVY_Internal {
 // Utility function to create new input parsing class on 1st call for
 // C interface
 
-std::auto_ptr<GRVY_Input_Class> _GRVY_Input;
+std::unique_ptr<GRVY_Input_Class> _GRVY_Input;
 
 namespace GRVY_Internal {
   void verify_C_parser_allocated();

@@ -1360,7 +1360,7 @@ class GRVY_Input_Class {
 
  private:
   class GRVY_Input_ClassImp       ;           // forward declaration to Input class implementation
-  std::auto_ptr<GRVY_Input_ClassImp> m_pimpl; // pointer to implementation
+  std::unique_ptr<GRVY_Input_ClassImp> m_pimpl; // pointer to implementation
 
 };
 
@@ -1546,7 +1546,7 @@ class GRVY_Timer_Class {
 
 private:
   class GRVY_Timer_ClassImp;	              // forward declaration to Timer implementation
-  std::auto_ptr<GRVY_Timer_ClassImp> m_pimpl; // pointer to implementation
+  std::unique_ptr<GRVY_Timer_ClassImp> m_pimpl; // pointer to implementation
 
 };
 
@@ -1718,7 +1718,7 @@ private:
  private:
    //boost::scoped_ptr<GRVY_HDF5_ClassImp> m_pimpl;
    class GRVY_HDF5_ClassImp;	               // forward declaration of HDF5 implementation
-   std::auto_ptr<GRVY_HDF5_ClassImp> m_pimpl;  // pointer to implementation
+   std::unique_ptr<GRVY_HDF5_ClassImp> m_pimpl;  // pointer to implementation
  };
 }
 
