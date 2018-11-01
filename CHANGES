@@ -1,4 +1,10 @@
-Version 0.33 (March 2013 - In Progress)
+Version 0.34 (31 October 2018)
+
+  * move source code hosting to GitHub
+  * fix several compiler warnings (#1)
+  * strip out old svn references in header comments (#2)
+
+Version 0.33 (March 2013)
 
   * migrated additional portions of Fortran interface to use iso_c_bindings 
   * addition of new timer utiliites which provide inclusive timing measurements
