@@ -253,6 +253,13 @@ extern "C" int grvy_input_register_get_char   (const char *var,char **value)
 // using iso_c_binding....
 //-----------------------------------------------------------------
 
+// temporarily disable gcc warning that complains about strncpy()
+// calls in the following Fortran interfaces. We verify separately
+// that the destination is sized large enough to accept the copy.
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow=n"
+
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void grvy_input_fread_char_(char *var,char *value,int *flag,int _namelen, int _storage)
 #else
@@ -292,7 +299,6 @@ extern "C" void grvy_input_fread_char_(char *var,int _namelen,char *value,int _s
   delete[] name;
   return;
 }
-
 
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void grvy_input_fread_char_ivec_(char *var,char *value,int *elem,int *flag,
@@ -335,6 +341,8 @@ extern "C" void grvy_input_fread_char_ivec_(char *var,int _namelen,char *value,
   free(tmpvar);
   return;
 }
+
+#pragma GCC diagnostic pop
 
 // DEPRECATED function; can be controlled via grvy_log_setlevel
 
@@ -447,6 +455,9 @@ extern "C" void grvy_input_register_get_double_ (char *var,int _namelen,double *
   return;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow=n"
+
 #ifdef _GRVY_FORTRAN_STRING_ORDER1
 extern "C" void grvy_input_register_get_char_   (char *var,char *value,int *flag,int _namelen,int _storage)
 #else
@@ -469,6 +480,4 @@ extern "C" void grvy_input_register_get_char_   (char *var,int _namelen,char *va
   return;
 }
 
-
-
-
+#pragma GCC diagnostic pop
