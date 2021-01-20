@@ -76,11 +76,11 @@ namespace GRVY {
 
 #ifdef _GRVY_GLOBAL_DEF
 
-  GRVY_Log_Class    _GRVY_Log;                           // Log mechanism
-  GLOBAL const char *_GRVY_gtimer  = "GRVY_Unassigned";  // default global timer key
-
-  GRVY_MPI_Ocore_Class *_GRVY_Ocore = NULL;		 // MPI ramdisk for out-of-core methods
-
+  GRVY_Log_Class    _GRVY_Log;                          // Log mechanism
+  GLOBAL const char *_GRVY_gtimer  = "GRVY_Unassigned"; // default global timer key
+#ifdef ENABLE_OCORE  
+  GRVY_MPI_Ocore_Class *_GRVY_Ocore = NULL;		// MPI ramdisk for out-of-core methods
+#endif
   GLOBAL double _GRVY_TIMER_THRESH       = 9.0e-8;      // low water mark for expected timer usage deltas        
   GLOBAL double _GRVY_PERC_TOL           = 1e-3;        // tolerance for defining acceptable global percentages
 
@@ -88,8 +88,9 @@ namespace GRVY {
 
   GLOBAL GRVY_Log_Class _GRVY_Log;
   GLOBAL const char *_GRVY_gtimer;
-
+#ifdef ENABLE_OCORE  
   GLOBAL GRVY_MPI_Ocore_Class *_GRVY_Ocore;
+#endif
   GLOBAL double _GRVY_TIMER_THRESH;
   GLOBAL double _GRVY_PERC_TOL;
 #endif
@@ -128,7 +129,7 @@ namespace GRVY {
     GRVY_HDF5_ClassImp() {}
    ~GRVY_HDF5_ClassImp() {}
     
-#ifdef HAVE_HDF5  
+#ifdef HAVE_HDF5
     hid_t fileId;                             // hdf5 file handle
     std::map<std::string,hid_t> groupIds;     // hdf5 group handles
     std::map<std::string,hid_t> datasetIds;   // hdf5 dataset handles

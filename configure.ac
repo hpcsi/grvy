@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.65)
-AC_INIT(grvy, 0.34.0, karl@ices.utexas.edu)
+AC_INIT(grvy, 0.35.0, karl@utexas.edu)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADER(config_grvy.h)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -56,6 +56,21 @@ fi
 
 AM_CONDITIONAL(MPI_ENABLED,test x$HAVE_MPI = x1)
 AC_SUBST(HAVE_MPI)
+
+# Enable MPI Ocore
+ENABLE_OCORE=0
+AC_ARG_ENABLE(ocore, AC_HELP_STRING([--enable-ocore],[enable MPI ocore utilities (requires MPI)]))
+if test "x$enable_ocore" = "xyes"; then
+   ENABLE_OCORE=1
+   AC_DEFINE(ENABLE_OCORE,1,[Enable MPI OCORE options])
+   if test "x$enable_mpi" != "xyes"; then
+     AC_MSG_ERROR([an MPI-based build must be enabled to enable MPI OCORE])
+   fi
+fi
+AM_CONDITIONAL(ENABLE_OCORE,test x$ENABLE_OCORE = x1)
+AC_SUBST(ENABLE_OCORE)
+
+
 
 #---------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.

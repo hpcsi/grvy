@@ -35,9 +35,9 @@
 #include<grvy.h>
 #include<string>
 
-// OPTIONAL Module - Only available with MPI
+// OPTIONAL Module - Only available with MPI/Ocore
 
-#ifdef HAVE_MPI
+#ifdef ENABLE_OCORE
 
 using namespace std;
 using namespace GRVY;
@@ -139,8 +139,8 @@ size_t grvy_ocore_pop_record_int64        (long long int *data) { return(_GRVY_O
 
 extern "C" int grvy_ocore_init_fortran(const char *input_file, int num_ocore_tasks, int GLOB_COMM_Fortran)
 {
-  grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI support\n\n");
-  grvy_printf(GRVY_FATAL,"Please enable support using the \"--with-mpi\" option to configure \n");
+  grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI OCORE support\n\n");
+  grvy_printf(GRVY_FATAL,"Please enable support using the \"--enable-ocore\" option to configure \n");
   grvy_printf(GRVY_FATAL,"and reinstall if you desire to use MPI out-of-core related functionality.\n\n");
   exit(1);
 }

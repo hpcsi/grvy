@@ -39,7 +39,7 @@
 
 // OPTIONAL Module - Only available with MPI
 
-#ifdef HAVE_MPI
+#ifdef HAVE_OCORE
 
 using namespace std;
 using namespace GRVY;
@@ -1661,16 +1661,16 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Abort()
 namespace GRVY {
   GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class()
   {
-    grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI support\n\n");
-    grvy_printf(GRVY_FATAL,"Please enable support using the \"--with-mpi\" option to configure \n");
+    grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI Ocore support\n\n");
+    grvy_printf(GRVY_FATAL,"Please enable support using the \"--enable-ocore\" option to configure \n");
     grvy_printf(GRVY_FATAL,"and reinstall if you desire to use MPI out-of-core related functionality.\n\n");
     exit(1);
   }
   
   GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
   {
-    grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI support\n\n");
-    grvy_printf(GRVY_FATAL,"Please enable support using the \"--with-mpi\" option to configure \n");
+    grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI Ocore support\n\n");
+    grvy_printf(GRVY_FATAL,"Please enable support using the \"--enable-ocore\" option to configure \n");
     grvy_printf(GRVY_FATAL,"and reinstall if you desire to use MPI out-of-core related functionality.\n\n");
     exit(1);
   }

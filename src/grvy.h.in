@@ -72,6 +72,7 @@ extern "C" {
 #define GRVY_FC             "@FC@"
 #define GRVY_FCFLAGS        "@FCFLAGS@"
 #define GRVY_MPI_ENABLED    @HAVE_MPI@
+#define GRVY_OCORE_ENABLED  @ENABLE_OCORE@
 
 #if GRVY_MPI_ENABLED == 1
 // MPI implementations try to include C++ code via mpi.h unless you
@@ -678,7 +679,7 @@ extern "C" {
   // MPI Out-of-Core Utilities
   //-----------------------------------------------------------------
 
-#if GRVY_MPI_ENABLED == 1
+#if GRVY_OCORE_ENABLED == 1
 
   /** \defgroup Cocore MPI Out-of-Core Utilities 
    *  \ingroup Capi
@@ -1545,7 +1546,7 @@ class GRVY_Timer_Class {
 
 private:
   class GRVY_Timer_ClassImp;	              // forward declaration to Timer implementation
-  std::unique_ptr<GRVY_Timer_ClassImp> m_pimpl; // pointer to implementation
+  std::auto_ptr<GRVY_Timer_ClassImp> m_pimpl; // pointer to implementation
 
 };
 
@@ -1644,7 +1645,7 @@ public:
   /** @} */
 
 private:
-  class GRVY_MPI_Ocore_ClassImp;		  // forward declaration to Ocore implementation
+  class GRVY_MPI_Ocore_ClassImp;		    // forward declaration to Ocore implementation
   std::auto_ptr<GRVY_MPI_Ocore_ClassImp> m_pimpl; // pointer to implementation
 };
 

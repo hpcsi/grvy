@@ -57,6 +57,11 @@ echo Optional Features:
    else
      echo '   'Link with MPI.............. : yes
    fi
+   if test "$ENABLE_OCORE" = "0"; then
+     echo '   'Enable MPI Ocore........... : no
+   else
+     echo '   'Enable MPI Ocore........... : yes
+   fi
    if test "$HAVE_GCOV_TOOLS" = "0"; then
      echo '   'Enable gcov code coverage.. : no
    else

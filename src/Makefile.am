@@ -2,10 +2,13 @@
 
 h_sources                 = grvy.h grvy_classes.h grvy_int.h fortran_string_order.h \
 	                    grvy_env.h grvy_ptable.h grvy_mpi.h
-cc_sources                = grvy_input.cpp grvy_input_interface.cpp grvy_classes.cpp                \
-	                    grvy_timer.cpp grvy_timer_interface.cpp                                 \
-		            grvy_utils.cpp grvy_math.cpp grvy_log.cpp grvy_ramdisk.cpp              \
-			    grvy_version.cpp grvy_env.cpp grvy_hdf5.cpp grvy_ramdisk_interface.cpp
+cc_sources                = grvy_input.cpp grvy_input_interface.cpp grvy_classes.cpp \
+	                    grvy_timer.cpp grvy_timer_interface.cpp                  \
+		            grvy_utils.cpp grvy_math.cpp grvy_log.cpp                \
+			    grvy_version.cpp grvy_env.cpp grvy_hdf5.cpp
+
+cc_sources               += grvy_ramdisk.cpp grvy_ramdisk_interface.cpp
+
 
 getpot_sources            = common/getpot/getpot.h
 
