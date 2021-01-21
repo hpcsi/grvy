@@ -1,3 +1,10 @@
+Version 0.35 (2021)
+
+  * update smart pointer usage: prefer unique_ptr over auto_ptr
+  * updated boost macro version
+  * add build option to separate out MPI out-of-core functionality (#4)
+  * migrate CI from Travis -> GitHub actions (#5)
+
 Version 0.34 (31 October 2018)
 
   * move source code hosting to GitHub
