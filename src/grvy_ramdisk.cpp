@@ -37,12 +37,12 @@
 #include<stack>
 #include <boost/type_traits/is_floating_point.hpp>
 
-// OPTIONAL Module - Only available with MPI
-
-#ifdef HAVE_OCORE
-
 using namespace std;
 using namespace GRVY;
+
+// OPTIONAL Module - Only available with MPI Ocore
+
+#ifdef ENABLE_OCORE
 
 #define info  GRVY_INFO
 #define warn  GRVY_WARN
@@ -95,6 +95,8 @@ class ComparePriority
     }
 };
 
+#endif
+
 //------------------------------------------------------------
 // private implementation class definition for GRVY_MPI_Ocore
 //------------------------------------------------------------
@@ -103,6 +105,7 @@ namespace GRVY {
 
 // Supported Function Templates for Ocore Read/Write
 
+#ifdef ENABLE_OCORE
 template    int GRVY_MPI_Ocore_Class::Write     <       double> (size_t offset,        double *data);
 template    int GRVY_MPI_Ocore_Class::Write     <        float> (size_t offset,         float *data);
 template    int GRVY_MPI_Ocore_Class::Write     <          int> (size_t offset,           int *data);
@@ -117,6 +120,7 @@ template size_t GRVY_MPI_Ocore_Class::PopRecord <       double> (       double *
 template size_t GRVY_MPI_Ocore_Class::PopRecord <        float> (        float *data);
 template size_t GRVY_MPI_Ocore_Class::PopRecord <          int> (          int *data);
 template size_t GRVY_MPI_Ocore_Class::PopRecord <long long int> (long long int *data);
+#endif
 
 class GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp 
 {
@@ -124,7 +128,7 @@ public:
   GRVY_MPI_Ocore_ClassImp () {}
  ~GRVY_MPI_Ocore_ClassImp () {}
   
-#ifdef HAVE_MPI
+#ifdef ENABLE_OCORE
   //int    SplitComm        (MPI_Comm GLOB_COMM, MPI_Comm &WORK_COMM, MPI_Comm &OCORE_COMM, int numWork, int mode);
   int    Initialize       (string input_file, int num_ocore_tasks, MPI_Comm GLOB_COMM);
   int    AssignOwnership  (size_t sparse_index);
@@ -200,7 +204,7 @@ private:
 
 } // matches namespace GRVY
 
-//#ifdef HAVE_MPI    
+#ifdef HAVE_OCORE
 
 namespace GRVY {
 
@@ -1656,7 +1660,7 @@ void GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_ClassImp:: Abort()
 
 } // matches namespace GRVY
 
-#else
+#else         // ocore not enabled
 
 namespace GRVY {
   GRVY_MPI_Ocore_Class::GRVY_MPI_Ocore_Class()
@@ -1666,17 +1670,8 @@ namespace GRVY {
     grvy_printf(GRVY_FATAL,"and reinstall if you desire to use MPI out-of-core related functionality.\n\n");
     exit(1);
   }
-  
-  GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class()
-  {
-    grvy_printf(GRVY_FATAL,"\n\nlibGRVY not built with MPI Ocore support\n\n");
-    grvy_printf(GRVY_FATAL,"Please enable support using the \"--enable-ocore\" option to configure \n");
-    grvy_printf(GRVY_FATAL,"and reinstall if you desire to use MPI out-of-core related functionality.\n\n");
-    exit(1);
-  }
+
+  GRVY_MPI_Ocore_Class::~GRVY_MPI_Ocore_Class() = default;
 }
 
 #endif
-
-
-

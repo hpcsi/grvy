@@ -1545,8 +1545,8 @@ class GRVY_Timer_Class {
   int  SetOption           (std::string option, bool flag);
 
 private:
-  class GRVY_Timer_ClassImp;	              // forward declaration to Timer implementation
-  std::auto_ptr<GRVY_Timer_ClassImp> m_pimpl; // pointer to implementation
+  class GRVY_Timer_ClassImp;	                // forward declaration to Timer implementation
+  std::unique_ptr<GRVY_Timer_ClassImp> m_pimpl; // pointer to implementation
 
 };
 
@@ -1575,9 +1575,9 @@ class GRVY_MPI_Ocore_Class {
 
 public:
   GRVY_MPI_Ocore_Class(); 
- ~GRVY_MPI_Ocore_Class();
+  ~GRVY_MPI_Ocore_Class();
 
-#if GRVY_MPI_ENABLED == 1
+#if GRVY_OCORE_ENABLED == 1
   /** 
    * \ingroup CXXocore
    * \name Initialization and runtime queries:
@@ -1646,7 +1646,7 @@ public:
 
 private:
   class GRVY_MPI_Ocore_ClassImp;		    // forward declaration to Ocore implementation
-  std::auto_ptr<GRVY_MPI_Ocore_ClassImp> m_pimpl; // pointer to implementation
+  std::unique_ptr<GRVY_MPI_Ocore_ClassImp> m_pimpl; // pointer to implementation
 };
 
 
@@ -1716,8 +1716,7 @@ private:
    // Packet Table related functions
    
  private:
-   //boost::scoped_ptr<GRVY_HDF5_ClassImp> m_pimpl;
-   class GRVY_HDF5_ClassImp;	               // forward declaration of HDF5 implementation
+   class GRVY_HDF5_ClassImp;	                 // forward declaration of HDF5 implementation
    std::unique_ptr<GRVY_HDF5_ClassImp> m_pimpl;  // pointer to implementation
  };
 }
