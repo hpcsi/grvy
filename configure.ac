@@ -93,18 +93,13 @@ AC_ARG_ENABLE(boost-headers-only, AC_HELP_STRING([--enable-boost-headers-only],
 				  [boost_header_only=yes],[boost_header_only=no])
 				  
 AC_LANG([C++])
+BOOST_REQUIRE([1.47])
 
-if test "x$boost_header_only" != "xyes";then
-   BOOST_REQUIRE([1.47])
+if test "x$boost_header_only" != "xyes"; then
    BOOST_MATH
-   #BOOST_REGEX
-   #BOOST_PROGRAM_OPTIONS
-   #BOOST_FILESYSTEM('')
    BOOST_FILESYSTEM
    BOOST_SYSTEM
-   #BOOST_ASIO
 else
-   BOOST_REQUIRE([1.46])
    BOOST_HEADER_ONLY=1
    AC_DEFINE(BOOST_HEADER_ONLY,1,[Define if using a header-only build for Boost])
 fi
