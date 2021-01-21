@@ -27,9 +27,9 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
-#include<grvy_classes.h>
+//#include<grvy_classes.h>
 #include<grvy.h>
-#include<grvy_int.h>
+//#include<grvy_int.h>
 #include<iostream>
 
 using namespace std;
@@ -52,7 +52,7 @@ myclass::myclass()
 
 #endif
 
-myclass logger;
+//myclass logger;
 
 void print_messages();
 
@@ -90,8 +90,8 @@ void print_messages()
   //  logger.msg(GRVY_INFO,"koomie foo");
 
 
-  logger << "koomie foo2";
-  logger << "koomie foo3";
+  //logger << "koomie foo2";
+  //logger << "koomie foo3";
 
   logger2 << "ok";
 

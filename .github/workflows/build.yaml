@@ -11,3 +11,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Install Boost
         run:  sudo apt-get install libboost-dev
+    name: Configure
+    steps:
+      - name: Bootstrap
+        run:  ./bootstrap
+      - name: Configure
+        run:  ./configure

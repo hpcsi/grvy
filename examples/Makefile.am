@@ -18,7 +18,7 @@ BUILT_SOURCES           = .license.stamp
 CLEANFILES              = .license.stamp *.gcno *.gcda
 
 example_PROGRAMS        = input timer check_dir inputf timerf messages timer cpp-input \
-	                  hdf5_access cpp-timer 
+	                  hdf5_access cpp-timer
 
 input_SOURCES           = input.c
 cpp_input_SOURCES       = cpp-input.cpp
@@ -30,6 +30,7 @@ inputf_LDADD            = ../src/libgrvyf.la
 
 timer_SOURCES           = timer.c
 cpp_timer_SOURCES       = cpp-timer.cpp
+cpp_messages_SOURCES    = cpp-messages.cpp
 
 timerf_SOURCES          = timerf.f90
 timerf_LIBTOOLFLAGS     = --tag=FC
@@ -38,7 +39,7 @@ timerf_LDADD            = ../src/libgrvyf.la
 check_dir_SOURCES       = check_dir.c
 messages_SOURCES        = messages.c
 
-if MPI_ENABLED
+if ENABLE_OCORE
    example_PROGRAMS    += cpp-ocore ocore ocore_f ocore_perf
    ocore_SOURCES        = ocore.c
    cpp_ocore_SOURCES    = cpp-ocore.cpp
