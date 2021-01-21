@@ -5,7 +5,9 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-20.04
-    name: Build
+    name: Checkout
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Install Boost
+        run:  sudo apt-get install libboost-dev
