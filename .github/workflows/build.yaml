@@ -1,0 +1,13 @@
+name: libGRVY CI
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    name: Build
+    steps:
+        - name: Checkout code
+         uses: actions/checkout@v2
+
+ 
