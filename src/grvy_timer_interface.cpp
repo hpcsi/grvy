@@ -41,7 +41,7 @@ using namespace GRVY;
 // Utility function to create new timer class on 1st call for C
 // interface
 
-std::auto_ptr<GRVY_Timer_Class> _GRVY_Timers;
+std::unique_ptr<GRVY_Timer_Class> _GRVY_Timers;
 
 namespace GRVY_Internal {
   void verify_C_timer_allocated();
