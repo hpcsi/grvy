@@ -2,7 +2,8 @@
 ===================
 
 ![Build Status](https://github.com/hpcsi/grvy/workflows/libGRVY%20CI/badge.svg?branch=main)
-![libGRVY CI](https://github.com/hpcsi/grvy/workflows/libGRVY%20CI/badge.svg?branch=main)(https://github.com/hpcsi/grvy/actions)
+[![libGRVY CI](https://github.com/hpcsi/grvy/workflows/libGRVY%20CI/badge.svg?branch=main)](https://github.com/hpcsi/grvy/actions)
+
 
 The GRVY Toolkit is a utility library used to house various support
 functions often required for application development of
