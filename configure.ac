@@ -35,6 +35,7 @@ AC_PROG_LIBTOOL
 AC_PROG_LN_S
 AC_PROG_SED
 AM_SANITY_CHECK
+LT_LIB_M
 
 # ---------------------
 # Enable MPI utilities?

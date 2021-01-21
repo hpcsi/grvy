@@ -101,10 +101,12 @@ C_scratch_dir_SOURCES                           = C_scratch_dir.c
 TESTS                                          += C_math_isnan
 check_PROGRAMS                                 += C_math_isnan
 C_math_isnan_SOURCES                            = C_math-isnan.c
+C_math_isnan_LDADD                             = $(LIBM)
 
 TESTS                                          += C_math_isinf
 check_PROGRAMS                                 += C_math_isinf
 C_math_isinf_SOURCES                            = C_math-isinf.c
+C_math_isinf_LDADD                              = $(LIBM)
 
 TESTS                                          += C_check_file_path
 check_PROGRAMS                                 += C_check_file_path
