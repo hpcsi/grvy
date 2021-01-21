@@ -14,4 +14,4 @@ jobs:
       - name: Bootstrap
         run:  ./bootstrap
       - name: Configure
-        run:  ./configure
+        run:  ./configure --enable-boost-headers-only
