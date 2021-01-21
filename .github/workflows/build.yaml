@@ -9,8 +9,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install Boost
-        run:  sudo apt-get install libboost-dev
+      - name: Install Boost/Autotools
+        run:  sudo apt-get install libboost-dev autoconf automake libtool
       - name: Bootstrap
         run:  ./bootstrap
       - name: Configure
