@@ -17,3 +17,5 @@ jobs:
         run:  ./configure --enable-boost-headers-only
       - name: Make
         run:  make -j 2
+      - name: Test
+        run:  make -j 2 check
