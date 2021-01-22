@@ -33,7 +33,7 @@
 
 #define GETPOT_NAMESPACE GRVYGetPot
 #define GETPOT_DISABLE_MUTEX
-#include<getpot.h>
+#include<GetPot>
 
 #include<grvy_classes.h>
 #include<grvy.h>

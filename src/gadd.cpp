@@ -40,7 +40,7 @@
 
 #define GETPOT_NAMESPACE GRVYGetPot
 #define GETPOT_DISABLE_MUTEX
-#include<getpot.h>
+#include<GetPot>
 
 using namespace std;
 

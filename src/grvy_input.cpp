@@ -44,7 +44,7 @@
 // And we don't support threaded GetPot usage yet
 
 #define GETPOT_DISABLE_MUTEX
-#include "getpot.h"
+#include <GetPot>
 
 using namespace std;
 using namespace GRVY;

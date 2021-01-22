@@ -10,13 +10,7 @@ cc_sources                = grvy_input.cpp grvy_input_interface.cpp grvy_classes
 cc_sources               += grvy_ramdisk.cpp grvy_ramdisk_interface.cpp
 
 
-getpot_sources            = common/getpot/getpot.h
-
-AM_CPPFLAGS               = -I$(top_srcdir)/src/common/getpot $(BOOST_CPPFLAGS) 
-###AM_FCFLAGS                = $(INCLUDES)
-###AM_CFLAGS                 = $(INCLUDES)
-###AM_CPPFLAGS               = $(INCLUDES) $(BOOST_CPPFLAGS) 
-#LIBS                      = $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) $(BOOST_ASIO_LDFLAGS) $(BOOST_ASIO_LIBS) $(BOOST_SYSTEM_LIBS)
+AM_CPPFLAGS               =  $(BOOST_CPPFLAGS) 
 BUILT_SOURCES             = .license.stamp
 
 bin_PROGRAMS              = # Appended below

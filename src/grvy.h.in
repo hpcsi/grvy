@@ -1117,7 +1117,7 @@ extern "C" {
 #include<memory>
 
 // Forward declare GetPot class so we don't need
-// to include getpot.h here.
+// to include header here.
 
 namespace GRVYGetPot
   {
