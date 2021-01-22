@@ -14,7 +14,7 @@ jobs:
       - name: Bootstrap
         run:  ./bootstrap
       - name: Configure
-        run:  ./configure --enable-boost-headers-only CXXFLAGS="-fdiagnostics-color=always"
+        run:  ./configure --enable-boost-headers-only CXXFLAGS="-fdiagnostics-color=always" CFLAGS="-fdiagnostics-color=always"
       - name: Make
         run:  make -j 2
       - name: Test
