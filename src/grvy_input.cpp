@@ -463,7 +463,7 @@ namespace GRVY {
 
     // All boolean queries must supply a default so let's register them.
 
-    grvy_printf(GRVY_DEBUG,"Registering user-supplied default bool value for %s\n",var);
+    grvy_printf(GRVY_DEBUG,"Registering user-supplied default bool value for %s (%i)\n",var,Var_Def);
     Register_Var(var,Var_Def);
   
     *value = (*m_pimpl->ifile)(var,Var_Def);
