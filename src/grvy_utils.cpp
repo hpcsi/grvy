@@ -262,6 +262,12 @@ namespace GRVY {
 	boost::filesystem::path target(to_dir);
 
 	target /= path_in.substr(path_in.find(from_dir)+strlen(from_dir),string::npos);
+
+	if ( exists(target) )
+	  {
+	    grvy_printf(GRVY_DEBUG,"\n%s: skipping target that already exists: %s \n",__func__,target.c_str());
+	    continue;
+	  }
 	
 	grvy_printf(GRVY_DEBUG,"\n%s: copying %s to %s\n",__func__,dir->path().string().c_str(),
 		    target.c_str());
