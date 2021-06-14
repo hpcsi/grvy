@@ -10,7 +10,7 @@ cc_sources                = grvy_input.cpp grvy_input_interface.cpp grvy_classes
 cc_sources               += grvy_ramdisk.cpp grvy_ramdisk_interface.cpp
 
 
-AM_CPPFLAGS               =  $(BOOST_CPPFLAGS) 
+AM_CPPFLAGS               =  $(BOOST_CPPFLAGS) -DBOOST_ALL_DYN_LINK
 BUILT_SOURCES             = .license.stamp
 
 bin_PROGRAMS              = # Appended below
@@ -27,11 +27,8 @@ lib_LTLIBRARIES          += libgrvy.la
 libgrvy_la_LDFLAGS        = $(all_libraries) -release $(GENERIC_RELEASE) 
 
 if LINK_BOOST_LIBS
-#  libgrvy_la_LDFLAGS     += $(BOOST_REGEX_LDFLAGS) \
-#				$(BOOST_PROGRAM_OPTIONS_LIBS) $(BOOST_REGEX_LIBS) \
-#				$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) 
   libgrvy_la_LDFLAGS     += $(BOOST_FILESYSTEM_LDFLAGS)  \
-			    $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) 
+			    $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) $(BOOST_LOG_LIBS) -lboost_log_setup $(BOOST_THREAD_LIBS)
 endif
 
 

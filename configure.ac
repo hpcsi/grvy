@@ -99,6 +99,8 @@ if test "x$boost_header_only" != "xyes"; then
    BOOST_MATH
    BOOST_FILESYSTEM
    BOOST_SYSTEM
+   BOOST_THREAD
+   BOOST_LOG
 else
    BOOST_HEADER_ONLY=1
    AC_DEFINE(BOOST_HEADER_ONLY,1,[Define if using a header-only build for Boost])
