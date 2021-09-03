@@ -119,10 +119,8 @@ program main
      write(6,*) "Read int_ivec mismatch"
   endif
 
-  call compare_int(ivar1,10,flag)
-  error=error*flag
-  call compare_int(ivar2,13,flag)
-  error=error*flag
+  call compare_int(ivar1,10)
+  call compare_int(ivar2,13)
 
   ! ----- REALS -----
   call grvy_input_fread_real     ("verify/fvar",fvar1,flag)
@@ -138,10 +136,8 @@ program main
      write(6,*) "Read float_ivec mismatch"
   endif
 
-  call compare_real(fvar1,100.,flag)
-  error=error*flag
-  call compare_real(fvar2,102.,flag)
-  error=error*flag
+  call compare_real(fvar1,100.)
+  call compare_real(fvar2,102.)
 
   ! ----- DOUBLEs -----  
   call grvy_input_fread_double     ("verify/dvar",dvar1,flag)
@@ -157,10 +153,8 @@ program main
      write(6,*) "Read double_ivec mismatch"
   endif
   
-  call compare_double(dvar1,1.0d20,flag)
-  error=error*flag
-  call compare_double(dvar2,1.2d20,flag)
-  error=error*flag
+  call compare_double(dvar1,1.0d20)
+  call compare_double(dvar2,1.2d20)
 
   ! ----- Logicals -----
 
