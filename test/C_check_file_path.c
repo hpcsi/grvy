@@ -102,7 +102,12 @@ int main(int argc, char **argv)
     char  pwd[MAXPATHLEN];
     char path[MAXPATHLEN];
     getcwd(pwd,MAXPATHLEN);
-    sprintf(path,"%s/CheckFilePathDir/A/B/foo",pwd);
+
+    // now, store in exact sized string
+    char *pwd2 = strndup(pwd,strlen(pwd));
+
+    sprintf(path,"%s/CheckFilePathDir/A/B/foo",pwd2);
+    free(pwd2);
 
     flag *= (0 == grvy_check_file_path(path));
 
