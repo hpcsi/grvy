@@ -32,9 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-char * build_example_file_path(char *filename)
+char * build_example_file_path(const char *filename)
 {
-  //const char filename[] = "input-example.txt";
   char *retval;
   char *input_dir = getenv("GRVY_INPUT_EXAMPLE_DIR");
 
