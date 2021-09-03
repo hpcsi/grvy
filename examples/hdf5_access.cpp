@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 
   // Save timing information to historical HDF repository
 
-  gt.SaveHistTiming("Example1","",1,-1,"r"GRVY_BUILD_VERSION,0,"koomie2.h5");
+  gt.SaveHistTiming("Example1","",1,-1,"r" GRVY_BUILD_VERSION,0,"koomie2.h5");
 
   // Query the historical performance logs
 
