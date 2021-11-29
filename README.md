@@ -22,3 +22,6 @@ functionality provided by the library is categorized as follows:
   of distributed shared-memory nodes using MPI for data transfer
   miscellaneous 
 * file handling and math utilities
+
+For more detailed API information, please refer to the
+[documentation](https://hpcsi.github.io/grvy/index.html).
