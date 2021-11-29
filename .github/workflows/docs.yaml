@@ -21,4 +21,8 @@ jobs:
         run:  ./configure --enable-boost-headers-only
       - name: Build docs
         run:  make doc
-
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/html
