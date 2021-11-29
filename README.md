@@ -1,9 +1,8 @@
 ![libGRVY](https://raw.githubusercontent.com/hpcsi/grvy/master/doxygen/images/grvy-small.png)
-[![Doxygen](https://github.com/hpcsi/grvy/actions/workflows/docs.yaml/badge.svg)](https://github.com/hpcsi/grvy/actions/workflows/docs.yaml)
-
 ===================
 
 [![build](https://github.com/hpcsi/grvy/workflows/CI//badge.svg?branch=main)](https://github.com/hpcsi/grvy/actions)
+[![Doxygen](https://github.com/hpcsi/grvy/actions/workflows/docs.yaml/badge.svg)](https://github.com/hpcsi/grvy/actions/workflows/docs.yaml)
 
 
 The GRVY Toolkit is a utility library used to house various support
