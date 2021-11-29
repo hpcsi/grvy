@@ -785,13 +785,11 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = src/grvy.h \
+INPUT                  = $(SRCDIR)/doxygen/grvy.txt \
+		         src/grvy.h \
                          examples/pecos-input.txt \
-                         $(SRCDIR)/doxygen/grvy.page \
-                         .//doxygen/txt_common/about_vpath.page \
-                         $(SRCDIR)/doxygen/txt_common/acknowledgment.page \
-                         $(SRCDIR)/doxygen/txt_common/gpl.page \
-                         $(SRCDIR)/doxygen/txt_common/lgpl.page \
+                         $(SRCDIR)/doxygen/txt_common/acknowledgment.txt \
+                         $(SRCDIR)/doxygen/txt_common/lgpl.txt \
                          $(SRCDIR)/doxygen/txt_common/noop.page \
                          src/grvy.f90
 
@@ -823,8 +821,7 @@ FILE_PATTERNS          = *.cpp \
                          *.F90 \
                          *.h \
                          *.c \
-                         *.txt \
-                         *.page
+                         *.txt
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -2207,7 +2204,7 @@ DOT_NUM_THREADS        = 0
 # The default value is: Helvetica.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_FONTNAME           = FreeSans
+#DOT_FONTNAME           = FreeSans
 
 # The DOT_FONTSIZE tag can be used to set the size (in points) of the font of
 # dot graphs.

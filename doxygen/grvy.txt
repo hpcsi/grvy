@@ -49,8 +49,8 @@ further divided into the following subsections:
 \section bugs Reporting Bugs
 
 Bugs in the code and errors or omissions in the documentation can be
-reported to karl@ices.utexas.edu.  Requests and contributions are
-welcome at the same e-mail address.  All bug reports should include:
+reported on <a href="https://github.com/hpcsi/grvy">GitHub</a>.  Requests and contributions are
+welcome as well.  All bug reports should include:
 <ul>
 
 <li>the version number of the GRVY library (versioning information can
@@ -62,16 +62,11 @@ bin/ directory of a local libGRVY installation),
 <li>a short program which reproduces the bug.
 </ul>
 
-\section licence License
-Copyright (C) 2008,2009,2010,2011,2012,2013 The PECOS Development Team.\n
-
+<hr>
 \copydoc LicenseLGPL
-
+<hr>
 \section acknowledgements Acknowledgments
 \copydoc Acknowledgments
-
-\section pecos-center More Information About PECOS
-\copydoc About2
 
  */
 
