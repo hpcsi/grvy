@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install Doxygen 
-        uses: sudo apt-get install doxygen
+        run:  sudo apt-get install doxygen
       - name: Install Boost/Autotools
         run:  sudo apt-get install libboost-dev autoconf automake libtool
       - name: Bootstrap
