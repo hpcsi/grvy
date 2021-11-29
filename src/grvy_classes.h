@@ -144,9 +144,9 @@ class GRVY_Math_Class {
 
     // C++ ostream style logging (<<)
 
-    template <typename T> 
-    inline GRVY_Log_Class operator <<(const T &val) {{std::cout << val;}};
-    inline GRVY_Log_Class operator <<(std::ostream &(*pf)(std::ostream&)) {{std::cout << *pf; return *this;}};
+//     template <typename T> 
+//     inline GRVY_Log_Class operator <<(const T &val) {{std::cout << val;}};
+//     inline GRVY_Log_Class operator <<(std::ostream &(*pf)(std::ostream&)) {{std::cout << *pf; return *this;}};
 
     // Basic std::string message
 
