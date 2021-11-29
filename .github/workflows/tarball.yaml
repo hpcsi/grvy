@@ -30,6 +30,8 @@ jobs:
          with:
            name: tarball-${{github.sha}}
            path: grvy-*.tar.gz
+       - name: md5sum tarball
+          run: md5sum grvy-*.tar.gz
    disttest-cpu:
      runs-on: ubuntu-20.04
      needs: distbuild
