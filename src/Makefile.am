@@ -101,7 +101,7 @@ uninstall-local:
 dist-hook:
 	rm -rf `find $(distdir)/ -name .svn`
 
-EXTRA_DIST              = common/lic_utils common/lcov .license.stamp
+EXTRA_DIST              = GetPot common/lic_utils common/lcov .license.stamp
 CLEANFILES              = grvy.mod .license.stamp *.gcno *.gcda
 
 METASOURCES = AUTO
