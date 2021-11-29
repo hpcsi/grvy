@@ -189,7 +189,7 @@ extern "C" {
 
   /**
    * \brief Open a libGRVY style input file
-   * \param filename desired input filename
+   * \param[in] filename desired input filename
    */
 
   extern int grvy_input_fopen               (const char *filename);
@@ -251,22 +251,22 @@ extern "C" {
    */
 
    /** \brief Read a single input integer \e value corresponding to the \e keyword path
-    *  \param keyword input keyword path
-    *  \param corresponding value in input file
+    *  \param[in] keyword input keyword path
+    *  \param[out]  value corresponding value in input file
     */
 
    extern int grvy_input_fread_int           (const char* keyword, int *value);
 
    /** \brief Read a single input float \e value corresponding to the \e keyword path
-    *  \param keyword input keyword path
-    *  \param corresponding value in input file
+    *  \param[in] keyword input keyword path
+    *  \param[out]  value corresponding value in input file
     */
 
    extern int grvy_input_fread_float         (const char* keyword, float *value);
 
    /** \brief Read a single input double \e value corresponding to the \e keyword path
-    *  \param keyword input keyword path
-    *  \param corresponding value in input file
+    *  \param[in] keyword input keyword path
+    *  \param[out]  value corresponding value in input file
     */
 
    extern int grvy_input_fread_double        (const char* keyword, double *value);
@@ -277,8 +277,8 @@ extern "C" {
     * size of the string present in the input file (including null
     * terminator). 
     *
-    *  \param keyword input keyword path
-    *  \param corresponding value in input file
+    *  \param[in] keyword input keyword path
+    *  \param[out]  value corresponding value in input file
     */
 
    extern int grvy_input_fread_char          (const char* keyword, char **value);
@@ -882,12 +882,12 @@ extern "C" {
    * parent directories.  The Unix pathname to check can be a relative
    * or absolute path.
    *
-   * \param[in] pathname.
-   * \return \c 0 if succeeds.
+   * \param[in] name_template path to check
+   * \return \c 0 if succeeds
    *
    */
 
-  extern int  grvy_check_file_path        (const char *pathname);
+  extern int  grvy_check_file_path        (const char *name_template);
 
   /** 
    * \brief Creates a new, unique directory with 0700 permissions using the
@@ -895,8 +895,8 @@ extern "C" {
    * must be XXXXXX, and \a name_template is modified with the unique
    * name upon return.
    *
-   * \param[in,out] name_template. 
-   * \return \c 0 if succeeds.
+   * \param[in,out] name_template template directory name
+   * \return \c 0 if succeeds
    */
 
   extern int  grvy_create_unique_dir      (      char *name_template);
@@ -905,8 +905,8 @@ extern "C" {
    * \brief Identical to grvy_create_unique_dir(), except that the new directory and
    * all of its contents are deleted when the process exits.
    * 
-   * \param[in,out] name_template. 
-   * \return \c 0 if succeeds.
+   * \param[in,out] name_template template directory name
+   * \return \c 0 if succeeds 
    */
 
   extern int  grvy_create_scratch_dir     (      char *name_template);
@@ -916,8 +916,8 @@ extern "C" {
    * (\a from_dir) to a new directory (\a to_dir).  If \a to_dir does not
    * exist, it will be created; otherwise it must be empty.
    * 
-   * \param[in] from_dir
-   * \param[in] to_dir
+   * \param[in] from_dir input directory
+   * \param[in] to_dir   output directory
    * \return \c 0 if succeeds.
    */
 
