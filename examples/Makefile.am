@@ -30,7 +30,6 @@ inputf_LDADD            = ../src/libgrvyf.la
 
 timer_SOURCES           = timer.c
 cpp_timer_SOURCES       = cpp-timer.cpp
-cpp_messages_SOURCES    = cpp-messages.cpp
 
 timerf_SOURCES          = timerf.f90
 timerf_LIBTOOLFLAGS     = --tag=FC
