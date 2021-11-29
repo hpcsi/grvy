@@ -51,7 +51,7 @@ jobs:
          run:  cd grvy-*; ./configure --enable-boost-headers-only
        - name: Make
          run:  cd grvy-*; make -j 2
-       - name: TPS version
+       - name: GRVY version
          run:  cd grvy-*; ./src/grvy_version
        - name: Tests
          run:  cd grvy-*; make AM_COLOR_TESTS=yes -j 2 check
