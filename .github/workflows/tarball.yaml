@@ -1,0 +1,57 @@
+name: Distcheck
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+   distbuild:
+     runs-on: ubuntu-20.04
+     name: Create dist tarball
+     steps:
+       - name: Cancel previous runs
+         uses: styfle/cancel-workflow-action@0.9.0
+         with:
+           access_token: ${{ github.token }}     
+       - name: Checkout code
+         uses: actions/checkout@v2
+       - name: Install Boost/Autotools
+         run:  sudo apt-get install libboost-dev autoconf automake libtool	 
+       - name: Bootstrap
+         run:  ./bootstrap
+       - name: Configure
+         run:  ./configure --enable-boost-headers-only
+       - name: Dist
+         run:  make dist
+       - name: Archive tarball
+         uses: actions/upload-artifact@v2
+         with:
+           name: tarball-${{ github.event.pull_request.head.sha }}
+           path: grvy-*.tar.gz
+   disttest-cpu:
+     runs-on: ubuntu-20.04
+     needs: distbuild
+     name: Release tarball tests
+     steps:
+       - name: Cancel previous runs
+         uses: styfle/cancel-workflow-action@0.9.0
+         with:
+           access_token: ${{ github.token }}     
+       - name: Access tarball
+         uses: actions/download-artifact@v2
+         with:
+           name: tarball-${{ github.event.pull_request.head.sha }}
+       - name: Install Boost/Autotools
+         run:  sudo apt-get install libboost-dev autoconf automake libtool	 	 	   
+       - name: Expand
+         run:  tar xfz grvy-*.tar.gz; rm grvy-*.tar.gz
+       - name: Configure
+         run:  cd grvy-*; ./configure --enable-boost-headers-only
+       - name: Make
+         run:  cd grvy-*; make -j 2
+       - name: TPS version
+         run:  cd grvy-*; ./src/grvy_version
+       - name: Tests
+         run:  cd grvy-*; make AM_COLOR_TESTS=yes -j 2 check
