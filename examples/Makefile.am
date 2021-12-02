@@ -4,7 +4,7 @@ example_DATA            = input.c inputf.f90 pecos-input.txt \
 EXTRA_DIST	        = input.c inputf.f90 pecos-input.txt \
 		    	  timer.c timerf.f90 messages.c .license.stamp
 
-AM_CPPFLAGS             = -I$(top_srcdir)/src -I$(top_builddir)/src 
+AM_CPPFLAGS             = -I$(top_srcdir)/src -I$(top_builddir)/src $(BOOST_CPPFLAGS)
 AM_FCFLAGS              = $(AM_CPPFLAGS)
 AM_CFLAGS               = $(AM_CPPFLAGS)
 LIBS                    = -L$(top_builddir)/src -lgrvy 
@@ -18,7 +18,7 @@ BUILT_SOURCES           = .license.stamp
 CLEANFILES              = .license.stamp *.gcno *.gcda
 
 example_PROGRAMS        = input timer check_dir inputf timerf messages timer cpp-input \
-	                  hdf5_access cpp-timer
+	                  hdf5_access cpp-timer cpp-messages
 
 input_SOURCES           = input.c
 cpp_input_SOURCES       = cpp-input.cpp
@@ -37,6 +37,7 @@ timerf_LDADD            = ../src/libgrvyf.la
 
 check_dir_SOURCES       = check_dir.c
 messages_SOURCES        = messages.c
+cpp_messages_SOURCES    = cpp-messages.cpp
 
 if ENABLE_OCORE
    example_PROGRAMS    += cpp-ocore ocore ocore_f ocore_perf
