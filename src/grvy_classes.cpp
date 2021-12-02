@@ -28,9 +28,11 @@
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 
-#include<sys/time.h>
-#include<stdarg.h>
-#include<time.h>
+#include <sys/time.h>
+#include <stdarg.h>
+#include <time.h>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup/console.hpp>
 #include "grvy_classes.h"
 #include "grvy.h"
 #include "grvy_int.h"
@@ -129,25 +131,26 @@ namespace GRVY {
   GRVY_Log_Class::GRVY_Log_Class()
   {
 
+    // simple boost logger setup
+    boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity");
+    boost::log::add_console_log(std::cout,boost::log::keywords::format = "%Message%");
+    boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
+
+    BOOST_LOG_TRIVIAL(info) << "An informational severity message from boost";
+    BOOST_LOG(info) << "An informational severity message from boost2";
+
     // set default log level
     
     log_level = GRVY_INFO;
+    log_level_ = boost::log::trivial::info;
 
     // set default log masks for each priority level
 
-#if 0
-    LogMask[GRVY_FATAL] = "[*] Fatal: ";
-    LogMask[GRVY_ERROR] = "[*] Error: ";
-    LogMask[GRVY_WARN ] = "[*]  Warn: ";
-    LogMask[GRVY_INFO ] = "[*]  Info: ";
-    LogMask[GRVY_DEBUG] = "[*] Debug: ";
-#else
     LogMask[GRVY_FATAL] = "";
     LogMask[GRVY_ERROR] = "";
     LogMask[GRVY_WARN ] = "";
     LogMask[GRVY_INFO ] = "";
     LogMask[GRVY_DEBUG] = "";
-#endif
 
     return;
   }
