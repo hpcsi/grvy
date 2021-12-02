@@ -44,11 +44,12 @@
 #include<config_grvy.h>
 
 #ifdef HAVE_HDF5
-#include <hdf5.h>
-#include <H5PTpublic.h>
+#include<hdf5.h>
+#include<H5PTpublic.h>
 #endif
 
 #include<boost/math/special_functions.hpp>
+#include<boost/log/trivial.hpp>
 
 #if 0
 namespace GRVY_Internal {
@@ -159,6 +160,7 @@ class GRVY_Math_Class {
 
   private:
     int log_level;			                            // Current log level priority
+    boost::log::trivial::severity_level log_level_;                 // Current log level priority
     std::map<int,std::string> LogMask;                              // String masks for log messages
 
   };
