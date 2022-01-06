@@ -352,7 +352,7 @@ namespace GRVY {
 
     if(Var_Def != m_pimpl->Get_Default(Var_Def) )
       {
-	grvy_printf(GRVY_DEBUG,"Registering user-supplied default value for %s\n",var);
+        // grvy_printf(GRVY_DEBUG,"Registering user-supplied default value for %s\n",var);
 	Register_Var(var,Var_Def);
       }
 
@@ -364,10 +364,6 @@ namespace GRVY {
 	  {
 	    _GRVY_message(GRVY_ERROR,"fread","Unable to query variable -> ",var);
 	    return 0;
-	  }
-	else
-	  {
-	    _GRVY_message(GRVY_INFO,"fread: Using pre-registered value for variable",var,*value);
 	  }
       }
   
