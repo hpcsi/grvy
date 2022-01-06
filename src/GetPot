@@ -73,6 +73,9 @@ public:
     inline GetPot(const GetPot&);
     inline GetPot(const int argc_, char** argv_, 
 		  const char* FieldSeparator=0x0);
+    inline GetPot(std::stringstream &istr,
+                  const char* CommentStart=0x0, const char* CommentEnd=0x0,
+		  const char* FieldSeparator=0x0);
     inline GetPot(const char* FileName, 
 		  const char* CommentStart=0x0, const char* CommentEnd=0x0,
 		  const char* FieldSeparator=0x0);
@@ -415,7 +418,26 @@ GetPot::GetPot(const int argc_, char ** argv_,
     }
     __parse_argument_vector(_apriori_argv);
 }
+inline
+GetPot::GetPot(std::stringstream &istr,
+	       const char* CommentStart  /* = 0x0 */, const char* CommentEnd /* = 0x0 */,
+	       const char* FieldSeparator/* = 0x0 */)
+{
+    __basic_initialization();
+    // if specified -> overwrite default strings
+    if( CommentStart )   _comment_start = std::string(CommentStart);
+    if( CommentEnd )     _comment_end   = std::string(CommentEnd);
+    if( FieldSeparator ) _field_separator = FieldSeparator;
 
+    STRING_VECTOR _apriori_argv;
+    // -- file name is element of argument vector, however, it is not parsed for
+    //    variable assignments or nominuses.
+    _apriori_argv.push_back("<stringstream-initializer>");
+
+    STRING_VECTOR args = __read_in_stream(istr);
+    _apriori_argv.insert(_apriori_argv.begin()+1, args.begin(), args.end());
+    __parse_argument_vector(_apriori_argv);
+}
 
 inline
 GetPot::GetPot(const char* FileName,
