@@ -191,6 +191,29 @@ namespace GRVY {
       }
   }
 
+  int GRVY_Input_Class::Load(std::stringstream &buffer)
+  {
+    if(m_pimpl->initialized)
+      {
+	_GRVY_message(GRVY_ERROR,__func__,"close previous input file first prior to loading new input");
+	return 0;
+      }
+
+    m_pimpl->ifile = new GETPOT_NAMESPACE::GetPot(buffer,m_pimpl->comment_start,m_pimpl->comment_end);
+
+    if(m_pimpl->ifile->size() <= 1)
+      {
+	_GRVY_message(GRVY_ERROR,__func__,"non-existent or empty buffer contents");
+	return 0;
+      }
+    else
+      {
+	m_pimpl->initialized=true;
+	return 1;
+      }
+
+  }
+
   int GRVY_Input_Class::Close()
   {
     if(m_pimpl->initialized)

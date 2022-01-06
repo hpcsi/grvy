@@ -1192,6 +1192,10 @@ class GRVY_Input_Class {
 
   /// \brief open \e filename for parsing
   int  Open         (const char *filename);
+  /// \brief load contents from a stringstream \e buffer for subsequent parsing. Useful
+  /// for parallel MPI programs where you read the file from a single process and then broadcast contents
+  /// to remaining tasks.
+  int  Load         (std::stringstream &buffer);
 
   /// \brief close previously opened input file.
   int  Close        ();
