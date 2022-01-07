@@ -1,3 +1,10 @@
+Version 0.36 (07 January 2022)
+
+  * extend C++ parsing API to include option to read from a
+    std::stringstream. Function is intended for use by distributed MPI
+    applications where only one task reads the file, and then broadcasts contents to
+    the remaining children so that all tasks can access input vars.
+
 Version 0.35 (29 November 2021)
 
   * update smart pointer usage: prefer unique_ptr over auto_ptr
@@ -27,7 +34,6 @@ Version 0.33 (March 2013)
   * added Ocore support for multtiple MPI worker tasks and various performance optimizations
 
 Version 0.32 (22 May 2012)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.32.0
 
   * significantly expanded online documentation
   * bug fix for embedded timers sometimes reporting incorrect mean/variance values
@@ -54,7 +60,6 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.32.0
   * configuration updates to support "make distcheck"
 
 Version 0.31 (09 October 2011)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.31.0
 
   * additional std::string handling input support
   * addition of MPI based out-of-core ramdisk utility
@@ -66,7 +71,6 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.31.0
   * fix ascii output conversion when including subtimers option (-a) with gdump
 
 Version 0.30.0 (28 March 2011)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.30.0
 
   * addition of function to allow for wider timer summary output options
   * add defensive warning against dos newlines for input parsing
@@ -82,14 +86,12 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.30.0
   * build system fix for parallel builds
 
 Version 0.29.1 (26 September 2010)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.29.1
 
   * bug fix in mixed language input parsing of multiple files resulting in double free()
   * inclusion of versioning routines in Fortran interface
   * updated regressions
 
 Version 0.29 (21 September 2010)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.29
 
   * bug fix in timer counting statistic (affects embedded timers only)
   * inclusion of automatic licensing header support
@@ -99,7 +101,6 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.29
   * added support for GNU code coverage analysis (--enable-coverage)
 
 Version 0.28 (18 August 2010)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.28
 
   * performance timing functionality updated to allow for embedded timers
   * addition of grvy_printf() function for C/C++ logging
@@ -110,7 +111,6 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.28
   * tarball distribution includes svn version info
 
 Version 0.27.1 (15 April 2010)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.27.1
 
   * bug fix for thread-safe Getpot version
   * direct -lhpct linkage supported but will be deprecated in future releases
@@ -119,7 +119,6 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.27.1
   * minor updates to logger documentation
 
 Version 0.27 (06 March 2010)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.27
 
   * name/API change -> HPCT is now GRVY (affects all routines). Note
     that the previous hpct named functions are still available in this
@@ -131,23 +130,19 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.27
   * bug fix for hpct_create_unique_dir() on MacOS
 
 Version 0.26 (08 November 2009)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.26
 
   * inclusion of doxygen generated documentation
   * creation of math class using Boost to provide an isnan interface
 
 Version 0.25.2 (11 September 2009)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.25.2
 
   * updated timer accuracy checks to avoid false positive warnings
 
 Version 0.25.1 (05 September 2009)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.25.1
 
   * bug fix for F90 interface version of vector reads (for static arrays)
 
 Version 0.25 (27 August 2009)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.25
 
   * compile-time bug fixes for gcc 4.3.x
   * inclusion of toggle_message() option in Fortran interface
@@ -156,14 +151,12 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.25
   * new function to create parent directories for desired output file
 
 Version 0.24 (26 July 2009)
-https://svn.ices.utexas.edu/repos/pecos/hpct/releases/0.24
 
   * API change for hpct_timer_init (char *name) - name is now required
   * inclusion of basic statistics for performance timers (mean/variance/count)
   * now requires Boost library linkage
 
 Version 0.23 (12 June 2009)
-https://svn.ices.utexas.edu/repos/pecos/hpct/tags/0.23-release
 
   * addition of routines to register default input variable values
   * extension of timer API to provide raw timing results for a specific timer
@@ -173,7 +166,6 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/tags/0.23-release
   * bug fix for incorrect performance timing output with multiple init calls
 
 Version 0.22 (27 Feb 2009)
-https://svn.ices.utexas.edu/repos/pecos/hpct/tags/0.22-release
 
   * inclusion of Fortran API for performance timer functions
   * inclusion of examples/ dir
@@ -181,7 +173,6 @@ https://svn.ices.utexas.edu/repos/pecos/hpct/tags/0.22-release
   * bug fix for lack of Fortran fclose interface
 
 Version 0.20 (10 Jan 2009)
-https://svn.ices.utexas.edu/repos/pecos/hpct/tags/0.2-release
 
   * addition of wallclock performance timer based on user-defined keys (C only)
   * autoconf/automake based configuration
