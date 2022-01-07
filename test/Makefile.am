@@ -173,6 +173,10 @@ TESTS                                          += CXX_input
 check_PROGRAMS                                 += CXX_input
 CXX_input_SOURCES                               = C++_input.cpp C_examplefile.c examplefile.h
 
+TESTS                                          += CXX_input_stream
+check_PROGRAMS                                 += CXX_input_stream
+CXX_input_stream_SOURCES                        = C++_input_stream.cpp C_examplefile.c examplefile.h
+
 TESTS                                          += CXX_input_register_variables
 check_PROGRAMS                                 += CXX_input_register_variables
 CXX_input_register_variables_SOURCES            = C++_input-register.cpp C_examplefile.c examplefile.h
