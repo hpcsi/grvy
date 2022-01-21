@@ -22,7 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 m4_define([_BOOST_SERIAL], [m4_translit([
-# serial 34
+# serial 30
 ], [#
 ], [])])
 
@@ -46,6 +46,16 @@ m4_define([_BOOST_SERIAL], [m4_translit([
 # simply read the README, it will show you what to do step by step.
 
 m4_pattern_forbid([^_?(BOOST|Boost)_])
+
+# _BOOST_SHELL_FUNCTIONS
+# --------------------------------------------------------
+#
+# Useful shell functions. Call
+#   AC_REQUIRE([_BOOST_SHELL_FUNCTIONS])
+# before using
+AC_DEFUN([_BOOST_SHELL_FUNCTIONS],
+[_boost_join_path() { _boost_join_path_save_IFS=$IFS; IFS=@ ; echo "$[]*" ; IFS=$_boost_join_path_save_IFS ; } ]
+)
 
 
 # _BOOST_SED_CPP(SED-PROGRAM, PROGRAM,
@@ -329,6 +339,7 @@ AS_VAR_PUSHDEF([Boost_lib], [boost_cv_lib_$1])dnl
 AS_VAR_PUSHDEF([Boost_lib_LDFLAGS], [boost_cv_lib_$1_LDFLAGS])dnl
 AS_VAR_PUSHDEF([Boost_lib_LDPATH], [boost_cv_lib_$1_LDPATH])dnl
 AS_VAR_PUSHDEF([Boost_lib_LIBS], [boost_cv_lib_$1_LIBS])dnl
+AS_VAR_PUSHDEF([Boost_lib_abs_path], [boost_cv_lib_$1_abs_path])dnl
 AS_IF([test x"$8" = "xno"], [not_found_header='true'])
 BOOST_FIND_HEADER([$4], [$not_found_header])
 boost_save_CPPFLAGS=$CPPFLAGS
@@ -390,7 +401,8 @@ AC_DEFUN([BOOST_FIND_LIB],
 # ERROR_ON_UNUSABLE can be set to "no" if the caller does not want their
 # configure to fail
 AC_DEFUN([_BOOST_FIND_LIBS],
-[Boost_lib=no
+[AC_REQUIRE([_BOOST_SHELL_FUNCTIONS])
+Boost_lib=no
   case "$3" in #(
     (mt | mt-) boost_mt=-mt; boost_rtopt=;; #(
     (mt* | mt-*) boost_mt=-mt; boost_rtopt=`expr "X$3" : 'Xmt-*\(.*\)'`;; #(
@@ -442,6 +454,7 @@ dnl start the for loops).
     ])
   ac_objext=$boost_save_ac_objext
   boost_failed_libs=
+  eval eval _boost_shrext=$shrext_cmds
 # Don't bother to ident the following nested for loops, only the 2
 # innermost ones matter.
 for boost_lib_ in $2; do
@@ -462,14 +475,26 @@ for boost_rtopt_ in $boost_rtopt '' -d; do
     case $boost_failed_libs in #(
       (*@$boost_lib@*) continue;;
     esac
-    # If with_boost is empty, we'll search in /lib first, which is not quite
-    # right so instead we'll try to a location based on where the headers are.
-    boost_tmp_lib=$with_boost
-    test x"$with_boost" = x && boost_tmp_lib=${boost_cv_inc_path%/include}
-    for boost_ldpath in "$boost_tmp_lib/lib" '' \
-             /opt/local/lib* /usr/local/lib* /opt/lib* /usr/lib* \
-             "$with_boost" C:/Boost/lib /lib*
+    # If with_boost is specified; search *only* within that hierarchy,
+    # otherwise search the "standard" places, starting with a location
+    # based upon where the headers are.
+    AS_IF( [ test x"$with_boost" = x ],
+	  [
+            AS_IF( [ test x"$boost_cv_inc_path" = xno || test x"$boost_cv_inc_path" = xyes ],
+                   [boost_tmp_lib=],
+                   [boost_tmp_lib=${boost_cv_inc_path%/include} ]
+                 )
+            boost_ldpaths=`_boost_join_path  $boost_tmp_lib ''  \
+	                  /opt/local/lib* /usr/local/lib* /opt/lib* /usr/lib* \
+		          C:/Boost/lib /lib*` ],
+          [ boost_ldpaths=`_boost_join_path "$with_boost" "$with_boost/lib"` ]
+    )
+
+    save_IFS=$IFS
+    IFS=@
+    for boost_ldpath in `echo "$boost_ldpaths"`
     do
+      IFS=$save_IFS
       # Don't waste time with directories that don't exist.
       if test x"$boost_ldpath" != x && test ! -e "$boost_ldpath"; then
         continue
@@ -478,14 +503,19 @@ for boost_rtopt_ in $boost_rtopt '' -d; do
       # Are we looking for a static library?
       case $boost_ldpath:$boost_rtopt_ in #(
         (*?*:*s*) # Yes (Non empty boost_ldpath + s in rt opt)
-          Boost_lib_LIBS="$boost_ldpath/lib$boost_lib.$libext"
-          test -e "$Boost_lib_LIBS" || continue;; #(
-        (*) # No: use -lboost_foo to find the shared library.
+          Boost_lib_abs_path="$boost_ldpath/lib$boost_lib.$libext"
+          Boost_lib_LIBS="$Boost_lib_abs_path" ;;
+        (*) # No:
+          Boost_lib_abs_path="$boost_ldpath/lib$boost_lib$_boost_shrext"
           Boost_lib_LIBS="-l$boost_lib";;
       esac
+      # Don't waste time with libraries that don't exist
+      if test x"$boost_ldpath" != x && test ! -e "$Boost_lib_abs_path"; then
+        continue
+      fi
       boost_save_LIBS=$LIBS
       LIBS="$Boost_lib_LIBS $LIBS"
-      test x"$boost_ldpath" != x && LDFLAGS="$LDFLAGS -L$boost_ldpath"
+      test x"$boost_ldpath" != x && LDFLAGS=" -L$boost_ldpath $LDFLAGS"
 dnl First argument of AC_LINK_IFELSE left empty because the test file is
 dnl generated only once above (before we start the for loops).
       _BOOST_AC_LINK_IFELSE([],
@@ -505,8 +535,8 @@ dnl generated only once above (before we start the for loops).
              boost_rpath_link_ldflag_found=yes;;
            *)
             for boost_cv_rpath_link_ldflag in -Wl,-R, -Wl,-rpath,; do
-              LDFLAGS="$boost_save_LDFLAGS -L$boost_ldpath $boost_cv_rpath_link_ldflag$boost_ldpath"
-              LIBS="$Boost_lib_LIBS $boost_save_LIBS"
+              LDFLAGS="-L$boost_ldpath $boost_save_LDFLAGS $boost_cv_rpath_link_ldflag$boost_ldpath"
+              LIBS="$boost_save_LIBS $Boost_lib_LIBS"
               _BOOST_AC_LINK_IFELSE([],
                 [boost_rpath_link_ldflag_found=yes
                 break],
@@ -664,10 +694,6 @@ LDFLAGS=$boost_filesystem_save_LDFLAGS
 # * The signatures of make_fcontext() and jump_fcontext were changed in 1.56.0
 # * A dependency on boost_thread appears in 1.57.0
 # * The implementation details were moved to boost::context::detail in 1.61.0
-# * 1.61 also introduces execution_context_v2, which is the "lowest common
-#   denominator" for boost::context presence since then.
-# * boost::context::fiber was introduced in 1.69 and execution_context_v2 was
-#   removed in 1.72
 BOOST_DEFUN([Context],
 [boost_context_save_LIBS=$LIBS
  boost_context_save_LDFLAGS=$LDFLAGS
@@ -678,55 +704,27 @@ if test $boost_major_version -ge 157; then
   LDFLAGS="$LDFLAGS $BOOST_THREAD_LDFLAGS"
 fi
 
-if test $boost_major_version -ge 169; then
-
+if test $boost_major_version -ge 161; then
 BOOST_FIND_LIB([context], [$1],
-                [boost/context/fiber.hpp], [[
+                [boost/context/continuation.hpp], [[
 namespace ctx=boost::context;
 int a;
-ctx::fiber source{[&a](ctx::fiber&& sink){
-    a=0;
-    int b=1;
-    for(;;){
-        sink=std::move(sink).resume();
-        int next=a+b;
-        a=b;
-        b=next;
-    }
-    return std::move(sink);
-}};
-for (int j=0;j<10;++j) {
-    source=std::move(source).resume();
-}
-return a == 34;
-]], [], [], [$2])
-
-elif test $boost_major_version -ge 161; then
-
-BOOST_FIND_LIB([context], [$1],
-                [boost/context/execution_context_v2.hpp], [[
-namespace ctx=boost::context;
-int res=0;
-int n=35;
-ctx::execution_context<int> source(
-    [n, &res](ctx::execution_context<int> sink, int) mutable {
-        int a=0;
+ctx::continuation source=ctx::callcc(
+    [&a](ctx::continuation && sink){
+        a=0;
         int b=1;
-        while(n-->0){
-            auto result=sink(a);
-            sink=std::move(std::get<0>(result));
-            auto next=a+b;
+        for(;;){
+            sink=sink.resume();
+            int next=a+b;
             a=b;
             b=next;
         }
-        return sink;
+        return std::move(sink);
     });
-for(int i=0;i<10;++i){
-    auto result=source(i);
-    source=std::move(std::get<0>(result));
-    res = std::get<1>(result);
+for (int j=0;j<10;++j) {
+    source=source.resume();
 }
-return res == 34;
+return a == 34;
 ]], [], [], [$2])
 
 else
@@ -1549,11 +1547,10 @@ AC_CACHE_CHECK([for the flags needed to use pthreads], [boost_cv_pthread_flag],
                            -pthreads -mthreads -lpthread --thread-safe -mt";;
   esac
   # Generate the test file.
-  AC_LANG_CONFTEST([AC_LANG_PROGRAM([#include <pthread.h>
-    void *f(void*){ return 0; }],
-    [pthread_t th; pthread_create(&th,0,f,0); pthread_join(th,0);
-    pthread_attr_t attr; pthread_attr_init(&attr); pthread_cleanup_push(0, 0);
-    pthread_cleanup_pop(0);])])
+  AC_LANG_CONFTEST([AC_LANG_PROGRAM([#include <pthread.h>],
+    [pthread_t th; pthread_join(th, 0);
+    pthread_attr_init(0); pthread_cleanup_push(0, 0);
+    pthread_create(0,0,0,0); pthread_cleanup_pop(0);])])
   for boost_pthread_flag in '' $boost_pthread_flags; do
     boost_pthread_ok=false
 dnl Re-use the test file already generated.
@@ -1615,10 +1612,6 @@ if test x$boost_cv_inc_path != xno; then
   # I'm not sure about my test for `il' (be careful: Intel's ICC pre-defines
   # the same defines as GCC's).
   for i in \
-    "defined __clang__ && __clang_major__ == 12 && __clang_minor__ == 0 @ clang120" \
-    "defined __clang__ && __clang_major__ == 11 && __clang_minor__ == 0 @ clang110" \
-    "defined __clang__ && __clang_major__ == 10 && __clang_minor__ == 0 @ clang100" \
-    "defined __clang__ && __clang_major__ == 9 && __clang_minor__ == 0 @ clang90" \
     "defined __clang__ && __clang_major__ == 8 && __clang_minor__ == 0 @ clang80" \
     "defined __clang__ && __clang_major__ == 7 && __clang_minor__ == 0 @ clang70" \
     "defined __clang__ && __clang_major__ == 6 && __clang_minor__ == 0 @ clang60" \
@@ -1627,20 +1620,10 @@ if test x$boost_cv_inc_path != xno; then
     "defined __clang__ && __clang_major__ == 3 && __clang_minor__ == 9 @ clang39" \
     "defined __clang__ && __clang_major__ == 3 && __clang_minor__ == 8 @ clang38" \
     "defined __clang__ && __clang_major__ == 3 && __clang_minor__ == 7 @ clang37" \
-    _BOOST_mingw_test(10, 2) \
-    _BOOST_gcc_test(10, 2) \
-    _BOOST_mingw_test(10, 1) \
-    _BOOST_gcc_test(10, 1) \
-    _BOOST_mingw_test(9, 3) \
-    _BOOST_gcc_test(9, 3) \
-    _BOOST_mingw_test(9, 2) \
-    _BOOST_gcc_test(9, 2) \
     _BOOST_mingw_test(9, 1) \
     _BOOST_gcc_test(9, 1) \
     _BOOST_mingw_test(9, 0) \
     _BOOST_gcc_test(9, 0) \
-    _BOOST_mingw_test(8, 4) \
-    _BOOST_gcc_test(8, 4) \
     _BOOST_mingw_test(8, 3) \
     _BOOST_gcc_test(8, 3) \
     _BOOST_mingw_test(8, 2) \
@@ -1649,8 +1632,6 @@ if test x$boost_cv_inc_path != xno; then
     _BOOST_gcc_test(8, 1) \
     _BOOST_mingw_test(8, 0) \
     _BOOST_gcc_test(8, 0) \
-    _BOOST_mingw_test(7, 4) \
-    _BOOST_gcc_test(7, 4) \
     _BOOST_mingw_test(7, 3) \
     _BOOST_gcc_test(7, 3) \
     _BOOST_mingw_test(7, 2) \
@@ -1659,8 +1640,6 @@ if test x$boost_cv_inc_path != xno; then
     _BOOST_gcc_test(7, 1) \
     _BOOST_mingw_test(7, 0) \
     _BOOST_gcc_test(7, 0) \
-    _BOOST_mingw_test(6, 5) \
-    _BOOST_gcc_test(6, 5) \
     _BOOST_mingw_test(6, 4) \
     _BOOST_gcc_test(6, 4) \
     _BOOST_mingw_test(6, 3) \
