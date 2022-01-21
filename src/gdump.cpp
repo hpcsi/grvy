@@ -4,7 +4,7 @@
 // 
 // libGRVY - a utility library for scientific computing.
 //
-// Copyright (C) 2008,2009,2010,2011,2012,2013 The PECOS Development Team
+// Copyright (C) 2008-2013,2018-2021 The PECOS Development Team
 // Additional Copyright (C) 2018 individual authors
 //
 // This library is free software; you can redistribute it and/or
@@ -137,7 +137,7 @@ namespace GRVY_gdump
 
     if(cl.search(2,"--delimiter","-d"))
       {
-	delimiter = cl.next(delimiter);
+	delimiter = cl.next(delimiter.c_str());
 	grvy_printf(GRVY_DEBUG,"User requested --delimiter option with %s\n",delimiter.c_str());
 
 	for(size_t i=0;i<inputs.size();i++) // pop this arg from remaining inputs
@@ -150,7 +150,7 @@ namespace GRVY_gdump
 
     if(cl.search(2,"--output-dir","-o"))
       {
-	output_dir = cl.next(output_dir);
+	output_dir = cl.next(output_dir.c_str());
 	grvy_printf(GRVY_DEBUG,"User requested --output-dir option with %s\n",output_dir.c_str());
 
 	for(size_t i=0;i<inputs.size();i++) // pop this arg from remaining inputs

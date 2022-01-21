@@ -89,7 +89,7 @@ namespace GRVY_gadd
   {
     if(cl.search(2,opt_text1,opt_text2))
       {
-	varname = cl.next(varname);
+	varname = cl.next(varname.c_str());
 	grvy_printf(GRVY_DEBUG,"User requested %s option = %s\n",opt_text1,varname.c_str());
 	pop_argument(arguments,varname);
       }
