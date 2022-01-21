@@ -42,9 +42,10 @@ extern "C" {
 }
 #include <cmath>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <algorithm>
-
+#include <sstream>
 #include <fstream>
 #include <iostream> // not every compiler distribution includes <iostream> 
 //                  // with <fstream>
