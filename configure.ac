@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.65)
-AC_INIT(grvy, 0.36.0, https://github.com/hpcsi/grvy)
+AC_INIT(grvy, 0.37.0, https://github.com/hpcsi/grvy)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADER(config_grvy.h)
 AC_CONFIG_AUX_DIR([build-aux])

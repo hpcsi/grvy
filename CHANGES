@@ -1,3 +1,10 @@
+Version 0.37 (20 January 2022)
+
+  * update boost.m4 macro to only check for desired libraries in path
+    specified with BOOST_ROOT
+  * update GetPot to support compilation with intel compilers
+  * update hdf5 routines to be compatible with current GetPot version 
+
 Version 0.36 (07 January 2022)
 
   * extend C++ parsing API to include option to read from a
