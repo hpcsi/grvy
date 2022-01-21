@@ -445,10 +445,12 @@ namespace GRVY {
 	    _GRVY_message(GRVY_ERROR,"fread_string","Unable to query variable -> ",var);
 	    return 0;
 	  }
+#if 0
 	else 
 	  {
 	    _GRVY_message(GRVY_INFO,"fread_string","Using pre-registered value for variable",var);
 	  }
+#endif
       }
     return 1;
   }
@@ -512,10 +514,12 @@ namespace GRVY {
 	    _GRVY_message(GRVY_ERROR,"fread_char","Unable to query variable -> ",var);
 	    return 0;
 	  }
+#if 0
 	else 
 	  {
 	    _GRVY_message(GRVY_INFO,"fread_char","Using pre-registered value for variable",var);
 	  }
+#endif
       }
     return 1;
   }
