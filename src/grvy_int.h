@@ -103,13 +103,13 @@ namespace GRVY {
 
   class TimerCmpHighLow {
   public:
-    bool operator()(const std::vector <double> v1, const std::vector <double> v2 )  {
+    bool operator()(const std::vector <double> v1, const std::vector <double> v2 )  const {
       return ( v1[0] - v2[0] ) > 0; }
   };
 
   class TimerCmpLowHigh {
   public:
-    bool operator()(const std::vector <double> v1, const std::vector <double> v2 )  {
+    bool operator()(const std::vector <double> v1, const std::vector <double> v2 )  const {
       return ( v1[0] - v2[0] ) < 0; }
   };
 
