@@ -1,3 +1,7 @@
+Version 0.38 (12 July 2023)
+
+  * timer comparison fix to support compilation with gcc v12
+
 Version 0.37 (20 January 2022)
 
   * update boost.m4 macro to only check for desired libraries in path
