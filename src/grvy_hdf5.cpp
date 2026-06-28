@@ -804,7 +804,7 @@ void GRVY_HDF5_Class::GRVY_HDF5_ClassImp::close_open_objects()
       grvy_printf(GRVY_DEBUG,"%s: Closing open group (%s)\n",__func__,(*it).first.c_str());
 
       if(H5Gclose((*it).second) < 0)
-	grvy_printf(GRVY_WARN,"%s: Unable to close group (%s)\n",__func__,(*it).second);
+	grvy_printf(GRVY_WARN,"%s: Unable to close group (%s)\n",__func__,(*it).first.c_str());
 
       it = groupIds.erase(it);
     }
