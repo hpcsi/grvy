@@ -149,6 +149,7 @@ if HDF5_ENABLED
   TESTS                                        += C_hdf_hist_timing
   check_PROGRAMS                               += C_hdf_hist_timing
   C_hdf_hist_timing_SOURCES                     = C_hdf_hist_timing.c
+  C_hdf_hist_timing_LDADD                       = $(LIBM)
 
   TESTS                                        += F_hdf_hist_timing
   check_PROGRAMS                               += F_hdf_hist_timing
