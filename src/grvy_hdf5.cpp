@@ -332,9 +332,9 @@ vector<string> GRVY_HDF5_Class::ListSubGroups(string groupname)
 
 herr_t op_callback(hid_t loc_id, const char *name, const H5L_info_t *info, void *data)
 {
-  H5O_info_t infobuf;
+  H5O_info1_t infobuf;
 
-  herr_t status = H5Oget_info_by_name(loc_id,name,&infobuf,H5P_DEFAULT);
+  herr_t status = H5Oget_info_by_name1(loc_id,name,&infobuf,H5P_DEFAULT);
   switch(infobuf.type) 
     {
     case H5O_TYPE_GROUP:
