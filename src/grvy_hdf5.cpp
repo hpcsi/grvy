@@ -799,14 +799,14 @@ void GRVY_HDF5_Class::GRVY_HDF5_ClassImp::close_open_objects()
 
   map<std::string,hid_t>::iterator it;
 
-  for ( it=groupIds.begin(); it != groupIds.end(); it++ )
+  for ( it=groupIds.begin(); it != groupIds.end(); )
     {
       grvy_printf(GRVY_DEBUG,"%s: Closing open group (%s)\n",__func__,(*it).first.c_str());
 
       if(H5Gclose((*it).second) < 0)
 	grvy_printf(GRVY_WARN,"%s: Unable to close group (%s)\n",__func__,(*it).second);
 
-      groupIds.erase(it);
+      it = groupIds.erase(it);
     }
 
   // TODO: continue to add here for any other hdf objects which get opened
