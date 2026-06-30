@@ -1,3 +1,8 @@
+Version 0.39 (30 June 2026)
+
+  * updates to support newer compiler toolchains and external libs (#8)
+  * update CI to leverate newer Ubuntu distro (#9)
+
 Version 0.38 (12 July 2023)
 
   * timer comparison fix to support compilation with gcc v12
