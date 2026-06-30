@@ -8,15 +8,15 @@ on:
 
 jobs:
    distbuild:
-     runs-on: ubuntu-20.04
+     runs-on: ubuntu-latest
      name: Create dist tarball
      steps:
        - name: Cancel previous runs
-         uses: styfle/cancel-workflow-action@0.9.0
+         uses: styfle/cancel-workflow-action@0.9.1
          with:
            access_token: ${{ github.token }}     
        - name: Checkout code
-         uses: actions/checkout@v2
+         uses: actions/checkout@v7
        - name: Install Boost/Autotools
          run:  sudo apt-get install libboost-dev autoconf automake libtool	 
        - name: Bootstrap
@@ -28,21 +28,21 @@ jobs:
        - name: md5sum tarball
          run:  md5sum grvy-*.tar.gz
        - name: Archive tarball
-         uses: actions/upload-artifact@v2
+         uses: actions/upload-artifact@v7
          with:
            name: tarball-${{github.sha}}
            path: grvy-*.tar.gz
    disttest-cpu:
-     runs-on: ubuntu-20.04
+     runs-on: ubuntu-latest
      needs: distbuild
      name: Release tarball tests
      steps:
        - name: Cancel previous runs
-         uses: styfle/cancel-workflow-action@0.9.0
+         uses: styfle/cancel-workflow-action@0.9.1
          with:
            access_token: ${{ github.token }}     
        - name: Access tarball
-         uses: actions/download-artifact@v2
+         uses: actions/download-artifact@v7
          with:
            name: tarball-${{github.sha}}
        - name: Install Boost/Autotools
