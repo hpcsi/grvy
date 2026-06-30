@@ -1,6 +1,7 @@
 ![libGRVY](https://raw.githubusercontent.com/hpcsi/grvy/master/doxygen/images/grvy-small.png)
 ===================
 
+[![build](https://github.com/hpcsi/grvy/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/hpcsi/grvy/actions/workflows/build.yaml)
 [![build](https://github.com/hpcsi/grvy/workflows/CI//badge.svg?branch=main)](https://github.com/hpcsi/grvy/actions)
 [![Doxygen](https://github.com/hpcsi/grvy/actions/workflows/docs.yaml/badge.svg)](https://github.com/hpcsi/grvy/actions/workflows/docs.yaml)
 
