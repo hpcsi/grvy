@@ -8,7 +8,7 @@ on:
 
 jobs:
    distbuild:
-     runs-on: ubuntu-20.04
+     runs-on: ubuntu-latest
      name: Create dist tarball
      steps:
        - name: Cancel previous runs
@@ -33,7 +33,7 @@ jobs:
            name: tarball-${{github.sha}}
            path: grvy-*.tar.gz
    disttest-cpu:
-     runs-on: ubuntu-20.04
+     runs-on: ubuntu-latest
      needs: distbuild
      name: Release tarball tests
      steps:
