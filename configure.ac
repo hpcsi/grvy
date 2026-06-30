@@ -4,7 +4,7 @@
 AC_PREREQ(2.65)
 AC_INIT(grvy, 0.38.0, https://github.com/hpcsi/grvy)
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADER(config_grvy.h)
+AC_CONFIG_HEADERS([config_grvy.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE
 
@@ -31,7 +31,7 @@ AC_SUBST(GENERIC_MICRO_VERSION)
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_FC
-AC_PROG_LIBTOOL
+LT_INIT
 AC_PROG_LN_S
 AC_PROG_SED
 AM_SANITY_CHECK
@@ -41,7 +41,7 @@ LT_LIB_M
 # Enable MPI utilities?
 # ---------------------
 
-AC_ARG_ENABLE(mpi, AC_HELP_STRING([--enable-mpi],[enable MPI associated utilities]))
+AC_ARG_ENABLE(mpi, AS_HELP_STRING([--enable-mpi],[enable MPI associated utilities]))
 
 HAVE_MPI=0
 
@@ -60,7 +60,7 @@ AC_SUBST(HAVE_MPI)
 
 # Enable MPI Ocore
 ENABLE_OCORE=0
-AC_ARG_ENABLE(ocore, AC_HELP_STRING([--enable-ocore],[enable MPI ocore utilities (requires MPI)]))
+AC_ARG_ENABLE(ocore, AS_HELP_STRING([--enable-ocore],[enable MPI ocore utilities (requires MPI)]))
 if test "x$enable_ocore" = "xyes"; then
    ENABLE_OCORE=1
    AC_DEFINE(ENABLE_OCORE,1,[Enable MPI OCORE options])
@@ -88,7 +88,7 @@ AX_TLS
 #-------------------------------------------------------------------
 
 BOOST_HEADER_ONLY=0
-AC_ARG_ENABLE(boost-headers-only, AC_HELP_STRING([--enable-boost-headers-only],
+AC_ARG_ENABLE(boost-headers-only, AS_HELP_STRING([--enable-boost-headers-only],
 				  [build GRVY with Boost header-only install (disables some functionality)]),
 				  [boost_header_only=yes],[boost_header_only=no])
 				  
@@ -119,7 +119,7 @@ AX_PATH_HDF5(1.8.0,no)
 #----------------------------------
 # Enable quadrature rule generation
 #----------------------------------
-AC_ARG_ENABLE(gquad, AC_HELP_STRING([--enable-gquad],[enable Gaussian quadrature rule generation]))
+AC_ARG_ENABLE(gquad, AS_HELP_STRING([--enable-gquad],[enable Gaussian quadrature rule generation]))
 
 # If the user wants the quadrature capability, then GSL is required
 # Note that boost is also required (shared_ptr), but we already check for that.
@@ -155,8 +155,9 @@ DX_PS_FEATURE(OFF)
 
 DX_INIT_DOXYGEN(GRVY, doxygen/grvy.dox, docs)
 
-AC_OUTPUT( Makefile src/Makefile examples/Makefile test/Makefile grvy.pc \
-	   grvy.spec doxygen/Makefile src/grvy.h test/F_version.F90 )
+AC_CONFIG_FILES([Makefile src/Makefile examples/Makefile test/Makefile grvy.pc \
+	   grvy.spec doxygen/Makefile src/grvy.h test/F_version.F90])
+AC_OUTPUT
 
 # Final summary
 

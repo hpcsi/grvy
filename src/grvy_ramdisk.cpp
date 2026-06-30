@@ -204,7 +204,7 @@ private:
 
 } // matches namespace GRVY
 
-#ifdef HAVE_OCORE
+#ifdef ENABLE_OCORE
 
 namespace GRVY {
 

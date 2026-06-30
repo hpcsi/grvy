@@ -19,6 +19,15 @@ EXTRA_DIST        = init.sh finalize.sh diff_dir.sh version hostinfo \
 CLEANFILES        = .license.stamp *.gcno *.gcda .hostinfo
 TESTS             = # Append below
 TESTS_ENVIRONMENT = GRVY_INPUT_EXAMPLE_DIR=$(srcdir)
+
+# The test suite is serial by design: init.sh/finalize.sh bookend the
+# run and gdump.sh consumes the shared .test.h5 produced by gadd.sh.
+# Serialize the test runs so "make -j check" cannot race on it.  Under
+# GNU make >= 4.4, naming the parent $(TEST_SUITE_LOG) forces its
+# prerequisites (the per-test .log targets) to build serially while
+# test compilation stays parallel; older make ignores the prerequisite
+# and simply serializes the whole directory.
+.NOTPARALLEL: $(TEST_SUITE_LOG)
 check_PROGRAMS    = # Append below
 
 # C and Fortran require libgrvy.la and libgrvyf.la, respectively
@@ -149,6 +158,7 @@ if HDF5_ENABLED
   TESTS                                        += C_hdf_hist_timing
   check_PROGRAMS                               += C_hdf_hist_timing
   C_hdf_hist_timing_SOURCES                     = C_hdf_hist_timing.c
+  C_hdf_hist_timing_LDADD                       = $(LIBM)
 
   TESTS                                        += F_hdf_hist_timing
   check_PROGRAMS                               += F_hdf_hist_timing
